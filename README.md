@@ -6,7 +6,9 @@
 
 #### 演示
 
-演示站点：[看电影](https://www.wxkdy666.com)
+旧版.Net Framework：[看电影](https://www.wxkdy666.com)
+
+新版正在移植中
 
 #### 软件架构
 .Net Core简单仓储模式
