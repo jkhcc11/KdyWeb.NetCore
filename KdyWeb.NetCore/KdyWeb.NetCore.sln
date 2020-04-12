@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.NetCore", "KdyWeb.NetCore\KdyWeb.NetCore.csproj", "{E1D23B7E-989F-40A8-B911-6E104CA178C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.NetCore", "KdyWeb.NetCore\KdyWeb.NetCore.csproj", "{E1D23B7E-989F-40A8-B911-6E104CA178C3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0.Interface", "0.Interface", "{B165F07F-7447-4CFA-9DC8-310F981D4193}"
 EndProject
@@ -13,23 +13,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.DbFramework", "2.DbFramew
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.Service", "3.Service", "{477E0FF4-E622-4E13-BE93-AE6C2D89EAB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.BaseInterface", "KdyWeb.BaseInterface\KdyWeb.BaseInterface.csproj", "{76EC781E-0ECD-4F54-A73D-9D75CFD93A3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.BaseInterface", "KdyWeb.BaseInterface\KdyWeb.BaseInterface.csproj", "{76EC781E-0ECD-4F54-A73D-9D75CFD93A3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.Utility", "KdyWeb.Utility\KdyWeb.Utility.csproj", "{9EF2B0CB-8592-4550-ABBF-45D442590929}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.Utility", "KdyWeb.Utility\KdyWeb.Utility.csproj", "{9EF2B0CB-8592-4550-ABBF-45D442590929}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.Entity", "KdyWeb.Entity\KdyWeb.Entity.csproj", "{6AB6A6AB-8899-4F24-9F5B-5CFA7716BD1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.Entity", "KdyWeb.Entity\KdyWeb.Entity.csproj", "{6AB6A6AB-8899-4F24-9F5B-5CFA7716BD1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.EntityFramework", "KdyWeb.EntityFramework\KdyWeb.EntityFramework.csproj", "{CB9B17CF-C52C-42A9-AC8E-93D7A77A2A2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.EntityFramework", "KdyWeb.EntityFramework\KdyWeb.EntityFramework.csproj", "{CB9B17CF-C52C-42A9-AC8E-93D7A77A2A2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.IRepository", "KdyWeb.IRepository\KdyWeb.IRepository.csproj", "{3BA5FBC8-6A1B-4226-BE79-F4C611DA96F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.IRepository", "KdyWeb.IRepository\KdyWeb.IRepository.csproj", "{3BA5FBC8-6A1B-4226-BE79-F4C611DA96F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.Repository", "KdyWeb.Repository\KdyWeb.Repository.csproj", "{19BF65B0-1C1B-4AF8-A831-272721C5F83E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.Repository", "KdyWeb.Repository\KdyWeb.Repository.csproj", "{19BF65B0-1C1B-4AF8-A831-272721C5F83E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.IService", "KdyWeb.IService\KdyWeb.IService.csproj", "{A3E41576-E084-4D77-A6EB-B39EE31C7D50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.IService", "KdyWeb.IService\KdyWeb.IService.csproj", "{A3E41576-E084-4D77-A6EB-B39EE31C7D50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.Service", "KdyWeb.Service\KdyWeb.Service.csproj", "{41488220-9060-4E66-BDD9-8B934D82D4A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.Service", "KdyWeb.Service\KdyWeb.Service.csproj", "{41488220-9060-4E66-BDD9-8B934D82D4A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.Dto", "KdyWeb.Dto\KdyWeb.Dto.csproj", "{2BB73015-0464-4539-AD40-3F70CF7046ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.Dto", "KdyWeb.Dto\KdyWeb.Dto.csproj", "{2BB73015-0464-4539-AD40-3F70CF7046ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.Kdy.Project", "4.Kdy.Project", "{3F234AA6-2960-4971-B811-3EED82B423DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +84,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{E1D23B7E-989F-40A8-B911-6E104CA178C3} = {3F234AA6-2960-4971-B811-3EED82B423DC}
 		{76EC781E-0ECD-4F54-A73D-9D75CFD93A3F} = {B165F07F-7447-4CFA-9DC8-310F981D4193}
 		{9EF2B0CB-8592-4550-ABBF-45D442590929} = {85897962-185C-4CC2-A782-2840886FFD21}
 		{6AB6A6AB-8899-4F24-9F5B-5CFA7716BD1C} = {1A07C1DD-510C-4B92-A64F-B6E7D5B94B57}
