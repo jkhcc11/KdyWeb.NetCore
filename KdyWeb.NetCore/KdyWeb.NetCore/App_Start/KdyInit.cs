@@ -5,7 +5,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using AutoMapper;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.InterfaceFlag;
+using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
@@ -123,6 +125,10 @@ namespace KdyWeb.NetCore
                     UseCookies = false
                 });
 
+            //注入ExceptionLess日志
+            services.AddSingleton<IKdyLog, KdyLogForExceptionLess>();
+
+            services.InitHangFire();
         }
     }
 }

@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.KdyLog;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace KdyWeb.NetCore
+namespace KdyWeb.Job
 {
     public class Startup
     {
@@ -23,9 +20,10 @@ namespace KdyWeb.NetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-
-            services.KdyRegisterInit(Configuration);
+            //注入ExceptionLess日志
+            services.AddSingleton<IKdyLog, KdyLogForExceptionLess>();
+            services.AddControllers();
+            services.InitHangFireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,11 +33,6 @@ namespace KdyWeb.NetCore
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-            app.UseStaticFiles();
 
             app.UseRouting();
 
@@ -47,14 +40,12 @@ namespace KdyWeb.NetCore
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
 
+            app.InitDashboard();
             app.InitExceptionLess();
-            //全局DI容器
-            KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
+
         }
     }
 }

@@ -8,4 +8,8 @@
     <ProjectReference Include="..\KdyWeb.Dto\KdyWeb.Dto.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Job\" />
+  </ItemGroup>
+
 </Project>
