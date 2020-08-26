@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 
 namespace KdyWeb.BaseInterface.HttpBase
@@ -19,5 +20,11 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// </summary>
         /// <returns></returns>
         Task<TResult> SendAsync(TExt input);
+
+        /// <summary>
+        /// 设置请求参数
+        /// </summary>
+        /// <returns></returns>
+        HttpRequestMessage RequestPar(TExt input);
     }
 }

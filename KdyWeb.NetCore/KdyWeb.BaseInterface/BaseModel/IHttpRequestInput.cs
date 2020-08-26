@@ -14,6 +14,16 @@ namespace KdyWeb.BaseInterface.BaseModel
         string Url { get; set; }
 
         /// <summary>
+        /// 来源
+        /// </summary>
+        string Referer { get; set; }
+
+        /// <summary>
+        /// 用户代理
+        /// </summary>
+        string UserAgent { set; get; }
+
+        /// <summary>
         /// Cookie
         /// </summary>
         string Cookie { get; set; }

@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
 using Newtonsoft.Json;
 
@@ -35,11 +36,21 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         public virtual async Task<TResult> SendAsync(TInput input)
         {
-            var httpClient = HttpClientFactory.CreateClient("DemoHttp");
+            var httpClient = HttpClientFactory.CreateClient();
             var request = RequestPar(input);
             if (string.IsNullOrEmpty(input.Cookie) == false)
             {
                 request.Headers.Add("Cookie", input.Cookie);
+            }
+
+            if (string.IsNullOrEmpty(input.Referer) == false)
+            {
+                request.Headers.Add("Referer", input.Referer);
+            }
+
+            if (string.IsNullOrEmpty(input.UserAgent) == false)
+            {
+                request.Headers.Add("User-Agent", input.UserAgent);
             }
 
             var result = new TResult() { IsSuccess = true };
@@ -74,33 +85,51 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <param name="httpClient">HttpClient 实例</param>
         /// <param name="request">HttpRequestMessage</param>
         /// <param name="result">结果实例</param>
+        /// <param name="input">输入参数</param>
         /// <returns></returns>
         protected virtual async Task<TResult> GetResult(HttpClient httpClient, HttpRequestMessage request, TResult result, TInput input)
         {
-            var response = await httpClient.SendAsync(request);
-
-            result.HttpCode = response.StatusCode;
-            if (response.IsSuccessStatusCode == false)
+            try
             {
-                result.IsSuccess = false;
+                var response = await httpClient.SendAsync(request);
+
+                result.HttpCode = response.StatusCode;
+                if (response.IsSuccessStatusCode == false)
+                {
+                    result.IsSuccess = false;
+                    return result;
+                }
+
+                var resultBytes = await response.Content.ReadAsByteArrayAsync();
+                var resultStr = CharsetHandler(input, resultBytes);
+
+                if (typeof(TData) == typeof(string))
+                {
+                    //String类型
+                    result.Data = resultStr as TData;
+                }
+                else
+                {
+                    //其他类型
+                    result.Data = JsonConvert.DeserializeObject<TData>(resultStr);
+                }
+
                 return result;
             }
-
-            var resultBytes = await response.Content.ReadAsByteArrayAsync();
-            var resultStr = CharsetHandler(input, resultBytes);
-
-            if (typeof(TData) == typeof(string))
+            catch (WebException ex)
             {
-                //String类型
-                result.Data = resultStr as TData;
+                result.IsSuccess = false;
+                result.ErrMsg = $"Http网站异常：{ex.Message}";
+                ex.ToExceptionless().Submit();
+                return result;
             }
-            else
+            catch (Exception ex)
             {
-                //其他类型
-                result.Data = JsonConvert.DeserializeObject<TData>(resultStr);
+                result.IsSuccess = false;
+                result.ErrMsg = $"Http程序异常：{ex.Message}";
+                ex.ToExceptionless().Submit();
+                return result;
             }
-
-            return result;
         }
 
         /// <summary>

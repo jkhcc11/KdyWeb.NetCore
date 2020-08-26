@@ -21,7 +21,8 @@ namespace KdyWeb.BaseInterface
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
                 .Build();
-            if (string.IsNullOrEmpty(lessConfig["ExceptionLess:ApiKey"]))
+            var key = lessConfig.GetValue<string>("ExceptionLess:ApiKey");
+            if (string.IsNullOrEmpty(key))
             {
                 throw new Exception("启动ExceptionLess异常，未配置ExceptionLess节点");
             }
