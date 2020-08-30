@@ -59,13 +59,8 @@ namespace KdyWeb.Job
                 {
                     //环境变量
                     var env = context.HostingEnvironment;
-                    Console.WriteLine(env.ApplicationName);
-                    Console.WriteLine(env.EnvironmentName);
-
                     context.Configuration = config.Build();
                     string consulUrl = context.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
-
-                    Console.WriteLine(consulUrl);
                     config.InitConfigCenter(context, consulUrl,
                         $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
                 })
