@@ -1,7 +1,9 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using KdyWeb.BaseInterface;
 using KdyWeb.Job.JobService;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -55,7 +57,17 @@ namespace KdyWeb.Job
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    config.AddJsonFile("hosting.json", optional: true);
+                    //环境变量
+                    var env = context.HostingEnvironment;
+                    Console.WriteLine(env.ApplicationName);
+                    Console.WriteLine(env.EnvironmentName);
+
+                    context.Configuration = config.Build();
+                    string consulUrl = context.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
+
+                    Console.WriteLine(consulUrl);
+                    config.InitConfigCenter(context, consulUrl,
+                        $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
                 })
                 .ConfigureServices((context, service) =>
                 {

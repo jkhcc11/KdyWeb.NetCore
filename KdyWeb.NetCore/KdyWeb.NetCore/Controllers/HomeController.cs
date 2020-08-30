@@ -6,7 +6,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Hangfire;
 using KdyWeb.Dto.Job;
+using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,48 +20,61 @@ namespace KdyWeb.NetCore.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IBackgroundJobClient _backgroundJobClient;
+         private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly IKdyRequestCommon _kdyRequestCommon;
+        private readonly IMinIoFileService _minIoFileService;
 
-        public HomeController(ILogger<HomeController> logger, IBackgroundJobClient backgroundJobClient, IKdyRequestCommon kdyRequestCommon)
+        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient)
         {
             _logger = logger;
-            _backgroundJobClient = backgroundJobClient;
             _kdyRequestCommon = kdyRequestCommon;
+            _minIoFileService = minIoFileService;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<IActionResult> Index(string url)
         {
-            //var input = new SendEmailInput()
-            //{
-            //    Email = "154@qq.com",
-            //    Content = "jfiejfieji"
-            //};
-            //_backgroundJobClient.Enqueue<SendEmailQueue>(a => a.Execute(input));
+            var emailInput = new SendEmailInput()
+            {
+                Email = "154@qq.com",
+                Content = "jfiejfieji"
+            };
+            _backgroundJobClient.Enqueue<SendEmailQueue>(a => a.Execute(emailInput));
             if (string.IsNullOrEmpty(url))
             {
-                url = "https://www.baidu.com";
-            }
-            var reqInput = new KdyRequestCommonInput(url, HttpMethod.Get);
-            var result = await _kdyRequestCommon.SendAsync(reqInput);
-            if (result.IsSuccess == false)
-            {
-                return Content(result.ErrMsg);
+                return View();
             }
 
-            return Content(result.Data);
+            var name = $"{DateTime.Now.Ticks:x}.jpg";
+            var input = new MinIoFileInput("kdyimg", name, url);
+
+            var result = await _minIoFileService.PostFile(input);
+            return Json(result);
+
+            //if (string.IsNullOrEmpty(url))
+            //{
+            //    url = "https://www.baidu.com";
+            //}
+            //var reqInput = new KdyRequestCommonInput(url, HttpMethod.Get);
+            //var result = await _kdyRequestCommon.SendAsync(reqInput);
+            //if (result.IsSuccess == false)
+            //{
+            //    return Content(result.ErrMsg);
+            //}
+
+            //return Content(result.Data);
 
             return View();
         }
 
         public async Task<IActionResult> IndexRef()
         {
-          
+
             var reqInput = new KdyRequestCommonInput("https://zx.itkdd.com/Cloud/Down/IndexV3/zxzj_232/1DE59A1DDCEAC51A64CFCB7BCCC34BB78D497E2E181AE03A515A48F6C851743F/2", HttpMethod.Get)
             {
                 Referer = "https://www.zxzj.me/video/2946-1-1.html"
             };
-            
+
             var result = await _kdyRequestCommon.SendAsync(reqInput);
             if (result.IsSuccess == false)
             {

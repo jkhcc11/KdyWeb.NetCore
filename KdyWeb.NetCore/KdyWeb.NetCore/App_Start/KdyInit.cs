@@ -10,6 +10,8 @@ using KdyWeb.BaseInterface.InterfaceFlag;
 using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
+using KdyWeb.IService.KdyFile;
+using KdyWeb.Service.KdyFile;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -128,7 +130,7 @@ namespace KdyWeb.NetCore
             //注入ExceptionLess日志
             services.AddSingleton<IKdyLog, KdyLogForExceptionLess>();
 
-            services.InitHangFire();
+            services.InitHangFire(configuration);
         }
     }
 }

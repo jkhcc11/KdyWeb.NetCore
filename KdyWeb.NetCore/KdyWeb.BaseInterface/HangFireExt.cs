@@ -17,29 +17,31 @@ namespace KdyWeb.BaseInterface
         /// 初始化Hangfire服务端
         /// </summary>
         /// <param name="services"></param>
-        public static void InitHangFireServer(this IServiceCollection services)
+        /// <param name="configuration"></param>
+        public static void InitHangFireServer(this IServiceCollection services,IConfiguration configuration)
         {
             services.AddHangfireServer();
-            services.InitHangFire();
+            services.InitHangFire(configuration);
 
         }
 
         /// <summary>
         /// 初始化Hangfire客户端
         /// </summary>
-        /// <param name="services"></param>
-        public static void InitHangFire(this IServiceCollection services)
+        public static void InitHangFire(this IServiceCollection services, IConfiguration configuration)
         {
-            var hangFireConfig = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .Build();
-            var connectionStr = hangFireConfig.GetConnectionString("HangFireConnStr");
+            //var hangFireConfig = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json", optional: true)
+            //    .Build();
+            //var connectionStr = hangFireConfig.GetConnectionString("HangFireConnStr");
+
+            var connectionStr = configuration.GetConnectionString("HangFireConnStr");
             if (string.IsNullOrEmpty(connectionStr))
             {
                 throw new Exception("启动Hangfire异常，找不到连接字符串");
             }
 
-            services.AddHangfire(configuration => configuration
+            services.AddHangfire(hgConfig => hgConfig
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()

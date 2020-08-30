@@ -23,7 +23,7 @@ namespace KdyWeb.Job
             //◊¢»ÎExceptionLess»’÷æ
             services.AddSingleton<IKdyLog, KdyLogForExceptionLess>();
             services.AddControllers();
-            services.InitHangFireServer();
+            services.InitHangFireServer(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,7 +44,7 @@ namespace KdyWeb.Job
             });
 
             app.InitDashboard();
-            app.InitExceptionLess();
+            app.InitExceptionLess(Configuration);
 
         }
     }

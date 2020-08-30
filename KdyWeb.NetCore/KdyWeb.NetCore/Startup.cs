@@ -52,7 +52,7 @@ namespace KdyWeb.NetCore
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.InitExceptionLess();
+            app.InitExceptionLess(Configuration);
             //È«¾ÖDIÈÝÆ÷
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
         }

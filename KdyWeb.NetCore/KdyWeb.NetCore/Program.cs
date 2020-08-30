@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Winton.Extensions.Configuration.Consul;
 
 namespace KdyWeb.NetCore
 {
@@ -16,11 +13,24 @@ namespace KdyWeb.NetCore
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                 .ConfigureAppConfiguration((hostingContext, config) =>
+                 {
+                     //环境变量
+                     var env = hostingContext.HostingEnvironment;
+                     hostingContext.Configuration = config.Build();
+                     string consulUrl = hostingContext.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
+
+                     config.InitConfigCenter(hostingContext, consulUrl,
+                         $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
+                 })
+                 .ConfigureWebHostDefaults(webBuilder =>
+                 {
+                     webBuilder.UseStartup<Startup>();
+                 });
+        }
+
     }
 }
