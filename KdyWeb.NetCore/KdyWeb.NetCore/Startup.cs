@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,7 +29,9 @@ namespace KdyWeb.NetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            //添加自动防伪标记
+            services.AddControllersWithViews(options =>
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
             services.KdyRegisterInit(Configuration);
         }
@@ -40,11 +48,16 @@ namespace KdyWeb.NetCore
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
+            app.UseCookiePolicy();
 
             app.UseRouting();
+            app.UseKdyAuth(new KdyAuthMiddlewareOption()
+            {
+                LoginUrl = "/User/Login"
+            });
+            app.UseKdyLog();
 
-            app.UseAuthorization();
-
+            // app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -52,9 +65,9 @@ namespace KdyWeb.NetCore
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.InitExceptionLess(Configuration);
             //全局DI容器
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
+            app.InitExceptionLess(Configuration);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Exceptionless;
 using Exceptionless.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace KdyWeb.BaseInterface.KdyLog
 {
@@ -16,11 +17,16 @@ namespace KdyWeb.BaseInterface.KdyLog
             _client = ExceptionlessClient.Default;
         }
 
-        public void Info(string source, string info, params string[] tags)
+        public void Info(string source, string info, HttpContext context = null, params string[] tags)
         {
-            _client.CreateLog(source, info, LogLevel.Info)
-                .AddTags(tags)
-                .Submit();
+            var client = _client.CreateLog(source, info, LogLevel.Info)
+                .AddTags(tags);
+            if (context != null)
+            {
+                client.SetHttpContext(context);
+            }
+
+            client.Submit();
         }
 
         public void Debug(string source, string info, params string[] tags)

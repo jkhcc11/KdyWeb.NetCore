@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 
 namespace KdyWeb.BaseInterface.KdyLog
 {
@@ -12,8 +13,9 @@ namespace KdyWeb.BaseInterface.KdyLog
         /// </summary>
         /// <param name="source">来源</param>
         /// <param name="info">信息</param>
+        /// <param name="context"><see cref="HttpContext"/></param>
         /// <param name="tags">扩展附加</param>
-        void Info(string source, string info, params string[] tags);
+        void Info(string source, string info, HttpContext context = null, params string[] tags);
 
         /// <summary>
         /// 调试信息

@@ -123,7 +123,7 @@ namespace KdyWeb.Repository
         /// 硬删除
         /// </summary>
         /// <returns></returns>
-        public async Task<int> DeleteAndRemoveAsync(TEntity entity)
+        public virtual async Task<int> DeleteAndRemoveAsync(TEntity entity)
         {
             DbSet.Remove(entity);
             return await _dbContext.SaveChangesAsync();
@@ -133,7 +133,7 @@ namespace KdyWeb.Repository
         /// 新增
         /// </summary>
         /// <returns></returns>
-        public async Task CreateAsync(TEntity entity)
+        public virtual async Task CreateAsync(TEntity entity)
         {
             entity.CreatedTime = DateTime.Now;
             await DbSet.AddAsync(entity);

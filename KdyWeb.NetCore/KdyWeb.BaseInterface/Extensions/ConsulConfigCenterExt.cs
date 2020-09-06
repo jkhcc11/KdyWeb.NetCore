@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Winton.Extensions.Configuration.Consul;
 
-namespace KdyWeb.BaseInterface
+namespace KdyWeb.BaseInterface.Extensions
 {
     /// <summary>
     /// Consul配置中心扩展

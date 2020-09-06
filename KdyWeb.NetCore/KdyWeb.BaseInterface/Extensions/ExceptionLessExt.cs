@@ -3,7 +3,7 @@ using Exceptionless;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
-namespace KdyWeb.BaseInterface
+namespace KdyWeb.BaseInterface.Extensions
 {
     /// <summary>
     /// ExceptionLess扩展
@@ -13,7 +13,7 @@ namespace KdyWeb.BaseInterface
         /// <summary>
         /// 初始化 ExceptionLess
         /// </summary>
-        public static void InitExceptionLess(this IApplicationBuilder app, IConfiguration configuration)
+        public static IApplicationBuilder InitExceptionLess(this IApplicationBuilder app, IConfiguration configuration)
         {
             ExceptionlessClient.Default.Configuration.UseInMemoryStorage();
             //var lessConfig = new ConfigurationBuilder()
@@ -28,6 +28,7 @@ namespace KdyWeb.BaseInterface
             }
 
             app.UseExceptionless(configuration);
+            return app;
         }
     }
 }

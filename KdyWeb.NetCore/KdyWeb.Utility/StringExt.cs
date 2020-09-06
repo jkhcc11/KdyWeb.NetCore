@@ -10,6 +10,15 @@ namespace KdyWeb.Utility
     public static class StringExt
     {
         /// <summary>
+        /// 为空校验
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsEmptyExt(this string str)
+        {
+            return string.IsNullOrEmpty(str);
+        }
+
+        /// <summary>
         /// Md5扩展
         /// </summary>
         /// <param name="strSource">待加密字符串</param>

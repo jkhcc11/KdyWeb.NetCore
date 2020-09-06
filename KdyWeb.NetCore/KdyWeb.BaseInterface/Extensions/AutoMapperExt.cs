@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace KdyWeb.BaseInterface
+namespace KdyWeb.BaseInterface.Extensions
 {
     /// <summary>
     /// AutoMapper扩展

@@ -6,12 +6,14 @@ using System.Net.Http;
 using System.Reflection;
 using AutoMapper;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.InterfaceFlag;
 using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
-using KdyWeb.IService.KdyFile;
-using KdyWeb.Service.KdyFile;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,7 +52,7 @@ namespace KdyWeb.NetCore
                 var currentInterface = item.GetInterfaces().FirstOrDefault(a => a.Name.EndsWith(item.Name));
                 if (currentInterface == null)
                 {
-                    throw new Exception($"方法名：{item.Namespace}自动注入失败");
+                    continue;
                 }
 
                 //每次请求，都获取一个新的实例。同一个请求获取多次会得到相同的实例
@@ -69,7 +71,7 @@ namespace KdyWeb.NetCore
                 var currentInterface = item.GetInterfaces().FirstOrDefault(a => a.Name.EndsWith(item.Name));
                 if (currentInterface == null)
                 {
-                    throw new Exception($"方法名：{item.Namespace}自动注入失败");
+                    continue;
                 }
 
                 //每次请求，都获取一个新的实例。同一个请求获取多次会得到相同的实例
@@ -88,7 +90,7 @@ namespace KdyWeb.NetCore
                 var currentInterface = item.GetInterfaces().FirstOrDefault(a => a.Name.EndsWith(item.Name));
                 if (currentInterface == null)
                 {
-                    throw new Exception($"方法名：{item.Namespace}自动注入失败");
+                    continue;
                 }
 
                 //单例注入
@@ -127,10 +129,20 @@ namespace KdyWeb.NetCore
                     UseCookies = false
                 });
 
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.HttpOnly = HttpOnlyPolicy.Always;
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            });
+
             //注入ExceptionLess日志
             services.AddSingleton<IKdyLog, KdyLogForExceptionLess>();
 
-            services.InitHangFire(configuration);
+            //初始化第三方组件
+            services.InitHangFire(configuration)
+                .InitIdGenerate(configuration)
+                .UseRedisCache(configuration)
+                .AddMemoryCache();
         }
     }
 }

@@ -4,14 +4,16 @@ using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(KdyContext))]
-    partial class KdyContextModelSnapshot : ModelSnapshot
+    [Migration("20200905061941_idDelete")]
+    partial class idDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,11 +27,9 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2020, 9, 5, 14, 25, 8, 577, DateTimeKind.Local).AddTicks(1298));
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
+                    b.Property<int>("CreatedUserId")
                         .HasColumnType("int");
 
                     b.Property<string>("FileMd5")
@@ -93,11 +93,9 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasMaxLength(100);
 
                     b.Property<DateTime>("CreatedTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2020, 9, 5, 14, 25, 8, 794, DateTimeKind.Local).AddTicks(6124));
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
+                    b.Property<int>("CreatedUserId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActivate")
@@ -144,11 +142,9 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2020, 9, 5, 14, 25, 8, 811, DateTimeKind.Local).AddTicks(1345));
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
+                    b.Property<int>("CreatedUserId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActivate")
@@ -178,7 +174,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedTime = new DateTime(2020, 9, 5, 14, 25, 8, 812, DateTimeKind.Local).AddTicks(8644),
+                            CreatedTime = new DateTime(2020, 9, 5, 14, 19, 40, 679, DateTimeKind.Local).AddTicks(5864),
+                            CreatedUserId = 0,
                             IsActivate = true,
                             IsDelete = false,
                             KdyRoleType = (byte)1
@@ -186,7 +183,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedTime = new DateTime(2020, 9, 5, 14, 25, 8, 813, DateTimeKind.Local).AddTicks(250),
+                            CreatedTime = new DateTime(2020, 9, 5, 14, 19, 40, 682, DateTimeKind.Local).AddTicks(5963),
+                            CreatedUserId = 0,
                             IsActivate = true,
                             IsDelete = false,
                             KdyRoleType = (byte)5
@@ -194,7 +192,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedTime = new DateTime(2020, 9, 5, 14, 25, 8, 813, DateTimeKind.Local).AddTicks(291),
+                            CreatedTime = new DateTime(2020, 9, 5, 14, 19, 40, 682, DateTimeKind.Local).AddTicks(6036),
+                            CreatedUserId = 0,
                             IsActivate = true,
                             IsDelete = false,
                             KdyRoleType = (byte)10
@@ -202,7 +201,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedTime = new DateTime(2020, 9, 5, 14, 25, 8, 813, DateTimeKind.Local).AddTicks(293),
+                            CreatedTime = new DateTime(2020, 9, 5, 14, 19, 40, 682, DateTimeKind.Local).AddTicks(6040),
+                            CreatedUserId = 0,
                             IsActivate = true,
                             IsDelete = false,
                             KdyRoleType = (byte)15
@@ -217,11 +217,9 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2020, 9, 5, 14, 25, 8, 818, DateTimeKind.Local).AddTicks(4079));
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
+                    b.Property<int>("CreatedUserId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActivate")
@@ -261,11 +259,9 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2020, 9, 5, 14, 25, 8, 819, DateTimeKind.Local).AddTicks(3709));
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
+                    b.Property<int>("CreatedUserId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDelete")
@@ -314,7 +310,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedTime = new DateTime(2020, 9, 5, 14, 25, 8, 829, DateTimeKind.Local).AddTicks(41),
+                            CreatedTime = new DateTime(2020, 9, 5, 14, 19, 40, 698, DateTimeKind.Local).AddTicks(8693),
+                            CreatedUserId = 0,
                             IsDelete = false,
                             KdyRoleId = 3,
                             UserEmail = "137651076@qq.com",
@@ -325,7 +322,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedTime = new DateTime(2020, 9, 5, 14, 25, 8, 829, DateTimeKind.Local).AddTicks(1552),
+                            CreatedTime = new DateTime(2020, 9, 5, 14, 19, 40, 698, DateTimeKind.Local).AddTicks(9639),
+                            CreatedUserId = 0,
                             IsDelete = false,
                             KdyRoleId = 1,
                             UserEmail = "123456@qq.com",
@@ -341,11 +339,9 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2020, 9, 5, 14, 25, 8, 589, DateTimeKind.Local).AddTicks(1195));
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
+                    b.Property<int>("CreatedUserId")
                         .HasColumnType("int");
 
                     b.Property<string>("FileMd5")

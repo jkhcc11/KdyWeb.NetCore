@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.Job.JobService;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

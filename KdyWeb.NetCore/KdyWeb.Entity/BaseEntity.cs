@@ -49,7 +49,7 @@ namespace KdyWeb.Entity
         /// <summary>
         /// 创建用户Id
         /// </summary>
-        int CreatedUserId { get; set; }
+        int? CreatedUserId { get; set; }
 
         /// <summary>
         /// 修改用户Id
@@ -86,7 +86,7 @@ namespace KdyWeb.Entity
         /// <summary>
         /// 创建用户
         /// </summary>
-        public int CreatedUserId { get; set; }
+        public int? CreatedUserId { get; set; }
 
         /// <summary>
         /// 修改用户

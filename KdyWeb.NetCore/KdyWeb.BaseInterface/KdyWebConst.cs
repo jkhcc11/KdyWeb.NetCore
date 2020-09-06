@@ -1,0 +1,13 @@
+﻿namespace KdyWeb.BaseInterface
+{
+    /// <summary>
+    /// 公用常量
+    /// </summary>
+    public class KdyBaseConst
+    {
+        /// <summary>
+        /// 登录Cookie Key
+        /// </summary>
+        public const string CookieKey = "Kdy666_Status";
+    }
+}

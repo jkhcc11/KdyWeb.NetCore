@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Service;
 using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface.HttpBase
@@ -13,7 +14,7 @@ namespace KdyWeb.BaseInterface.HttpBase
     /// <summary>
     /// Http请求 抽象类
     /// </summary>
-    public abstract class BaseKdyHttp<TResult, TData, TInput, TExtData>
+    public abstract class BaseKdyHttp<TResult, TData, TInput, TExtData> : BaseKdyService
         where TResult : class, IHttpOut<TData>, new()
         where TData : class
         where TInput : class, IHttpRequestInput<TExtData>

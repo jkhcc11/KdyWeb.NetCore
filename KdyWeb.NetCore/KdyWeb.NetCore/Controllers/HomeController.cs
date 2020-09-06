@@ -5,15 +5,19 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Hangfire;
+using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.Job;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using KdyWeb.NetCore.Models;
 using KdyWeb.Service.Job;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace KdyWeb.NetCore.Controllers
 {
@@ -23,17 +27,24 @@ namespace KdyWeb.NetCore.Controllers
          private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly IKdyRequestCommon _kdyRequestCommon;
         private readonly IMinIoFileService _minIoFileService;
+        private readonly IKdyImgSaveService _kdyImgSaveService;
+        private readonly IKdyRedisCache _redisCache;
 
-        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient)
+        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient, IKdyImgSaveService kdyImgSaveService, IKdyRedisCache redisCache)
         {
             _logger = logger;
             _kdyRequestCommon = kdyRequestCommon;
             _minIoFileService = minIoFileService;
             _backgroundJobClient = backgroundJobClient;
+            _kdyImgSaveService = kdyImgSaveService;
+            _redisCache = redisCache;
         }
 
         public async Task<IActionResult> Index(string url)
         {
+           // await _redisCache.GetCache().SetStringAsync("Index", url);
+
+           // await _kdyImgSaveService.Test();
             var emailInput = new SendEmailInput()
             {
                 Email = "154@qq.com",
@@ -84,6 +95,7 @@ namespace KdyWeb.NetCore.Controllers
             return Content(result.Data);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> IndexPost()
         {
 

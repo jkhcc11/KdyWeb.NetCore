@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.KdyFile;
 
@@ -11,7 +12,7 @@ namespace KdyWeb.Service.KdyFile
     /// 文件存储 抽象基类
     /// </summary>
     /// <typeparam name="T">扩展参数</typeparam>
-    public abstract class BaseKdyFileService<T> : IKdyFileService<T>
+    public abstract class BaseKdyFileService<T> : BaseKdyService, IKdyFileService<T>
         where T : class, IBaseKdyFileInput
     {
         protected readonly IHttpClientFactory _httpClientFactory;

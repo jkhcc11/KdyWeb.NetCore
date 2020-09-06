@@ -1,13 +1,17 @@
-﻿
-
-using KdyWeb.BaseInterface.InterfaceFlag;
+﻿using KdyWeb.BaseInterface.InterfaceFlag;
 
 namespace KdyWeb.BaseInterface.Service
 {
     /// <summary>
-    /// 用户批量注入Service
+    /// 基础服务定义 接口
     /// </summary>
     public interface IKdyService : IKdyScoped
     {
+        /// <summary>
+        /// 根据Key 获取配置信息
+        /// </summary>
+        /// <param name="key">配置Key</param>
+        /// <returns></returns>
+        T GetConfig<T>(string key);
     }
 }

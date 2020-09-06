@@ -1,4 +1,5 @@
-﻿using KdyWeb.Entity;
+﻿using System;
+using KdyWeb.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -45,6 +46,14 @@ namespace KdyWeb.EntityFramework.Mapping
             {
                 builder.Property(nameof(IRowVersion.RowVersion)).IsRowVersion();
             }
+
+            //long类型非自增
+            if (typeof(long) == typeof(TKey))
+            {
+                builder.Property(a => a.Id).ValueGeneratedNever();
+            }
+
+            builder.Property(a => a.IsDelete).HasDefaultValue(false);
 
             MapperConfigure(builder);
         }
