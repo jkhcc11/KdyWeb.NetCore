@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using KdyWeb.BaseInterface.BaseModel;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.KdyHttp
 {
@@ -23,5 +24,20 @@ namespace KdyWeb.Dto.KdyHttp
         /// 返回内容
         /// </summary>
         public string Data { get; set; }
+
+        public Dictionary<string, string> CookieDic { get; set; } = new Dictionary<string, string>();
+
+        public string LocationUrl { get; set; }
+
+        public string GetString()
+        {
+            var str = JsonConvert.SerializeObject(this);
+            if (str.Length > 1024)
+            {
+                return str.Substring(0, 1024);
+            }
+
+            return str;
+        }
     }
 }

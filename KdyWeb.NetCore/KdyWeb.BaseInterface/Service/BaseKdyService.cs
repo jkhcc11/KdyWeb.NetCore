@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using KdyWeb.BaseInterface.KdyLog;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KdyWeb.BaseInterface.Service
@@ -17,6 +18,15 @@ namespace KdyWeb.BaseInterface.Service
         {
             var config = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
             return config.GetValue<T>(key);
+        }
+
+        /// <summary>
+        /// 获取日志实例
+        /// </summary>
+        /// <returns></returns>
+        public IKdyLog GetKdyLog()
+        {
+            return KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
         }
     }
 }

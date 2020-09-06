@@ -16,7 +16,7 @@ namespace KdyWeb.Service.Job
 
         public override void Execute(SendEmailInput input)
         {
-            KdyLog.Debug(nameof(SendEmailQueue), $"请求参数：{input.ToJsonStr()}", nameof(Execute));
+           // KdyLog.Debug(nameof(SendEmailQueue), $"请求参数：{input.ToJsonStr()}", nameof(Execute));
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Text;
 using KdyWeb.BaseInterface.BaseModel;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.KdyHttp
 {
@@ -33,7 +34,20 @@ namespace KdyWeb.Dto.KdyHttp
 
         public Encoding EnCoding { get; set; }
 
+        public bool IsAutoRedirect { get; set; }
+
         public KdyRequestCommonExtInput ExtData { get; set; }
+
+        public string GetString()
+        {
+            var str = JsonConvert.SerializeObject(this);
+            if (str.Length > 1024)
+            {
+                return str.Substring(0, 1024);
+            }
+
+            return str;
+        }
     }
 
     /// <summary>
@@ -47,13 +61,14 @@ namespace KdyWeb.Dto.KdyHttp
         public string ContentType { get; set; } = "application/x-www-form-urlencoded";
 
         /// <summary>
+        /// 是否Ajax请求
+        /// </summary>
+        public bool IsAjax { get; set; }
+
+        /// <summary>
         /// Post数据
         /// </summary>
         public string PostData { get; set; }
 
-        /// <summary>
-        /// 是否Ajax请求
-        /// </summary>
-        public bool IsAjax { get; set; }
     }
 }

@@ -54,8 +54,7 @@ namespace KdyWeb.NetCore
             app.UseKdyAuth(new KdyAuthMiddlewareOption()
             {
                 LoginUrl = "/User/Login"
-            });
-            app.UseKdyLog();
+            }).UseKdyLog();
 
             // app.UseAuthorization();
             app.UseEndpoints(endpoints =>

@@ -39,8 +39,19 @@ namespace KdyWeb.BaseInterface.BaseModel
         Encoding EnCoding { get; set; }
 
         /// <summary>
+        /// 是否自动302跳转
+        /// </summary>
+        bool IsAutoRedirect { get; set; }
+
+        /// <summary>
         /// 扩展参数
         /// </summary>
         TExt ExtData { set; get; }
+
+        /// <summary>
+        /// 格式化入参
+        /// </summary>
+        /// <returns></returns>
+        string GetString();
     }
 }

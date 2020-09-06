@@ -21,10 +21,10 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         Task<TResult> SendAsync(TExt input);
 
-        /// <summary>
-        /// 设置请求参数
-        /// </summary>
-        /// <returns></returns>
-        HttpRequestMessage RequestPar(TExt input);
+        ///// <summary>
+        ///// 设置请求参数
+        ///// </summary>
+        ///// <returns></returns>
+        //HttpRequestMessage RequestPar(TExt input);
     }
 }

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace KdyWeb.NetCore
 {
@@ -98,6 +99,9 @@ namespace KdyWeb.NetCore
             }
             #endregion
 
+            //为了后面获取HttpContext
+            services.AddHttpContextAccessor()
+                .TryAddSingleton<IKdyLog, KdyLogForExceptionLess>();
         }
 
         /// <summary>
@@ -120,7 +124,7 @@ namespace KdyWeb.NetCore
             services.AddAutoMapper(typeof(KdyMapperInit));
 
             //注入HttpClient
-            services.AddHttpClient("WeChatDisableCookies")
+            services.AddHttpClient("KdyWeb")
                 .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
                 {
                     //取消自动跳转
@@ -134,9 +138,6 @@ namespace KdyWeb.NetCore
                 options.HttpOnly = HttpOnlyPolicy.Always;
                 options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
-
-            //注入ExceptionLess日志
-            services.AddSingleton<IKdyLog, KdyLogForExceptionLess>();
 
             //初始化第三方组件
             services.InitHangFire(configuration)

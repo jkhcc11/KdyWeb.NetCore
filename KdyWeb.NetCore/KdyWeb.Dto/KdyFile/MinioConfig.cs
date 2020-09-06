@@ -6,11 +6,6 @@
     public class MinioConfig
     {
         /// <summary>
-        /// 配置文件节点
-        /// </summary>
-        public const string ConfigKey = "MinioConfig";
-
-        /// <summary>
         /// MinIO Api地址
         /// </summary>
         public string ServerUrl { get; set; }

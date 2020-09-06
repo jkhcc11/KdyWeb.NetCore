@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,6 +44,7 @@ namespace KdyWeb.BaseInterface
         public async Task Invoke(HttpContext context)
         {
             var request = context.Request;
+            var response = context.Response;
             if (request == null)
             {
                 return;
@@ -63,33 +65,35 @@ namespace KdyWeb.BaseInterface
                 source = request.Path;
             }
 
-            try
+            //原始数据流
+            var oldBody = context.Response.Body;
+            //清空流
+            var ms = new MemoryStream();
+            context.Response.Body = ms;
+
+            //执行其他
+            await _next(context);
+
+            if (response.StatusCode > 500 || (response.StatusCode > 300 && response.StatusCode < 400))
             {
-                //原始数据流
-                var oldBody = context.Response.Body;
-                //清空流
-                var ms = new MemoryStream();
-                context.Response.Body = ms;
-
-                //执行其他
-                await _next(context);
-
-                //重置
-                ms.Seek(0, SeekOrigin.Begin);
-                var reader = new StreamReader(ms);
-                var str = reader.ReadToEnd();
-
-                //记录日志
-                kdyLog.Info(source, $"{str}", context, request.Path);
-
-                ms.Seek(0, SeekOrigin.Begin);
-                // 写入到原有的流中
-                await ms.CopyToAsync(oldBody);
+                //系统错误和跳转不要记录
+                return;
             }
-            catch
+
+            //重置
+            ms.Seek(0, SeekOrigin.Begin);
+            var reader = new StreamReader(ms);
+            var str = await reader.ReadToEndAsync();
+
+            //记录日志
+            kdyLog.Info(source, "用户请求结束", new Dictionary<string, string>()
             {
-                throw;
-            }
+                {"Response",str }
+            });
+
+            ms.Seek(0, SeekOrigin.Begin);
+            // 写入到原有的流中
+            await ms.CopyToAsync(oldBody);
 
         }
 

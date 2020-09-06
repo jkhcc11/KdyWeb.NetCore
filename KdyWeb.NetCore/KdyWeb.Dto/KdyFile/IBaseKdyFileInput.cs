@@ -1,7 +1,7 @@
 ﻿namespace KdyWeb.Dto.KdyFile
 {
     /// <summary>
-    /// 文件上传基础 接口
+    /// 文件上传基础Input  接口
     /// </summary>
     public interface IBaseKdyFileInput
     {

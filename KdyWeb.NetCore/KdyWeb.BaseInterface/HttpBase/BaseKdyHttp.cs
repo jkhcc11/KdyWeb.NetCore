@@ -12,7 +12,8 @@ using Newtonsoft.Json;
 namespace KdyWeb.BaseInterface.HttpBase
 {
     /// <summary>
-    /// Http请求 抽象类
+    /// 基于HttpClient Http请求 抽象类
+    /// todo:获取跨域cookie麻烦
     /// </summary>
     public abstract class BaseKdyHttp<TResult, TData, TInput, TExtData> : BaseKdyService
         where TResult : class, IHttpOut<TData>, new()

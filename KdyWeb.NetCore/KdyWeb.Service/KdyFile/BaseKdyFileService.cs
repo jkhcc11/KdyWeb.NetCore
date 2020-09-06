@@ -5,6 +5,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.KdyFile;
+using Microsoft.AspNetCore.Http;
 
 namespace KdyWeb.Service.KdyFile
 {
@@ -16,6 +17,7 @@ namespace KdyWeb.Service.KdyFile
         where T : class, IBaseKdyFileInput
     {
         protected readonly IHttpClientFactory _httpClientFactory;
+
         protected BaseKdyFileService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;

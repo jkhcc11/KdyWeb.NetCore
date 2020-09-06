@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -11,37 +12,33 @@ namespace KdyWeb.Service.KdyHttp
     /// <summary>
     /// 通用Http请求 实现
     /// </summary>
-    public class KdyRequestCommon : BaseKdyHttp<KdyRequestCommonResult, string, KdyRequestCommonInput, KdyRequestCommonExtInput>, IKdyRequestCommon
+    public class KdyRequestCommon : BaseKdyHttpWebRequest<KdyRequestCommonResult, string, KdyRequestCommonInput, KdyRequestCommonExtInput>, IKdyRequestCommon
     {
-        public KdyRequestCommon(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
+        protected override void SetRequest(HttpWebRequest request, KdyRequestCommonInput input)
         {
-        }
-
-        public override HttpRequestMessage RequestPar(KdyRequestCommonInput input)
-        {
-            var req = new HttpRequestMessage(input.Method, input.Url);
-
             if (input.ExtData == null)
             {
-                return req;
+                return;
             }
 
-            if (string.IsNullOrEmpty(input.ExtData.ContentType) == false &&
-                string.IsNullOrEmpty(input.ExtData.PostData) == false)
+            request.Method = input.Method.ToString();
+            if (input.Method == HttpMethod.Post)
             {
-                //组装post内容
-                var postContent = new StringContent(input.ExtData.PostData);
-                postContent.Headers.ContentType = new MediaTypeHeaderValue(input.ExtData.ContentType);
-
-                req.Content = postContent;
+             
+                if (string.IsNullOrEmpty(input.ExtData.PostData) == false)
+                {
+                    request.ContentType = input.ExtData.ContentType;
+                    byte[] bs = input.EnCoding.GetBytes(input.ExtData.PostData);
+                    request.ContentLength = bs.Length;
+                    using var reqStream = request.GetRequestStream();
+                    reqStream.Write(bs, 0, bs.Length);
+                }
             }
 
             if (input.ExtData.IsAjax)
             {
-                req.Headers.Add("X-Requested-With", "XMLHttpRequest");
+                request.Headers.Add("X-Requested-With", "XMLHttpRequest");
             }
-
-            return req;
 
         }
     }

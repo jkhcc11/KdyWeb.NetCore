@@ -12,12 +12,10 @@
         /// <param name="fileName">文件名</param>
         /// <param name="fileUrl">文件Url</param>
         /// <param name="location">位置</param>
-        /// <param name="domainUrl">访问Url 可能展示和上传不是一起</param>
-        public MinIoFileInput(string bucketName, string fileName, string fileUrl, string location = "cn-249", string domainUrl = "https://img.zsxcb.net/")
+        public MinIoFileInput(string bucketName, string fileName, string fileUrl, string location = "cn-249")
         {
             BucketName = bucketName;
             Location = location;
-            DomainUrl = domainUrl;
             FileName = fileName;
             FileUrl = fileUrl;
         }
@@ -29,12 +27,10 @@
         /// <param name="fileName">文件名</param>
         /// <param name="fileBytes">文件字节数组</param>
         /// <param name="location">位置</param>
-        /// <param name="domainUrl">访问Url 可能展示和上传不是一起</param>
-        public MinIoFileInput(string bucketName, string fileName, byte[] fileBytes, string location = "cn-249", string domainUrl = "https://img.zsxcb.net/")
+        public MinIoFileInput(string bucketName, string fileName, byte[] fileBytes, string location = "cn-249")
         {
             BucketName = bucketName;
             Location = location;
-            DomainUrl = domainUrl;
             FileName = fileName;
             FileBytes = fileBytes;
         }
@@ -48,11 +44,6 @@
         /// 存储区域 默认cn-249
         /// </summary>
         public string Location { get; set; }
-
-        /// <summary>
-        /// 访问域名 默认：https://img.zsxcb.net/
-        /// </summary>
-        public string DomainUrl { get; set; }
 
         /// <summary>
         /// 文件名

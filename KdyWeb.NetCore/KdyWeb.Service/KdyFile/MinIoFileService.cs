@@ -3,9 +3,12 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Exceptionless;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.KdyFile;
+using KdyWeb.Utility;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Minio;
 using Minio.Exceptions;
@@ -64,7 +67,7 @@ namespace KdyWeb.Service.KdyFile
 
                 var uploadResult = new KdyFileDto()
                 {
-                    Url = $"{input.DomainUrl}{input.BucketName}/{input.FileName}"
+                    Url = $"/{input.BucketName}/{input.FileName}"
                 };
 
                 result = KdyResult.Success(uploadResult);
@@ -74,7 +77,7 @@ namespace KdyWeb.Service.KdyFile
             {
                 result.Msg = $"Minio上传异常【{e.Message}】";
                 e.ToExceptionless()
-                    .AddTags(nameof(PostFileByBytes))
+                    .AddTags(nameof(MinIoFileService), nameof(PostFileByBytes))
                     .Submit();
             }
 
@@ -92,7 +95,7 @@ namespace KdyWeb.Service.KdyFile
             catch (Exception ex)
             {
                 ex.ToExceptionless()
-                    .AddTags(nameof(PostFileByUrl))
+                    .AddTags(nameof(MinIoFileService), nameof(PostFileByUrl))
                     .Submit();
                 return KdyResult.Error<KdyFileDto>(KdyResultCode.Error, $"Minio Url上传异常【{ex.Message}】");
             }
@@ -101,7 +104,7 @@ namespace KdyWeb.Service.KdyFile
         public MinioClient GetMinIoClient()
         {
             var config = _configuration
-                .GetSection(MinioConfig.ConfigKey)
+                .GetSection(KdyWebServiceConst.MinIoConfigKey)
                 .Get<MinioConfig>();
             var client = new MinioClient(config.ServerUrl, config.AccessKey, config.SecretKey);
             if (config.IsSSL)

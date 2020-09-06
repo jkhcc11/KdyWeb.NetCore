@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace KdyWeb.BaseInterface.BaseModel
 {
@@ -36,5 +37,21 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// Http请求结果
         /// </summary>
         TData Data { get; set; }
+
+        /// <summary>
+        /// Cookie字典
+        /// </summary>
+        Dictionary<string, string> CookieDic { get; set; }
+
+        /// <summary>
+        /// 301|302跳转地址
+        /// </summary>
+        string LocationUrl { get; set; }
+
+        /// <summary>
+        /// 格式化出参
+        /// </summary>
+        /// <returns></returns>
+        string GetString();
     }
 }

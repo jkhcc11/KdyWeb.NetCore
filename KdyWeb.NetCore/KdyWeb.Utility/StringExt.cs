@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace KdyWeb.Utility
 {
@@ -16,6 +19,78 @@ namespace KdyWeb.Utility
         public static bool IsEmptyExt(this string str)
         {
             return string.IsNullOrEmpty(str);
+        }
+
+        /// <summary>
+        /// 获得字符串中开始和结束字符串中间得值
+        /// </summary>
+        /// <param name="str">原字符串</param>
+        /// <param name="s">开始</param>
+        /// <param name="e">结束</param>
+        /// <returns></returns>
+        public static string GetValueExt(this string str, string s, string e)
+        {
+            //后面是模式 multiline表示多行 singleline单行
+            var rg = new Regex("(?<=(" + s + "))[.\\s\\S]*?(?=(" + e + "))",
+                RegexOptions.Multiline | RegexOptions.Singleline);
+            return rg.Match(str).Value;
+        }
+
+        /// <summary>
+        /// Unix时间戳格式 10位
+        /// </summary>
+        /// <param name="time">时间</param>
+        /// <param name="length">默认返回10位</param>
+        /// <returns>Unix时间戳格式</returns>
+        public static long GetUnixExt(DateTime? time = null, int length = 10)
+        {
+            var resTime = DateTime.Now;
+            if (time != null)
+            {
+                resTime = time.Value;
+            }
+
+            var startTime = DateTime.Now.ToUniversalTime();
+            switch (length)
+            {
+                case 13:
+                    {
+                        //毫秒
+                        return (resTime.Ticks - startTime.Ticks) / 10000;
+                    }
+                default:
+                    {
+                        //秒
+                        return (resTime.Ticks - startTime.Ticks) / 10000000;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// 转为Url编码
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="encoding">编码格式 默认utf-8</param>
+        /// <returns></returns>
+        public static string ToUrlCodeExt(this string str, string encoding = "")
+        {
+            str = HttpUtility.UrlEncode(str, string.IsNullOrEmpty(encoding) ? Encoding.UTF8 : Encoding.Default);
+            return str;
+        }
+
+        /// <summary>
+        /// Url编码转正常
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string UrlCodeToStrExt(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
+            return HttpUtility.UrlDecode(str);
         }
 
         /// <summary>
@@ -51,5 +126,48 @@ namespace KdyWeb.Utility
             md5.Clear(); //释放资源
             return md5Data.Aggregate("", (current, t) => current + t.ToString("x").PadLeft(2, '0'));
         }
+
+        /// <summary>
+        /// Base64编码
+        /// </summary>
+        /// <param name="encode">编码方式</param>
+        /// <param name="source">字符串</param>
+        /// <returns></returns>
+        public static string ToBase64Ext(this string source, Encoding encode)
+        {
+            string ec;
+            byte[] bytes = encode.GetBytes(source);
+            try
+            {
+                ec = Convert.ToBase64String(bytes);
+            }
+            catch
+            {
+                ec = source;
+            }
+            return ec;
+        }
+
+        /// <summary>
+        /// Base64解码
+        /// </summary>
+        /// <param name="encode">编码方式，必须和编码方式一致</param>
+        /// <param name="result">Base64字符串</param>
+        /// <returns></returns>
+        public static string Base64ToStrExt(this string result, Encoding encode)
+        {
+            string decode;
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(result);
+                decode = encode.GetString(bytes);
+            }
+            catch
+            {
+                decode = result;
+            }
+            return decode;
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using KdyWeb.BaseInterface.InterfaceFlag;
+using KdyWeb.BaseInterface.KdyLog;
 
 namespace KdyWeb.BaseInterface.Service
 {
@@ -13,5 +14,11 @@ namespace KdyWeb.BaseInterface.Service
         /// <param name="key">配置Key</param>
         /// <returns></returns>
         T GetConfig<T>(string key);
+
+        /// <summary>
+        /// 获取日志实例
+        /// </summary>
+        /// <returns></returns>
+        IKdyLog GetKdyLog();
     }
 }

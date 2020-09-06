@@ -3,7 +3,6 @@ using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Winton.Extensions.Configuration.Consul;
 
 namespace KdyWeb.NetCore
 {

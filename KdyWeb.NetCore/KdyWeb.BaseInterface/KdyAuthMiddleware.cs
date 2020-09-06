@@ -29,10 +29,11 @@ namespace KdyWeb.BaseInterface
         /// 使用Kdy授权中间件 使用Cookie验证
         /// </summary>
         /// <returns></returns>
-        public static void UseKdyAuth(this IApplicationBuilder builder, KdyAuthMiddlewareOption option)
+        public static IApplicationBuilder UseKdyAuth(this IApplicationBuilder builder, KdyAuthMiddlewareOption option)
         {
             //todo:迁移完改成JWT统一
             builder.UseMiddleware<KdyAuthMiddleware>(option);
+            return builder;
         }
     }
 

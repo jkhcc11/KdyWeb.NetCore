@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Exceptionless;
 using Exceptionless.Logging;
 using Microsoft.AspNetCore.Http;
@@ -10,51 +12,103 @@ namespace KdyWeb.BaseInterface.KdyLog
     /// </summary>
     public class KdyLogForExceptionLess : IKdyLog
     {
-        private readonly ExceptionlessClient _client;
+        private static readonly ExceptionlessClient Client = ExceptionlessClient.Default;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public KdyLogForExceptionLess()
+        public KdyLogForExceptionLess(IHttpContextAccessor httpContextAccessor)
         {
-            _client = ExceptionlessClient.Default;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public void Info(string source, string info, HttpContext context = null, params string[] tags)
+
+        public void Info(string source, string info, Dictionary<string, string> extInfo = null, params string[] tags)
         {
-            var client = _client.CreateLog(source, info, LogLevel.Info)
+            var client = Client.CreateLog(source, info, LogLevel.Info)
                 .AddTags(tags);
-            if (context != null)
+            if (extInfo != null && extInfo.Any())
             {
-                client.SetHttpContext(context);
+                client.SetManualStackingInfo("KdyExtInfo", extInfo);
+            }
+
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                client.AddTags(_httpContextAccessor.HttpContext.TraceIdentifier)
+                    .SetHttpContext(_httpContextAccessor.HttpContext);
             }
 
             client.Submit();
         }
 
-        public void Debug(string source, string info, params string[] tags)
+        public void Debug(string source, string info, Dictionary<string, string> extInfo = null, params string[] tags)
         {
-            _client.CreateLog(source, info, LogLevel.Debug)
-                .AddTags(tags)
-                .Submit();
+            var client = Client.CreateLog(source, info, LogLevel.Debug)
+                .AddTags(tags);
+            if (extInfo != null && extInfo.Any())
+            {
+                client.SetManualStackingInfo("KdyExtInfo", extInfo);
+            }
+
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                client.AddTags(_httpContextAccessor.HttpContext.TraceIdentifier)
+                    .SetHttpContext(_httpContextAccessor.HttpContext);
+            }
+
+            client.Submit();
         }
 
-        public void Warn(string source, string info, params string[] tags)
+        public void Warn(string source, string info, Dictionary<string, string> extInfo = null, params string[] tags)
         {
-            _client.CreateLog(source, info, LogLevel.Warn)
-                .AddTags(tags)
-                .Submit();
+            var client = Client.CreateLog(source, info, LogLevel.Warn)
+                 .AddTags(tags);
+            if (extInfo != null && extInfo.Any())
+            {
+                client.SetManualStackingInfo("KdyExtInfo", extInfo);
+            }
+
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                client.AddTags(_httpContextAccessor.HttpContext.TraceIdentifier)
+                    .SetHttpContext(_httpContextAccessor.HttpContext);
+            }
+
+            client.Submit();
         }
 
-        public void Other(string source, string info, params string[] tags)
+        public void Other(string source, string info, Dictionary<string, string> extInfo = null, params string[] tags)
         {
-            _client.CreateLog(source, info, LogLevel.Other)
-                .AddTags(tags)
-                .Submit();
+            var client = Client.CreateLog(source, info, LogLevel.Other)
+                 .AddTags(tags);
+            if (extInfo != null && extInfo.Any())
+            {
+                client.SetManualStackingInfo("KdyExtInfo", extInfo);
+            }
+
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                client.AddTags(_httpContextAccessor.HttpContext.TraceIdentifier)
+                    .SetHttpContext(_httpContextAccessor.HttpContext);
+            }
+
+            client.Submit();
         }
 
-        public void Error(Exception ex, params string[] tags)
+        public void Error(Exception ex, Dictionary<string, string> extInfo = null, params string[] tags)
         {
-            ex.ToExceptionless()
-                .AddTags(tags)
-                .Submit();
+            var client = ex.ToExceptionless()
+                 .AddTags(tags);
+            if (extInfo != null && extInfo.Any())
+            {
+                client.SetManualStackingInfo("KdyExtInfo", extInfo);
+            }
+
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                client.AddTags(_httpContextAccessor.HttpContext.TraceIdentifier)
+                    .SetHttpContext(_httpContextAccessor.HttpContext);
+            }
+
+            client.Submit();
         }
 
     }
