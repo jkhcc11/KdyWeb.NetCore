@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -39,8 +40,14 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         public virtual async Task<TResult> SendAsync(TInput input)
         {
-            //todo:待验证cookie问题
-            var httpClient = HttpClientFactory.CreateClient();
+            GetKdyLog().Info($"{this}", "Http请求开始", new Dictionary<string, string>()
+            {
+                {"HttpInput",input.GetString()}
+            });
+
+            //todo:待验证cookie问题 需要改造
+            //这里的name必须和注入时保持一致时 注入的配置才生效
+            var httpClient = HttpClientFactory.CreateClient(KdyBaseConst.HttpClientName);
             var request = RequestPar(input);
             if (string.IsNullOrEmpty(input.Cookie) == false)
             {
@@ -59,6 +66,11 @@ namespace KdyWeb.BaseInterface.HttpBase
 
             var result = new TResult() { IsSuccess = true };
             await GetResult(httpClient, request, result, input);
+
+            GetKdyLog().Info($"{this}", "Http请求结束", new Dictionary<string, string>()
+            {
+                {"HttpResult",result.GetString() }
+            });
             return result;
         }
 
@@ -75,6 +87,11 @@ namespace KdyWeb.BaseInterface.HttpBase
             try
             {
                 var response = await httpClient.SendAsync(request);
+
+                if (response.Headers.Contains("location"))
+                {
+                    result.LocationUrl = response.Headers.GetValues("location").First();
+                }
 
                 if (response.Headers.Contains("Set-Cookie"))
                 {

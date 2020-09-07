@@ -24,16 +24,16 @@ namespace KdyWeb.Service.KdyFile
     {
         private readonly string _postHost = "https://picupload.weibo.com";
         private readonly string _publicHost = "https://tva2.sinaimg.cn";
-        private readonly IKdyRequestCommon _kdyRequestCommon;
         private readonly IConfiguration _configuration;
         private readonly IKdyRedisCache _kdyRedisCache;
+        private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
 
-        public WeiBoFileService(IHttpClientFactory httpClientFactory, IKdyRequestCommon kdyRequestCommon, IConfiguration configuration,
-            IKdyRedisCache kdyRedisCache) : base(httpClientFactory)
+        public WeiBoFileService(IHttpClientFactory httpClientFactory,IConfiguration configuration,
+            IKdyRedisCache kdyRedisCache, IKdyRequestClientCommon kdyRequestClientCommon) : base(httpClientFactory)
         {
-            _kdyRequestCommon = kdyRequestCommon;
             _configuration = configuration;
             _kdyRedisCache = kdyRedisCache;
+            _kdyRequestClientCommon = kdyRequestClientCommon;
         }
 
         public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(BaseKdyFileInput input)
@@ -59,7 +59,7 @@ namespace KdyWeb.Service.KdyFile
                     PostData = $"b64_data={base64Img.ToUrlCodeExt()}"
                 }
             };
-            var httpResult = await _kdyRequestCommon.SendAsync(httpInput);
+            var httpResult = await _kdyRequestClientCommon.SendAsync(httpInput);
             if (httpResult.IsSuccess == false && httpResult.HttpCode != HttpStatusCode.Found)
             {
                 result.Msg = httpResult.ErrMsg;
@@ -124,14 +124,12 @@ namespace KdyWeb.Service.KdyFile
                     PostData = $"entry=sso&gateway=1&from=null&savestate=30&useticket=0&pagerefer=&vsnf=1&su={config.UserName.ToBase64Ext(Encoding.UTF8)}&service=sso&sp={config.UserPwd}&sr=1536*864&encoding=UTF-8&cdult=3&domain=sina.com.cn&prelt=0&returntype=TEXT"
                 }
             };
-            var httpResult = await _kdyRequestCommon.SendAsync(httpInput);
+            var httpResult = await _kdyRequestClientCommon.SendAsync(httpInput);
             if (httpResult.IsSuccess == false)
             {
                 GetKdyLog().Warn($"{this}", "微博登录失败");
                 return string.Empty;
             }
-
-            GetKdyLog().Info($"{this}", "微博登录成功");
 
             if (httpResult.Data.Contains("nick") == false)
             {
@@ -143,6 +141,7 @@ namespace KdyWeb.Service.KdyFile
                 cacheVal = $"SUB={httpResult.CookieDic["SUB"]}";
             }
 
+            GetKdyLog().Info($"{this}", "微博登录成功");
             await _kdyRedisCache.GetCache().SetStringAsync(KdyServiceCacheKey.WeiBoCookieKey, cacheVal, new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(20)

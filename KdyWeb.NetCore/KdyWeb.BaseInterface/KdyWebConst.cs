@@ -9,5 +9,10 @@
         /// 登录Cookie Key
         /// </summary>
         public const string CookieKey = "Kdy666_Status";
+
+        /// <summary>
+        /// HttpClient Name
+        /// </summary>
+        public const string HttpClientName = "KdyWeb";
     }
 }

@@ -124,13 +124,13 @@ namespace KdyWeb.NetCore
             services.AddAutoMapper(typeof(KdyMapperInit));
 
             //注入HttpClient
-            services.AddHttpClient("KdyWeb")
+            services.AddHttpClient(KdyBaseConst.HttpClientName)
                 .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
                 {
                     //取消自动跳转
                     AllowAutoRedirect = false,
                     //不自动设置cookie
-                    UseCookies = false
+                   // UseCookies = false
                 });
 
             services.Configure<CookiePolicyOptions>(options =>

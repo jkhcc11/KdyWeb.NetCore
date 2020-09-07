@@ -29,8 +29,9 @@ namespace KdyWeb.NetCore.Controllers
         private readonly IMinIoFileService _minIoFileService;
         private readonly IKdyImgSaveService _kdyImgSaveService;
         private readonly IKdyRedisCache _redisCache;
+        private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
 
-        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient, IKdyImgSaveService kdyImgSaveService, IKdyRedisCache redisCache)
+        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient, IKdyImgSaveService kdyImgSaveService, IKdyRedisCache redisCache, IKdyRequestClientCommon kdyRequestClientCommon)
         {
             _logger = logger;
             _kdyRequestCommon = kdyRequestCommon;
@@ -38,6 +39,7 @@ namespace KdyWeb.NetCore.Controllers
             _backgroundJobClient = backgroundJobClient;
             _kdyImgSaveService = kdyImgSaveService;
             _redisCache = redisCache;
+            _kdyRequestClientCommon = kdyRequestClientCommon;
         }
 
         public async Task<IActionResult> Index(string url)
@@ -114,6 +116,37 @@ namespace KdyWeb.NetCore.Controllers
             }
 
             return Content(result.Data);
+        }
+
+        /// <summary>
+        /// 测试Cookie
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public async Task<IActionResult> TestCookie()
+        {
+            //var reqInput=new KdyRequestCommonInput("https://pan.baidu.com/s/11ULLsXTPA4hG7H7_ykoGjA#list/path=%2F", HttpMethod.Get)
+            //{
+            //    Cookie = "BIDUPSID=0F26932E0EE9CBCB41A0F46179D0B2D9;PSTM=1589612958;BAIDUID=0F26932E0EE9CBCBDDBC688CA551CCB5:FG=1;PANWEB=1;csrfToken=kn627t6zIaJJ1fMbCsecb9on;pan_login_way=1;delPer=0;ZD_ENTRY=baidu;PSINO=6;Hm_lvt_7a3960b6f067eb0085b7f96ff5e660b0=1597498191,1598153994;recommendTime=mac2020-09-02%2015%3A38%3A00;BDUSS=oyaWIzaUZRem9WQXY1dGVROXBWTm05VkZreWhXeWhEaEx2dGN-VklzcWEzM2xmSVFBQUFBJCQAAAAAAAAAAAEAAACWkdLta2R5NjY2MjAxOQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJpSUl-aUlJfLX;BDUSS_BFESS=oyaWIzaUZRem9WQXY1dGVROXBWTm05VkZreWhXeWhEaEx2dGN-VklzcWEzM2xmSVFBQUFBJCQAAAAAAAAAAAEAAACWkdLta2R5NjY2MjAxOQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJpSUl-aUlJfLX; STOKEN=08184247673d3d11e25de140d6368aa325842b04f943bcb4bdce160463ba1e95;SCRC=89a00e3c5d311c002ed7dd91cfff6940;H_PS_PSSID=7541_32606_1439_32328_31660_32045_32679_32117_31321;BDCLND=PsvyJNzBn0KLG5GxIGRJOOG3dhbJ7G5FLOEkydU%2BTic%3D;Hm_lpvt_7a3960b6f067eb0085b7f96ff5e660b0=1599486499;PANPSC=2861820099159283262%3ACU2JWesajwDlmux2abJQFky7txDAjOFZT71QYf2NbKjPvHE4IT5LETgOvhx7XIhXomkDDRqX579TMx5%2FR2wsyFDrhfWzVbTlBldOXVdDlbBKvICFQelbNKL5jVfu52v0baC532AuNi1GiBt6rgD9UiZTnz2RR6t%2BG5E6QgrAKeR89Veg5I7xCzuoAeCl9TBG"
+            //};
+            var reqInput = new KdyRequestCommonInput("https://passport2.chaoxing.com/fanyalogin", HttpMethod.Post)
+            {
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
+                Referer = "https://passport2.chaoxing.com/login?newversion=true&refer=http%3A%2F%2Fpan-yz.chaoxing.com%2F",
+                ExtData = new KdyRequestCommonExtInput()
+                {
+                    IsAjax = true,
+                    PostData = "fid=-1&uname=1549930804%40qq.com&password=Qk9IRUpJTkcxMjM%3D&refer=http%253A%252F%252Fpan-yz.chaoxing.com%252F&t=true"
+                }
+            };
+
+            var result = await _kdyRequestClientCommon.SendAsync(reqInput);
+            if (result.IsSuccess == false)
+            {
+                return Content(result.ErrMsg);
+            }
+
+            return Json(result);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
