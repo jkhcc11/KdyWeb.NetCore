@@ -9,9 +9,9 @@ namespace KdyWeb.IService.KdyHttp
     /// 通用Http请求 接口
     /// </summary>
     /// <remarks>
-    /// 基于WebRequest
+    /// 基于HttpClient
     /// </remarks>
-    public interface IKdyRequestCommon : IKdyHttp<KdyRequestCommonResult, string, KdyRequestCommonInput, KdyRequestCommonExtInput>, IKdyService
+    public interface IKdyRequestClientCommon : IKdyHttp<KdyRequestCommonResult, string, KdyRequestCommonInput, KdyRequestCommonExtInput>, IKdyService
     {
     }
 }

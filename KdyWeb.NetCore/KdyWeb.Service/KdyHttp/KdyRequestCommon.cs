@@ -12,6 +12,9 @@ namespace KdyWeb.Service.KdyHttp
     /// <summary>
     /// 通用Http请求 实现
     /// </summary>
+    /// <remarks>
+    /// 基于WebRequest
+    /// </remarks>
     public class KdyRequestCommon : BaseKdyHttpWebRequest<KdyRequestCommonResult, string, KdyRequestCommonInput, KdyRequestCommonExtInput>, IKdyRequestCommon
     {
         protected override void SetRequest(HttpWebRequest request, KdyRequestCommonInput input)

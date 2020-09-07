@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -15,13 +16,13 @@ namespace KdyWeb.BaseInterface.HttpBase
     /// 基于HttpClient Http请求 抽象类
     /// todo:获取跨域cookie麻烦
     /// </summary>
-    public abstract class BaseKdyHttp<TResult, TData, TInput, TExtData> : BaseKdyService
+    public abstract class BaseKdyHttpClient<TResult, TData, TInput, TExtData> : BaseKdyService
         where TResult : class, IHttpOut<TData>, new()
         where TData : class
         where TInput : class, IHttpRequestInput<TExtData>
     {
         protected readonly IHttpClientFactory HttpClientFactory;
-        protected BaseKdyHttp(IHttpClientFactory httpClientFactory)
+        protected BaseKdyHttpClient(IHttpClientFactory httpClientFactory)
         {
             HttpClientFactory = httpClientFactory;
         }
@@ -38,6 +39,7 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         public virtual async Task<TResult> SendAsync(TInput input)
         {
+            //todo:待验证cookie问题
             var httpClient = HttpClientFactory.CreateClient();
             var request = RequestPar(input);
             if (string.IsNullOrEmpty(input.Cookie) == false)
@@ -60,27 +62,6 @@ namespace KdyWeb.BaseInterface.HttpBase
             return result;
         }
 
-        ///// <summary>
-        ///// 异步Post
-        ///// </summary>
-        ///// <returns></returns>
-        //protected virtual async Task<TResult> PostAsync(string url, string postData)
-        //{
-        //    var httpClient = HttpClientFactory.CreateClient("DemoHttp");
-
-        //    //组装post内容
-        //    var postContent = new StringContent(postData);
-        //    postContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-
-        //    //头部信息
-        //    var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = postContent };
-        //    request.Headers.Add("Referer", url);
-        //    var result = new TResult() { IsSuccess = true };
-
-        //    await GetResult(httpClient, request, result);
-        //    return result;
-        //}
-
         /// <summary>
         /// Http结果格式化
         /// </summary>
@@ -94,6 +75,30 @@ namespace KdyWeb.BaseInterface.HttpBase
             try
             {
                 var response = await httpClient.SendAsync(request);
+
+                if (response.Headers.Contains("Set-Cookie"))
+                {
+                    #region cookie处理
+                    var sb = new StringBuilder();
+                    var tempArray = response.Headers.GetValues("Set-Cookie");
+                    if (tempArray.Any())
+                    {
+                        foreach (var item in tempArray)
+                        {
+                            //用;分隔取第一个
+                            var temp = item.Split(';').First();
+                            sb.Append($"{temp.Trim()};");
+                            if (temp.Contains("="))
+                            {
+                                var tempA = temp.Split('=');
+                                result.CookieDic.Add(tempA[0].Trim(), tempA[1].Trim());
+                            }
+
+                        }
+                    }
+                    result.Cookie = sb.ToString(); 
+                    #endregion
+                }
 
                 result.HttpCode = response.StatusCode;
                 if (response.IsSuccessStatusCode == false)
