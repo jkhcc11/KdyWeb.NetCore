@@ -40,9 +40,9 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         public virtual async Task<TResult> SendAsync(TInput input)
         {
-            GetKdyLog().Info($"{this}", "Http请求开始", new Dictionary<string, string>()
+            GetKdyLog().Info("Http请求开始", new Dictionary<string, object>()
             {
-                {"HttpInput",input.GetString()}
+                {"HttpInput",input}
             });
 
             //todo:待验证cookie问题 需要改造
@@ -67,9 +67,9 @@ namespace KdyWeb.BaseInterface.HttpBase
             var result = new TResult() { IsSuccess = true };
             await GetResult(httpClient, request, result, input);
 
-            GetKdyLog().Info($"{this}", "Http请求结束", new Dictionary<string, string>()
+            GetKdyLog().Info("Http请求结束", new Dictionary<string, object>()
             {
-                {"HttpResult",result.GetString() }
+                {"HttpResult",result}
             });
             return result;
         }
@@ -113,7 +113,7 @@ namespace KdyWeb.BaseInterface.HttpBase
 
                         }
                     }
-                    result.Cookie = sb.ToString(); 
+                    result.Cookie = sb.ToString();
                     #endregion
                 }
 

@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
     <ProjectReference Include="..\KdyWeb.IService\KdyWeb.IService.csproj" />
     <ProjectReference Include="..\KdyWeb.Repository\KdyWeb.Repository.csproj" />
   </ItemGroup>

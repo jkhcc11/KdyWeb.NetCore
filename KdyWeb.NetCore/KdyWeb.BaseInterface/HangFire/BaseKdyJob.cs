@@ -1,4 +1,5 @@
 ﻿using KdyWeb.BaseInterface.KdyLog;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.BaseInterface.HangFire
 {
@@ -7,11 +8,13 @@ namespace KdyWeb.BaseInterface.HangFire
     /// </summary>
     public abstract class BaseKdyJob<TInput>
     {
-        protected IKdyLog KdyLog;
+        protected readonly IKdyLog KdyLog;
+
         protected BaseKdyJob(IKdyLog kdyLog)
         {
             KdyLog = kdyLog;
         }
+
         /// <summary>
         /// 具体执行
         /// </summary>

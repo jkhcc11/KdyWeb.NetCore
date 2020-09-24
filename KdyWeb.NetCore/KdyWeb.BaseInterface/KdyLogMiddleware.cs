@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using Exceptionless;
 using KdyWeb.BaseInterface.KdyLog;
-using KdyWeb.BaseInterface.KdyRedis;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface
 {
@@ -86,7 +79,7 @@ namespace KdyWeb.BaseInterface
             var str = await reader.ReadToEndAsync();
 
             //记录日志
-            kdyLog.Info(source, "用户请求结束", new Dictionary<string, string>()
+            kdyLog.Info("用户请求结束", new Dictionary<string, object>()
             {
                 {"Response",str }
             });

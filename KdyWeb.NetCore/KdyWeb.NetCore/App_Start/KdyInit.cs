@@ -101,7 +101,7 @@ namespace KdyWeb.NetCore
 
             //为了后面获取HttpContext
             services.AddHttpContextAccessor()
-                .TryAddSingleton<IKdyLog, KdyLogForExceptionLess>();
+                .AddSingleton<IKdyLog, KdyLogForExceptionLess>();
         }
 
         /// <summary>

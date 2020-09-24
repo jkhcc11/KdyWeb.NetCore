@@ -28,7 +28,7 @@ namespace KdyWeb.Service.KdyFile
         private readonly IKdyRedisCache _kdyRedisCache;
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
 
-        public WeiBoFileService(IHttpClientFactory httpClientFactory,IConfiguration configuration,
+        public WeiBoFileService(IHttpClientFactory httpClientFactory, IConfiguration configuration,
             IKdyRedisCache kdyRedisCache, IKdyRequestClientCommon kdyRequestClientCommon) : base(httpClientFactory)
         {
             _configuration = configuration;
@@ -63,14 +63,14 @@ namespace KdyWeb.Service.KdyFile
             if (httpResult.IsSuccess == false && httpResult.HttpCode != HttpStatusCode.Found)
             {
                 result.Msg = httpResult.ErrMsg;
-                GetKdyLog().Warn($"{this}", "微博上传失败");
+                GetKdyLog().Warn("微博上传失败");
                 return result;
             }
 
             var newStr = httpResult.LocationUrl.TrimEnd(';') + ';';
             if (newStr.Contains("pid") == false)
             {
-                GetKdyLog().Warn($"{this}", "微博上传失败,获取Pid失败");
+                GetKdyLog().Warn("微博上传失败,获取Pid失败");
                 return result;
             }
 
@@ -127,7 +127,7 @@ namespace KdyWeb.Service.KdyFile
             var httpResult = await _kdyRequestClientCommon.SendAsync(httpInput);
             if (httpResult.IsSuccess == false)
             {
-                GetKdyLog().Warn($"{this}", "微博登录失败");
+                GetKdyLog().Warn("微博登录失败");
                 return string.Empty;
             }
 
@@ -141,7 +141,7 @@ namespace KdyWeb.Service.KdyFile
                 cacheVal = $"SUB={httpResult.CookieDic["SUB"]}";
             }
 
-            GetKdyLog().Info($"{this}", "微博登录成功");
+            GetKdyLog().Info("微博登录成功");
             await _kdyRedisCache.GetCache().SetStringAsync(KdyServiceCacheKey.WeiBoCookieKey, cacheVal, new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(20)

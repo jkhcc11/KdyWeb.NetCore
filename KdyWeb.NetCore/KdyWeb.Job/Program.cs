@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Exceptionless;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.Job.JobService;
@@ -73,6 +74,10 @@ namespace KdyWeb.Job
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                }).
+                ConfigureLogging(config =>
+                {
+                    config.AddExceptionless();
                 });
     }
 }

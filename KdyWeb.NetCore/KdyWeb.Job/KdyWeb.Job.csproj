@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>bbd001bb-65f8-48dd-a7c2-594c898c271c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
     <ProjectReference Include="..\KdyWeb.Service\KdyWeb.Service.csproj" />
   </ItemGroup>
 

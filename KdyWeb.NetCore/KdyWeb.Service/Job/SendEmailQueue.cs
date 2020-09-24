@@ -1,7 +1,9 @@
-﻿using KdyWeb.BaseInterface.HangFire;
+﻿using System.Collections.Generic;
+using KdyWeb.BaseInterface.HangFire;
 using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto.Job;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.Job
 {
@@ -12,11 +14,15 @@ namespace KdyWeb.Service.Job
     {
         public SendEmailQueue(IKdyLog kdyLog) : base(kdyLog)
         {
+
         }
 
         public override void Execute(SendEmailInput input)
         {
-           // KdyLog.Debug(nameof(SendEmailQueue), $"请求参数：{input.ToJsonStr()}", nameof(Execute));
+            KdyLog.Info("开始发送邮件", new Dictionary<string, object>()
+            {
+                {"ttt",input }
+            });
         }
 
     }
