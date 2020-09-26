@@ -1,5 +1,7 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using Exceptionless.Json;
 using KdyWeb.BaseInterface.BaseModel;
 using Newtonsoft.Json;
 
@@ -23,15 +25,19 @@ namespace KdyWeb.Dto.KdyHttp
             UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0";
         }
 
+        public int TimeOut { get; set; } = 10;
+
         public string Url { get; set; }
 
         public string Referer { get; set; }
+
         public string UserAgent { get; set; }
 
         public string Cookie { get; set; }
 
         public HttpMethod Method { get; set; }
 
+        [ExceptionlessIgnore]
         public Encoding EnCoding { get; set; }
 
         public bool IsAutoRedirect { get; set; }
@@ -70,5 +76,25 @@ namespace KdyWeb.Dto.KdyHttp
         /// </summary>
         public string PostData { get; set; }
 
+        /// <summary>
+        /// 文件名
+        /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// Post文件数据
+        /// </summary>
+        [ExceptionlessIgnore]
+        public byte[] FileBytes { get; set; }
+
+        /// <summary>
+        /// 文件标签Name
+        /// </summary>
+        public string NameField { get; set; }
+
+        /// <summary>
+        /// 表单其他字段
+        /// </summary>
+        public Dictionary<string, string> PostParDic { get; set; }
     }
 }

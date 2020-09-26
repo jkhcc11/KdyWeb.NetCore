@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
@@ -14,11 +16,13 @@ namespace KdyWeb.NetCore.Controllers
     {
         private readonly IKdyImgSaveService _kdyImgSaveService;
         private readonly IWeiBoFileService _weiBoFileService;
+        private readonly INormalFileService _normalFileService;
 
-        public KdyImgController(IKdyImgSaveService kdyImgSaveService, IWeiBoFileService weiBoFileService)
+        public KdyImgController(IKdyImgSaveService kdyImgSaveService, IWeiBoFileService weiBoFileService, INormalFileService normalFileService)
         {
             _kdyImgSaveService = kdyImgSaveService;
             _weiBoFileService = weiBoFileService;
+            _normalFileService = normalFileService;
         }
 
         public async Task<IActionResult> Index(string url)
@@ -28,8 +32,15 @@ namespace KdyWeb.NetCore.Controllers
                 return Content("Url Is");
             }
 
-            var input = new BaseKdyFileInput(url);
-            var result = await _weiBoFileService.PostFile(input);
+            var ext = Path.GetExtension(url);
+
+            var input = new NormalFileInput("https://niupic.com/index/upload/process", "image_field",
+                "data", $"{DateTime.Now.Ticks:x}{ext}", url);
+            var result = await _normalFileService.PostFile(input);
+
+
+            // var input = new BaseKdyFileInput(url);
+            //var result = await _weiBoFileService.PostFile(input);
             return Json(result);
         }
 

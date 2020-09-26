@@ -9,6 +9,14 @@ namespace KdyWeb.BaseInterface.BaseModel
     public interface IHttpRequestInput<TExt>
     {
         /// <summary>
+        /// 超时时间 默认10s
+        /// </summary>
+        /// <remarks>
+        /// 单位 秒（s）
+        /// </remarks>
+        int TimeOut { get; set; }
+
+        /// <summary>
         /// 请求Url
         /// </summary>
         string Url { get; set; }

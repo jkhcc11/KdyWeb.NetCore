@@ -48,6 +48,8 @@ namespace KdyWeb.BaseInterface.HttpBase
             //todo:待验证cookie问题 需要改造
             //这里的name必须和注入时保持一致时 注入的配置才生效
             var httpClient = HttpClientFactory.CreateClient(KdyBaseConst.HttpClientName);
+            httpClient.Timeout = TimeSpan.FromSeconds(input.TimeOut);
+
             var request = RequestPar(input);
             if (string.IsNullOrEmpty(input.Cookie) == false)
             {

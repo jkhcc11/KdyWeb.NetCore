@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -24,7 +25,6 @@ namespace KdyWeb.Service.KdyHttp
         public override HttpRequestMessage RequestPar(KdyRequestCommonInput input)
         {
             var req = new HttpRequestMessage(input.Method, input.Url);
-
             if (input.ExtData == null)
             {
                 return req;
@@ -38,6 +38,24 @@ namespace KdyWeb.Service.KdyHttp
                 postContent.Headers.ContentType = new MediaTypeHeaderValue(input.ExtData.ContentType);
 
                 req.Content = postContent;
+            }
+            else if (input.ExtData.FileBytes != null)
+            {
+                #region post文件
+                var multiContent = new MultipartFormDataContent();
+                var fileContent = new ByteArrayContent(input.ExtData.FileBytes);
+                multiContent.Add(fileContent, input.ExtData.NameField, input.ExtData.FileName);
+
+                if (input.ExtData.PostParDic != null && input.ExtData.PostParDic.Any() == false)
+                {
+                    foreach (var key in input.ExtData.PostParDic)
+                    {
+                        multiContent.Add(fileContent, key.Key, key.Value);
+                    }
+                }
+
+                req.Content = multiContent; 
+                #endregion
             }
 
             if (input.ExtData.IsAjax)
