@@ -1,4 +1,6 @@
-﻿namespace KdyWeb.Dto.KdyFile
+﻿using Exceptionless.Json;
+
+namespace KdyWeb.Dto.KdyFile
 {
     /// <summary>
     /// 文件上传基础Input 
@@ -31,6 +33,7 @@
 
         public string FileUrl { get; set; }
 
+        [ExceptionlessIgnore]
         public byte[] FileBytes { get; set; }
     }
 }

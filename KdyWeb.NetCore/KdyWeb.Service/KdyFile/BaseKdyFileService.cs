@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
@@ -27,19 +29,24 @@ namespace KdyWeb.Service.KdyFile
         /// 文件上传
         /// </summary>
         /// <returns></returns>
-        public virtual Task<KdyResult<KdyFileDto>> PostFile(T input)
+        public virtual async Task<KdyResult<KdyFileDto>> PostFile(T input)
         {
+            var result = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "文件上传失败");
             if (input.FileBytes != null && input.FileBytes.Length > 0)
             {
-                return PostFileByBytes(input);
+                result = await PostFileByBytes(input);
             }
-
-            if (string.IsNullOrEmpty(input.FileUrl) == false)
+            else if (string.IsNullOrEmpty(input.FileUrl) == false)
             {
-                return PostFileByUrl(input);
+                result = await PostFileByUrl(input);
             }
 
-            throw new Exception($"文件上传失败 入参FileUrl和FileBytes必须二选一");
+            if (result.IsSuccess && input.FileBytes != null)
+            {
+                result.Data.FileMd5 = GetFileMd5(input.FileBytes);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -109,6 +116,18 @@ namespace KdyWeb.Service.KdyFile
             }
 
             return "application/octet-stream";
+        }
+
+        /// <summary>
+        /// 获取文件Md5
+        /// </summary>
+        /// <returns></returns>
+        protected string GetFileMd5(byte[] fileBytes)
+        {
+            using var md5 = new MD5CryptoServiceProvider();
+            //计算data字节数组的哈希值
+            var md5Data = md5.ComputeHash(fileBytes);
+            return md5Data.Aggregate("", (current, t) => current + t.ToString("x").PadLeft(2, '0'));
         }
     }
 }

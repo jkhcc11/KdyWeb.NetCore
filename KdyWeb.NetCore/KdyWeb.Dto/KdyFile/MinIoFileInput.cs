@@ -1,4 +1,6 @@
-﻿namespace KdyWeb.Dto.KdyFile
+﻿using Exceptionless.Json;
+
+namespace KdyWeb.Dto.KdyFile
 {
     /// <summary>
     /// MinIo存储 输入
@@ -58,6 +60,7 @@
         /// <summary>
         /// 字节
         /// </summary>
+        [ExceptionlessIgnore]
         public byte[] FileBytes { get; set; }
     }
 }

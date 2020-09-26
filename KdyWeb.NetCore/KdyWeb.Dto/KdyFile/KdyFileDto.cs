@@ -9,5 +9,10 @@
         /// 上传后的Url
         /// </summary>
         public string Url { get; set; }
+
+        /// <summary>
+        /// 文件Md5
+        /// </summary>
+        public string FileMd5 { get; set; }
     }
 }

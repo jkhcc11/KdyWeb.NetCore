@@ -17,6 +17,27 @@ namespace KdyWeb.Entity
         /// </summary>
         public const int UrlLength = 200;
 
+        /// <summary>
+        /// 构造
+        /// </summary>
+        /// <param name="fileMd5">文件md5</param>
+        /// <param name="mainUrl">主Url</param>
+        /// <param name="oneUrl">备</param>
+        /// <param name="twoUrl">备用1</param>
+        /// <param name="userId">用户Id</param>
+        /// <param name="userNick">昵称</param>
+        /// <param name="urls">多Url</param>
+        public KdyImgSave(string fileMd5, string mainUrl, string oneUrl = "", string twoUrl = "", int? userId = null, string userNick = "", string[] urls = null)
+        {
+            FileMd5 = fileMd5;
+            MainUrl = mainUrl;
+            OneUrl = oneUrl;
+            TwoUrl = twoUrl;
+            UserId = userId;
+            UserNick = userNick;
+            Urls = urls;
+        }
+
         /// <summary>  
         /// 文件Md5  
         /// </summary>

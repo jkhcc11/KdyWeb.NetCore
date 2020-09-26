@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -29,20 +30,10 @@ namespace KdyWeb.Service.KdyFile
 
         public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(MinIoFileInput input)
         {
-            #region demo
-            ////获取存储桶
-            //var getListBucketsTask =await _minio.ListBucketsAsync();
-            ////遍历输出存储通
-            //foreach (var bucket in getListBucketsTask.Buckets)
-            //{
-            //    // Console.WriteLine(bucket.Name + " " + bucket.CreationDateDateTime);
-            //}
-            //  var objectName = "golden-oldies.zip";
-            // var filePath = "C:\\Users\\username\\Downloads\\golden_oldies.mp3";
-            //上传
-            // await _minio.PutObjectAsync(Config.BucketName, objectName, filePath, contentType);
-            // Console.WriteLine("Successfully uploaded " + objectName); 
-            #endregion
+            GetKdyLog().Trace("MinIo上传开始", new Dictionary<string, object>()
+            {
+                {"MinIoInput",input}
+            });
 
             if (input.FileName.StartsWith("/") == false)
             {
@@ -81,6 +72,10 @@ namespace KdyWeb.Service.KdyFile
                     .Submit();
             }
 
+            GetKdyLog().Trace("MinIo上传结束", new Dictionary<string, object>()
+            {
+                {"MinIoResult",result}
+            });
             return result;
         }
 
