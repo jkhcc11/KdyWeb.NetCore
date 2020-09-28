@@ -15,7 +15,7 @@ namespace KdyWeb.Repository
     /// </summary>
     /// <typeparam name="TEntity">数据库实体类</typeparam>
     /// <typeparam name="TKey">主键类型</typeparam>
-    public abstract class KdyRepository<TEntity, TKey> : IKdyRepository<TEntity>
+    public abstract class KdyRepository<TEntity, TKey> : IKdyRepository<TEntity, TKey>
         where TEntity : class, IBaseKey<TKey>
         where TKey : struct
     {

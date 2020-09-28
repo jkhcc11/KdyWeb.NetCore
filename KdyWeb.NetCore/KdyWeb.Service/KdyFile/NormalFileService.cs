@@ -49,7 +49,7 @@ namespace KdyWeb.Service.KdyFile
                 httpResult.HttpCode == HttpStatusCode.BadRequest)
             {
                 result.Msg = httpResult.ErrMsg;
-                GetKdyLog().Warn("普通文件上传失败", new Dictionary<string, object>()
+                KdyLog.Warn("普通文件上传失败", new Dictionary<string, object>()
                 {
                     {"PostInputPar",input }
                 }, $"{this}");

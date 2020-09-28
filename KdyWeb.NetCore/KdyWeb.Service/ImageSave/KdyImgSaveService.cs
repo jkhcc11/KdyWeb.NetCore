@@ -11,6 +11,7 @@ using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.Utility;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.ImageSave
 {
@@ -128,7 +129,7 @@ namespace KdyWeb.Service.ImageSave
         /// <returns></returns>
         private string ImgHandler(KdyImgSave dbImg)
         {
-            var host = GetConfig<string>(KdyWebServiceConst.ImgHostKey);
+            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
             var defaultUrl = $"{host}{KdyWebServiceConst.DefaultImgUrl}";
 
             if (dbImg == null)
@@ -174,7 +175,7 @@ namespace KdyWeb.Service.ImageSave
         /// <returns></returns>
         private string UrlHandler(string url)
         {
-            var host = GetConfig<string>(KdyWebServiceConst.ImgHostKey);
+            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
 
             if (url.StartsWith($"/{bucketName}"))
             {

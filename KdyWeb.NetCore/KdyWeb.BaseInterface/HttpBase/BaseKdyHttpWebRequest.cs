@@ -34,7 +34,7 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         public virtual async Task<TResult> SendAsync(TInput input)
         {
-            GetKdyLog().Info("Http请求开始", new Dictionary<string, object>()
+            KdyLog.Info("Http请求开始", new Dictionary<string, object>()
             {
                 {"HttpInput",input}
             });
@@ -64,7 +64,7 @@ namespace KdyWeb.BaseInterface.HttpBase
             };
             await GetResult(request, result, input);
 
-            GetKdyLog().Info("Http请求结束", new Dictionary<string, object>()
+            KdyLog.Info("Http请求结束", new Dictionary<string, object>()
             {
                 {"HttpResult",result}
             });

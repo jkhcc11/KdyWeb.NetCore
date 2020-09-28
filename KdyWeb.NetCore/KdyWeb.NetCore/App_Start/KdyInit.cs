@@ -9,8 +9,11 @@ using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.InterfaceFlag;
 using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
+using KdyWeb.Entity;
 using KdyWeb.EntityFramework;
+using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Http;
@@ -102,6 +105,10 @@ namespace KdyWeb.NetCore
             //为了后面获取HttpContext
             services.AddHttpContextAccessor()
                 .AddSingleton<IKdyLog, KdyLogForExceptionLess>();
+
+            //注入通用泛型仓储
+            services.TryAdd(ServiceDescriptor.Scoped(typeof(IKdyRepository<>), typeof(CommonRepository<>)));
+            services.TryAdd(ServiceDescriptor.Scoped(typeof(IKdyRepository<,>), typeof(CommonRepository<,>)));
         }
 
         /// <summary>
@@ -130,7 +137,7 @@ namespace KdyWeb.NetCore
                     //取消自动跳转
                     AllowAutoRedirect = false,
                     //不自动设置cookie
-                   // UseCookies = false
+                    // UseCookies = false
                 });
 
             services.Configure<CookiePolicyOptions>(options =>

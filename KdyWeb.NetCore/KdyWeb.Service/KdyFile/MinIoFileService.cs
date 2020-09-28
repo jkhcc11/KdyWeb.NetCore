@@ -30,7 +30,7 @@ namespace KdyWeb.Service.KdyFile
 
         public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(MinIoFileInput input)
         {
-            GetKdyLog().Trace("MinIo上传开始", new Dictionary<string, object>()
+            KdyLog.Trace("MinIo上传开始", new Dictionary<string, object>()
             {
                 {"MinIoInput",input}
             });
@@ -72,7 +72,7 @@ namespace KdyWeb.Service.KdyFile
                     .Submit();
             }
 
-            GetKdyLog().Trace("MinIo上传结束", new Dictionary<string, object>()
+            KdyLog.Trace("MinIo上传结束", new Dictionary<string, object>()
             {
                 {"MinIoResult",result}
             });

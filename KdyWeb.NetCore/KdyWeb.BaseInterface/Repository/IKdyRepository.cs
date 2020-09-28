@@ -9,9 +9,13 @@ using KdyWeb.BaseInterface.InterfaceFlag;
 namespace KdyWeb.BaseInterface.Repository
 {
     /// <summary>
-    /// 仓储基类
+    /// 基础仓储 接口
     /// </summary>
-    public interface IKdyRepository<TEntity> : IKdyScoped
+    /// <typeparam name="TEntity">实体类</typeparam>
+    /// <typeparam name="TKey">主键</typeparam>
+    public interface IKdyRepository<TEntity, TKey> : IKdyScoped
+        where TEntity : class
+        where TKey : struct
     {
         /// <summary>
         /// 生成查询
@@ -60,5 +64,14 @@ namespace KdyWeb.BaseInterface.Repository
         /// </summary>
         /// <returns></returns>
         Task CreateAsync(TEntity entity);
+    }
+
+    /// <summary>
+    /// Int基础仓储 接口
+    /// </summary>
+    public interface IKdyRepository<TEntity> : IKdyRepository<TEntity, int>
+        where TEntity : class
+    {
+
     }
 }

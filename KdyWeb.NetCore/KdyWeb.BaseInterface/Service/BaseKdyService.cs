@@ -7,26 +7,22 @@ namespace KdyWeb.BaseInterface.Service
     /// <summary>
     /// 基础服务定义 实现
     /// </summary>
-    public class BaseKdyService : IKdyService
+    public abstract class BaseKdyService : IKdyService
     {
         /// <summary>
-        /// 根据Key 获取配置信息
+        /// 统一日志
         /// </summary>
-        /// <param name="key">配置Key</param>
-        /// <returns></returns>
-        public T GetConfig<T>(string key)
+        protected readonly IKdyLog KdyLog;
+        /// <summary>
+        /// 统一配置
+        /// </summary>
+        protected readonly IConfiguration KdyConfiguration;
+
+        protected BaseKdyService()
         {
-            var config = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
-            return config.GetValue<T>(key);
+            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
+            KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
         }
 
-        /// <summary>
-        /// 获取日志实例
-        /// </summary>
-        /// <returns></returns>
-        public IKdyLog GetKdyLog()
-        {
-            return KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
-        }
     }
 }

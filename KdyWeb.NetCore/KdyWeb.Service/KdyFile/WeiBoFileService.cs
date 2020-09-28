@@ -63,14 +63,14 @@ namespace KdyWeb.Service.KdyFile
             if (httpResult.IsSuccess == false && httpResult.HttpCode != HttpStatusCode.Found)
             {
                 result.Msg = httpResult.ErrMsg;
-                GetKdyLog().Warn("微博上传失败");
+                KdyLog.Warn("微博上传失败");
                 return result;
             }
 
             var newStr = httpResult.LocationUrl.TrimEnd(';') + ';';
             if (newStr.Contains("pid") == false)
             {
-                GetKdyLog().Warn("微博上传失败,获取Pid失败");
+                KdyLog.Warn("微博上传失败,获取Pid失败");
                 return result;
             }
 
@@ -127,7 +127,7 @@ namespace KdyWeb.Service.KdyFile
             var httpResult = await _kdyRequestClientCommon.SendAsync(httpInput);
             if (httpResult.IsSuccess == false)
             {
-                GetKdyLog().Warn("微博登录失败");
+                KdyLog.Warn("微博登录失败");
                 return string.Empty;
             }
 
@@ -141,7 +141,7 @@ namespace KdyWeb.Service.KdyFile
                 cacheVal = $"SUB={httpResult.CookieDic["SUB"]}";
             }
 
-            GetKdyLog().Info("微博登录成功");
+            KdyLog.Info("微博登录成功");
             await _kdyRedisCache.GetCache().SetStringAsync(KdyServiceCacheKey.WeiBoCookieKey, cacheVal, new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(20)

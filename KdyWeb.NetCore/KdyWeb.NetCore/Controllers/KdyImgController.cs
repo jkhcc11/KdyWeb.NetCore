@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using KdyWeb.Dto.KdyFile;
+using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
 using Microsoft.AspNetCore.Mvc;
@@ -16,17 +17,20 @@ namespace KdyWeb.NetCore.Controllers
     {
         private readonly IKdyImgSaveService _kdyImgSaveService;
         private readonly IWeiBoFileService _weiBoFileService;
+        private readonly IDouBanWebInfoService _douBanWebInfoService;
 
-        public KdyImgController(IKdyImgSaveService kdyImgSaveService, IWeiBoFileService weiBoFileService)
+        public KdyImgController(IKdyImgSaveService kdyImgSaveService, IWeiBoFileService weiBoFileService, IDouBanWebInfoService douBanWebInfoService)
         {
             _kdyImgSaveService = kdyImgSaveService;
             _weiBoFileService = weiBoFileService;
+            _douBanWebInfoService = douBanWebInfoService;
         }
 
         public async Task<IActionResult> Index(string url)
         {
             if (string.IsNullOrEmpty(url))
             {
+                await _douBanWebInfoService.GetInfoBySubjectId("111");
                 return Content("Url Is");
             }
 
