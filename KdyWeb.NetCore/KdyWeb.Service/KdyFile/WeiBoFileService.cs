@@ -78,7 +78,7 @@ namespace KdyWeb.Service.KdyFile
             //https://tva2.sinaimg.cn/large/{location.Substring(lastIndex + 5)}.jpg
             var uploadResult = new KdyFileDto()
             {
-                Url = $"{_publicHost}/large/{newStr.GetValueExt("pid=", ";")}.jpg"
+                Url = $"{_publicHost}/large/{newStr.GetStrMathExt("pid=", ";")}.jpg"
             };
 
             result = KdyResult.Success(uploadResult);

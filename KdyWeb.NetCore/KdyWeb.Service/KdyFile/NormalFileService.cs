@@ -60,7 +60,7 @@ namespace KdyWeb.Service.KdyFile
             if (input.CallBackRule.IsEmptyExt() == false)
             {
                 //跨域提取
-                var callBackJson = httpResult.Data.GetValueExt($"{input.CallBackRule}\\(", "\\)");
+                var callBackJson = httpResult.Data.GetStrMathExt($"{input.CallBackRule}\\(", "\\)");
                 if (string.IsNullOrEmpty(callBackJson))
                 {
                     return result;

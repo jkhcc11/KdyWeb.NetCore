@@ -8,7 +8,7 @@ namespace KdyWeb.Entity.SearchVideo
     public enum DouBanInfoStatus : byte
     {
         /// <summary>
-        /// SearchWait
+        /// 待搜索
         /// </summary>
         [Display(Name = "待搜索")]
         SearchWait = 0,

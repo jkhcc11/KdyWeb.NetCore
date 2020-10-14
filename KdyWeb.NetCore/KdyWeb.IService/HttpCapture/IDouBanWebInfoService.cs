@@ -16,5 +16,15 @@ namespace KdyWeb.IService.HttpCapture
         /// <param name="subjectId">豆瓣Id</param>
         /// <returns></returns>
         Task<KdyResult<GetDouBanOut>> GetInfoBySubjectId(string subjectId);
+
+        /// <summary>
+        /// 根据豆瓣Id获取豆瓣信息
+        /// </summary>
+        /// <remarks>
+        ///  PC版模拟
+        /// </remarks>
+        /// <param name="subjectId">豆瓣Id</param>
+        /// <returns></returns>
+        Task<KdyResult<GetDouBanOut>> GetInfoBySubjectIdForPcWeb(string subjectId);
     }
 }

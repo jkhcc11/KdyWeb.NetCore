@@ -9,6 +9,7 @@ using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.Job;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
@@ -18,6 +19,7 @@ using KdyWeb.NetCore.Models;
 using KdyWeb.Service.Job;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace KdyWeb.NetCore.Controllers
 {
@@ -30,8 +32,9 @@ namespace KdyWeb.NetCore.Controllers
         private readonly IKdyImgSaveService _kdyImgSaveService;
         private readonly IKdyRedisCache _redisCache;
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
+        private readonly IDouBanWebInfoService _douBanWebInfoService;
 
-        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient, IKdyImgSaveService kdyImgSaveService, IKdyRedisCache redisCache, IKdyRequestClientCommon kdyRequestClientCommon)
+        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient, IKdyImgSaveService kdyImgSaveService, IKdyRedisCache redisCache, IKdyRequestClientCommon kdyRequestClientCommon, IDouBanWebInfoService douBanWebInfoService)
         {
             _logger = logger;
             _kdyRequestCommon = kdyRequestCommon;
@@ -40,13 +43,16 @@ namespace KdyWeb.NetCore.Controllers
             _kdyImgSaveService = kdyImgSaveService;
             _redisCache = redisCache;
             _kdyRequestClientCommon = kdyRequestClientCommon;
+            _douBanWebInfoService = douBanWebInfoService;
         }
 
         public async Task<IActionResult> Index(string url)
         {
+            var t = await _douBanWebInfoService.GetInfoBySubjectIdForPcWeb(url);
+            return Json(t);
            // await _redisCache.GetCache().SetStringAsync("Index", url);
 
-           // await _kdyImgSaveService.Test();
+            // await _kdyImgSaveService.Test();
             var emailInput = new SendEmailInput()
             {
                 Email = "154@qq.com",

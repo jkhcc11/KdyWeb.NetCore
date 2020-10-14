@@ -22,13 +22,49 @@ namespace KdyWeb.Utility
         }
 
         /// <summary>
+        /// Html提取时移除多余字符
+        /// </summary>
+        /// <returns></returns>
+        public static string InnerHtmlHandler(this string str)
+        {
+            if (str.IsEmptyExt())
+            {
+                return string.Empty;
+            }
+
+            return str.Replace("<![CDATA[", "")
+                .Replace("]]>", "")
+                .Trim();
+        }
+
+        /// <summary>
+        /// 移除字符串中的给定字符
+        /// </summary>
+        /// <param name="str">待处理字符串</param>
+        /// <param name="removeArray">需要移除的字符</param>
+        /// <returns></returns>
+        public static string RemoveStrExt(this string str, params string[] removeArray)
+        {
+            if (str.IsEmptyExt() || removeArray == null)
+            {
+                return str;
+            }
+
+            foreach (var item in removeArray)
+            {
+                str = str.Replace(item, "");
+            }
+            return str;
+        }
+
+        /// <summary>
         /// 获得字符串中开始和结束字符串中间得值
         /// </summary>
         /// <param name="str">原字符串</param>
         /// <param name="s">开始</param>
         /// <param name="e">结束</param>
         /// <returns></returns>
-        public static string GetValueExt(this string str, string s, string e)
+        public static string GetStrMathExt(this string str, string s, string e)
         {
             //后面是模式 multiline表示多行 singleline单行
             var rg = new Regex("(?<=(" + s + "))[.\\s\\S]*?(?=(" + e + "))",
@@ -93,6 +129,7 @@ namespace KdyWeb.Utility
             return HttpUtility.UrlDecode(str);
         }
 
+        #region 加密相关
         /// <summary>
         /// Md5扩展
         /// </summary>
@@ -169,5 +206,6 @@ namespace KdyWeb.Utility
             return decode;
         }
 
+        #endregion
     }
 }
