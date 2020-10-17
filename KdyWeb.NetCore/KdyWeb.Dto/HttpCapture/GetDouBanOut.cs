@@ -1,4 +1,6 @@
-﻿using KdyWeb.Entity.SearchVideo;
+﻿using AutoMapper;
+using AutoMapper.Configuration.Annotations;
+using KdyWeb.Entity.SearchVideo;
 
 namespace KdyWeb.Dto.HttpCapture
 {
@@ -99,17 +101,37 @@ namespace KdyWeb.Dto.HttpCapture
         /// </summary>
         public int CommentsCount { get; set; }
 
+        /// <summary>
+        /// 长评人数
+        /// </summary>
+        public int ReviewsCount { get; set; }
+
         #region 接口直接获取不到
         /// <summary>
         /// Imdb Url
         /// </summary>
         public string ImdbStr { get; set; }
-
-        /// <summary>
-        /// 长评人数
-        /// </summary>
-        public int ReviewsCount { get; set; } 
         #endregion
 
+    }
+
+    public class GetDouBanOutProfile : Profile
+    {
+        public GetDouBanOutProfile()
+        {
+            CreateMap<GetDouBanOut, DouBanInfo>()
+                .ForMember(a => a.VideoTitle, a => a.MapFrom(b => b.Title))
+                .ForMember(a => a.VideoYear, a => a.MapFrom(b => b.Year))
+                .ForMember(a => a.VideoImg, a => a.MapFrom(b => b.Pic))
+                .ForMember(a => a.VideoCasts, a => a.MapFrom(b => b.Actors))
+                .ForMember(a => a.VideoDirectors, a => a.MapFrom(b => b.Directors))
+                .ForMember(a => a.VideoGenres, a => a.MapFrom(b => b.Tags))
+                .ForMember(a => a.VideoRating, a => a.MapFrom(b => b.Rating))
+                .ForMember(a => a.VideoSummary, a => a.MapFrom(b => b.Intro))
+                .ForMember(a => a.VideoDetailId, a => a.MapFrom(b => b.Id))
+                .ForMember(a => a.VideoCountries, a => a.MapFrom(b => b.Countries))
+                .ForMember(a => a.Id, a => a.Ignore())
+                .ReverseMap();
+        }
     }
 }

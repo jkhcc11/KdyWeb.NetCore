@@ -13,6 +13,7 @@ using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
+using KdyWeb.IService.SearchVideo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using KdyWeb.NetCore.Models;
@@ -32,9 +33,9 @@ namespace KdyWeb.NetCore.Controllers
         private readonly IKdyImgSaveService _kdyImgSaveService;
         private readonly IKdyRedisCache _redisCache;
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
-        private readonly IDouBanWebInfoService _douBanWebInfoService;
+        private readonly IDouBanInfoService _douBanInfoService;
 
-        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient, IKdyImgSaveService kdyImgSaveService, IKdyRedisCache redisCache, IKdyRequestClientCommon kdyRequestClientCommon, IDouBanWebInfoService douBanWebInfoService)
+        public HomeController(ILogger<HomeController> logger, IKdyRequestCommon kdyRequestCommon, IMinIoFileService minIoFileService, IBackgroundJobClient backgroundJobClient, IKdyImgSaveService kdyImgSaveService, IKdyRedisCache redisCache, IKdyRequestClientCommon kdyRequestClientCommon, IDouBanInfoService douBanInfoService)
         {
             _logger = logger;
             _kdyRequestCommon = kdyRequestCommon;
@@ -43,12 +44,12 @@ namespace KdyWeb.NetCore.Controllers
             _kdyImgSaveService = kdyImgSaveService;
             _redisCache = redisCache;
             _kdyRequestClientCommon = kdyRequestClientCommon;
-            _douBanWebInfoService = douBanWebInfoService;
+            _douBanInfoService = douBanInfoService;
         }
 
         public async Task<IActionResult> Index(string url)
         {
-            var t = await _douBanWebInfoService.GetInfoBySubjectIdForPcWeb(url);
+            var t = await _douBanInfoService.CreateForSubjectIdAsync(url);
             return Json(t);
            // await _redisCache.GetCache().SetStringAsync("Index", url);
 

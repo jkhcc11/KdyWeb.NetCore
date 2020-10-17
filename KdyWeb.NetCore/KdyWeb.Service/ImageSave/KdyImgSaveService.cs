@@ -48,9 +48,11 @@ namespace KdyWeb.Service.ImageSave
         /// <returns></returns>
         public async Task<KdyResult<string>> PostFileByUrl(string imgUrl)
         {
+            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
             var ext = Path.GetExtension(imgUrl);
             var result = KdyResult.Error<string>(KdyResultCode.Error, "图片上传失败");
 
+            //自有必传备用 微博成功则设置为主、否则备用设置为主 
             var fileName = $"{DateTime.Now.Ticks:x}{ext}";
             //自有MinIo
             var minIoInput = new MinIoFileInput(bucketName, fileName, imgUrl);
@@ -63,8 +65,7 @@ namespace KdyWeb.Service.ImageSave
             var dbImg = await _kdyImgSaveRepository.FirstOrDefaultAsync(a => a.FileMd5 == minIoResult.Data.FileMd5);
             if (dbImg != null)
             {
-                result.Data = await GetImageByImgId(dbImg.Id);
-                return result;
+                return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
             }
 
             //微博
@@ -95,7 +96,7 @@ namespace KdyWeb.Service.ImageSave
 
             await _kdyImgSaveRepository.CreateAsync(dbImg);
 
-            return KdyResult.Success($"/kdyImg/path/{dbImg.Id}", "获取成功");
+            return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
         }
 
         /// <summary>

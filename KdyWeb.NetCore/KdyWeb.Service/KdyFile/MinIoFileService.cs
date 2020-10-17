@@ -101,7 +101,7 @@ namespace KdyWeb.Service.KdyFile
             var config = _configuration
                 .GetSection(KdyWebServiceConst.MinIoConfigKey)
                 .Get<MinioConfig>();
-            var client = new MinioClient(config.ServerUrl, config.AccessKey, config.SecretKey);
+            var client = new MinioClient(config.ServerUrl, config.AccessKey, config.SecretKey,"cn-249");
             if (config.IsSSL)
             {
                 return client.WithSSL();

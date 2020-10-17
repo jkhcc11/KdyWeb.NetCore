@@ -128,7 +128,10 @@ namespace KdyWeb.NetCore
 
             //AutoMapper注入
             //https://www.codementor.io/zedotech/how-to-using-automapper-on-asp-net-core-3-0-via-dependencyinjection-zq497lzsq
-            services.AddAutoMapper(typeof(KdyMapperInit));
+            //services.AddAutoMapper(typeof(KdyMapperInit));
+            var dtoAssembly = typeof(KdyMapperInit).Assembly;
+            var entityAssembly = typeof(BaseEntity<>).Assembly;
+            services.AddAutoMapper(dtoAssembly, entityAssembly);
 
             //注入HttpClient
             services.AddHttpClient(KdyBaseConst.HttpClientName)
