@@ -21,7 +21,7 @@ namespace KdyWeb.BaseInterface.Extensions
         {
             services.AddHangfireServer(config =>
             {
-                config.Queues = new[] { HangFireQueue.Email, HangFireQueue.Capture, HangFireQueue.DouBan };
+                config.Queues = new[] { "default", HangFireQueue.Email, HangFireQueue.Capture, HangFireQueue.DouBan };
             });
             services.InitHangFire(configuration);
             return services;

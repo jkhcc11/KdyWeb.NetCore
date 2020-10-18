@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -9,10 +10,18 @@ namespace KdyWeb.Job.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
+        private readonly IBackgroundJobClient _backgroundJobClient;
+
+        public HomeController(IBackgroundJobClient backgroundJobClient)
+        {
+            _backgroundJobClient = backgroundJobClient;
+        }
+
         // GET: api/<HomeController>
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            _backgroundJobClient.Enqueue(() => Test());
             return new string[] { "value1", "value2" };
         }
 
@@ -39,6 +48,11 @@ namespace KdyWeb.Job.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        public string Test()
+        {
+            return "测试";
         }
     }
 }
