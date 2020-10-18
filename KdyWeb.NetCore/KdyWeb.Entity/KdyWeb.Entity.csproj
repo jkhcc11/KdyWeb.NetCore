@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KdyWeb.BaseInterface\KdyWeb.BaseInterface.csproj" />
     <ProjectReference Include="..\KdyWeb.Utility\KdyWeb.Utility.csproj" />
   </ItemGroup>
 

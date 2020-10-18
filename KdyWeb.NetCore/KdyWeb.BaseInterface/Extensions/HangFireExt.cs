@@ -19,7 +19,10 @@ namespace KdyWeb.BaseInterface.Extensions
         /// <param name="configuration"></param>
         public static IServiceCollection InitHangFireServer(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddHangfireServer();
+            services.AddHangfireServer(config =>
+            {
+                config.Queues = new[] { HangFireQueue.Email, HangFireQueue.Capture, HangFireQueue.DouBan };
+            });
             services.InitHangFire(configuration);
             return services;
         }

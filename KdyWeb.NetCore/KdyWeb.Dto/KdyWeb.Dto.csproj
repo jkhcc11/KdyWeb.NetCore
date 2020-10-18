@@ -5,8 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KdyWeb.BaseInterface\KdyWeb.BaseInterface.csproj" />
     <ProjectReference Include="..\KdyWeb.Entity\KdyWeb.Entity.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Job\" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,7 @@
-﻿using KdyWeb.BaseInterface.Repository;
-using KdyWeb.Entity;
+﻿using KdyWeb.BaseInterface.BaseModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace KdyWeb.Repository
+namespace KdyWeb.BaseInterface.Repository
 {
     /// <summary>
     /// 通用仓储 实现

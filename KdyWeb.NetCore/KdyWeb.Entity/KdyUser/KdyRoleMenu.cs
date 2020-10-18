@@ -1,4 +1,6 @@
-﻿namespace KdyWeb.Entity
+﻿using KdyWeb.BaseInterface.BaseModel;
+
+namespace KdyWeb.Entity
 {
     /// <summary>
     /// 角色菜单

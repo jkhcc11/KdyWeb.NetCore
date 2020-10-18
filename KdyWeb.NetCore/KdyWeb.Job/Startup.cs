@@ -2,18 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using AutoMapper;
 using Kdy.StandardJob;
-using Kdy.StandardJob.JobService;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.BaseInterface.InterfaceFlag;
-using KdyWeb.BaseInterface.KdyLog;
-using KdyWeb.Service.Job;
+using KdyWeb.BaseInterface.Repository;
+using KdyWeb.Dto;
+using KdyWeb.EntityFramework;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -31,9 +35,24 @@ namespace KdyWeb.Job
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContextPool<KdyContext>(options =>
+            {
+                var connectionStr = Configuration.GetConnectionString("WeChatDb");
+                options.UseSqlServer(connectionStr);
+            });
+            //todo: 必需注入此关系 后面仓储DbContext才可以使用
+            services.AddScoped<DbContext, KdyContext>();
+
+            services.KdyRegister();
+
+            //注入通用泛型仓储
+            services.TryAdd(ServiceDescriptor.Scoped(typeof(IKdyRepository<>), typeof(CommonRepository<>)));
+            services.TryAdd(ServiceDescriptor.Scoped(typeof(IKdyRepository<,>), typeof(CommonRepository<,>)));
+
+            #region 自动注入旧版Job
+
             //加载当前项目程序集
             var assemblies = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Kdy*.dll").Select(Assembly.LoadFrom).ToArray();
-
             //所有程序集类型声明
             var allTypes = new List<System.Type>();
             foreach (var itemAssemblies in assemblies)
@@ -41,7 +60,6 @@ namespace KdyWeb.Job
                 allTypes.AddRange(itemAssemblies.GetTypes());
             }
 
-            #region 自动注入Scoped
             //公用的接口
             var baseType = typeof(IKdyJobFlag);
             //过滤需要用到的服务声明接口
@@ -60,11 +78,30 @@ namespace KdyWeb.Job
             }
             #endregion
 
-            //注入ExceptionLess日志
-            services.AddHttpContextAccessor()
-                .AddSingleton<IKdyLog, KdyLogForExceptionLess>();
+            //AutoMapper注入
+            //https://www.codementor.io/zedotech/how-to-using-automapper-on-asp-net-core-3-0-via-dependencyinjection-zq497lzsq
+            //services.AddAutoMapper(typeof(KdyMapperInit));
+            var dtoAssembly = typeof(KdyMapperInit).Assembly;
+            var entityAssembly = typeof(BaseEntity<>).Assembly;
+            services.AddAutoMapper(dtoAssembly, entityAssembly);
+
             services.AddControllers();
+
+            //注入Hangfire
             services.InitHangFireServer(Configuration);
+
+            //注入HttpClient
+            services.AddHttpClient(KdyBaseConst.HttpClientName)
+                .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
+                {
+                    //取消自动跳转
+                    AllowAutoRedirect = false,
+                });
+
+            //初始化第三方组件
+            services.InitIdGenerate(Configuration)
+                .UseRedisCache(Configuration)
+                .AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,8 +122,10 @@ namespace KdyWeb.Job
             });
 
             app.InitDashboard();
-            app.InitExceptionLess(Configuration);
 
+            //全局DI容器
+            KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
+            app.InitExceptionLess(Configuration);
         }
     }
 }

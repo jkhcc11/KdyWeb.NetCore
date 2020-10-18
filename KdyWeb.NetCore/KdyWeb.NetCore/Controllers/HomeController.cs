@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Hangfire;
 using KdyWeb.BaseInterface.KdyRedis;
-using KdyWeb.Dto.Job;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyHttp;
-using KdyWeb.IService.HttpCapture;
+using KdyWeb.Dto.Message;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
@@ -19,8 +16,6 @@ using Microsoft.Extensions.Logging;
 using KdyWeb.NetCore.Models;
 using KdyWeb.Service.Job;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 
 namespace KdyWeb.NetCore.Controllers
 {
@@ -49,16 +44,12 @@ namespace KdyWeb.NetCore.Controllers
 
         public async Task<IActionResult> Index(string url)
         {
-            var t = await _douBanInfoService.CreateForSubjectIdAsync(url);
-            return Json(t);
+            //var t = await _douBanInfoService.CreateForSubjectIdAsync(url);
+            //return Json(t);
            // await _redisCache.GetCache().SetStringAsync("Index", url);
 
             // await _kdyImgSaveService.Test();
-            var emailInput = new SendEmailInput()
-            {
-                Email = "154@qq.com",
-                Content = "jfiejfieji"
-            };
+            var emailInput = new SendEmailInput("137651076@qq.com","测试主题","测试内容");
             _backgroundJobClient.Enqueue<SendEmailQueue>(a => a.Execute(emailInput));
             if (string.IsNullOrEmpty(url))
             {

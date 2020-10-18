@@ -15,4 +15,26 @@
         /// </summary>
         public const string HttpClientName = "KdyWeb";
     }
+
+
+    /// <summary>
+    /// Hangfire队列
+    /// </summary>
+    public class HangFireQueue
+    {
+        /// <summary>
+        /// 邮件队列
+        /// </summary>
+        public const string Email = "email";
+
+        /// <summary>
+        /// 豆瓣队列
+        /// </summary>
+        public const string DouBan = "douban";
+
+        /// <summary>
+        /// 资源获取队列
+        /// </summary>
+        public const string Capture = "capture";
+    }
 }

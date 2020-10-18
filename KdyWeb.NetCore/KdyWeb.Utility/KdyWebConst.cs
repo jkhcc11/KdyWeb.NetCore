@@ -35,6 +35,11 @@
         /// 图床默认图片
         /// </summary>
         public const string DefaultImgUrl = "/kdyimg/public/old/8d78d765c1bce92.jpg";
+
+        /// <summary>
+        /// 邮件服务器配置
+        /// </summary>
+        public const string SmtpKey = "SmtpConfig";
     }
 
     /// <summary>
@@ -47,4 +52,5 @@
         /// </summary>
         public const string WeiBoCookieKey = "WeiBoCookieKey";
     }
+
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KdyWeb.BaseInterface\KdyWeb.BaseInterface.csproj" />
     <ProjectReference Include="..\KdyWeb.EntityFramework\KdyWeb.EntityFramework.csproj" />
   </ItemGroup>
 

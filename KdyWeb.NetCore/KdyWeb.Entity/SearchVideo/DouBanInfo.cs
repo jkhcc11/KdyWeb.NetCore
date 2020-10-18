@@ -1,4 +1,6 @@
-﻿namespace KdyWeb.Entity.SearchVideo
+﻿using KdyWeb.BaseInterface.BaseModel;
+
+namespace KdyWeb.Entity.SearchVideo
 {
     /// <summary>
     /// 豆瓣信息

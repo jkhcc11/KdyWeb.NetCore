@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using KdyWeb.BaseInterface.BaseModel;
 
 namespace KdyWeb.Entity
 {

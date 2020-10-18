@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Text;
-using System.Threading;
 using HtmlAgilityPack;
 
 namespace KdyWeb.Utility
@@ -77,9 +76,6 @@ namespace KdyWeb.Utility
                         return firstChild.GetAttributeValue(attrName, "").InnerHtmlHandler();
                     }
             }
-
-            //找不到返回文本
-            return firstChild.InnerText;
         }
 
         ///  <summary>

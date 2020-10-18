@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace KdyWeb.Entity
+namespace KdyWeb.BaseInterface.BaseModel
 {
     /// <summary>
     /// 是否激活

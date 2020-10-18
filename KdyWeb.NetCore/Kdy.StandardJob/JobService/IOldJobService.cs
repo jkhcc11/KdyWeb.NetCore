@@ -16,11 +16,11 @@ namespace Kdy.StandardJob.JobService
         /// <remarks>
         /// 图片分发上传
         /// </remarks>
-        void UploadImgJob(UploadImgJobInput input);
+        string UploadImgJob(UploadImgJobInput input);
 
         /// <summary>
         /// 邮件发送
         /// </summary>
-        void SendEmailJob(UploadImgJobInput input);
+        void SendEmailJob(SendEmailJobInput input);
     }
 }

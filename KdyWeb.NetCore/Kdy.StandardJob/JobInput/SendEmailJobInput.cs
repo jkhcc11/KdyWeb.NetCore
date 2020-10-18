@@ -25,5 +25,10 @@
         /// 具体内容
         /// </summary>
         public string Content { get; set; }
+
+        /// <summary>
+        /// 主题
+        /// </summary>
+        public string Subject { get; set; }
     }
 }

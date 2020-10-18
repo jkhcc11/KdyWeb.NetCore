@@ -4,11 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.Repository;
-using KdyWeb.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace KdyWeb.Repository
+namespace KdyWeb.BaseInterface.Repository
 {
     /// <summary>
     /// 基础仓储 抽象类
