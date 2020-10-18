@@ -1,15 +1,8 @@
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Exceptionless;
-using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.Job.JobService;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -17,7 +10,7 @@ namespace KdyWeb.Job
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             //https://docs.microsoft.com/zh-cn/aspnet/core/host-and-deploy/windows-service?view=aspnetcore-3.1&tabs=visual-studio
             //1¡¢Windows²¿Êð
@@ -38,7 +31,8 @@ namespace KdyWeb.Job
                 builder.UseWindowsService();
             }
 
-            await builder.RunConsoleAsync();
+            var host = builder.Build();
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
