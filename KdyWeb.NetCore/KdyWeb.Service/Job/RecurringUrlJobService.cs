@@ -34,7 +34,7 @@ namespace KdyWeb.Service.Job
             };
 
             var reqResult = KdyAsyncHelper.Run(() => _kdyRequestClientCommon.SendAsync(reqInput));
-            KdyLog.Debug($"发送邮件返回{reqResult.ToJsonStr()}");
+            KdyLog.Debug($"循环Url返回：{reqResult.ToJsonStr()}");
             if (reqResult.IsSuccess == false)
             {
                 throw new Exception(reqResult.ErrMsg);

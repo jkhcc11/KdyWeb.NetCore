@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
@@ -16,43 +17,28 @@ namespace KdyWeb.Job
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
+            //https://docs.microsoft.com/zh-cn/aspnet/core/host-and-deploy/windows-service?view=aspnetcore-3.1&tabs=visual-studio
             //1、Windows部署
             //Microsoft.Extensions.Hosting.WindowsServices 用于给程序添加worker services的包
             //2、Linux部署
             // Microsoft.Extensions.Hosting.Systemd NuGet包
-            var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
-            if (isService)
+            var builder = CreateHostBuilder(args);
+            var isWin = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            if (isWin == false)
             {
-                var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-                var pathToContentRoot = Path.GetDirectoryName(pathToExe);
-                Directory.SetCurrentDirectory(pathToContentRoot);
-            }
-
-            var builder = CreateHostBuilder(
-                args.Where(arg => arg != "--console").ToArray());
-            var host = builder.Build();
-            if (isService)
-            {
-                //以服务方式
-                var isWin = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-                if (isWin == false)
-                {
-                    //Linux
-                    builder.UseSystemd();
-                }
-                else
-                {
-                    //Windows
-                    builder.UseWindowsService();
-                }
+                //Linux
+                builder.UseSystemd();
             }
             else
             {
-                host.Run();
+                //Windows
+                builder.UseWindowsService();
             }
+
+            await builder.RunConsoleAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
