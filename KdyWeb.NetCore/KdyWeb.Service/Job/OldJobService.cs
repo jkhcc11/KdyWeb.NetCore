@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Net.Http;
+using Hangfire;
 using Kdy.StandardJob;
 using Kdy.StandardJob.JobInput;
 using Kdy.StandardJob.JobService;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.Dto.KdyHttp;
 using KdyWeb.Dto.Message;
 using KdyWeb.IService.ImageSave;
+using KdyWeb.IService.KdyHttp;
 using KdyWeb.IService.Message;
 using KdyWeb.Utility;
 
@@ -19,6 +23,7 @@ namespace KdyWeb.Service.Job
         private readonly IKdyLog _kdyLog;
         private readonly ISendEmailService _sendEmailService;
         private readonly IKdyImgSaveService _kdyImgSaveService;
+
 
         public OldJobService(IKdyLog kdyLog, ISendEmailService sendEmailService, IKdyImgSaveService kdyImgSaveService)
         {
@@ -57,6 +62,14 @@ namespace KdyWeb.Service.Job
             {
                 throw new Exception(result.Msg);
             }
+        }
+
+        /// <summary>
+        /// 添加循环请求Url Job
+        /// </summary>
+        public void RecurringUrlJob(RecurringUrlJobInput input)
+        {
+            RecurringJob.AddOrUpdate<RecurringUrlJobService>(input.JobId, x => x.Execute(input), input.Cron, TimeZoneInfo.Utc);
         }
     }
 }

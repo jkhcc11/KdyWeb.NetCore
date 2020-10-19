@@ -1,4 +1,5 @@
-﻿using Kdy.StandardJob.JobInput;
+﻿using Hangfire;
+using Kdy.StandardJob.JobInput;
 
 namespace Kdy.StandardJob.JobService
 {
@@ -22,5 +23,10 @@ namespace Kdy.StandardJob.JobService
         /// 邮件发送
         /// </summary>
         void SendEmailJob(SendEmailJobInput input);
+
+        /// <summary>
+        /// 添加循环请求Url Job
+        /// </summary>
+        void RecurringUrlJob(RecurringUrlJobInput input);
     }
 }
