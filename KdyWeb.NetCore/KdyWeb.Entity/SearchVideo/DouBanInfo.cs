@@ -1,4 +1,5 @@
-﻿using KdyWeb.BaseInterface.BaseModel;
+﻿using System.ComponentModel.DataAnnotations;
+using KdyWeb.BaseInterface.BaseModel;
 
 namespace KdyWeb.Entity.SearchVideo
 {
@@ -7,9 +8,57 @@ namespace KdyWeb.Entity.SearchVideo
     /// </summary>
     public class DouBanInfo : BaseEntity<int>
     {
+        #region 常量
+        /// <summary>
+        /// 豆瓣详情Id
+        /// </summary>
+        public const int VideoDetailIdLength = 10;
+
+        /// <summary>
+        /// 名称长度
+        /// </summary>
+        public const int VideoTitleLength = 100;
+
+        /// <summary>
+        /// 海报长度
+        /// </summary>
+        public const int VideoImgLength = 200;
+
+        /// <summary>
+        /// 主演长度
+        /// </summary>
+        public const int VideoCastsLength = 200;
+
+        /// <summary>
+        /// 导演长度
+        /// </summary>
+        public const int VideoDirectorsLength = 200;
+
+        /// <summary>
+        /// 影片类型长度
+        /// </summary>
+        public const int VideoGenresLength = 200;
+
+        /// <summary>
+        /// 国家长度
+        /// </summary>
+        public const int VideoCountriesLength = 200;
+
+        /// <summary>
+        /// 又名 长度
+        /// </summary>
+        public const int AkaLength = 100;
+
+        /// <summary>
+        /// ImdbUrl长度
+        /// </summary>
+        public const int ImdbStrLength = 100;
+        #endregion
+
         /// <summary>
         /// 名称
         /// </summary>
+        [StringLength(VideoTitleLength)]
         public string VideoTitle { get; set; }
 
         /// <summary>
@@ -40,16 +89,19 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 海报
         /// </summary>
+        [StringLength(VideoImgLength)]
         public string VideoImg { get; set; }
 
         /// <summary>
         /// 主演
         /// </summary>
+        [StringLength(VideoCastsLength)]
         public string VideoCasts { get; set; }
 
         /// <summary>
         /// 导演
         /// </summary>
+        [StringLength(VideoDirectorsLength)]
         public string VideoDirectors { get; set; }
 
         /// <summary>
@@ -58,6 +110,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <remarks>
         /// 多个以 ，隔开
         /// </remarks>
+        [StringLength(VideoGenresLength)]
         public string VideoGenres { get; set; }
 
         /// <summary>
@@ -73,6 +126,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 详情Id
         /// </summary>
+        [StringLength(VideoDetailIdLength)]
         public string VideoDetailId { get; set; }
 
         /// <summary>
@@ -81,32 +135,35 @@ namespace KdyWeb.Entity.SearchVideo
         /// <remarks>
         /// 多个以 ，隔开
         /// </remarks>
+        [StringLength(VideoCountriesLength)]
         public string VideoCountries { get; set; }
 
         /// <summary>
         /// 评分人数
         /// </summary>
-        public int RatingsCount { get; set; }
+        public int? RatingsCount { get; set; }
 
         /// <summary>
         /// 评论人数
         /// </summary>
-        public int CommentsCount { get; set; }
+        public int? CommentsCount { get; set; }
 
         /// <summary>
         /// 影评人数
         /// </summary>
-        public int ReviewsCount { get; set; }
+        public int? ReviewsCount { get; set; }
 
         /// <summary>
         /// 又名 
         /// </summary>
         /// <remarks>多个名称，逗号隔开</remarks>
+        [StringLength(AkaLength)]
         public string Aka { get; set; }
 
         /// <summary>
         /// Imdb Url
         /// </summary>
+        [StringLength(VideoImgLength)]
         public string ImdbStr { get; set; }
     }
 }

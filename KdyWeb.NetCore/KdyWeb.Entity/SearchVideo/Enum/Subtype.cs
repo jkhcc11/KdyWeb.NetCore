@@ -10,6 +10,9 @@ namespace KdyWeb.Entity.SearchVideo
     /// </remarks>
     public enum Subtype : byte
     {
+        [Display(Name = "未知")]
+        None = 0,
+
         /// <summary>
         /// 电影
         /// </summary>
