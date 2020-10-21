@@ -5,8 +5,8 @@
 		<!--生成xml注释文档-->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageId>Kdy.StandardJob</PackageId>
-		<Version>1.0.4</Version>
-		<Description>新增循环Url Job</Description>
+		<Version>1.0.5</Version>
+		<Description>新增豆瓣信息获取 Job</Description>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	</PropertyGroup>
 
