@@ -19,7 +19,7 @@ namespace KdyWeb.EntityFramework.Mapping
         public override void MapperConfigure(EntityTypeBuilder<DouBanInfo> builder)
         {
             builder.Property(a => a.Subtype).HasDefaultValue(Subtype.None);
-            builder.Property(a => a.DouBanInfoStatus).HasDefaultValue(DouBanStatus.SearchWait);
+            builder.Property(a => a.DouBanInfoStatus).HasDefaultValue(DouBanInfoStatus.SearchWait);
         }
     }
 }
