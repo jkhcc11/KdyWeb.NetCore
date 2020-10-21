@@ -76,7 +76,8 @@ namespace KdyWeb.Service.Job
         /// </summary>
         public void SaveDouBanInfoJob(SaveDouBanInfoInput input)
         {
-            KdyAsyncHelper.Run(() => _douBanInfoService.CreateForSubjectIdAsync(input.SubjectId));
+            var result = KdyAsyncHelper.Run(() => _douBanInfoService.CreateForSubjectIdAsync(input.SubjectId));
+            _kdyLog.Info($"豆瓣信息录入返回:{result.ToJsonStr()}");
         }
     }
 }
