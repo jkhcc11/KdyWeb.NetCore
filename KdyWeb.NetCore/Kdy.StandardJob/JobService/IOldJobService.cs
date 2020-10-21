@@ -28,5 +28,10 @@ namespace Kdy.StandardJob.JobService
         /// 添加循环请求Url Job
         /// </summary>
         void RecurringUrlJob(RecurringUrlJobInput input);
+
+        /// <summary>
+        /// 豆瓣信息录入Job
+        /// </summary>
+        void SaveDouBanInfoJob(SaveDouBanInfoInput input);
     }
 }
