@@ -5,6 +5,7 @@ using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.NetCore.Controllers
@@ -38,7 +39,12 @@ namespace KdyWeb.NetCore.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// 获取微博cookie
+        /// </summary>
+        /// <returns></returns>
         [Route("init")]
+        [AllowAnonymous]
         public async Task<IActionResult> InitWebBo()
         {
             var result = await _weiBoFileService.GetLoginCookie();
@@ -49,6 +55,7 @@ namespace KdyWeb.NetCore.Controllers
         /// 获取图床图片
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         [Route("path/{id}")]
         public async Task<IActionResult> GetImgAsync(long id)
         {
