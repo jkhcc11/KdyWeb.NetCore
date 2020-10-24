@@ -64,6 +64,18 @@ namespace KdyWeb.BaseInterface.Repository
         /// </summary>
         /// <returns></returns>
         Task CreateAsync(TEntity entity);
+
+        /// <summary>
+        /// 获取分页
+        /// </summary>
+        /// <typeparam name="TEntity">数据库实体类</typeparam>
+        /// <typeparam name="TDto">Dto</typeparam>
+        /// <param name="page">页</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="whereExpression">表达式</param>
+        /// <returns></returns>
+        Task<PageList<TDto>> GetDtoPageListAsync<TDto>(int page, int pageSize, Expression<Func<TEntity, bool>> whereExpression);
+
     }
 
     /// <summary>
