@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -8,6 +10,7 @@ using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.SearchVideo;
+using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -64,6 +67,20 @@ namespace KdyWeb.Service.SearchVideo
 
             result = dbDouBanInfo.MapToExt<CreateForSubjectIdDto>();
             return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 获取最新豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<GetTop50DouBanInfoDto>>> GetTopDouBanInfoAsync(int topNumber = 50)
+        {
+            var dbList = await _douBanInfoRepository.GetQuery()
+                .OrderByDescending(a => a.CreatedTime)
+                .Take(topNumber)
+                .ToListAsync();
+            var list = dbList.MapToExt<List<GetTop50DouBanInfoDto>>();
+            return KdyResult.Success(list);
         }
     }
 }
