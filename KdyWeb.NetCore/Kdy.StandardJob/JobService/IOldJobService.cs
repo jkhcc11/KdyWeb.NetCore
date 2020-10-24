@@ -33,5 +33,10 @@ namespace Kdy.StandardJob.JobService
         /// 豆瓣信息录入Job
         /// </summary>
         void SaveDouBanInfoJob(SaveDouBanInfoInput input);
+
+        /// <summary>
+        /// 用户反馈Job
+        /// </summary>
+        void UserFeedBackJob(UserFeedBackJobInput input);
     }
 }
