@@ -22,7 +22,7 @@ namespace KdyWeb.EntityFramework.Mapping
                     UserEmail = "137651076@qq.com",
                     UserNick = "管理员",
                     UserPwd = $"123456{KdyWebConst.UserSalt}".Md5Ext(),
-                    CreatedTime = DateTime.Now
+                    CreatedTime = new DateTime(1977, 1, 1),
                 },
                 new KdyUser()
                 {
@@ -32,7 +32,7 @@ namespace KdyWeb.EntityFramework.Mapping
                     UserEmail = "123456@qq.com",
                     UserNick = "普通用户测试",
                     UserPwd = $"123456{KdyWebConst.UserSalt}".Md5Ext(),
-                    CreatedTime = DateTime.Now
+                    CreatedTime = new DateTime(1977, 1, 1),
                 }
                 );
 
