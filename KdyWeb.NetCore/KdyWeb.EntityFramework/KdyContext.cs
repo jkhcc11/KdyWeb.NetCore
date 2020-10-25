@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.EntityFramework
@@ -24,6 +26,16 @@ namespace KdyWeb.EntityFramework
             //加载当前 所有继承了IEntityTypeConfiguration的配置类
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(modelBuilder);
+
+            //获取所有数据实体类
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                //实现了软删除接口的实体类
+                if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
+                {
+                    entityType.AddSoftDeleteQueryFilter();
+                }
+            }
         }
     }
 }

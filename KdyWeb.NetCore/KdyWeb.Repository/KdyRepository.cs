@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.BaseInterface.Repository
@@ -136,6 +137,25 @@ namespace KdyWeb.BaseInterface.Repository
             entity.CreatedTime = DateTime.Now;
             await DbSet.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public virtual async Task<PageList<TDto>> GetDtoPageListAsync<TDto>(int page, int pageSize, Expression<Func<TEntity, bool>> whereExpression)
+        {
+            var result = new PageList<TDto>();
+            var query = GetQuery();
+            var skip = (page - 1) * pageSize;
+            result.DataCount = query.Count(whereExpression);
+            result.Page = page;
+            result.PageSize = pageSize;
+            if (result.DataCount <= 0)
+            {
+                result.Data = new List<TDto>();
+                return result;
+            }
+
+            var dbList = await query.Where(whereExpression).Skip(skip).Take(pageSize).ToListAsync();
+            result.Data = dbList.MapToListExt<TDto>();
+            return result;
         }
     }
 }

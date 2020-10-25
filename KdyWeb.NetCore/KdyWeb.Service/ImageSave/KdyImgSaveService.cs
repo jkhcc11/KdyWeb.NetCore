@@ -18,6 +18,7 @@ namespace KdyWeb.Service.ImageSave
 
     /// <summary>
     /// 图床关联 服务实现
+    /// todo:迁移完新增七牛、阿里云oss等对象存储
     /// </summary>
     public class KdyImgSaveService : BaseKdyService, IKdyImgSaveService
     {

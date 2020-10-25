@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using Kdy.StandardJob;
 using KdyWeb.BaseInterface;
@@ -20,6 +22,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace KdyWeb.Job
 {
@@ -85,7 +89,11 @@ namespace KdyWeb.Job
             var entityAssembly = typeof(BaseEntity<>).Assembly;
             services.AddAutoMapper(dtoAssembly, entityAssembly);
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson(option =>
+                {
+                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:ss:ss";
+                });
 
             //×¢ÈëHangfire
             services.InitHangFireServer(Configuration);

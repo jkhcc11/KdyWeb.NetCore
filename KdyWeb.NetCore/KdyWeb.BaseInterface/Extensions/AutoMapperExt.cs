@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KdyWeb.BaseInterface.Extensions
@@ -31,6 +32,18 @@ namespace KdyWeb.BaseInterface.Extensions
         {
             var mapper = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IMapper>();
             return mapper.Map<TTarget>(source);
+        }
+
+        /// <summary>
+        ///  AutoMapper自动映射
+        /// </summary>
+        /// <typeparam name="TTarget">目标实体 泛型</typeparam>
+        /// <param name="source">源实体类</param>
+        /// <returns></returns>
+        public static IList<TTarget> MapToListExt<TTarget>(this object source)
+        {
+            var mapper = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IMapper>();
+            return mapper.Map<List<TTarget>>(source);
         }
     }
 }

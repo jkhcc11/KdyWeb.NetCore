@@ -4,6 +4,17 @@ using System.ComponentModel.DataAnnotations;
 namespace KdyWeb.BaseInterface.BaseModel
 {
     /// <summary>
+    /// 软删除标记
+    /// </summary>
+    public interface ISoftDelete
+    {
+        /// <summary>
+        /// 是否删除
+        /// </summary>
+        bool IsDelete { get; set; }
+    }
+
+    /// <summary>
     /// 是否激活
     /// </summary>
     public interface IsActivate
@@ -28,17 +39,12 @@ namespace KdyWeb.BaseInterface.BaseModel
     /// <summary>
     /// 主键接口
     /// </summary>
-    public interface IBaseKey<TKey> : IBaseTimeKey
+    public interface IBaseKey<TKey> : IBaseTimeKey, ISoftDelete
     {
         /// <summary>
         /// 主键
         /// </summary>
         TKey Id { get; set; }
-
-        /// <summary>
-        /// 是否删除
-        /// </summary>
-        bool IsDelete { get; set; }
     }
 
     /// <summary>

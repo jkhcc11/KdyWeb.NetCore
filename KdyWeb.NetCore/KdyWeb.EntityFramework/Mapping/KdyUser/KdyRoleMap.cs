@@ -18,27 +18,27 @@ namespace KdyWeb.EntityFramework.Mapping
                    {
                        Id = 1,
                        KdyRoleType = KdyRoleType.Normal,
-                       CreatedTime = DateTime.Now,
+                       CreatedTime = new DateTime(1977, 1, 1),
                        IsActivate = true
                    }, new KdyRole()
                    {
                        Id = 2,
                        KdyRoleType = KdyRoleType.VideoAdmin,
-                       CreatedTime = DateTime.Now,
+                       CreatedTime = new DateTime(1977, 1, 1),
                        IsActivate = true
                    },
                    new KdyRole()
                    {
                        Id = 3,
                        KdyRoleType = KdyRoleType.SupperAdmin,
-                       CreatedTime = DateTime.Now,
+                       CreatedTime = new DateTime(1977, 1, 1),
                        IsActivate = true
                    },
                    new KdyRole()
                    {
                        Id = 4,
                        KdyRoleType = KdyRoleType.LiveAdmin,
-                       CreatedTime = DateTime.Now,
+                       CreatedTime = new DateTime(1977, 1, 1),
                        IsActivate = true
                    });
             #endregion
