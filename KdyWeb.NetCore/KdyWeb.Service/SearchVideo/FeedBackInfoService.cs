@@ -77,5 +77,20 @@ namespace KdyWeb.Service.SearchVideo
 
             return KdyResult.Success();
         }
+
+        /// <summary>
+        /// 获取反馈信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<GetFeedBackInfoDto>> GetFeedBackInfoAsync(int id)
+        {
+            var dbModel = await _kdyRepository.FirstOrDefaultAsync(a => a.Id == id);
+            if (dbModel==null)
+            {
+                return KdyResult.Error<GetFeedBackInfoDto>(KdyResultCode.Error, "参数错误");
+            }
+
+            return KdyResult.Success(dbModel.MapToExt<GetFeedBackInfoDto>());
+        }
     }
 }
