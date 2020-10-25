@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -29,8 +31,12 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoAsync(GetFeedBackInfoInput input)
         {
+            var orderBy = new List<KdyEfOrderConditions>()
+            {
+                new KdyEfOrderConditions(nameof(FeedBackInfo.CreatedTime),KdyEfOrderBy.Desc)
+            };
             var dbPage = await _kdyRepository.GetDtoPageListAsync<GetFeedBackInfoDto>(input.Page, input.PageSize,
-                a => a.DemandType == input.UserDemandType);
+                a => a.DemandType == input.UserDemandType, orderBy);
 
             return KdyResult.Success(dbPage);
         }

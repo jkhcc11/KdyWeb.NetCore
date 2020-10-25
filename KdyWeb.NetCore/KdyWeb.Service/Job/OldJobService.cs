@@ -92,7 +92,9 @@ namespace KdyWeb.Service.Job
                     DemandType = UserDemandType.Input,
                     UserEmail = input.UserEmail
                 };
-                _feedBackInfoService.CreateFeedBackInfoAsync(feedBackInfo).GetAwaiter();
+
+                var createResult = KdyAsyncHelper.Run(() => _feedBackInfoService.CreateFeedBackInfoAsync(feedBackInfo));
+                _kdyLog.Info($"反馈录入返回:{createResult.ToJsonStr()}");
             }
 
             _kdyLog.Info($"豆瓣信息录入返回:{result.ToJsonStr()}");
