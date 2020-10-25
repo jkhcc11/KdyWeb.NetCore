@@ -21,5 +21,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> CreateFeedBackInfoAsync(CreateFeedBackInfoInput input);
+
+        /// <summary>
+        /// 变更反馈信息状态
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> ChangeFeedBackInfoAsync(ChangeFeedBackInfoInput input);
     }
 }

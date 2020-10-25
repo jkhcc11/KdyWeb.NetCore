@@ -40,5 +40,17 @@ namespace KdyWeb.Job.Controllers
             var result = await _feedBackInfoService.CreateFeedBackInfoAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 变更反馈状态
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("change")]
+        public async Task<IActionResult> ChangeFeedBackInfoAsync(ChangeFeedBackInfoInput input)
+        {
+            var result = await _feedBackInfoService.ChangeFeedBackInfoAsync(input);
+            return Ok(result);
+        }
     }
 }

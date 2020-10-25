@@ -54,5 +54,28 @@ namespace KdyWeb.Service.SearchVideo
             await _kdyRepository.CreateAsync(dbFeedBack);
             return KdyResult.Success();
         }
+
+        /// <summary>
+        /// 变更反馈信息状态
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> ChangeFeedBackInfoAsync(ChangeFeedBackInfoInput input)
+        {
+            var dbList = await _kdyRepository.GetQuery()
+                .Where(a => input.Ids.Contains(a.Id))
+                .ToListAsync();
+            if (dbList.Any()==false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无数据结果，处理失败");
+            }
+
+            foreach (var item in dbList)
+            {
+                item.FeedBackInfoStatus = input.FeedBackInfoStatus;
+                await _kdyRepository.UpdateAsync(item);
+            }
+
+            return KdyResult.Success();
+        }
     }
 }
