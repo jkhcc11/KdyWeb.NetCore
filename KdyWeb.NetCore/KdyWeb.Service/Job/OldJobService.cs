@@ -6,6 +6,7 @@ using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto.Message;
+using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.Message;
@@ -23,16 +24,16 @@ namespace KdyWeb.Service.Job
         private readonly ISendEmailService _sendEmailService;
         private readonly IKdyImgSaveService _kdyImgSaveService;
         private readonly IDouBanInfoService _douBanInfoService;
-        private readonly IKdyRepository<FeedBackInfo, int> _kdyRepository;
+        private readonly IFeedBackInfoService _feedBackInfoService;
 
 
-        public OldJobService(IKdyLog kdyLog, ISendEmailService sendEmailService, IKdyImgSaveService kdyImgSaveService, IDouBanInfoService douBanInfoService, IKdyRepository<FeedBackInfo, int> kdyRepository)
+        public OldJobService(IKdyLog kdyLog, ISendEmailService sendEmailService, IKdyImgSaveService kdyImgSaveService, IDouBanInfoService douBanInfoService, IFeedBackInfoService feedBackInfoService)
         {
             _kdyLog = kdyLog;
             _sendEmailService = sendEmailService;
             _kdyImgSaveService = kdyImgSaveService;
             _douBanInfoService = douBanInfoService;
-            _kdyRepository = kdyRepository;
+            _feedBackInfoService = feedBackInfoService;
         }
 
         /// <summary>
@@ -84,11 +85,14 @@ namespace KdyWeb.Service.Job
             if (result.IsSuccess)
             {
                 var url = $"//movie.douban.com/subject/{input.SubjectId}/";
-                var feedBackInfo = new FeedBackInfo(UserDemandType.Input, url, input.UserEmail)
+                var feedBackInfo = new CreateFeedBackInfoInput()
                 {
-                    VideoName = result.Data.VideoTitle
+                    VideoName = result.Data.VideoTitle,
+                    OriginalUrl = url,
+                    DemandType = UserDemandType.Input,
+                    UserEmail = input.UserEmail
                 };
-                _kdyRepository.CreateAsync(feedBackInfo).GetAwaiter();
+                _feedBackInfoService.CreateFeedBackInfoAsync(feedBackInfo).GetAwaiter();
             }
 
             _kdyLog.Info($"豆瓣信息录入返回:{result.ToJsonStr()}");
@@ -99,11 +103,14 @@ namespace KdyWeb.Service.Job
         /// </summary>
         public void UserFeedBackJob(UserFeedBackJobInput input)
         {
-            var feedBackInfo = new FeedBackInfo(UserDemandType.Feedback, input.Url, input.UserEmail)
+            var feedBackInfo = new CreateFeedBackInfoInput()
             {
-                VideoName = input.VideoName
+                VideoName = input.VideoName,
+                OriginalUrl = input.Url,
+                DemandType = UserDemandType.Feedback,
+                UserEmail = input.UserEmail
             };
-            _kdyRepository.CreateAsync(feedBackInfo).GetAwaiter();
+            _feedBackInfoService.CreateFeedBackInfoAsync(feedBackInfo).GetAwaiter();
         }
     }
 }
