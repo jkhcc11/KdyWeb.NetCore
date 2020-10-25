@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
@@ -16,5 +15,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoAsync(GetFeedBackInfoInput input);
+
+        /// <summary>
+        /// 创建反馈信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CreateFeedBackInfoAsync(CreateFeedBackInfoInput input);
     }
 }
