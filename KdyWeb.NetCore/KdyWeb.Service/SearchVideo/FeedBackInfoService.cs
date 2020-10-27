@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -29,8 +31,12 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoAsync(GetFeedBackInfoInput input)
         {
+            var orderBy = new List<KdyEfOrderConditions>()
+            {
+                new KdyEfOrderConditions(nameof(FeedBackInfo.CreatedTime),KdyEfOrderBy.Desc)
+            };
             var dbPage = await _kdyRepository.GetDtoPageListAsync<GetFeedBackInfoDto>(input.Page, input.PageSize,
-                a => a.DemandType == input.UserDemandType);
+                a => a.DemandType == input.UserDemandType, orderBy);
 
             return KdyResult.Success(dbPage);
         }
@@ -53,6 +59,44 @@ namespace KdyWeb.Service.SearchVideo
             var dbFeedBack = input.MapToExt<FeedBackInfo>();
             await _kdyRepository.CreateAsync(dbFeedBack);
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 变更反馈信息状态
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> ChangeFeedBackInfoAsync(ChangeFeedBackInfoInput input)
+        {
+            var dbList = await _kdyRepository.GetQuery()
+                .Where(a => input.Ids.Contains(a.Id))
+                .ToListAsync();
+            if (dbList.Any()==false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无数据结果，处理失败");
+            }
+
+            foreach (var item in dbList)
+            {
+                item.FeedBackInfoStatus = input.FeedBackInfoStatus;
+                await _kdyRepository.UpdateAsync(item);
+            }
+
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 获取反馈信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<GetFeedBackInfoDto>> GetFeedBackInfoAsync(int id)
+        {
+            var dbModel = await _kdyRepository.FirstOrDefaultAsync(a => a.Id == id);
+            if (dbModel==null)
+            {
+                return KdyResult.Error<GetFeedBackInfoDto>(KdyResultCode.Error, "参数错误");
+            }
+
+            return KdyResult.Success(dbModel.MapToExt<GetFeedBackInfoDto>());
         }
     }
 }

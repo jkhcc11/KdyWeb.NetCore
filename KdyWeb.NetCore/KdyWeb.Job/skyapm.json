@@ -1,6 +1,6 @@
 {
   "SkyWalking": {
-    "ServiceName": "KdyWeb.NetCore.Pro",
+    "ServiceName": "KdyWeb.Job.Pro",
     "Namespace": "KdyWeb",
     "HeaderVersions": [
       "sw6"

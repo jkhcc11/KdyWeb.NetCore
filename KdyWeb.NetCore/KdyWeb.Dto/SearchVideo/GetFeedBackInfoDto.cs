@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.Utility;
 
@@ -8,7 +9,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 分页获取反馈信息 Dto
     /// </summary>
     [AutoMap(typeof(FeedBackInfo))]
-    public class GetFeedBackInfoDto
+    public class GetFeedBackInfoDto : CreatedUserDto<int>
     {
         /// <summary>
         /// 反馈类型

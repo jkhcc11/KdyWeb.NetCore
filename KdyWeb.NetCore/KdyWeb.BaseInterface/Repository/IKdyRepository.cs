@@ -73,8 +73,9 @@ namespace KdyWeb.BaseInterface.Repository
         /// <param name="page">页</param>
         /// <param name="pageSize">分页大小</param>
         /// <param name="whereExpression">表达式</param>
+        /// <param name="orderBy">排序</param>
         /// <returns></returns>
-        Task<PageList<TDto>> GetDtoPageListAsync<TDto>(int page, int pageSize, Expression<Func<TEntity, bool>> whereExpression);
+        Task<PageList<TDto>> GetDtoPageListAsync<TDto>(int page, int pageSize, Expression<Func<TEntity, bool>> whereExpression, IList<KdyEfOrderConditions> orderBy = null);
 
     }
 

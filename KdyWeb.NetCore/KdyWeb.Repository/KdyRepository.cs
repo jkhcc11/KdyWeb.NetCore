@@ -139,7 +139,7 @@ namespace KdyWeb.BaseInterface.Repository
             await _dbContext.SaveChangesAsync();
         }
 
-        public virtual async Task<PageList<TDto>> GetDtoPageListAsync<TDto>(int page, int pageSize, Expression<Func<TEntity, bool>> whereExpression)
+        public virtual async Task<PageList<TDto>> GetDtoPageListAsync<TDto>(int page, int pageSize, Expression<Func<TEntity, bool>> whereExpression, IList<KdyEfOrderConditions> orderBy = null)
         {
             var result = new PageList<TDto>();
             var query = GetQuery();
@@ -153,7 +153,23 @@ namespace KdyWeb.BaseInterface.Repository
                 return result;
             }
 
-            var dbList = await query.Where(whereExpression).Skip(skip).Take(pageSize).ToListAsync();
+            var dbQuery = query.Where(whereExpression);
+            if (orderBy != null)
+            {
+                dbQuery = dbQuery.KdyOrderBy(orderBy);
+            }
+            else
+            {
+                dbQuery = dbQuery.KdyOrderBy(new List<KdyEfOrderConditions>()
+                {
+                    new KdyEfOrderConditions("Id", KdyEfOrderBy.Desc)
+                });
+            }
+
+            var dbList = await dbQuery
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
             result.Data = dbList.MapToListExt<TDto>();
             return result;
         }
