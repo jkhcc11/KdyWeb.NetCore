@@ -42,6 +42,7 @@ namespace KdyWeb.NetCore.Controllers
             _douBanInfoService = douBanInfoService;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index(string url)
         {
             //var t = await _douBanInfoService.CreateForSubjectIdAsync(url);
@@ -49,8 +50,8 @@ namespace KdyWeb.NetCore.Controllers
            // await _redisCache.GetCache().SetStringAsync("Index", url);
 
             // await _kdyImgSaveService.Test();
-            var emailInput = new SendEmailInput("137651076@qq.com","测试主题","测试内容");
-            _backgroundJobClient.Enqueue<SendEmailQueue>(a => a.Execute(emailInput));
+            //var emailInput = new SendEmailInput("137651076@qq.com","测试主题","测试内容");
+            //_backgroundJobClient.Enqueue<SendEmailQueue>(a => a.Execute(emailInput));
             if (string.IsNullOrEmpty(url))
             {
                 return View();
