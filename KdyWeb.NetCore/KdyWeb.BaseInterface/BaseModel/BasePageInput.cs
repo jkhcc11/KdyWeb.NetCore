@@ -1,10 +1,17 @@
-﻿namespace KdyWeb.BaseInterface.BaseModel
+﻿using System.Collections.Generic;
+
+namespace KdyWeb.BaseInterface.BaseModel
 {
     /// <summary>
     /// 分页入参
     /// </summary>
-    public abstract class BasePageInput
+    public abstract class BasePageInput : IPageInput
     {
+        /// <summary>
+        /// 最大分页
+        /// </summary>
+        public const int MaxPageSize = 100;
+
         /// <summary>
         /// 页数
         /// </summary>
@@ -37,14 +44,46 @@
                     return;
                 }
 
-                if (value >= 100)
+                if (value >= MaxPageSize)
                 {
-                    _pageSize = 100;
+                    _pageSize = MaxPageSize;
                     return;
                 }
 
                 _pageSize = value;
             }
         }
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        public IList<KdyEfOrderConditions> OrderBy { get; set; }
+    }
+
+    /// <summary>
+    /// 分页入参 接口
+    /// </summary>
+    public interface IPageInput : ISortInput
+    {
+        /// <summary>
+        /// 页数
+        /// </summary>
+        int Page { get; set; }
+
+        /// <summary>
+        /// 分页大小
+        /// </summary>
+        int PageSize { get; set; }
+    }
+
+    /// <summary>
+    /// 排序入参 接口
+    /// </summary>
+    public interface ISortInput
+    {
+        /// <summary>
+        /// 排序
+        /// </summary>
+        IList<KdyEfOrderConditions> OrderBy { get; set; }
     }
 }

@@ -9,6 +9,17 @@ namespace KdyWeb.BaseInterface.BaseModel
     public class PageList<TEntity>
     {
         /// <summary>
+        /// 构造
+        /// </summary>
+        /// <param name="page">第几页</param>
+        /// <param name="pageSize">分页大小</param>
+        public PageList(int page, int pageSize)
+        {
+            Page = page;
+            PageSize = pageSize;
+        }
+
+        /// <summary>
         /// 当前页数
         /// </summary>
         public int Page { get; set; }

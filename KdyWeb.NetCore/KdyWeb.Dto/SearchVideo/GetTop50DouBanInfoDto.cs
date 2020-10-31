@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.Entity.SearchVideo;
-using KdyWeb.Utility;
 
 namespace KdyWeb.Dto.SearchVideo
 {

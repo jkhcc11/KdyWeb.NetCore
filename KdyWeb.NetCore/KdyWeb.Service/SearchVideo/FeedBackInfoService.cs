@@ -31,12 +31,16 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoAsync(GetFeedBackInfoInput input)
         {
-            var orderBy = new List<KdyEfOrderConditions>()
+            input.OrderBy ??= new List<KdyEfOrderConditions>()
             {
-                new KdyEfOrderConditions(nameof(FeedBackInfo.CreatedTime),KdyEfOrderBy.Desc)
+                new KdyEfOrderConditions()
+                {
+                    Key = nameof(FeedBackInfo.CreatedTime),
+                    OrderBy = KdyEfOrderBy.Desc
+                }
             };
-            var dbPage = await _kdyRepository.GetDtoPageListAsync<GetFeedBackInfoDto>(input.Page, input.PageSize,
-                a => a.DemandType == input.UserDemandType, orderBy);
+            var dbPage = await _kdyRepository.GetQuery()
+                .GetDtoPageListAsync<FeedBackInfo, GetFeedBackInfoDto>(input);
 
             return KdyResult.Success(dbPage);
         }
@@ -70,7 +74,7 @@ namespace KdyWeb.Service.SearchVideo
             var dbList = await _kdyRepository.GetQuery()
                 .Where(a => input.Ids.Contains(a.Id))
                 .ToListAsync();
-            if (dbList.Any()==false)
+            if (dbList.Any() == false)
             {
                 return KdyResult.Error(KdyResultCode.Error, "无数据结果，处理失败");
             }
@@ -91,7 +95,7 @@ namespace KdyWeb.Service.SearchVideo
         public async Task<KdyResult<GetFeedBackInfoDto>> GetFeedBackInfoAsync(int id)
         {
             var dbModel = await _kdyRepository.FirstOrDefaultAsync(a => a.Id == id);
-            if (dbModel==null)
+            if (dbModel == null)
             {
                 return KdyResult.Error<GetFeedBackInfoDto>(KdyResultCode.Error, "参数错误");
             }

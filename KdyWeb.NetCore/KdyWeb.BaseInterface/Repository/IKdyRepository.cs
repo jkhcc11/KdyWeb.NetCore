@@ -36,16 +36,16 @@ namespace KdyWeb.BaseInterface.Repository
         Task<IList<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> whereExpression);
 
         /// <summary>
-        /// 获取分页
+        /// 更新
         /// </summary>
         /// <returns></returns>
-        Task<PageList<TEntity>> GetPageListAsync(int page, int pageSize, Expression<Func<TEntity, bool>> whereExpression);
+        Task<TEntity> UpdateAsync(TEntity entity);
 
         /// <summary>
         /// 更新
         /// </summary>
         /// <returns></returns>
-        Task<TEntity> UpdateAsync(TEntity entity);
+        Task UpdateAsync(List<TEntity> entity);
 
         /// <summary>
         /// 软删除
@@ -63,19 +63,13 @@ namespace KdyWeb.BaseInterface.Repository
         /// 创建
         /// </summary>
         /// <returns></returns>
-        Task CreateAsync(TEntity entity);
+        Task<TEntity> CreateAsync(TEntity entity);
 
         /// <summary>
-        /// 获取分页
+        /// 批量创建
         /// </summary>
-        /// <typeparam name="TEntity">数据库实体类</typeparam>
-        /// <typeparam name="TDto">Dto</typeparam>
-        /// <param name="page">页</param>
-        /// <param name="pageSize">分页大小</param>
-        /// <param name="whereExpression">表达式</param>
-        /// <param name="orderBy">排序</param>
         /// <returns></returns>
-        Task<PageList<TDto>> GetDtoPageListAsync<TDto>(int page, int pageSize, Expression<Func<TEntity, bool>> whereExpression, IList<KdyEfOrderConditions> orderBy = null);
+        Task CreateAsync(List<TEntity> entity);
 
     }
 
