@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -89,7 +90,16 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryDouBanInfoDto>>> QueryDouBanInfoAsync(QueryDouBanInfoInput input)
         {
-            var pageList=await _douBanInfoRepository.GetQuery()
+            input.OrderBy ??= new List<KdyEfOrderConditions>()
+            {
+                new KdyEfOrderConditions()
+                {
+                    Key = nameof(DouBanInfo.CreatedTime),
+                    OrderBy = KdyEfOrderBy.Desc
+                }
+            };
+
+            var pageList = await _douBanInfoRepository.GetQuery()
                 .GetDtoPageListAsync<DouBanInfo, QueryDouBanInfoDto>(input);
 
             return KdyResult.Success(pageList);

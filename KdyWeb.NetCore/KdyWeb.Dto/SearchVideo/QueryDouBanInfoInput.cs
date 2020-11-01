@@ -20,7 +20,8 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         [KdyQuery(nameof(DouBanInfo.VideoTitle), KdyOperator.Like)]
         [KdyQuery(nameof(DouBanInfo.VideoDetailId), KdyOperator.Like)]
-        [KdyQuery(nameof(DouBanInfo.VideoYear), KdyOperator.Equal)]
+        [KdyQuery(nameof(DouBanInfo.VideoDirectors), KdyOperator.Like)]
+        [KdyQuery(nameof(DouBanInfo.VideoCasts), KdyOperator.Like)]
         public string Key { get; set; }
     }
 }
