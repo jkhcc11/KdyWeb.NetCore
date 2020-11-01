@@ -82,5 +82,17 @@ namespace KdyWeb.Service.SearchVideo
             var list = dbList.MapToExt<List<GetTop50DouBanInfoDto>>();
             return KdyResult.Success(list);
         }
+
+        /// <summary>
+        /// 查询豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryDouBanInfoDto>>> QueryDouBanInfoAsync(QueryDouBanInfoInput input)
+        {
+            var pageList=await _douBanInfoRepository.GetQuery()
+                .GetDtoPageListAsync<DouBanInfo, QueryDouBanInfoDto>(input);
+
+            return KdyResult.Success(pageList);
+        }
     }
 }
