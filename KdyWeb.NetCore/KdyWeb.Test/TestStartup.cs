@@ -1,4 +1,4 @@
-ï»¿using System.Net.Http;
+using System.Net.Http;
 using AutoMapper;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -9,52 +9,61 @@ using KdyWeb.EntityFramework;
 using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
-namespace KdyWeb.NetCore
+namespace KdyWeb.Test
 {
-    /// <summary>
-    /// åˆå§‹åŒ–æ³¨å…¥
-    /// </summary>
-    public static class KdyInit
+    public class TestStartup
     {
-        /// <summary>
-        /// åˆå§‹åŒ–æ³¨å…¥
-        /// </summary>
-        public static void KdyRegisterInit(this IServiceCollection services, IConfiguration configuration)
+        public TestStartup(IConfiguration configuration)
         {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //Ìí¼Ó×Ô¶¯·ÀÎ±±ê¼Ç
+            services.AddControllersWithViews(options =>
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+
             services.AddDbContextPool<KdyContext>(options =>
             {
-                var connectionStr = configuration.GetConnectionString("WeChatDb");
+                var connectionStr = Configuration.GetConnectionString("WeChatDb");
                 options.UseSqlServer(connectionStr);
             });
-            //todo: å¿…éœ€æ³¨å…¥æ­¤å…³ç³» åé¢ä»“å‚¨DbContextæ‰å¯ä»¥ä½¿ç”¨
+            //todo: ±ØĞè×¢Èë´Ë¹ØÏµ ºóÃæ²Ö´¢DbContext²Å¿ÉÒÔÊ¹ÓÃ
             services.AddScoped<DbContext, KdyContext>();
 
             services.KdyRegister();
 
-            //æ³¨å…¥é€šç”¨æ³›å‹ä»“å‚¨
+            //×¢ÈëÍ¨ÓÃ·ºĞÍ²Ö´¢
             services.TryAdd(ServiceDescriptor.Scoped(typeof(IKdyRepository<>), typeof(CommonRepository<>)));
             services.TryAdd(ServiceDescriptor.Scoped(typeof(IKdyRepository<,>), typeof(CommonRepository<,>)));
 
-            //AutoMapperæ³¨å…¥
+            //AutoMapper×¢Èë
             //https://www.codementor.io/zedotech/how-to-using-automapper-on-asp-net-core-3-0-via-dependencyinjection-zq497lzsq
             //services.AddAutoMapper(typeof(KdyMapperInit));
             var dtoAssembly = typeof(KdyMapperInit).Assembly;
             var entityAssembly = typeof(BaseEntity<>).Assembly;
             services.AddAutoMapper(dtoAssembly, entityAssembly);
 
-            //æ³¨å…¥HttpClient
+            //×¢ÈëHttpClient
             services.AddHttpClient(KdyBaseConst.HttpClientName)
                 .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
                 {
-                    //å–æ¶ˆè‡ªåŠ¨è·³è½¬
+                    //È¡Ïû×Ô¶¯Ìø×ª
                     AllowAutoRedirect = false,
-                    //ä¸è‡ªåŠ¨è®¾ç½®cookie
+                    //²»×Ô¶¯ÉèÖÃcookie
                     // UseCookies = false
                 });
 
@@ -64,11 +73,18 @@ namespace KdyWeb.NetCore
                 options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
 
-            //åˆå§‹åŒ–ç¬¬ä¸‰æ–¹ç»„ä»¶
-            services.InitHangFire(configuration)
-                .InitIdGenerate(configuration)
-                .UseRedisCache(configuration)
+            //³õÊ¼»¯µÚÈı·½×é¼ş
+            services.InitHangFire(Configuration)
+                .InitIdGenerate(Configuration)
+                .UseRedisCache(Configuration)
                 .AddMemoryCache();
+
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+          
         }
     }
 }
