@@ -22,6 +22,12 @@ namespace KdyWeb.IService.SearchVideo
         /// 获取最新豆瓣信息
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult<List<GetTop50DouBanInfoDto>>> GetTopDouBanInfoAsync(int topNumber=50);
+        Task<KdyResult<List<GetTop50DouBanInfoDto>>> GetTopDouBanInfoAsync(int topNumber = 50);
+
+        /// <summary>
+        /// 查询豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<QueryDouBanInfoDto>>> QueryDouBanInfoAsync(QueryDouBanInfoInput input);
     }
 }

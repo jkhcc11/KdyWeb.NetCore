@@ -17,10 +17,10 @@ namespace KdyWeb.Repository.ImageSave
             _idGenerate = idGenerate;
         }
 
-        public override async Task CreateAsync(KdyImgSave entity)
+        public override async Task<KdyImgSave> CreateAsync(KdyImgSave entity)
         {
             entity.Id = _idGenerate.Create();
-            await base.CreateAsync(entity);
+            return await base.CreateAsync(entity);
         }
     }
 }

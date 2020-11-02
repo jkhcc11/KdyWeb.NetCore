@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +40,18 @@ namespace KdyWeb.Job.Controllers
         public async Task<IActionResult> GetTopDouBanInfoAsync(int top)
         {
             var result = await _douBanInfoService.GetTopDouBanInfoAsync(top);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 查询豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("query")]
+        public async Task<IActionResult> QueryDouBanInfoAsync([FromQuery] QueryDouBanInfoInput input)
+        {
+            var result = await _douBanInfoService.QueryDouBanInfoAsync(input);
             return Ok(result);
         }
     }

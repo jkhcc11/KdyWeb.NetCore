@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -10,6 +11,7 @@ using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.SearchVideo;
+using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
@@ -64,6 +66,7 @@ namespace KdyWeb.Service.SearchVideo
             //保存数据库
             dbDouBanInfo = douBanWebResult.Data.MapToExt<DouBanInfo>();
             await _douBanInfoRepository.CreateAsync(dbDouBanInfo);
+            await UnitOfWork.SaveChangesAsync();
 
             result = dbDouBanInfo.MapToExt<CreateForSubjectIdDto>();
             return KdyResult.Success(result);
@@ -81,6 +84,27 @@ namespace KdyWeb.Service.SearchVideo
                 .ToListAsync();
             var list = dbList.MapToExt<List<GetTop50DouBanInfoDto>>();
             return KdyResult.Success(list);
+        }
+
+        /// <summary>
+        /// 查询豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryDouBanInfoDto>>> QueryDouBanInfoAsync(QueryDouBanInfoInput input)
+        {
+            input.OrderBy ??= new List<KdyEfOrderConditions>()
+            {
+                new KdyEfOrderConditions()
+                {
+                    Key = nameof(DouBanInfo.CreatedTime),
+                    OrderBy = KdyEfOrderBy.Desc
+                }
+            };
+
+            var pageList = await _douBanInfoRepository.GetQuery()
+                .GetDtoPageListAsync<DouBanInfo, QueryDouBanInfoDto>(input);
+
+            return KdyResult.Success(pageList);
         }
     }
 }

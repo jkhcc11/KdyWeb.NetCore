@@ -6,17 +6,6 @@
     public class KdyEfOrderConditions
     {
         /// <summary>
-        /// 构造
-        /// </summary>
-        /// <param name="key">字段</param>
-        /// <param name="orderBy">排序</param>
-        public KdyEfOrderConditions(string key, KdyEfOrderBy orderBy)
-        {
-            Key = key;
-            OrderBy = orderBy;
-        }
-
-        /// <summary>
         /// 字段名称
         /// </summary>
         public string Key { get; set; }

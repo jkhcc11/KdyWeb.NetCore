@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AutoMapper.Configuration.Conventions;
 using KdyWeb.BaseInterface.BaseModel;
 
 namespace KdyWeb.Entity.SearchVideo
@@ -59,6 +60,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 名称
         /// </summary>
         [StringLength(VideoTitleLength)]
+        [Required]
         public string VideoTitle { get; set; }
 
         /// <summary>
@@ -90,6 +92,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 海报
         /// </summary>
         [StringLength(VideoImgLength)]
+        [Required]
         public string VideoImg { get; set; }
 
         /// <summary>
@@ -127,6 +130,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 详情Id
         /// </summary>
         [StringLength(VideoDetailIdLength)]
+        [Required]
         public string VideoDetailId { get; set; }
 
         /// <summary>

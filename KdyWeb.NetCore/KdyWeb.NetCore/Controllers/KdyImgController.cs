@@ -14,6 +14,7 @@ namespace KdyWeb.NetCore.Controllers
     /// 图床
     /// </summary>
     [Route("kdyImg")]
+    [AllowAnonymous]
     public class KdyImgController : Controller
     {
         private readonly IKdyImgSaveService _kdyImgSaveService;
@@ -29,14 +30,15 @@ namespace KdyWeb.NetCore.Controllers
 
         public async Task<IActionResult> Index(string url)
         {
-            if (string.IsNullOrEmpty(url))
-            {
-                await _douBanWebInfoService.GetInfoBySubjectId("111");
-                return Content("Url Is");
-            }
+            return Content("tttt");
+            //if (string.IsNullOrEmpty(url))
+            //{
+            //    await _douBanWebInfoService.GetInfoBySubjectId("111");
+            //    return Content("Url Is");
+            //}
 
-            var result = await _kdyImgSaveService.PostFileByUrl(url);
-            return Json(result);
+            //var result = await _kdyImgSaveService.PostFileByUrl(url);
+            //return Json(result);
         }
 
         /// <summary>
@@ -44,7 +46,6 @@ namespace KdyWeb.NetCore.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("init")]
-        [AllowAnonymous]
         public async Task<IActionResult> InitWebBo()
         {
             var result = await _weiBoFileService.GetLoginCookie();
@@ -55,7 +56,6 @@ namespace KdyWeb.NetCore.Controllers
         /// 获取图床图片
         /// </summary>
         /// <returns></returns>
-        [AllowAnonymous]
         [Route("path/{id}")]
         public async Task<IActionResult> GetImgAsync(long id)
         {
