@@ -22,7 +22,7 @@ namespace KdyWeb.Test
         [TestMethod]
         public async Task TestRollback()
         {
-            //第一步先引起异常
+            //第一步先引起异常 
             var dbDouBan = new DouBanInfo()
             {
                 VideoTitle = null,
