@@ -39,25 +39,25 @@ namespace KdyWeb.BaseInterface.Repository
         /// 更新
         /// </summary>
         /// <returns></returns>
-        Task<TEntity> UpdateAsync(TEntity entity);
+        TEntity Update(TEntity entity);
 
         /// <summary>
-        /// 更新
+        /// 批量更新
         /// </summary>
         /// <returns></returns>
-        Task UpdateAsync(List<TEntity> entity);
+        void Update(List<TEntity> entity);
 
         /// <summary>
         /// 软删除
         /// </summary>
         /// <returns></returns>
-        Task<int> DeleteAsync(TEntity entity);
+        void Delete(TEntity entity);
 
         /// <summary>
         /// 硬删除
         /// </summary>
         /// <returns></returns>
-        Task<int> DeleteAndRemoveAsync(TEntity entity);
+        void DeleteAndRemove(TEntity entity);
 
         /// <summary>
         /// 创建
