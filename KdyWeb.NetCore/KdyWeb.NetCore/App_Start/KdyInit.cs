@@ -6,7 +6,6 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
-using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Http;

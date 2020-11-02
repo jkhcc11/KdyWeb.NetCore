@@ -9,7 +9,6 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
@@ -63,8 +62,6 @@ namespace KdyWeb.Service.SearchVideo
 
             var dbFeedBack = input.MapToExt<FeedBackInfo>();
             await _kdyRepository.CreateAsync(dbFeedBack);
-            await UnitOfWork.SaveChangesAsync();
-
             return KdyResult.Success();
         }
 
@@ -85,11 +82,8 @@ namespace KdyWeb.Service.SearchVideo
             foreach (var item in dbList)
             {
                 item.FeedBackInfoStatus = input.FeedBackInfoStatus;
-              //  _kdyRepository.Update(item);
+                await _kdyRepository.UpdateAsync(item);
             }
-
-            _kdyRepository.Update(dbList);
-            await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success();
         }

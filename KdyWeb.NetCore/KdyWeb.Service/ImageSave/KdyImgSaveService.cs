@@ -96,7 +96,6 @@ namespace KdyWeb.Service.ImageSave
             }
 
             await _kdyImgSaveRepository.CreateAsync(dbImg);
-            await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
         }

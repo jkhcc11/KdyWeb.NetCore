@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.BaseInterface.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace KdyWeb.Repository
+namespace KdyWeb.BaseInterface.Repository
 {
     /// <summary>
     /// 基础仓储 抽象类
@@ -20,13 +20,18 @@ namespace KdyWeb.Repository
         where TKey : struct
     {
         /// <summary>
+        /// 数据库上下文
+        /// </summary>
+        private readonly DbContext _dbContext;
+        /// <summary>
         /// DbSet
         /// </summary>
         protected DbSet<TEntity> DbSet;
 
         protected KdyRepository(DbContext dbContext)
         {
-            DbSet = dbContext.Set<TEntity>();
+            _dbContext = dbContext;
+            DbSet = _dbContext.Set<TEntity>();
         }
 
         /// <summary>
@@ -69,10 +74,11 @@ namespace KdyWeb.Repository
         /// 更新
         /// </summary>
         /// <returns></returns>
-        public virtual TEntity Update(TEntity entity)
+        public virtual async Task<TEntity> UpdateAsync(TEntity entity)
         {
             entity.ModifyTime = DateTime.Now;
             DbSet.Update(entity);
+            await _dbContext.SaveChangesAsync();
             return entity;
         }
 
@@ -80,7 +86,7 @@ namespace KdyWeb.Repository
         /// 批量更新
         /// </summary>
         /// <returns></returns>
-        public virtual void Update(List<TEntity> entity)
+        public virtual async Task UpdateAsync(List<TEntity> entity)
         {
             foreach (var item in entity)
             {
@@ -88,27 +94,29 @@ namespace KdyWeb.Repository
             }
 
             DbSet.UpdateRange(entity);
+            await _dbContext.SaveChangesAsync();
         }
 
         /// <summary>
         /// 软删除
         /// </summary>
         /// <returns></returns>
-        public virtual void Delete(TEntity entity)
+        public virtual async Task<int> DeleteAsync(TEntity entity)
         {
             entity.ModifyTime = DateTime.Now;
             entity.IsDelete = true;
             DbSet.Update(entity);
+            return await _dbContext.SaveChangesAsync();
         }
 
         /// <summary>
         /// 硬删除
         /// </summary>
         /// <returns></returns>
-        public virtual void DeleteAndRemove(TEntity entity)
+        public virtual async Task<int> DeleteAndRemoveAsync(TEntity entity)
         {
             DbSet.Remove(entity);
-            //return await _dbContext.SaveChangesAsync();
+            return await _dbContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -119,7 +127,7 @@ namespace KdyWeb.Repository
         {
             entity.CreatedTime = DateTime.Now;
             await DbSet.AddAsync(entity);
-            //  await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return entity;
         }
 
@@ -135,7 +143,7 @@ namespace KdyWeb.Repository
             }
 
             await DbSet.AddRangeAsync(entity);
-            //   await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
     }
 
