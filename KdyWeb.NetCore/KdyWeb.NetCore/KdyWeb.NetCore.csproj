@@ -5,6 +5,10 @@
     <UserSecretsId>3720286c-bca9-4884-9c21-369265991444</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="App_Start\DesignTimeDbContextFactory.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <Folder Include="logs\" />

@@ -30,7 +30,7 @@ namespace KdyWeb.Test
                     string consulUrl = hostingContext.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
 
                     config.InitConfigCenter(hostingContext, consulUrl,
-                        $"KdyWeb.NetCore/appsettings.Development.json");
+                        $"KdyWeb.NetCore/appsettings.Test.json");
                 }).ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<TestStartup>();

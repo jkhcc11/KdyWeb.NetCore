@@ -1,6 +1,6 @@
 ﻿using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
-using Microsoft.EntityFrameworkCore;
+using KdyWeb.IRepository;
 
 namespace KdyWeb.Repository
 {
@@ -13,7 +13,7 @@ namespace KdyWeb.Repository
         where TEntity : class, IBaseKey<TKey>
         where TKey : struct
     {
-        public CommonRepository(DbContext dbContext) : base(dbContext)
+        public CommonRepository(IRwUnitOfWork rwUnitOfWork) : base(rwUnitOfWork)
         {
 
         }
@@ -26,7 +26,7 @@ namespace KdyWeb.Repository
     public class CommonRepository<TEntity> : KdyRepository<TEntity, int>, IKdyRepository<TEntity>
         where TEntity : class, IBaseKey<int>
     {
-        public CommonRepository(DbContext dbContext) : base(dbContext)
+        public CommonRepository(IRwUnitOfWork rwUnitOfWork) : base(rwUnitOfWork)
         {
 
         }

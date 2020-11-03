@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
+using KdyWeb.EntityFramework.ReadWrite;
+using KdyWeb.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Repository
@@ -23,10 +25,15 @@ namespace KdyWeb.Repository
         /// DbSet
         /// </summary>
         protected DbSet<TEntity> DbSet;
+        /// <summary>
+        /// 写库
+        /// </summary>
+        protected DbSet<TEntity> WriteDbSet;
 
-        protected KdyRepository(DbContext dbContext)
+        protected KdyRepository(IRwUnitOfWork unitOfWork)
         {
-            DbSet = dbContext.Set<TEntity>();
+            DbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Read).Set<TEntity>();
+            WriteDbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Write).Set<TEntity>();
         }
 
         /// <summary>
@@ -72,7 +79,7 @@ namespace KdyWeb.Repository
         public virtual TEntity Update(TEntity entity)
         {
             entity.ModifyTime = DateTime.Now;
-            DbSet.Update(entity);
+            WriteDbSet.Update(entity);
             return entity;
         }
 
@@ -87,7 +94,7 @@ namespace KdyWeb.Repository
                 item.ModifyTime = DateTime.Now;
             }
 
-            DbSet.UpdateRange(entity);
+            WriteDbSet.UpdateRange(entity);
         }
 
         /// <summary>
@@ -98,7 +105,7 @@ namespace KdyWeb.Repository
         {
             entity.ModifyTime = DateTime.Now;
             entity.IsDelete = true;
-            DbSet.Update(entity);
+            WriteDbSet.Update(entity);
         }
 
         /// <summary>
@@ -107,7 +114,7 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual void DeleteAndRemove(TEntity entity)
         {
-            DbSet.Remove(entity);
+            WriteDbSet.Remove(entity);
             //return await _dbContext.SaveChangesAsync();
         }
 
@@ -118,7 +125,7 @@ namespace KdyWeb.Repository
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
             entity.CreatedTime = DateTime.Now;
-            await DbSet.AddAsync(entity);
+            await WriteDbSet.AddAsync(entity);
             //  await _dbContext.SaveChangesAsync();
             return entity;
         }
@@ -134,7 +141,7 @@ namespace KdyWeb.Repository
                 item.CreatedTime = DateTime.Now;
             }
 
-            await DbSet.AddRangeAsync(entity);
+            await WriteDbSet.AddRangeAsync(entity);
             //   await _dbContext.SaveChangesAsync();
         }
     }

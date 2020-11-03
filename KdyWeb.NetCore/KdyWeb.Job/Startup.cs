@@ -12,6 +12,8 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
+using KdyWeb.EntityFramework.ReadWrite;
+using KdyWeb.IRepository;
 using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,13 +38,9 @@ namespace KdyWeb.Job
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<KdyContext>(options =>
-            {
-                var connectionStr = Configuration.GetConnectionString("WeChatDb");
-                options.UseSqlServer(connectionStr);
-            });
-            //todo: 必需注入此关系 后面仓储DbContext才可以使用
-            services.AddScoped<DbContext, KdyContext>();
+            //一主多从数据库
+            services.AddScoped<IRwContextFactory, RwContextFactory>();
+            services.AddScoped<IRwUnitOfWork, UnitOfWork>();
 
             services.KdyRegister();
 
