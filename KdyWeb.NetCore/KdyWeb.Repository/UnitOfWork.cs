@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using KdyWeb.BaseInterface.Repository;
+using KdyWeb.EntityFramework;
+using KdyWeb.EntityFramework.ReadWrite;
+using KdyWeb.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Repository
@@ -8,13 +10,15 @@ namespace KdyWeb.Repository
     /// <summary>
     /// 工作单元 实现
     /// </summary>
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IRwUnitOfWork
     {
         private readonly DbContext _dbContext;
+        private readonly DbContext _readDbContext;
 
-        public UnitOfWork(DbContext dbContext)
+        public UnitOfWork(IRwContextFactory contextFactory)
         {
-            _dbContext = dbContext;
+            _dbContext = new ReadWriteContext(contextFactory.GetDbContext(ReadWrite.Write));
+            _readDbContext = new ReadWriteContext(contextFactory.GetDbContext(ReadWrite.Read));
         }
 
         public int SaveChanges()
@@ -33,6 +37,16 @@ namespace KdyWeb.Repository
             _dbContext.ChangeTracker.Entries()
                 .Where(e => e.Entity != null).ToList()
                 .ForEach(e => e.State = EntityState.Detached);
+        }
+
+        public DbContext GetCurrentDbContext(ReadWrite rw)
+        {
+            if (rw == ReadWrite.Write)
+            {
+                return _dbContext;
+            }
+
+            return _readDbContext;
         }
     }
 }

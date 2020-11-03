@@ -4,17 +4,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.EntityFramework
 {
-
     /// <summary>
-    /// 公众号数据库上下文
+    /// 读写上写文
     /// </summary>
-    public class KdyContext : DbContext
+    public class ReadWriteContext : DbContext
     {
         /// <summary>
-        /// 注入使用的构造方法
+        /// 构造
         /// </summary>
-        /// <param name="options"></param>
-        public KdyContext(DbContextOptions<KdyContext> options) : base(options)
+        public ReadWriteContext(DbContextOptions<ReadWriteContext> options) : base(options)
         {
 
         }

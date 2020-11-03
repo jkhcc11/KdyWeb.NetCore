@@ -6,6 +6,8 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
+using KdyWeb.EntityFramework.ReadWrite;
+using KdyWeb.IRepository;
 using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -36,13 +38,16 @@ namespace KdyWeb.Test
             services.AddControllersWithViews(options =>
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
-            services.AddDbContextPool<KdyContext>(options =>
-            {
-                var connectionStr = Configuration.GetConnectionString("WeChatDb");
-                options.UseSqlServer(connectionStr);
-            });
+            //services.AddDbContextPool<KdyContext>(options =>
+            //{
+            //    var connectionStr = Configuration.GetConnectionString("WeChatDb");
+            //    options.UseSqlServer(connectionStr);
+            //});
             //todo: 必需注入此关系 后面仓储DbContext才可以使用
-            services.AddScoped<DbContext, KdyContext>();
+            //services.AddScoped<DbContext, KdyContext>();
+            services.AddScoped<IRwContextFactory, RwContextFactory>();
+            services.AddScoped<IRwUnitOfWork, UnitOfWork>();
+            //services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.KdyRegister();
 
@@ -83,7 +88,7 @@ namespace KdyWeb.Test
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-          
+
         }
     }
 }

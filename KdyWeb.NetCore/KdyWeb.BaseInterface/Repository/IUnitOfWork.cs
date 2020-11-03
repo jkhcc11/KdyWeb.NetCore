@@ -9,7 +9,7 @@ namespace KdyWeb.BaseInterface.Repository
     /// <remarks>
     /// 参考：https://www.cnblogs.com/xishuai/p/3750154.html
     /// </remarks>
-    public interface IUnitOfWork : IKdyScoped
+    public interface IUnitOfWork
     {
         /// <summary>
         /// 保存更改

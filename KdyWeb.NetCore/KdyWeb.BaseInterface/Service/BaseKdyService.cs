@@ -27,7 +27,7 @@ namespace KdyWeb.BaseInterface.Service
         {
             KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
-            UnitOfWork = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IUnitOfWork>();
+           // UnitOfWork = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IUnitOfWork>();
 
         }
 
