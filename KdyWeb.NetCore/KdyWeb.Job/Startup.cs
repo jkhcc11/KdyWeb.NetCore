@@ -14,9 +14,11 @@ using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
 using KdyWeb.EntityFramework.ReadWrite;
 using KdyWeb.IRepository;
+using KdyWeb.Job.JobService;
 using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +40,12 @@ namespace KdyWeb.Job
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //关闭ModelState自动校验
+            services.Configure<ApiBehaviorOptions>(option =>
+            {
+                option.SuppressModelStateInvalidFilter = true;
+            });
+
             //一主多从数据库
             services.AddScoped<IRwContextFactory, RwContextFactory>();
             services.AddScoped<IRwUnitOfWork, UnitOfWork>();
@@ -84,7 +92,10 @@ namespace KdyWeb.Job
             var entityAssembly = typeof(BaseEntity<>).Assembly;
             services.AddAutoMapper(dtoAssembly, entityAssembly);
 
-            services.AddControllers()
+            services.AddControllers(opt =>
+                {
+                    opt.Filters.Add<ModelStateValidFilter>();
+                })
                 .AddNewtonsoftJson(option =>
                 {
                     option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:ss:ss";

@@ -50,12 +50,18 @@ namespace KdyWeb.BaseInterface
                 return;
             }
 
-            //通过EndPoint获取Controller特性
-            var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
-            var source = endpoint?.DisplayName;
-            if (string.IsNullOrEmpty(source))
+            ////通过EndPoint获取Controller特性
+            //var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
+            //var source = endpoint?.DisplayName;
+            //if (string.IsNullOrEmpty(source))
+            //{
+            //    source = request.Path;
+            //}
+
+            if (request.Path.Value.Contains("/api/") == false)
             {
-                source = request.Path;
+                //非api不用记录
+                return;
             }
 
             //原始数据流
