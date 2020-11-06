@@ -1,5 +1,6 @@
 ﻿using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.Repository;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,8 +28,7 @@ namespace KdyWeb.BaseInterface.Service
         {
             KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
-           // UnitOfWork = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IUnitOfWork>();
-
+            UnitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
         }
 
     }

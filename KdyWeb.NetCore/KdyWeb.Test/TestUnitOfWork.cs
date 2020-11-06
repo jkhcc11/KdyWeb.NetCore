@@ -12,7 +12,7 @@ namespace KdyWeb.Test
     /// 工作单元 测试 
     /// </summary>
     [TestClass]
-    public class TestUnitOfWork : BaseTest<IRwUnitOfWork>
+    public class TestUnitOfWork : BaseTest<IUnitOfWork>
     {
         private readonly IKdyRepository<DouBanInfo, int> _douBanInfoRepository;
         private readonly IKdyRepository<FeedBackInfo, int> _feedBackRepository;

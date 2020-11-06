@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface.Repository;
 using KdyWeb.EntityFramework;
-using KdyWeb.EntityFramework.ReadWrite;
-using KdyWeb.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Repository
@@ -10,7 +9,7 @@ namespace KdyWeb.Repository
     /// <summary>
     /// 工作单元 实现
     /// </summary>
-    public class UnitOfWork : IRwUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly DbContext _dbContext;
         private readonly DbContext _readDbContext;

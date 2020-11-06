@@ -1,10 +1,7 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Entity;
-using KdyWeb.EntityFramework.ReadWrite;
-using KdyWeb.IRepository;
 using KdyWeb.IRepository.ImageSave;
-using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Repository.ImageSave
 {
@@ -14,7 +11,7 @@ namespace KdyWeb.Repository.ImageSave
     public class KdyImgSaveRepository : KdyRepository<KdyImgSave, long>, IKdyImgSaveRepository
     {
         private readonly IIdGenerate<long> _idGenerate;
-        public KdyImgSaveRepository(IRwUnitOfWork rwUnitOfWork, IIdGenerate<long> idGenerate) : base(rwUnitOfWork)
+        public KdyImgSaveRepository(IIdGenerate<long> idGenerate)
         {
             _idGenerate = idGenerate;
         }

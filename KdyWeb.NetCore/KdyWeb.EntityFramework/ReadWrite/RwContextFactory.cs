@@ -1,9 +1,10 @@
 ﻿using System;
+using KdyWeb.BaseInterface.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 
-namespace KdyWeb.EntityFramework.ReadWrite
+namespace KdyWeb.EntityFramework
 {
     /// <summary>
     /// 多数据库配置工厂 实现

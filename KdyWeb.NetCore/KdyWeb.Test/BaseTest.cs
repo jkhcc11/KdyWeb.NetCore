@@ -1,6 +1,7 @@
 ﻿using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -37,6 +38,7 @@ namespace KdyWeb.Test
                 }).Build();
             //全局DI容器
             KdyBaseServiceProvider.ServiceProvide = _host.Services;
+            KdyBaseServiceProvider.HttpContextAccessor = _host.Services.GetService<IHttpContextAccessor>();
 
             _service = _host.Services.GetService<TService>();
         }

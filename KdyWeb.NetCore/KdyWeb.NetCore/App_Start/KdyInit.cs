@@ -3,11 +3,11 @@ using AutoMapper;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.BaseInterface.LoginInfo;
 using KdyWeb.BaseInterface.Repository;
+using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
-using KdyWeb.EntityFramework.ReadWrite;
-using KdyWeb.IRepository;
 using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -34,10 +34,6 @@ namespace KdyWeb.NetCore
                 var connectionStr = configuration.GetConnectionString("WeChatDb");
                 options.UseSqlServer(connectionStr);
             });
-
-            //一主多从数据库
-            services.AddScoped<IRwContextFactory, RwContextFactory>();
-            services.AddScoped<IRwUnitOfWork, UnitOfWork>();
 
             services.KdyRegister();
 

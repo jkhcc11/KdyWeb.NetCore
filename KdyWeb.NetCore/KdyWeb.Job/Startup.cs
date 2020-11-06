@@ -12,14 +12,12 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
-using KdyWeb.EntityFramework.ReadWrite;
-using KdyWeb.IRepository;
 using KdyWeb.Job.JobService;
 using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -45,11 +43,6 @@ namespace KdyWeb.Job
             {
                 option.SuppressModelStateInvalidFilter = true;
             });
-
-            //一主多从数据库
-            services.AddScoped<IRwContextFactory, RwContextFactory>();
-            services.AddScoped<IRwUnitOfWork, UnitOfWork>();
-
             services.KdyRegister();
 
             //注入通用泛型仓储
@@ -139,6 +132,7 @@ namespace KdyWeb.Job
 
             //全局DI容器
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
+            KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             app.InitExceptionLess(Configuration);
         }
     }

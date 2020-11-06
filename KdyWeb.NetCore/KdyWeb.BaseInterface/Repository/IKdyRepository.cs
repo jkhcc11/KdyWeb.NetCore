@@ -13,7 +13,7 @@ namespace KdyWeb.BaseInterface.Repository
     /// </summary>
     /// <typeparam name="TEntity">实体类</typeparam>
     /// <typeparam name="TKey">主键</typeparam>
-    public interface IKdyRepository<TEntity, TKey> : IKdyScoped
+    public interface IKdyRepository<TEntity, TKey> : IKdyScoped, IDisposable
         where TEntity : class
         where TKey : struct
     {

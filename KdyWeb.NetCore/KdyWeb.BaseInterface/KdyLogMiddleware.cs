@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.BaseInterface.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -61,6 +62,7 @@ namespace KdyWeb.BaseInterface
             if (request.Path.Value.Contains("/api/") == false)
             {
                 //非api不用记录
+                await _next(context);
                 return;
             }
 
@@ -76,6 +78,7 @@ namespace KdyWeb.BaseInterface
             if (response.StatusCode >= 500 || (response.StatusCode >= 300 && response.StatusCode <= 400))
             {
                 //系统错误和跳转不要记录
+                await _next(context);
                 return;
             }
 
