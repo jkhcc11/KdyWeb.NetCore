@@ -36,5 +36,11 @@ namespace KdyWeb.IService.SearchVideo
         /// <param name="douBanInfoId">豆瓣信息Id</param>
         /// <returns></returns>
         Task<KdyResult<GetDouBanInfoForIdDto>> GetDouBanInfoForIdAsync(int douBanInfoId);
+
+        /// <summary>
+        /// 变更豆瓣信息状态
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> ChangeDouBanInfoStatusAsync(ChangeDouBanInfoStatusInput input);
     }
 }

@@ -123,5 +123,29 @@ namespace KdyWeb.Service.SearchVideo
             var result = dbDouBanInfo.MapToExt<GetDouBanInfoForIdDto>();
             return KdyResult.Success(result);
         }
+
+        /// <summary>
+        /// 变更豆瓣信息状态
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> ChangeDouBanInfoStatusAsync(ChangeDouBanInfoStatusInput input)
+        {
+            var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanInfoId);
+            if (dbDouBanInfo == null)
+            {
+                return KdyResult.Error<GetDouBanInfoForIdDto>(KdyResultCode.Error, "Id错误");
+            }
+
+            if (dbDouBanInfo.DouBanInfoStatus == DouBanInfoStatus.SearchEnd)
+            {
+                return KdyResult.Error<GetDouBanInfoForIdDto>(KdyResultCode.Error, "状态已完成，不能更改");
+            }
+
+            dbDouBanInfo.DouBanInfoStatus = input.DouBanInfoStatus;
+            _douBanInfoRepository.Update(dbDouBanInfo);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success();
+        }
     }
 }
