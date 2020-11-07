@@ -54,5 +54,16 @@ namespace KdyWeb.Job.Controllers
             var result = await _douBanInfoService.QueryDouBanInfoAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 获取豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("detail/{id}")]
+        public async Task<IActionResult> GetDouBanInfoForIdAsync(int id)
+        {
+            var result = await _douBanInfoService.GetDouBanInfoForIdAsync(id);
+            return Ok(result);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,6 +28,13 @@ namespace KdyWeb.Test.SearchVideo
         {
             var result = await _service.GetTopDouBanInfoAsync();
             Assert.IsTrue(result.IsSuccess);
+        }
+
+        [TestMethod]
+        public async Task TestGetDetail()
+        {
+            var result = await _service.GetDouBanInfoForIdAsync(14);
+            Assert.IsTrue(result.Data.Id > 0);
         }
     }
 }

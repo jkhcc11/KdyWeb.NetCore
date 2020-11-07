@@ -106,5 +106,22 @@ namespace KdyWeb.Service.SearchVideo
 
             return KdyResult.Success(pageList);
         }
+
+        /// <summary>
+        /// 获取豆瓣信息
+        /// </summary>
+        /// <param name="douBanInfoId">豆瓣信息Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult<GetDouBanInfoForIdDto>> GetDouBanInfoForIdAsync(int douBanInfoId)
+        {
+            var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == douBanInfoId);
+            if (dbDouBanInfo == null)
+            {
+                return KdyResult.Error<GetDouBanInfoForIdDto>(KdyResultCode.Error, "Id错误");
+            }
+
+            var result = dbDouBanInfo.MapToExt<GetDouBanInfoForIdDto>();
+            return KdyResult.Success(result);
+        }
     }
 }
