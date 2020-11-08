@@ -26,31 +26,13 @@ namespace KdyWeb.Entity.SearchVideo
         public const int UserNameLength = 50;
         #endregion
 
-        #region old
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="epId"></param>
         public UserHistory(long epId)
         {
             EpId = epId;
         }
-
-        /// <summary>
-        /// 旧 用户Id
-        /// </summary>
-        public int OldUserId { get; set; }
-
-        /// <summary>
-        /// 旧 主表主键Key
-        /// </summary>
-        public int OldKeyId { get; set; }
-
-        /// <summary>
-        /// 旧 剧集Key
-        /// </summary>
-        public int OldEpId { get; set; }
-        #endregion
 
         /// <summary>
         /// 主表主键Key
