@@ -1,6 +1,5 @@
 ﻿using System;
 using KdyWeb.BaseInterface.KdyRedis;
-using KdyWeb.BaseInterface.LoginInfo;
 using Microsoft.AspNetCore.Http;
 
 namespace KdyWeb.BaseInterface.Service
@@ -13,6 +12,7 @@ namespace KdyWeb.BaseInterface.Service
         private readonly IKdyRedisCache _kdyRedisCache;
         public LoginUserInfo(IHttpContextAccessor httpContextAccessor, IKdyRedisCache kdyRedisCache)
         {
+            UserId = 9999;
             _kdyRedisCache = kdyRedisCache;
             if (httpContextAccessor?.HttpContext == null)
             {
@@ -64,7 +64,7 @@ namespace KdyWeb.BaseInterface.Service
             {
                 UserId = userId;
             }
-          
+
         }
     }
 }

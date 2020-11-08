@@ -1,6 +1,6 @@
 ﻿using KdyWeb.BaseInterface.InterfaceFlag;
 
-namespace KdyWeb.BaseInterface.LoginInfo
+namespace KdyWeb.BaseInterface.Service
 {
     /// <summary>
     /// 登录信息 接口

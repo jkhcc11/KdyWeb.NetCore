@@ -1,4 +1,5 @@
 ﻿using KdyWeb.Entity.SearchVideo;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace KdyWeb.EntityFramework.Mapping
@@ -18,12 +19,14 @@ namespace KdyWeb.EntityFramework.Mapping
             //主->扩展
             builder.HasOne(a => a.VideoMainInfo)
                 .WithOne(a => a.VideoMain)
-                .HasForeignKey<VideoMainInfo>(a => a.MainId);
+                .HasForeignKey<VideoMainInfo>(a => a.MainId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //主->组
             builder.HasMany(a => a.EpisodeGroup)
                 .WithOne(a => a.VideoMain)
-                .HasForeignKey(a => a.MainId);
+                .HasForeignKey(a => a.MainId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

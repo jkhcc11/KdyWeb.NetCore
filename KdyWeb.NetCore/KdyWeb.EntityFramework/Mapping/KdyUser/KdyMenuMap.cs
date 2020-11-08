@@ -1,4 +1,5 @@
 ﻿using KdyWeb.Entity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace KdyWeb.EntityFramework.Mapping
@@ -12,7 +13,8 @@ namespace KdyWeb.EntityFramework.Mapping
         {
             builder.HasMany(a => a.KdyRoleMenus)
                 .WithOne(a => a.KdyMenu)
-                .HasForeignKey(a => a.MenuId);
+                .HasForeignKey(a => a.MenuId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

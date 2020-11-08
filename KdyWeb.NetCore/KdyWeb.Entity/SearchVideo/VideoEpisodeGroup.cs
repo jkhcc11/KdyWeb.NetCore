@@ -24,7 +24,7 @@ namespace KdyWeb.Entity.SearchVideo
         {
             GroupName = groupName;
             EpisodeGroupType = episodeGroupType;
-            MainId = mainId;
+           // MainId = mainId;
             EpisodeGroupStatus = EpisodeGroupStatus.Using;
         }
 

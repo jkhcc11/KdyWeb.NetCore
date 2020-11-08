@@ -21,7 +21,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <param name="episodeUrl">剧集Url</param>
         public VideoEpisode(long episodeGroupId, string episodeName, string episodeUrl)
         {
-            EpisodeGroupId = episodeGroupId;
+          //  EpisodeGroupId = episodeGroupId;
             EpisodeName = episodeName;
             EpisodeUrl = episodeUrl;
         }

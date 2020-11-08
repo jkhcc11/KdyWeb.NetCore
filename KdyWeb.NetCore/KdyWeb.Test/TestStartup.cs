@@ -43,8 +43,8 @@ namespace KdyWeb.Test
             //});
             //todo: 必需注入此关系 后面仓储DbContext才可以使用
             //services.AddScoped<DbContext, KdyContext>();
-            services.AddScoped<IRwContextFactory, RwContextFactory>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            //services.AddScoped<IRwContextFactory, RwContextFactory>();
+            //services.AddScoped<IUnitOfWork, UnitOfWork>();
             //services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.KdyRegister();

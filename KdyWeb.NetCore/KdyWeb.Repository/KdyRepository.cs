@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.BaseInterface.LoginInfo;
 using KdyWeb.BaseInterface.Repository;
+using KdyWeb.BaseInterface.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,18 +35,12 @@ namespace KdyWeb.Repository
         /// </summary>
         protected ILoginUserInfo LoginUserInfo;
 
-        /// <summary>
-        /// Id生成器
-        /// </summary>
-        private readonly IIdGenerate<TKey> IdGenerate;
-
         protected KdyRepository()
         {
             var unitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
             DbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Read).Set<TEntity>();
             WriteDbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Write).Set<TEntity>();
             LoginUserInfo = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<ILoginUserInfo>();
-            IdGenerate = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IIdGenerate<TKey>>();
         }
 
         /// <summary>
@@ -91,8 +85,6 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual TEntity Update(TEntity entity)
         {
-            entity.ModifyUserId = LoginUserInfo.UserId;
-            entity.ModifyTime = DateTime.Now;
             WriteDbSet.Update(entity);
             return entity;
         }
@@ -103,11 +95,11 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual void Update(List<TEntity> entity)
         {
-            foreach (var item in entity)
-            {
-                item.ModifyUserId = LoginUserInfo.UserId;
-                item.ModifyTime = DateTime.Now;
-            }
+            //foreach (var item in entity)
+            //{
+            //    item.ModifyUserId = LoginUserInfo.UserId;
+            //    // item.ModifyTime = DateTime.Now;
+            //}
 
             WriteDbSet.UpdateRange(entity);
         }
@@ -140,15 +132,8 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
-            if (typeof(TKey) == typeof(long) && IdGenerate != null)
-            {
-                entity.Id = IdGenerate.Create();
-            }
-
-            entity.CreatedUserId = LoginUserInfo.UserId;
-            entity.CreatedTime = DateTime.Now;
+           // entity.CreatedUserId = LoginUserInfo.UserId;
             await WriteDbSet.AddAsync(entity);
-            //  await _dbContext.SaveChangesAsync();
             return entity;
         }
 
@@ -158,14 +143,12 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public async Task CreateAsync(List<TEntity> entity)
         {
-            foreach (var item in entity)
-            {
-                item.CreatedUserId = LoginUserInfo.UserId;
-                item.CreatedTime = DateTime.Now;
-            }
+            //foreach (var item in entity)
+            //{
+            //    item.CreatedUserId = LoginUserInfo.UserId;
+            //}
 
             await WriteDbSet.AddRangeAsync(entity);
-            //   await _dbContext.SaveChangesAsync();
         }
 
         public void Dispose()

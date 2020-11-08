@@ -1,7 +1,5 @@
 ﻿using KdyWeb.BaseInterface.KdyLog;
-using KdyWeb.BaseInterface.LoginInfo;
 using KdyWeb.BaseInterface.Repository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
