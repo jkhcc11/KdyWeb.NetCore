@@ -1,4 +1,5 @@
 ﻿using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.BaseInterface.LoginInfo;
 using KdyWeb.BaseInterface.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -23,12 +24,17 @@ namespace KdyWeb.BaseInterface.Service
         /// 工作单元
         /// </summary>
         protected readonly IUnitOfWork UnitOfWork;
+        /// <summary>
+        /// 登录信息
+        /// </summary>
+        protected readonly ILoginUserInfo LoginUserInfo;
 
         protected BaseKdyService()
         {
             KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
             UnitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
+            LoginUserInfo = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<ILoginUserInfo>();
         }
 
     }

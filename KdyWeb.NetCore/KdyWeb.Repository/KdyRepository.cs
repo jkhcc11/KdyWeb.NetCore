@@ -35,12 +35,18 @@ namespace KdyWeb.Repository
         /// </summary>
         protected ILoginUserInfo LoginUserInfo;
 
+        /// <summary>
+        /// Id生成器
+        /// </summary>
+        private readonly IIdGenerate<TKey> IdGenerate;
+
         protected KdyRepository()
         {
             var unitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
             DbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Read).Set<TEntity>();
             WriteDbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Write).Set<TEntity>();
             LoginUserInfo = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<ILoginUserInfo>();
+            IdGenerate = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IIdGenerate<TKey>>();
         }
 
         /// <summary>
@@ -134,6 +140,11 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
+            if (typeof(TKey) == typeof(long) && IdGenerate != null)
+            {
+                entity.Id = IdGenerate.Create();
+            }
+
             entity.CreatedUserId = LoginUserInfo.UserId;
             entity.CreatedTime = DateTime.Now;
             await WriteDbSet.AddAsync(entity);

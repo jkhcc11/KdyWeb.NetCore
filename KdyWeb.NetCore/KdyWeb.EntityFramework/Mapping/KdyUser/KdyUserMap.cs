@@ -9,7 +9,7 @@ namespace KdyWeb.EntityFramework.Mapping
     /// <summary>
     /// 注册用户 Map
     /// </summary>
-    public class KdyUserMap : KdyBaseMap<KdyUser, int>
+    public class KdyUserMap : KdyBaseMap<KdyUser, long>
     {
         public override void MapperConfigure(EntityTypeBuilder<KdyUser> builder)
         {

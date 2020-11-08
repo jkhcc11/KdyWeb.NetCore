@@ -6,7 +6,7 @@ namespace KdyWeb.Entity
     /// <summary>
     /// 注册用户
     /// </summary>
-    public class KdyUser : BaseEntity<int>
+    public class KdyUser : BaseEntity<long>
     {
         #region 常量
         /// <summary>
