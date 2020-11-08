@@ -11,10 +11,16 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="mainId">影片主表Id</param>
-        public VideoMainInfo(long mainId)
+        /// <param name="videoGenres">影片类型 武侠，动作等</param>
+        /// <param name="videoCasts">主演</param>
+        /// <param name="videoDirectors">导演</param>
+        /// <param name="videoCountries">国家</param>
+        public VideoMainInfo(string videoGenres, string videoCasts, string videoDirectors, string videoCountries)
         {
-            MainId = mainId;
+            VideoGenres = videoGenres;
+            VideoCasts = videoCasts;
+            VideoDirectors = videoDirectors;
+            VideoCountries = videoCountries;
         }
 
         /// <summary>

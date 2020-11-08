@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto.SearchVideo;
 
 namespace KdyWeb.IService.SearchVideo
 {
@@ -10,9 +11,15 @@ namespace KdyWeb.IService.SearchVideo
     public interface IVideoMainService : IKdyService
     {
         /// <summary>
-        /// 创建影片信息
+        /// 通过豆瓣信息创建影片信息
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> CreateVideoInfoAsync();
+        Task<KdyResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input);
+
+        /// <summary>
+        /// 获取影片信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<GetVideoDetailDto>> GetVideoDetailAsync(long keyId);
     }
 }

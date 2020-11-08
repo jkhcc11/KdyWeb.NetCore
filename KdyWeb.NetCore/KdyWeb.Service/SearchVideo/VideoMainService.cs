@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
+using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.IService.SearchVideo
 {
@@ -13,52 +17,64 @@ namespace KdyWeb.IService.SearchVideo
     public class VideoMainService : BaseKdyService, IVideoMainService
     {
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
-        private readonly IKdyRepository<VideoEpisodeGroup, long> _videoEpisodeGroupRepository;
-        private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
+        private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
 
-        public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<VideoEpisode, long> videoEpisodeRepository)
+        public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository)
         {
             _videoMainRepository = videoMainRepository;
-            _videoEpisodeGroupRepository = videoEpisodeGroupRepository;
-            _videoEpisodeRepository = videoEpisodeRepository;
+            _douBanInfoRepository = douBanInfoRepository;
         }
 
-        public async Task<KdyResult> CreateVideoInfoAsync()
+        public async Task<KdyResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
         {
-            var dbVideoMain = new VideoMain(Subtype.Movie, "测试", "http://www.baidu.com", "systeminput", "systeminput")
+            //获取豆瓣信息
+            var douBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanInfoId);
+            if (douBanInfo == null)
             {
-                EpisodeGroup = new List<VideoEpisodeGroup>()
-                {
-                    new VideoEpisodeGroup(0, "测试组", EpisodeGroupType.VideoPlay)
-                    {
-                        Episodes = new List<VideoEpisode>()
-                        {
-                            new VideoEpisode(0, "极速", "http://www.baidu.com/1.m3u8"),
-                            new VideoEpisode(0, "极速1", "http://www.baidu.com/1.m3u8")
+                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息Id错误");
+            }
 
-                        }
+            var epName = input.EpisodeGroupType == EpisodeGroupType.VideoPlay ? "极速" : "点击下载";
+            //生成影片信息
+            var dbVideoMain = new VideoMain(douBanInfo.Subtype, douBanInfo.VideoTitle, douBanInfo.VideoImg, "systeminput", "systeminput");
+            dbVideoMain.ToVideoMain(douBanInfo);
+            dbVideoMain.EpisodeGroup = new List<VideoEpisodeGroup>()
+            {
+                new VideoEpisodeGroup(input.EpisodeGroupType,"默认组")
+                {
+                    Episodes = new List<VideoEpisode>()
+                    {
+                        new VideoEpisode(epName,input.EpUrl)
                     }
                 }
             };
-            dbVideoMain = await _videoMainRepository.CreateAsync(dbVideoMain);
+            dbVideoMain.IsMatchInfo = true;
+            dbVideoMain.IsEnd = true;
+            await _videoMainRepository.CreateAsync(dbVideoMain);
+
+            douBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
+            _douBanInfoRepository.Update(douBanInfo);
 
             await UnitOfWork.SaveChangesAsync();
 
-            await Task.Delay(5000);
-
-            // var dbMain = await _videoMainRepository.FirstOrDefaultAsync(a => a.Id == dbVideoMain.Id);
-
-            dbVideoMain.OrderBy = 6;
-            _videoMainRepository.Update(dbVideoMain);
-
-            //dbVideoMain = await _videoMainRepository.CreateAsync(dbVideoMain);
-            //var dbVideoEpGroup = new VideoEpisodeGroup(dbVideoMain.Id, "测试组", EpisodeGroupType.VideoPlay);
-            //dbVideoEpGroup = await _videoEpisodeGroupRepository.CreateAsync(dbVideoEpGroup);
-            //var dbEp = new VideoEpisode(dbVideoEpGroup.Id, "极速", "http://www.baidu.com/1.m3u8");
-            //dbEp = await _videoEpisodeRepository.CreateAsync(dbEp);
-
-            await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
+        }
+
+        public async Task<KdyResult<GetVideoDetailDto>> GetVideoDetailAsync(long keyId)
+        {
+            var main = await _videoMainRepository.GetAsNoTracking()
+                .Include(a => a.VideoMainInfo)
+                .Include(a => a.EpisodeGroup)
+                .ThenInclude(a => a.Episodes)
+                .Where(a => a.Id == keyId)
+                .FirstOrDefaultAsync();
+            if (main == null)
+            {
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "keyId错误");
+            }
+
+            var result = main.MapToExt<GetVideoDetailDto>();
+            return KdyResult.Success(result);
         }
     }
 }

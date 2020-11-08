@@ -16,12 +16,10 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="episodeGroupId">剧集组Id</param>
         /// <param name="episodeName">剧集名</param>
         /// <param name="episodeUrl">剧集Url</param>
-        public VideoEpisode(long episodeGroupId, string episodeName, string episodeUrl)
+        public VideoEpisode(string episodeName, string episodeUrl)
         {
-          //  EpisodeGroupId = episodeGroupId;
             EpisodeName = episodeName;
             EpisodeUrl = episodeUrl;
         }

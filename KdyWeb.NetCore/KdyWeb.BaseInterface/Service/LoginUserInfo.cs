@@ -12,7 +12,6 @@ namespace KdyWeb.BaseInterface.Service
         private readonly IKdyRedisCache _kdyRedisCache;
         public LoginUserInfo(IHttpContextAccessor httpContextAccessor, IKdyRedisCache kdyRedisCache)
         {
-            UserId = 9999;
             _kdyRedisCache = kdyRedisCache;
             if (httpContextAccessor?.HttpContext == null)
             {

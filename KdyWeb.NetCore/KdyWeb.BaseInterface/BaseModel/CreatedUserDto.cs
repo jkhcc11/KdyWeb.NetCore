@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface.BaseModel
 {
@@ -10,6 +11,7 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 主键
         /// </summary>
+        [JsonConverter(typeof(JsonConverterLong))]
         public TKey Id { get; set; }
 
         /// <summary>

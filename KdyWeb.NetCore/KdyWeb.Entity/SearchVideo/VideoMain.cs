@@ -135,4 +135,25 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         public virtual ICollection<VideoEpisodeGroup> EpisodeGroup { get; set; }
     }
+
+    /// <summary>
+    /// 影片主表扩展
+    /// </summary>
+    public static class VideoMainExt
+    {
+        /// <summary>
+        /// 豆瓣信息->影片主表
+        /// </summary>
+        public static void ToVideoMain(this VideoMain videoMain, DouBanInfo douBanInfo)
+        {
+            videoMain.Aka = douBanInfo.Aka;
+            videoMain.VideoDouBan = douBanInfo.VideoRating;
+            videoMain.VideoYear = douBanInfo.VideoYear;
+            videoMain.VideoInfoUrl = $"//movie.douban.com/subject/{douBanInfo.VideoDetailId}/";
+            videoMain.VideoMainInfo = new VideoMainInfo(douBanInfo.VideoGenres, douBanInfo.VideoCasts, douBanInfo.VideoDirectors, douBanInfo.VideoCountries)
+            {
+                VideoSummary = douBanInfo.VideoSummary
+            };
+        }
+    }
 }

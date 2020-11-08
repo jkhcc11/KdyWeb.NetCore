@@ -24,6 +24,12 @@ namespace KdyWeb.BaseInterface.Repository
         IQueryable<TEntity> GetQuery();
 
         /// <summary>
+        /// 未跟踪查询
+        /// </summary>
+        /// <returns></returns>
+        IQueryable<TEntity> GetAsNoTracking();
+
+        /// <summary>
         /// 获取单个
         /// </summary>
         /// <returns></returns>

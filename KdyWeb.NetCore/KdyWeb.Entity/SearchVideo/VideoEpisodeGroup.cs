@@ -19,12 +19,10 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         /// <param name="groupName">组名</param>
         /// <param name="episodeGroupType">组类型</param>
-        /// <param name="mainId">影片主表Id</param>
-        public VideoEpisodeGroup(long mainId, string groupName, EpisodeGroupType episodeGroupType)
+        public VideoEpisodeGroup(EpisodeGroupType episodeGroupType, string groupName)
         {
             GroupName = groupName;
             EpisodeGroupType = episodeGroupType;
-           // MainId = mainId;
             EpisodeGroupStatus = EpisodeGroupStatus.Using;
         }
 
