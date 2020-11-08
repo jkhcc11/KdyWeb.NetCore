@@ -4,14 +4,16 @@ using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    partial class ReadWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20201107142928_userHistory")]
+    partial class userHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -567,231 +569,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.ToTable("UserHistory");
                 });
 
-            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoEpisode", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("EpisodeGroupId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("EpisodeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(80)")
-                        .HasMaxLength(80);
-
-                    b.Property<string>("EpisodeUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(280)")
-                        .HasMaxLength(280);
-
-                    b.Property<bool>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifyTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderBy")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EpisodeGroupId");
-
-                    b.ToTable("VideoEpisode");
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoEpisodeGroup", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
-
-                    b.Property<byte>("EpisodeGroupStatus")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("EpisodeGroupType")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("GroupName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.Property<bool>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<long>("MainId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("ModifyTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MainId");
-
-                    b.ToTable("VideoEpisodeGroup");
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoMain", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Aka")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("IsEnd")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsMatchInfo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("KeyWord")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<DateTime?>("ModifyTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderBy")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SourceUrl")
-                        .HasColumnType("nvarchar(280)")
-                        .HasMaxLength(280);
-
-                    b.Property<byte>("Subtype")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("VideoContentFeature")
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
-
-                    b.Property<double>("VideoDouBan")
-                        .HasColumnType("float");
-
-                    b.Property<string>("VideoImg")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("VideoInfoUrl")
-                        .HasColumnType("nvarchar(280)")
-                        .HasMaxLength(280);
-
-                    b.Property<byte>("VideoMainStatus")
-                        .HasColumnType("tinyint");
-
-                    b.Property<int>("VideoYear")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VideoMain");
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoMainInfo", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("BanVideoJumpUrl")
-                        .HasColumnType("nvarchar(280)")
-                        .HasMaxLength(280);
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<long>("MainId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("ModifyTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NarrateUrl")
-                        .HasColumnType("nvarchar(280)")
-                        .HasMaxLength(280);
-
-                    b.Property<string>("VideoCasts")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("VideoCountries")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("VideoDirectors")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("VideoGenres")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("VideoSummary")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MainId")
-                        .IsUnique();
-
-                    b.ToTable("VideoMainInfo");
-                });
-
             modelBuilder.Entity("KdyWeb.Entity.KdyRoleMenu", b =>
                 {
                     b.HasOne("KdyWeb.Entity.KdyMenu", "KdyMenu")
@@ -812,33 +589,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasOne("KdyWeb.Entity.KdyRole", "KdyRole")
                         .WithMany("KdyUsers")
                         .HasForeignKey("KdyRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoEpisode", b =>
-                {
-                    b.HasOne("KdyWeb.Entity.SearchVideo.VideoEpisodeGroup", "VideoEpisodeGroup")
-                        .WithMany("Episodes")
-                        .HasForeignKey("EpisodeGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoEpisodeGroup", b =>
-                {
-                    b.HasOne("KdyWeb.Entity.SearchVideo.VideoMain", "VideoMain")
-                        .WithMany("EpisodeGroup")
-                        .HasForeignKey("MainId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoMainInfo", b =>
-                {
-                    b.HasOne("KdyWeb.Entity.SearchVideo.VideoMain", "VideoMain")
-                        .WithOne("VideoMainInfo")
-                        .HasForeignKey("KdyWeb.Entity.SearchVideo.VideoMainInfo", "MainId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
