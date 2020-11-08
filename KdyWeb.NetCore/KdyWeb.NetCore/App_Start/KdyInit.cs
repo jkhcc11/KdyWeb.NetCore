@@ -27,13 +27,11 @@ namespace KdyWeb.NetCore
         /// </summary>
         public static void KdyRegisterInit(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContextPool<KdyContext>(options =>
+            services.AddDbContext<ReadWriteContext>(options =>
             {
                 var connectionStr = configuration.GetConnectionString("WeChatDb");
                 options.UseSqlServer(connectionStr);
             });
-            //todo: 必需注入此关系 后面仓储DbContext才可以使用
-            services.AddScoped<DbContext, KdyContext>();
 
             services.KdyRegister();
 

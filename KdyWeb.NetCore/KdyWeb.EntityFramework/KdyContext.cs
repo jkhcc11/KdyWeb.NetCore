@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.EntityFramework

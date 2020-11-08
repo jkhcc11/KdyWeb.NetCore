@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
+using KdyWeb.BaseInterface.Service;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KdyWeb.Repository
 {
@@ -23,10 +26,21 @@ namespace KdyWeb.Repository
         /// DbSet
         /// </summary>
         protected DbSet<TEntity> DbSet;
+        /// <summary>
+        /// 写库
+        /// </summary>
+        protected DbSet<TEntity> WriteDbSet;
+        /// <summary>
+        /// 用户登录信息
+        /// </summary>
+        protected ILoginUserInfo LoginUserInfo;
 
-        protected KdyRepository(DbContext dbContext)
+        protected KdyRepository()
         {
-            DbSet = dbContext.Set<TEntity>();
+            var unitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
+            DbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Read).Set<TEntity>();
+            WriteDbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Write).Set<TEntity>();
+            LoginUserInfo = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<ILoginUserInfo>();
         }
 
         /// <summary>
@@ -71,8 +85,7 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual TEntity Update(TEntity entity)
         {
-            entity.ModifyTime = DateTime.Now;
-            DbSet.Update(entity);
+            WriteDbSet.Update(entity);
             return entity;
         }
 
@@ -82,12 +95,13 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual void Update(List<TEntity> entity)
         {
-            foreach (var item in entity)
-            {
-                item.ModifyTime = DateTime.Now;
-            }
+            //foreach (var item in entity)
+            //{
+            //    item.ModifyUserId = LoginUserInfo.UserId;
+            //    // item.ModifyTime = DateTime.Now;
+            //}
 
-            DbSet.UpdateRange(entity);
+            WriteDbSet.UpdateRange(entity);
         }
 
         /// <summary>
@@ -96,9 +110,10 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual void Delete(TEntity entity)
         {
+            entity.ModifyUserId = LoginUserInfo.UserId;
             entity.ModifyTime = DateTime.Now;
             entity.IsDelete = true;
-            DbSet.Update(entity);
+            WriteDbSet.Update(entity);
         }
 
         /// <summary>
@@ -107,7 +122,7 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual void DeleteAndRemove(TEntity entity)
         {
-            DbSet.Remove(entity);
+            WriteDbSet.Remove(entity);
             //return await _dbContext.SaveChangesAsync();
         }
 
@@ -117,9 +132,8 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
-            entity.CreatedTime = DateTime.Now;
-            await DbSet.AddAsync(entity);
-            //  await _dbContext.SaveChangesAsync();
+           // entity.CreatedUserId = LoginUserInfo.UserId;
+            await WriteDbSet.AddAsync(entity);
             return entity;
         }
 
@@ -129,13 +143,17 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public async Task CreateAsync(List<TEntity> entity)
         {
-            foreach (var item in entity)
-            {
-                item.CreatedTime = DateTime.Now;
-            }
+            //foreach (var item in entity)
+            //{
+            //    item.CreatedUserId = LoginUserInfo.UserId;
+            //}
 
-            await DbSet.AddRangeAsync(entity);
-            //   await _dbContext.SaveChangesAsync();
+            await WriteDbSet.AddRangeAsync(entity);
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
     }
 

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.BaseInterface.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -50,12 +51,19 @@ namespace KdyWeb.BaseInterface
                 return;
             }
 
-            //通过EndPoint获取Controller特性
-            var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
-            var source = endpoint?.DisplayName;
-            if (string.IsNullOrEmpty(source))
+            ////通过EndPoint获取Controller特性
+            //var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
+            //var source = endpoint?.DisplayName;
+            //if (string.IsNullOrEmpty(source))
+            //{
+            //    source = request.Path;
+            //}
+
+            if (request.Path.Value.Contains("/api/") == false)
             {
-                source = request.Path;
+                //非api不用记录
+                await _next(context);
+                return;
             }
 
             //原始数据流
@@ -67,9 +75,10 @@ namespace KdyWeb.BaseInterface
             //执行其他
             await _next(context);
 
-            if (response.StatusCode > 500 || (response.StatusCode > 300 && response.StatusCode < 400))
+            if (response.StatusCode >= 500 || (response.StatusCode >= 300 && response.StatusCode <= 400))
             {
                 //系统错误和跳转不要记录
+                await _next(context);
                 return;
             }
 

@@ -12,10 +12,12 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
+using KdyWeb.Job.JobService;
 using KdyWeb.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -36,14 +38,11 @@ namespace KdyWeb.Job
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<KdyContext>(options =>
+            //关闭ModelState自动校验
+            services.Configure<ApiBehaviorOptions>(option =>
             {
-                var connectionStr = Configuration.GetConnectionString("WeChatDb");
-                options.UseSqlServer(connectionStr);
+                option.SuppressModelStateInvalidFilter = true;
             });
-            //todo: 必需注入此关系 后面仓储DbContext才可以使用
-            services.AddScoped<DbContext, KdyContext>();
-
             services.KdyRegister();
 
             //注入通用泛型仓储
@@ -86,7 +85,10 @@ namespace KdyWeb.Job
             var entityAssembly = typeof(BaseEntity<>).Assembly;
             services.AddAutoMapper(dtoAssembly, entityAssembly);
 
-            services.AddControllers()
+            services.AddControllers(opt =>
+                {
+                    opt.Filters.Add<ModelStateValidFilter>();
+                })
                 .AddNewtonsoftJson(option =>
                 {
                     option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:ss:ss";
@@ -130,6 +132,7 @@ namespace KdyWeb.Job
 
             //全局DI容器
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
+            KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             app.InitExceptionLess(Configuration);
         }
     }

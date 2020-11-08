@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.InterfaceFlag;
+using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.BaseInterface.Repository
 {
@@ -27,5 +28,27 @@ namespace KdyWeb.BaseInterface.Repository
         /// 放弃所有更改
         /// </summary>
         void UnchangedAll();
+
+        /// <summary>
+        /// 获取当前数据库上下文
+        /// </summary>
+        /// <returns></returns>
+        DbContext GetCurrentDbContext(ReadWrite rw);
+    }
+
+    /// <summary>
+    /// 读写
+    /// </summary>
+    public enum ReadWrite
+    {
+        /// <summary>
+        /// 读
+        /// </summary>
+        Read,
+
+        /// <summary>
+        /// 写
+        /// </summary>
+        Write
     }
 }
