@@ -9,6 +9,6 @@ namespace KdyWeb.IService.OldMigration
     /// </summary>
     public interface IOldSysMainService : IKdyService
     {
-        Task<KdyResult> OldToNew();
+        Task<KdyResult> OldToNew(int page, int pageSize);
     }
 }

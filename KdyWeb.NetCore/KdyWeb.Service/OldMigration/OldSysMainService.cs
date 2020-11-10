@@ -25,13 +25,20 @@ namespace KdyWeb.Service.OldMigration
             _videoMainRepository = videoMainRepository;
         }
 
-        public async Task<KdyResult> OldToNew()
+        public async Task<KdyResult> OldToNew(int page, int pageSize)
         {
+            var skip = (page - 1) * pageSize;
+
             var main = await _mainRepository.GetQuery()
                 .Include(a => a.Episodes)
                 .OrderByDescending(a => a.CreatedTime)
-                .Take(10)
+                .Skip(skip)
+                .Take(pageSize)
                 .ToListAsync();
+            if (main.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无数据");
+            }
 
             var newDb = new List<VideoMain>();
             foreach (var item in main)
@@ -89,7 +96,19 @@ namespace KdyWeb.Service.OldMigration
                 newDb.Add(dbVideoMain);
             }
 
-            await _videoMainRepository.CreateAsync(newDb);
+            //待添加的旧值
+            var oldKeyIds = newDb.Select(a => a.OldKeyId).ToList();
+            //数据库已存在的旧值
+            var dbOldKeyIds = await _videoMainRepository.GetQuery()
+                .Where(a => oldKeyIds.Contains(a.OldKeyId))
+                .Select(a => a.OldKeyId)
+                .ToListAsync();
+
+            var newAddDb = newDb.Where(a => dbOldKeyIds.Contains(a.OldKeyId) == false)
+                .ToList();
+
+            await _videoMainRepository.CreateAsync(newAddDb);
+            await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }
     }
