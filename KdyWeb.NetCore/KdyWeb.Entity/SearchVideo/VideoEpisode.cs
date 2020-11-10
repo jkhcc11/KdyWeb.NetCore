@@ -54,6 +54,11 @@ namespace KdyWeb.Entity.SearchVideo
         public long EpisodeGroupId { get; set; }
 
         /// <summary>
+        /// 旧剧集Id
+        /// </summary>
+        public int OldEpId { get; set; }
+
+        /// <summary>
         /// 剧集组
         /// </summary>
         public virtual VideoEpisodeGroup VideoEpisodeGroup { get; set; }

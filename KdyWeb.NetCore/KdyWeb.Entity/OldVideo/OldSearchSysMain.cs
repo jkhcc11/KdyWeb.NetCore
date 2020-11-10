@@ -1,15 +1,13 @@
-﻿namespace KdyWeb.Entity.OldVideo
+﻿using System.Collections.Generic;
+using KdyWeb.BaseInterface.BaseModel;
+
+namespace KdyWeb.Entity.OldVideo
 {
     /// <summary>
     /// 旧版影视主 
     /// </summary>
-    public class OldSearchSysMain
+    public class OldSearchSysMain : BaseEntity<int>
     {
-        /// <summary>
-        /// 主键Id
-        /// </summary>
-        public int KeyId { get; set; }
-
         /// <summary>
         /// 视频类型 动作、犯罪
         /// </summary>
@@ -20,10 +18,10 @@
         /// </summary>
         public string MovieType { get; set; }
 
-        /// <summary>
-        /// 排序
-        /// </summary>
-        public int SearchIndex { get; set; }
+        ///// <summary>
+        ///// 排序
+        ///// </summary>
+        //public int SearchIndex { get; set; }
 
         /// <summary>
         /// 是否完结
@@ -76,9 +74,9 @@
         public string VideoCasts { get; set; }
 
         /// <summary>
-        /// 状态 0 正常 1禁用 2登录
+        /// 状态 0 正常 1禁用 2登录 3
         /// </summary>
-        public int VideoStatus { get; set; }
+        public int? VideoStatus { get; set; }
 
         /// <summary>
         /// 导演
@@ -104,5 +102,7 @@
         /// 版权Url
         /// </summary>
         public string BanVideoJumpUrl { get; set; }
+
+        public virtual ICollection<OldSearchSysEpisode> Episodes { get; set; }
     }
 }

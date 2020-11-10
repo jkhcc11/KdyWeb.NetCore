@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Entity.OldVideo;
 
 namespace KdyWeb.Entity.SearchVideo
 {
@@ -126,6 +127,11 @@ namespace KdyWeb.Entity.SearchVideo
         public string VideoInfoUrl { get; set; }
 
         /// <summary>
+        /// 旧KeyId
+        /// </summary>
+        public int OldKeyId { get; set; }
+
+        /// <summary>
         /// 影片主表 扩展信息
         /// </summary>
         public virtual VideoMainInfo VideoMainInfo { get; set; }
@@ -154,6 +160,22 @@ namespace KdyWeb.Entity.SearchVideo
             {
                 VideoSummary = douBanInfo.VideoSummary
             };
+        }
+
+        /// <summary>
+        /// 旧影视->影片主表
+        /// </summary>
+        public static void ToVideoMain(this VideoMain videoMain, OldSearchSysMain oldSearchSysMain)
+        {
+            //videoMain.Aka = douBanInfo.Aka;
+            videoMain.VideoDouBan = oldSearchSysMain.VideoDouBan;
+            videoMain.VideoYear = oldSearchSysMain.VideoYear;
+            videoMain.VideoInfoUrl = oldSearchSysMain.VideoDetail;
+            videoMain.VideoMainInfo = new VideoMainInfo(oldSearchSysMain.VideoType, oldSearchSysMain.VideoCasts, oldSearchSysMain.VideoDirectors, oldSearchSysMain.VideoCountries)
+            {
+                VideoSummary = oldSearchSysMain.VideoDescribe
+            };
+            videoMain.OldKeyId = oldSearchSysMain.Id;
         }
     }
 }

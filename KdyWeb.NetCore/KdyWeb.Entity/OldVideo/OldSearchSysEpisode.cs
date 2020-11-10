@@ -1,19 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using KdyWeb.BaseInterface.BaseModel;
 
 namespace KdyWeb.Entity.OldVideo
 {
     /// <summary>
     /// 旧版剧集
     /// </summary>
-    public class OldSearchSysEpisode
+    public class OldSearchSysEpisode : BaseEntity<int>
     {
-        /// <summary>
-        /// 剧集Id
-        /// </summary>
-        [Required]
-        [Key]
-        public int EpId { get; set; }
-
         /// <summary>
         /// 主键Id
         /// </summary>
@@ -29,5 +24,7 @@ namespace KdyWeb.Entity.OldVideo
         /// 剧集名
         /// </summary>
         public string EpisodeName { get; set; }
+
+        public virtual OldSearchSysMain Main { get; set; }
     }
 }
