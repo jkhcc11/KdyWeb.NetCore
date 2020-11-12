@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.Dto.Job;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.OldMigration;
+using KdyWeb.Service.Job;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers
@@ -24,42 +27,24 @@ namespace KdyWeb.Job.Controllers
         /// 开始迁移
         /// </summary>
         /// <returns></returns>
-        [HttpGet("start")]
-        public IActionResult OldToNew()
+        [HttpGet("start/{maxPage}")]
+        public async Task<IActionResult> OldToNew(int maxPage)
         {
-            Task.Factory.StartNew(async () =>
+            if (maxPage <= 0 || maxPage >= 200)
             {
-                int page = 1, pageSize = 300;
-                while (true)
-                {
-                    try
-                    {
-                        var migration = await _oldSysMainService.OldToNew(page, pageSize);
-                        if (migration.IsSuccess == false)
-                        {
-                            _kdyLog.Warn($"迁移出错，page:{page},pageSize{pageSize}");
-                            break;
-                        }
-                        _kdyLog.Trace($"迁移成功，page:{page},pageSize{pageSize}");
+                maxPage = 1;
+            }
 
-                    }
-                    catch (Exception ex)
-                    {
-                        _kdyLog.Error(ex, new Dictionary<string, object>()
-                        {
-                            {"OldMigration",$"page:{page},PageSize:{pageSize}"}
-                        });
+            int page = 1, pageSize = 300;
+            while (page < maxPage)
+            {
+                var jobInput = new OldMigrationJobInput(page, pageSize);
+                BackgroundJob.Enqueue<OldMigrationJobService>(a => a.ExecuteAsync(jobInput));
 
-                    }
-                    finally
-                    {
-                        page++;
-                        await Task.Delay(60000);
-                    }
-                }
+                page++;
+                await Task.Delay(500);
+            }
 
-                _kdyLog.Trace($"迁移完成，page:{page},pageSize{pageSize}");
-            });
             return Ok("后台任务运行中");
         }
 

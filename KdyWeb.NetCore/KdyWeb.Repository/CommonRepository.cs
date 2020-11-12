@@ -11,6 +11,9 @@ namespace KdyWeb.Repository
         where TEntity : class, IBaseKey<TKey>
         where TKey : struct
     {
+        public CommonRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
     }
 
     /// <summary>
@@ -20,5 +23,8 @@ namespace KdyWeb.Repository
     public class CommonRepository<TEntity> : KdyRepository<TEntity, int>, IKdyRepository<TEntity>
         where TEntity : class, IBaseKey<int>
     {
+        public CommonRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
     }
 }

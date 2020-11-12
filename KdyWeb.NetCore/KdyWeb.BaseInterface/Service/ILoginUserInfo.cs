@@ -5,7 +5,7 @@ namespace KdyWeb.BaseInterface.Service
     /// <summary>
     /// 登录信息 接口
     /// </summary>
-    public interface ILoginUserInfo : IKdyScoped
+    public interface ILoginUserInfo : IKdySingleton
     {
         /// <summary>
         /// 浏览器Agent

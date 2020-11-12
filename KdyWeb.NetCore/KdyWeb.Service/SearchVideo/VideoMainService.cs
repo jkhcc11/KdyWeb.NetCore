@@ -19,7 +19,8 @@ namespace KdyWeb.IService.SearchVideo
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
         private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
 
-        public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository)
+        public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository, IUnitOfWork unitOfWork) :
+            base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
             _douBanInfoRepository = douBanInfoRepository;

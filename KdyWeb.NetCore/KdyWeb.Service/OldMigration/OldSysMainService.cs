@@ -19,7 +19,8 @@ namespace KdyWeb.Service.OldMigration
         private readonly IKdyRepository<OldSearchSysMain, int> _mainRepository;
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
 
-        public OldSysMainService(IKdyRepository<OldSearchSysMain, int> mainRepository, IKdyRepository<VideoMain, long> videoMainRepository)
+        public OldSysMainService(IKdyRepository<OldSearchSysMain, int> mainRepository, IKdyRepository<VideoMain, long> videoMainRepository, 
+            IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _mainRepository = mainRepository;
             _videoMainRepository = videoMainRepository;
@@ -107,8 +108,12 @@ namespace KdyWeb.Service.OldMigration
             var newAddDb = newDb.Where(a => dbOldKeyIds.Contains(a.OldKeyId) == false)
                 .ToList();
 
-            await _videoMainRepository.CreateAsync(newAddDb);
-            await UnitOfWork.SaveChangesAsync();
+            if (newAddDb.Any())
+            {
+                await _videoMainRepository.CreateAsync(newAddDb);
+                await UnitOfWork.SaveChangesAsync();
+            }
+
             return KdyResult.Success();
         }
     }

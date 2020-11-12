@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.Message;
 using KdyWeb.IService.Message;
@@ -19,6 +20,10 @@ namespace KdyWeb.Service.Message
     /// </summary>
     public class SendEmailService : BaseKdyService, ISendEmailService
     {
+        public SendEmailService(IUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
+
         /// <summary>
         /// 发送Email
         /// </summary>
@@ -69,5 +74,6 @@ namespace KdyWeb.Service.Message
                 return KdyResult.Error(KdyResultCode.Error, $"发送邮件异常,{ex.Message}");
             }
         }
+
     }
 }

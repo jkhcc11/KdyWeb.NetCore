@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Entity;
@@ -33,7 +34,7 @@ namespace KdyWeb.Service.ImageSave
         private const string bucketName = "kdyimg";
 
         public KdyImgSaveService(IKdyImgSaveRepository kdyImgSaveRepository, IMemoryCache memoryCache, IMinIoFileService minIoFileService,
-            IWeiBoFileService weiBoFileService, INormalFileService normalFileService)
+            IWeiBoFileService weiBoFileService, INormalFileService normalFileService, IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _kdyImgSaveRepository = kdyImgSaveRepository;
             _memoryCache = memoryCache;

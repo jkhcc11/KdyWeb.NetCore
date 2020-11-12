@@ -16,7 +16,7 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
 
-        public UserHistoryService(IKdyRepository<UserHistory, long> userHistoryRepository)
+        public UserHistoryService(IKdyRepository<UserHistory, long> userHistoryRepository, IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _userHistoryRepository = userHistoryRepository;
         }

@@ -35,12 +35,12 @@ namespace KdyWeb.Repository
         /// </summary>
         protected ILoginUserInfo LoginUserInfo;
 
-        protected KdyRepository()
+        protected KdyRepository(IUnitOfWork unitOfWork)
         {
-            var unitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
+            // var unitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
             DbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Read).Set<TEntity>();
             WriteDbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Write).Set<TEntity>();
-            LoginUserInfo = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<ILoginUserInfo>();
+            LoginUserInfo = KdyBaseServiceProvider.ServiceProvide.GetService<ILoginUserInfo>();
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
-           // entity.CreatedUserId = LoginUserInfo.UserId;
+            // entity.CreatedUserId = LoginUserInfo.UserId;
             await WriteDbSet.AddAsync(entity);
             return entity;
         }
