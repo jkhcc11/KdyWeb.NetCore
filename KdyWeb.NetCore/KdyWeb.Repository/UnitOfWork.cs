@@ -83,7 +83,7 @@ namespace KdyWeb.Repository
                 {
                     case EntityState.Added:
                         {
-                            entity.CreatedUserId = LoginUserInfo.UserId;
+                            entity.CreatedUserId ??= LoginUserInfo.UserId;
                             entity.CreatedTime = DateTime.Now;
                             break;
                         }

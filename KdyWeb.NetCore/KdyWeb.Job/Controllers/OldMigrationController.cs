@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers
 {
+    /// <summary>
+    /// 旧版迁移
+    /// </summary>
     public class OldMigrationController : OldBaseApiController
     {
         private readonly IOldSysMainService _oldSysMainService;
@@ -24,7 +27,7 @@ namespace KdyWeb.Job.Controllers
         }
 
         /// <summary>
-        /// 开始迁移
+        /// 影片
         /// </summary>
         /// <returns></returns>
         [HttpGet("start/{maxPage}")]
@@ -50,7 +53,7 @@ namespace KdyWeb.Job.Controllers
 
 
         /// <summary>
-        /// 开始迁移
+        /// 用户
         /// </summary>
         /// <returns></returns>
         [HttpGet("startUser/{maxPage}")]
@@ -74,9 +77,8 @@ namespace KdyWeb.Job.Controllers
             return Ok("后台任务运行中");
         }
 
-
         /// <summary>
-        /// 开始迁移
+        /// 用户历史记录
         /// </summary>
         /// <returns></returns>
         [HttpGet("startUserHistory/{maxPage}")]
@@ -92,6 +94,31 @@ namespace KdyWeb.Job.Controllers
             {
                 var jobInput = new OldMigrationJobInput(page, pageSize);
                 BackgroundJob.Enqueue<OldMigrationJobService>(a => a.OldToNewUserHistoryAsync(jobInput));
+
+                page++;
+                await Task.Delay(500);
+            }
+
+            return Ok("后台任务运行中");
+        }
+
+        /// <summary>
+        /// 用户订阅
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("startUserSubscribe/{maxPage}")]
+        public async Task<IActionResult> OldToNewUserSubscribe(int maxPage)
+        {
+            if (maxPage <= 0 || maxPage >= 200)
+            {
+                maxPage = 1;
+            }
+
+            int page = 1, pageSize = 300;
+            while (page < maxPage)
+            {
+                var jobInput = new OldMigrationJobInput(page, pageSize);
+                BackgroundJob.Enqueue<OldMigrationJobService>(a => a.OldToNewUserSubscribe(jobInput));
 
                 page++;
                 await Task.Delay(500);

@@ -25,6 +25,6 @@ namespace KdyWeb.BaseInterface.Service
         /// <summary>
         /// 用户Id
         /// </summary>
-        int? UserId { get; set; }
+        long? UserId { get; set; }
     }
 }

@@ -14,5 +14,7 @@ namespace KdyWeb.IService.OldMigration
         Task<KdyResult> OldToNewUser(int page, int pageSize);
 
         Task<KdyResult> OldToNewUserHistory(int page, int pageSize);
+
+        Task<KdyResult> OldToNewUserSubscribe(int page, int pageSize);
     }
 }

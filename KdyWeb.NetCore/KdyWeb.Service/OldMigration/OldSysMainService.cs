@@ -27,8 +27,12 @@ namespace KdyWeb.Service.OldMigration
         private readonly IKdyRepository<KdyUser, long> _kdyUseRepository;
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
 
+        private readonly IKdyRepository<OldUserSubscribe> _oldSubscribeRepository;
+        private readonly IKdyRepository<UserSubscribe> _userSubscribeRepository;
+
         public OldSysMainService(IKdyRepository<OldSearchSysMain, int> mainRepository, IKdyRepository<VideoMain, long> videoMainRepository,
-            IUnitOfWork unitOfWork, IKdyRepository<OldSearchSysUser> oldUserRepository, IKdyRepository<OldUserHistory> oldUserHistoryRepository, IKdyRepository<KdyUser, long> kdyUseRepository, IKdyRepository<UserHistory, long> userHistoryRepository) : base(unitOfWork)
+            IUnitOfWork unitOfWork, IKdyRepository<OldSearchSysUser> oldUserRepository, IKdyRepository<OldUserHistory> oldUserHistoryRepository,
+            IKdyRepository<KdyUser, long> kdyUseRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<OldUserSubscribe> oldSubscribeRepository, IKdyRepository<UserSubscribe> userSubscribeRepository) : base(unitOfWork)
         {
             _mainRepository = mainRepository;
             _videoMainRepository = videoMainRepository;
@@ -36,6 +40,8 @@ namespace KdyWeb.Service.OldMigration
             _oldUserHistoryRepository = oldUserHistoryRepository;
             _kdyUseRepository = kdyUseRepository;
             _userHistoryRepository = userHistoryRepository;
+            _oldSubscribeRepository = oldSubscribeRepository;
+            _userSubscribeRepository = userSubscribeRepository;
         }
 
         public async Task<KdyResult> OldToNewMain(int page, int pageSize)
@@ -256,6 +262,68 @@ namespace KdyWeb.Service.OldMigration
             if (newDb.Any())
             {
                 await _userHistoryRepository.CreateAsync(newDb);
+                await UnitOfWork.SaveChangesAsync();
+            }
+
+            return KdyResult.Success();
+        }
+
+        public async Task<KdyResult> OldToNewUserSubscribe(int page, int pageSize)
+        {
+            var skip = (page - 1) * pageSize;
+
+            //旧用户订阅
+            var main = await _oldSubscribeRepository.GetQuery()
+                .OrderByDescending(a => a.CreatedTime)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
+            if (main.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无数据");
+            }
+
+            //所有Old影片数据Key 和Old用户数据Key
+            var oldMainKeyIds = main.Select(a => a.ObjId).ToList();
+            var oldUserIds = main.Select(a => a.UserId).ToList();
+
+            //新影片数据
+            var videoMain = await _videoMainRepository.GetQuery()
+                .Include(a => a.EpisodeGroup)
+                .ThenInclude(a => a.Episodes)
+                .Where(a => oldMainKeyIds.Contains(a.OldKeyId))
+                .ToListAsync();
+
+            //新用户数据
+            var userInfo = await _kdyUseRepository.GetAsNoTracking()
+                .Where(a => oldUserIds.Contains(a.OldUserId))
+                .ToListAsync();
+
+            //生成新数据
+            var newDb = new List<UserSubscribe>();
+            foreach (var item in main)
+            {
+                //新用户
+                var userItem = userInfo.FirstOrDefault(a => a.OldUserId == item.UserId);
+                //新影片
+                var videoItem = videoMain.FirstOrDefault(a => a.OldKeyId == item.ObjId);
+                if (userItem == null || videoItem == null)
+                {
+                    continue;
+                }
+
+                var historyItem = new UserSubscribe(videoItem.Id, videoItem.VideoContentFeature)
+                {
+                    CreatedUserId = userItem.Id,
+                    UserEmail = userItem.UserEmail
+                };
+
+                newDb.Add(historyItem);
+            }
+
+            if (newDb.Any())
+            {
+                await _userSubscribeRepository.CreateAsync(newDb);
                 await UnitOfWork.SaveChangesAsync();
             }
 
