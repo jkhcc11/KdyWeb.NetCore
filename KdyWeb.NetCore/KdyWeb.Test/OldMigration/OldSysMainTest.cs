@@ -10,7 +10,7 @@ namespace KdyWeb.Test.OldMigration
         [TestMethod]
         public async Task OldToNew()
         {
-            var result = await _service.OldToNew(1, 12);
+            var result = await _service.OldToNewMain(1, 12);
             Assert.IsTrue(result.IsSuccess);
         }
     }

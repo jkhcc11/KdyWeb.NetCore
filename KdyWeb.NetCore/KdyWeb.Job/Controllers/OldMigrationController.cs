@@ -48,5 +48,57 @@ namespace KdyWeb.Job.Controllers
             return Ok("后台任务运行中");
         }
 
+
+        /// <summary>
+        /// 开始迁移
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("startUser/{maxPage}")]
+        public async Task<IActionResult> OldToNewUserAsync(int maxPage)
+        {
+            if (maxPage <= 0 || maxPage >= 200)
+            {
+                maxPage = 1;
+            }
+
+            int page = 1, pageSize = 300;
+            while (page < maxPage)
+            {
+                var jobInput = new OldMigrationJobInput(page, pageSize);
+                BackgroundJob.Enqueue<OldMigrationJobService>(a => a.OldToNewUserAsync(jobInput));
+
+                page++;
+                await Task.Delay(500);
+            }
+
+            return Ok("后台任务运行中");
+        }
+
+
+        /// <summary>
+        /// 开始迁移
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("startUserHistory/{maxPage}")]
+        public async Task<IActionResult> OldToNewUserHistoryAsync(int maxPage)
+        {
+            if (maxPage <= 0 || maxPage >= 200)
+            {
+                maxPage = 1;
+            }
+
+            int page = 1, pageSize = 300;
+            while (page < maxPage)
+            {
+                var jobInput = new OldMigrationJobInput(page, pageSize);
+                BackgroundJob.Enqueue<OldMigrationJobService>(a => a.OldToNewUserHistoryAsync(jobInput));
+
+                page++;
+                await Task.Delay(500);
+            }
+
+            return Ok("后台任务运行中");
+        }
+
     }
 }

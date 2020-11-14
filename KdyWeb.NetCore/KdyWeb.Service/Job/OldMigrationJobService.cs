@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.HangFire;
 using KdyWeb.BaseInterface.KdyLog;
@@ -22,30 +21,56 @@ namespace KdyWeb.Service.Job
 
         public override async Task ExecuteAsync(OldMigrationJobInput input)
         {
+            await Task.Delay(5000);
+
             if (input.Page <= 0 || input.PageSize <= 0)
             {
                 throw new ArgumentNullException(nameof(OldMigrationJobInput));
             }
 
-            try
+            var migration = await _oldSysMainService.OldToNewMain(input.Page, input.PageSize);
+            if (migration.IsSuccess == false)
             {
-                var migration = await _oldSysMainService.OldToNew(input.Page, input.PageSize);
-                if (migration.IsSuccess == false)
-                {
-                    KdyLog.Warn($"迁移出错，pageInfo{input.ToJsonStr()}");
-                }
-
-                KdyLog.Trace($"迁移成功，pageInfo{input.ToJsonStr()}");
-
+                KdyLog.Warn($"迁移出错，pageInfo{input.ToJsonStr()}");
             }
-            catch (Exception ex)
+
+            KdyLog.Trace($"迁移成功，pageInfo{input.ToJsonStr()}");
+        }
+
+        public async Task OldToNewUserAsync(OldMigrationJobInput input)
+        {
+            await Task.Delay(5000);
+
+            if (input.Page <= 0 || input.PageSize <= 0)
             {
-                KdyLog.Error(ex, new Dictionary<string, object>()
-                        {
-                            {"OldMigration",input}
-                        });
-                throw ex;
+                throw new ArgumentNullException(nameof(OldMigrationJobInput));
             }
+
+            var migration = await _oldSysMainService.OldToNewUser(input.Page, input.PageSize);
+            if (migration.IsSuccess == false)
+            {
+                KdyLog.Warn($"迁移出错，pageInfo{input.ToJsonStr()}");
+            }
+
+            KdyLog.Trace($"迁移成功，pageInfo{input.ToJsonStr()}");
+        }
+
+        public async Task OldToNewUserHistoryAsync(OldMigrationJobInput input)
+        {
+            await Task.Delay(5000);
+
+            if (input.Page <= 0 || input.PageSize <= 0)
+            {
+                throw new ArgumentNullException(nameof(OldMigrationJobInput));
+            }
+
+            var migration = await _oldSysMainService.OldToNewUserHistory(input.Page, input.PageSize);
+            if (migration.IsSuccess == false)
+            {
+                KdyLog.Warn($"迁移出错，pageInfo{input.ToJsonStr()}");
+            }
+
+            KdyLog.Trace($"迁移成功，pageInfo{input.ToJsonStr()}");
         }
     }
 }

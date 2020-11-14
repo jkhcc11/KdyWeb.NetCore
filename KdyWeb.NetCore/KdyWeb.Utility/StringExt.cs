@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -207,6 +208,128 @@ namespace KdyWeb.Utility
             return decode;
         }
 
+        /// <summary>
+        /// DES加密返回十六进制
+        /// </summary>
+        /// <param name="str">待加密字符串</param>
+        /// <param name="key">密钥</param>
+        /// <returns></returns>
+        public static string ToDesHexExt(this string str, string key)
+        {
+            byte[] rgbIv = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
+            try
+            {
+                var rgbKey = Encoding.UTF8.GetBytes(key);
+                //rgbIV与rgbKey可以不一样
+                //var rgbIv = keys;
+                var inputByteArray = Encoding.UTF8.GetBytes(str);
+                var desCryptoService = new DESCryptoServiceProvider();
+                var mStream = new MemoryStream();
+                var cStream = new CryptoStream(mStream, desCryptoService.CreateEncryptor(rgbKey, rgbIv), CryptoStreamMode.Write);
+                cStream.Write(inputByteArray, 0, inputByteArray.Length);
+                cStream.FlushFinalBlock();
+                return mStream.ToArray().ByteToHexStr();
+            }
+            catch
+            {
+                return str;
+            }
+        }
+
+        /// <summary>
+        /// 十六进制 Des解密
+        /// </summary>
+        /// <param name="str">待解密字符串</param>
+        /// <param name="key">密钥</param>
+        /// <returns></returns>
+        public static string DesHexToStr(this string str, string key)
+        {
+            byte[] rgbIv = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
+            try
+            {
+                var rgbKey = Encoding.UTF8.GetBytes(key);
+                // var rgbIv = keys;
+                var inputByteArray = str.HexStrToByte();
+                if (inputByteArray == null || inputByteArray.Length <= 0)
+                {
+                    //兼容Base64解密
+                    inputByteArray = Convert.FromBase64String(str);
+                }
+
+                var desCryptoService = new DESCryptoServiceProvider();
+                var mStream = new MemoryStream();
+                var cStream = new CryptoStream(mStream, desCryptoService.CreateDecryptor(rgbKey, rgbIv), CryptoStreamMode.Write);
+                cStream.Write(inputByteArray, 0, inputByteArray.Length);
+                cStream.FlushFinalBlock();
+                return Encoding.UTF8.GetString(mStream.ToArray());
+            }
+            catch
+            {
+                return str;
+            }
+        }
+
+        /// <summary>
+        /// 16进制字符串转字节流
+        /// </summary>
+        /// <param name="hexStr">
+        /// 十六进制Hex字符串 <br/>
+        /// eg: 2C8721D8ECF5A96F49BC26788EAD9EA08CBC133DAA555A9F61008AEF79E30A68
+        /// </param>
+        /// <returns></returns>
+        public static byte[] HexStrToByte(this string hexStr)
+        {
+            // 两个十六进制代表一个字节  
+            var iLen = hexStr.Length;
+            if (iLen <= 0 || 0 != iLen % 2)
+            {
+                return null;
+            }
+
+            var dwCount = iLen / 2;
+            var pbBuffer = new byte[dwCount];
+            for (var i = 0; i < dwCount; i++)
+            {
+                var tmp1 = hexStr[i * 2] - (hexStr[i * 2] >= (uint)'A' ? (uint)'A' - 10 : '0');
+                if (tmp1 >= 16)
+                {
+                    return null;
+                }
+
+                var tmp2 = hexStr[i * 2 + 1] - (hexStr[i * 2 + 1] >= (uint)'A' ? (uint)'A' - 10 : '0');
+                if (tmp2 >= 16)
+                {
+                    return null;
+                }
+
+                pbBuffer[i] = (byte)(tmp1 * 16 + tmp2);
+            }
+            return pbBuffer;
+        }
+
+        /// <summary>
+        /// Hex流转字符串
+        /// </summary>
+        /// <param name="vByte">16进制byte流</param>
+        /// <returns></returns>
+        public static string ByteToHexStr(this byte[] vByte)
+        {
+            if (vByte == null || vByte.Length < 1)
+            {
+                return null;
+            }
+
+            var sb = new StringBuilder(vByte.Length * 2);
+            foreach (var t in vByte)
+            {
+                var k = (uint)t / 16;
+                sb.Append((char)(k + ((k > 9) ? 'A' - 10 : '0')));
+                k = (uint)t % 16;
+                sb.Append((char)(k + ((k > 9) ? 'A' - 10 : '0')));
+            }
+
+            return sb.ToString();
+        }
         #endregion
     }
 }
