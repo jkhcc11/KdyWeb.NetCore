@@ -29,20 +29,13 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="userId">用户Id</param>
         /// <param name="keyId">主表Key</param>
         /// <param name="epId">剧集Id</param>
-        public UserHistory(long userId, long keyId, long epId)
+        public UserHistory(long keyId, long epId)
         {
-            UserId = userId;
             KeyId = keyId;
             EpId = epId;
         }
-
-        /// <summary>
-        /// 用户Id
-        /// </summary>
-        public long UserId { get; set; }
 
         /// <summary>
         /// 主表主键Key
