@@ -40,6 +40,11 @@
         /// 邮件服务器配置
         /// </summary>
         public const string SmtpKey = "SmtpConfig";
+
+        /// <summary>
+        /// Des加密密钥
+        /// </summary>
+        public const string DesKey = "DesKey";
     }
 
     /// <summary>

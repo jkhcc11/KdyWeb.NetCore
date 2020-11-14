@@ -35,6 +35,24 @@ namespace KdyWeb.Entity
         public const int PhoneNumberLength = 11;
         #endregion
 
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        /// <param name="userName">用户名</param>
+        /// <param name="userNick">用户昵称</param>
+        /// <param name="userEmail">邮箱</param>
+        /// <param name="userPwd">用户密码</param>
+        /// <param name="kdyRoleId">角色id</param>
+        public KdyUser(string userName, string userNick, string userEmail, string userPwd, int kdyRoleId)
+        {
+            UserName = userName;
+            UserNick = userNick;
+            UserEmail = userEmail;
+            UserPwd = userPwd;
+            KdyRoleId = kdyRoleId;
+        }
+
         /// <summary>
         /// 用户名
         /// </summary>
@@ -69,6 +87,11 @@ namespace KdyWeb.Entity
         /// 角色Id
         /// </summary>
         public int KdyRoleId { get; set; }
+
+        /// <summary>
+        /// Old用户Id
+        /// </summary>
+        public int OldUserId { get; set; }
 
         /// <summary>
         /// 用户角色

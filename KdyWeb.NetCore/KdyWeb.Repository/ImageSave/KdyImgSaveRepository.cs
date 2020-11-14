@@ -1,4 +1,5 @@
-﻿using KdyWeb.Entity;
+﻿using KdyWeb.BaseInterface.Repository;
+using KdyWeb.Entity;
 using KdyWeb.IRepository.ImageSave;
 
 namespace KdyWeb.Repository.ImageSave
@@ -8,5 +9,8 @@ namespace KdyWeb.Repository.ImageSave
     /// </summary>
     public class KdyImgSaveRepository : KdyRepository<KdyImgSave, long>, IKdyImgSaveRepository
     {
+        public KdyImgSaveRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
     }
 }

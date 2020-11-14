@@ -18,7 +18,15 @@ namespace KdyWeb.Entity.SearchVideo
         public VideoMainInfo(string videoGenres, string videoCasts, string videoDirectors, string videoCountries)
         {
             VideoGenres = videoGenres;
-            VideoCasts = videoCasts;
+            if (string.IsNullOrEmpty(videoCasts) == false && videoCasts.Length > DouBanInfo.VideoCastsLength)
+            {
+                VideoCasts = videoCasts.Substring(0, DouBanInfo.VideoCastsLength - 3) + "...";
+            }
+            else
+            {
+                VideoCasts = videoCasts;
+            }
+
             VideoDirectors = videoDirectors;
             VideoCountries = videoCountries;
         }

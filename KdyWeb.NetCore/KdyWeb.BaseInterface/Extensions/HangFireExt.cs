@@ -63,6 +63,11 @@ namespace KdyWeb.BaseInterface.Extensions
         /// </summary>
         public static IApplicationBuilder InitDashboard(this IApplicationBuilder app)
         {
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute()
+            {
+                Attempts = 5,
+                DelaysInSeconds = new[] { 10, 15, 20 }
+            });
             app.UseHangfireDashboard("/kdyHangFire");
             return app;
         }

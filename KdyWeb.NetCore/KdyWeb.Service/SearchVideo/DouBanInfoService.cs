@@ -25,7 +25,8 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<DouBanInfo, int> _douBanInfoRepository;
         private readonly IKdyImgSaveService _kdyImgSaveService;
 
-        public DouBanInfoService(IDouBanWebInfoService douBanWebInfoService, IKdyRepository<DouBanInfo, int> douBanInfoRepository, IKdyImgSaveService kdyImgSaveService)
+        public DouBanInfoService(IDouBanWebInfoService douBanWebInfoService, IKdyRepository<DouBanInfo, int> douBanInfoRepository,
+            IKdyImgSaveService kdyImgSaveService, IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _douBanWebInfoService = douBanWebInfoService;
             _douBanInfoRepository = douBanInfoRepository;

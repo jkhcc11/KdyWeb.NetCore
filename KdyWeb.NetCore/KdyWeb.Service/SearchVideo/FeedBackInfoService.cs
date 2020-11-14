@@ -21,7 +21,7 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<FeedBackInfo, int> _kdyRepository;
 
-        public FeedBackInfoService(IKdyRepository<FeedBackInfo, int> kdyRepository)
+        public FeedBackInfoService(IKdyRepository<FeedBackInfo, int> kdyRepository, IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _kdyRepository = kdyRepository;
         }
@@ -85,7 +85,7 @@ namespace KdyWeb.Service.SearchVideo
             foreach (var item in dbList)
             {
                 item.FeedBackInfoStatus = input.FeedBackInfoStatus;
-              //  _kdyRepository.Update(item);
+                //  _kdyRepository.Update(item);
             }
 
             _kdyRepository.Update(dbList);

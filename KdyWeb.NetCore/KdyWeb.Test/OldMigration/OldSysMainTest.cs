@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using KdyWeb.IService.OldMigration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -13,7 +10,7 @@ namespace KdyWeb.Test.OldMigration
         [TestMethod]
         public async Task OldToNew()
         {
-            var result = await _service.OldToNew();
+            var result = await _service.OldToNewMain(1, 12);
             Assert.IsTrue(result.IsSuccess);
         }
     }

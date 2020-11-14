@@ -24,7 +24,7 @@ namespace KdyWeb.BaseInterface.Service
         public string UserAgent { get; set; }
         public string UserNick { get; set; }
         public string UserName { get; set; }
-        public int? UserId { get; set; }
+        public long? UserId { get; set; }
 
         /// <summary>
         /// 从当前请求初始化登录信息
@@ -58,7 +58,7 @@ namespace KdyWeb.BaseInterface.Service
                 return;
             }
 
-            int.TryParse(cookie.Split('@')[1], out int userId);
+            long.TryParse(cookie.Split('@')[1], out long userId);
             if (userId > 0)
             {
                 UserId = userId;

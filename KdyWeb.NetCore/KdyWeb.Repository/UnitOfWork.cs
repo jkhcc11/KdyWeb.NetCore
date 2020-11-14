@@ -27,7 +27,7 @@ namespace KdyWeb.Repository
         {
             _dbContext = new ReadWriteContext(contextFactory.GetDbContext(ReadWrite.Write));
             _readDbContext = new ReadWriteContext(contextFactory.GetDbContext(ReadWrite.Read));
-            LoginUserInfo = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<ILoginUserInfo>();
+            LoginUserInfo = KdyBaseServiceProvider.ServiceProvide.GetService<ILoginUserInfo>();
         }
 
         public int SaveChanges()
@@ -83,7 +83,7 @@ namespace KdyWeb.Repository
                 {
                     case EntityState.Added:
                         {
-                            entity.CreatedUserId = LoginUserInfo.UserId;
+                            entity.CreatedUserId ??= LoginUserInfo.UserId;
                             entity.CreatedTime = DateTime.Now;
                             break;
                         }
@@ -95,6 +95,12 @@ namespace KdyWeb.Repository
                         }
                 }
             }
+        }
+
+        public virtual void Dispose()
+        {
+            _dbContext?.Dispose();
+            _readDbContext?.Dispose();
         }
     }
 }

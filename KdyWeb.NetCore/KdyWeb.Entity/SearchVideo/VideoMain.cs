@@ -168,8 +168,8 @@ namespace KdyWeb.Entity.SearchVideo
         public static void ToVideoMain(this VideoMain videoMain, OldSearchSysMain oldSearchSysMain)
         {
             //videoMain.Aka = douBanInfo.Aka;
-            videoMain.VideoDouBan = oldSearchSysMain.VideoDouBan;
-            videoMain.VideoYear = oldSearchSysMain.VideoYear;
+            videoMain.VideoDouBan = oldSearchSysMain.VideoDouBan ?? 0;
+            videoMain.VideoYear = oldSearchSysMain.VideoYear ?? 0;
             videoMain.VideoInfoUrl = oldSearchSysMain.VideoDetail;
             videoMain.VideoMainInfo = new VideoMainInfo(oldSearchSysMain.VideoType, oldSearchSysMain.VideoCasts, oldSearchSysMain.VideoDirectors, oldSearchSysMain.VideoCountries)
             {

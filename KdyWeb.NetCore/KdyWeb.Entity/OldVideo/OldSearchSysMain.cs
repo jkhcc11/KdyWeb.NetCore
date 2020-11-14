@@ -56,12 +56,12 @@ namespace KdyWeb.Entity.OldVideo
         /// <summary>
         /// 豆瓣分
         /// </summary>
-        public double VideoDouBan { get; set; }
+        public double? VideoDouBan { get; set; }
 
         /// <summary>
         /// 年
         /// </summary>
-        public int VideoYear { get; set; }
+        public int? VideoYear { get; set; }
 
         /// <summary>
         /// 豆瓣Url

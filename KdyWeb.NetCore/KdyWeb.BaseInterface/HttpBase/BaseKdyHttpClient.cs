@@ -8,7 +8,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface.HttpBase
@@ -17,15 +21,26 @@ namespace KdyWeb.BaseInterface.HttpBase
     /// 基于HttpClient Http请求 抽象类
     /// todo:获取跨域cookie麻烦
     /// </summary>
-    public abstract class BaseKdyHttpClient<TResult, TData, TInput, TExtData> : BaseKdyService
+    public abstract class BaseKdyHttpClient<TResult, TData, TInput, TExtData> : IKdyService
         where TResult : class, IHttpOut<TData>, new()
         where TData : class
         where TInput : class, IHttpRequestInput<TExtData>
     {
+        /// <summary>
+        /// 统一日志
+        /// </summary>
+        protected readonly IKdyLog KdyLog;
+        /// <summary>
+        /// 统一配置
+        /// </summary>
+        protected readonly IConfiguration KdyConfiguration;
+
         protected readonly IHttpClientFactory HttpClientFactory;
         protected BaseKdyHttpClient(IHttpClientFactory httpClientFactory)
         {
             HttpClientFactory = httpClientFactory;
+            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
+            KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
         }
 
         /// <summary>
@@ -208,5 +223,8 @@ namespace KdyWeb.BaseInterface.HttpBase
             return input.EnCoding.GetString(repBytes);
         }
 
+        public void Dispose()
+        {
+        }
     }
 }
