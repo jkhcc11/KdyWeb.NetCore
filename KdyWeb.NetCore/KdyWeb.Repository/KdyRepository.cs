@@ -117,6 +117,22 @@ namespace KdyWeb.Repository
         }
 
         /// <summary>
+        /// 批量软删除
+        /// </summary>
+        /// <returns></returns>
+        public virtual void Delete(List<TEntity> entity)
+        {
+            foreach (var item in entity)
+            {
+                item.ModifyUserId = LoginUserInfo.UserId;
+                item.ModifyTime = DateTime.Now;
+                item.IsDelete = true;
+            }
+
+            WriteDbSet.UpdateRange(entity);
+        }
+
+        /// <summary>
         /// 硬删除
         /// </summary>
         /// <returns></returns>

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 
 namespace KdyWeb.IService.SearchVideo
@@ -21,5 +22,24 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<GetVideoDetailDto>> GetVideoDetailAsync(long keyId);
+
+        /// <summary>
+        /// 分页查询影视库
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<QueryVideoMainDto>>> QueryVideoMainAsync(QueryVideoMainInput input);
+
+        /// <summary>
+        /// 更新字段值
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> UpdateValueByFieldAsync(UpdateValueByFieldInput input);
+
+        /// <summary>
+        /// 批量删除影片
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DeleteAsync(BatchDeleteForLongKeyInput input);
+
     }
 }

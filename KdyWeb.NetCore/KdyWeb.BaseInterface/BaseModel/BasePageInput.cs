@@ -3,7 +3,7 @@
 namespace KdyWeb.BaseInterface.BaseModel
 {
     /// <summary>
-    /// 分页入参
+    /// 基类分页 入参
     /// </summary>
     public abstract class BasePageInput : IPageInput
     {

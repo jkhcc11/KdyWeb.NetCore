@@ -60,6 +60,12 @@ namespace KdyWeb.BaseInterface.Repository
         void Delete(TEntity entity);
 
         /// <summary>
+        /// 批量软删除
+        /// </summary>
+        /// <param name="entity"></param>
+        void Delete(List<TEntity> entity);
+
+        /// <summary>
         /// 硬删除
         /// </summary>
         /// <returns></returns>

@@ -121,13 +121,16 @@ namespace KdyWeb.Job
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //todo:!!!! 这个得注意顺序 得放到Routing后
+            app.UseKdyLog();
 
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
+          
             app.InitDashboard();
 
             //全局DI容器

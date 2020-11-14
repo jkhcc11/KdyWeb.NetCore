@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +39,39 @@ namespace KdyWeb.Job.Controllers
         public async Task<IActionResult> GetVideoDetailAsync(long keyId)
         {
             var result = await _videoMainService.GetVideoDetailAsync(keyId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 分页查询影视库
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("query")]
+        public async Task<IActionResult> QueryVideoMainAsync([FromQuery] QueryVideoMainInput input)
+        {
+            var result = await _videoMainService.QueryVideoMainAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 更新字段值
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("updateField")]
+        public async Task<IActionResult> UpdateValueByFieldAsync(UpdateValueByFieldInput input)
+        {
+            var result = await _videoMainService.UpdateValueByFieldAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 删除影片
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteAsync(BatchDeleteForLongKeyInput input)
+        {
+            var result = await _videoMainService.DeleteAsync(input);
             return Ok(result);
         }
     }

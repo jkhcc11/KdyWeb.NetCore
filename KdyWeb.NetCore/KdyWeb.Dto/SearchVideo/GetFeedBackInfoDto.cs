@@ -9,7 +9,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 分页获取反馈信息 Dto
     /// </summary>
     [AutoMap(typeof(FeedBackInfo))]
-    public class GetFeedBackInfoDto : CreatedUserDto<int>
+    public class GetFeedBackInfoDto : CreatedUserDto<long>
     {
         /// <summary>
         /// 反馈类型

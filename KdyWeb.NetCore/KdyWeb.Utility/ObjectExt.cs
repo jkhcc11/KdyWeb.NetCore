@@ -1,5 +1,7 @@
 ﻿
 
+using System;
+using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -63,6 +65,27 @@ namespace KdyWeb.Utility
             }
             return stringBuilder.ToString().TrimEnd(',');
 
+        }
+
+        /// <summary>
+        /// 动态更新实体类值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model">实体类</param>
+        /// <param name="propertyName">属性名</param>
+        /// <param name="value">属性值</param>
+        public static void UpdateModelField<T>(this T model, string propertyName, object value)
+        {
+            var type = model.GetType();
+            var property = type.GetProperty(propertyName);
+            if (property == null)
+            {
+                return;
+            }
+
+            //动态更改值
+            var changeV = Convert.ChangeType(value, property.PropertyType);
+            property.SetValue(model, changeV, null);
         }
     }
 }

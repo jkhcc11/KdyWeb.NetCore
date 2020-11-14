@@ -18,6 +18,11 @@ namespace KdyWeb.Dto.SearchVideo
         public Subtype Subtype { get; set; }
 
         /// <summary>
+        /// 影片类型Str
+        /// </summary>
+        public string SubtypeStr => Subtype.GetDisplayName();
+
+        /// <summary>
         /// 排序
         /// </summary>
         /// <remarks>
@@ -49,11 +54,6 @@ namespace KdyWeb.Dto.SearchVideo
         /// 影片状态
         /// </summary>
         public VideoMainStatus VideoMainStatus { get; set; }
-
-        /// <summary>
-        /// 影片状态Str
-        /// </summary>
-        public string VideoMainStatusStr => VideoMainStatus.GetDisplayName();
 
         /// <summary>
         /// 又名 
@@ -155,7 +155,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 剧集信息组
     /// </summary>
     [AutoMap(typeof(VideoEpisodeGroup))]
-    public class VideoEpisodeGroupDto
+    public class VideoEpisodeGroupDto : BaseEntityDto<long>
     {
         /// <summary>
         /// 剧集组名
@@ -192,7 +192,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 剧集
     /// </summary>
     [AutoMap(typeof(VideoEpisode))]
-    public class VideoEpisodeDto
+    public class VideoEpisodeDto : BaseEntityDto<long>
     {
         /// <summary>
         /// 剧集Url

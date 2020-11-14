@@ -75,9 +75,9 @@ namespace KdyWeb.BaseInterface
             //执行其他
             await _next(context);
 
-            if (response.StatusCode >= 500 || (response.StatusCode >= 300 && response.StatusCode <= 400))
+            if (response.StatusCode != 200)
             {
-                //系统错误和跳转不要记录
+                //非200不要记录
                 await _next(context);
                 return;
             }

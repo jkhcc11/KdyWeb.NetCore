@@ -1,15 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
+using KdyWeb.IService.SearchVideo;
+using KdyWeb.Repository;
+using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
-namespace KdyWeb.IService.SearchVideo
+namespace KdyWeb.Service.SearchVideo
 {
     /// <summary>
     /// 影片主表 服务实现
@@ -24,8 +29,17 @@ namespace KdyWeb.IService.SearchVideo
         {
             _videoMainRepository = videoMainRepository;
             _douBanInfoRepository = douBanInfoRepository;
+
+            CanUpdateFieldList.AddRange(new[]
+            {
+                "VideoContentFeature","Subtype","IsEnd","VideoMainStatus","IsMatchInfo","SourceUrl"
+            });
         }
 
+        /// <summary>
+        /// 通过豆瓣信息创建影片信息
+        /// </summary>
+        /// <returns></returns>
         public async Task<KdyResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
         {
             //获取豆瓣信息
@@ -61,6 +75,10 @@ namespace KdyWeb.IService.SearchVideo
             return KdyResult.Success();
         }
 
+        /// <summary>
+        /// 获取影片信息
+        /// </summary>
+        /// <returns></returns>
         public async Task<KdyResult<GetVideoDetailDto>> GetVideoDetailAsync(long keyId)
         {
             var main = await _videoMainRepository.GetAsNoTracking()
@@ -76,6 +94,74 @@ namespace KdyWeb.IService.SearchVideo
 
             var result = main.MapToExt<GetVideoDetailDto>();
             return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 分页查询影视库
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryVideoMainDto>>> QueryVideoMainAsync(QueryVideoMainInput input)
+        {
+            if (input.OrderBy == null || input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new KdyEfOrderConditions()
+                    {
+                        Key = "CreatedTime",
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
+            var pageData = await _videoMainRepository.GetQuery()
+                .Include(a => a.VideoMainInfo)
+                .GetDtoPageListAsync<VideoMain, QueryVideoMainDto>(input);
+            return KdyResult.Success(pageData);
+        }
+
+        /// <summary>
+        /// 更新字段值
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> UpdateValueByFieldAsync(UpdateValueByFieldInput input)
+        {
+            var dbMain = await _videoMainRepository.FirstOrDefaultAsync(a => a.Id == input.Id);
+            if (dbMain == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "Id错误");
+            }
+
+            if (CanUpdateFieldList.Contains(input.Field) == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, $"更新失败，当前字段：{input.Field} 不支持更新");
+            }
+
+            dbMain.UpdateModelField(input.Field, input.Value);
+
+            _videoMainRepository.Update(dbMain);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 批量删除影片
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> DeleteAsync(BatchDeleteForLongKeyInput input)
+        {
+            if (input.Ids == null || input.Ids.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "Id不能为空");
+            }
+
+            var dbEp = await _videoMainRepository.GetQuery()
+                .Where(a => input.Ids.Contains(a.Id))
+                .ToListAsync();
+            _videoMainRepository.Delete(dbEp);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success("剧集删除成功");
         }
     }
 }
