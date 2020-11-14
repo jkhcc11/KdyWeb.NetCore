@@ -19,7 +19,7 @@ namespace KdyWeb.Service.OldMigration
     /// </summary>
     public class OldSysMainService : BaseKdyService, IOldSysMainService
     {
-        private readonly IKdyRepository<OldSearchSysMain, int> _mainRepository;
+        private readonly IKdyRepository<OldSearchSysMain> _mainRepository;
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
 
         private readonly IKdyRepository<OldSearchSysUser> _oldUserRepository;
@@ -28,11 +28,12 @@ namespace KdyWeb.Service.OldMigration
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
 
         private readonly IKdyRepository<OldUserSubscribe> _oldSubscribeRepository;
-        private readonly IKdyRepository<UserSubscribe> _userSubscribeRepository;
+        private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
 
-        public OldSysMainService(IKdyRepository<OldSearchSysMain, int> mainRepository, IKdyRepository<VideoMain, long> videoMainRepository,
+        public OldSysMainService(IKdyRepository<OldSearchSysMain> mainRepository, IKdyRepository<VideoMain, long> videoMainRepository,
             IUnitOfWork unitOfWork, IKdyRepository<OldSearchSysUser> oldUserRepository, IKdyRepository<OldUserHistory> oldUserHistoryRepository,
-            IKdyRepository<KdyUser, long> kdyUseRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<OldUserSubscribe> oldSubscribeRepository, IKdyRepository<UserSubscribe> userSubscribeRepository) : base(unitOfWork)
+            IKdyRepository<KdyUser, long> kdyUseRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<OldUserSubscribe> oldSubscribeRepository,
+            IKdyRepository<UserSubscribe, long> userSubscribeRepository) : base(unitOfWork)
         {
             _mainRepository = mainRepository;
             _videoMainRepository = videoMainRepository;
@@ -248,12 +249,13 @@ namespace KdyWeb.Service.OldMigration
                     continue;
                 }
 
-                var historyItem = new UserHistory(userItem.Id, videoItem.Id, epItem.Id)
+                var historyItem = new UserHistory(videoItem.Id, epItem.Id)
                 {
                     EpName = epItem.EpisodeName,
                     VodName = videoItem.KeyWord,
                     UserName = userItem.UserName,
-                    VodUrl = $"/Movie/vod/{epItem.Id}"
+                    VodUrl = $"/Movie/vod/{epItem.Id}",
+                    CreatedUserId = userItem.Id
                 };
 
                 newDb.Add(historyItem);
