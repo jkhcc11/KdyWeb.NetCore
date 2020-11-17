@@ -93,6 +93,8 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var result = main.MapToExt<GetVideoDetailDto>();
+            result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
+
             return KdyResult.Success(result);
         }
 

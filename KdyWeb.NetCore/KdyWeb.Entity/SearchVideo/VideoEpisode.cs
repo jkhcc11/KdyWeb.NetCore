@@ -46,6 +46,9 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 排序
         /// </summary>
+        /// <remarks>
+        /// 越大越靠前
+        /// </remarks>
         public int OrderBy { get; set; }
 
         /// <summary>

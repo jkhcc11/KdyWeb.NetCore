@@ -46,6 +46,14 @@ namespace KdyWeb.Entity.SearchVideo
         public EpisodeGroupType EpisodeGroupType { get; set; }
 
         /// <summary>
+        /// 排序
+        /// </summary>
+        /// <remarks>
+        /// 越大越考前
+        /// </remarks>
+        public int OrderBy { get; set; }
+
+        /// <summary>
         /// 影片主表Id
         /// </summary>
         public long MainId { get; set; }

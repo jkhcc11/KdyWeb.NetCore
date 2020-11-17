@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
@@ -183,6 +184,14 @@ namespace KdyWeb.Dto.SearchVideo
         public string EpisodeGroupTypeStr => EpisodeGroupType.GetDisplayName();
 
         /// <summary>
+        /// 排序
+        /// </summary>
+        /// <remarks>
+        /// 越大越考前
+        /// </remarks>
+        public int OrderBy { get; set; }
+
+        /// <summary>
         /// 剧集
         /// </summary>
         public List<VideoEpisodeDto> Episodes { get; set; }
@@ -203,5 +212,48 @@ namespace KdyWeb.Dto.SearchVideo
         /// 剧集名
         /// </summary>
         public string EpisodeName { get; set; }
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        /// <remarks>
+        /// 越大越考前
+        /// </remarks>
+        public int OrderBy { get; set; }
+    }
+
+    /// <summary>
+    /// 剧集信息组 扩展
+    /// </summary>
+    public static class VideoEpisodeGroupDtoExtension
+    {
+        /// <summary>
+        /// 剧集组统一排序
+        /// </summary>
+        /// <returns></returns>
+        public static List<VideoEpisodeGroupDto> OrderByExt(this IList<VideoEpisodeGroupDto> list)
+        {
+            foreach (var groupItem in list)
+            {
+                groupItem.Episodes = groupItem.Episodes.OrderByDescending(a => a.OrderBy)
+                    .ThenBy(a => a.EpisodeName.Length)
+                    .ThenBy(a => a.EpisodeName)
+                    .ToList();
+            }
+
+            return list.OrderByDescending(a => a.OrderBy).ToList();
+        }
+
+        /// <summary>
+        /// 剧集组统一排序
+        /// </summary>
+        /// <returns></returns>
+        public static void OrderByExt(this VideoEpisodeGroupDto item)
+        {
+            item.Episodes = item.Episodes.OrderByDescending(a => a.OrderBy)
+                 .ThenBy(a => a.EpisodeName.Length)
+                 .ThenBy(a => a.EpisodeName)
+                 .ToList();
+        }
     }
 }

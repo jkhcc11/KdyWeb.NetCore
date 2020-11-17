@@ -91,7 +91,7 @@ namespace KdyWeb.Job
                 })
                 .AddNewtonsoftJson(option =>
                 {
-                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:ss:ss";
+                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                 });
 
             //×¢ÈëHangfire

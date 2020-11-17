@@ -32,7 +32,10 @@ namespace KdyWeb.NetCore
             //添加自动防伪标记
             services.AddControllersWithViews(options =>
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()))
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(option =>
+                {
+                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+                });
 
             services.KdyRegisterInit(Configuration);
         }

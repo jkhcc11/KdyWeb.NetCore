@@ -140,6 +140,8 @@ namespace KdyWeb.Service.SearchVideo
             var result = epInfo.MapToExt<GetEpisodeInfoDto>();
             result.VideoMainInfo = dbMain.MapToExt<VideoMainDto>();
 
+            result.VideoEpisodeGroup.OrderByExt();
+
             return KdyResult.Success(result);
         }
 
