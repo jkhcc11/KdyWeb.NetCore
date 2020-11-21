@@ -15,5 +15,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> CreateUserHistoryAsync(CreateUserHistoryInput input);
+
+        /// <summary>
+        /// 用户播放记录分页查询
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<QueryUserHistoryDto>>> QueryUserHistoryAsync(QueryUserHistoryInput input);
     }
 }

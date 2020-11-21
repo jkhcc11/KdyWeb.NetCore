@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -6,6 +9,7 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
+using KdyWeb.Repository;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -34,6 +38,30 @@ namespace KdyWeb.Service.SearchVideo
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 用户播放记录分页查询
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryUserHistoryDto>>> QueryUserHistoryAsync(QueryUserHistoryInput input)
+        {
+            if (input.OrderBy == null ||
+                input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(UserHistory.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
+            var result = await _userHistoryRepository.GetQuery()
+                .GetDtoPageListAsync<UserHistory, QueryUserHistoryDto>(input);
+            return KdyResult.Success(result);
         }
 
         internal void CreateUserHistoryHandler(UserHistory dbUserHistory, CreateUserHistoryInput input)
