@@ -18,5 +18,10 @@ namespace KdyWeb.Dto.SearchVideo
         /// 请求Url
         /// </summary>
         public string VodUrl { get; set; }
+
+        /// <summary>
+        /// 用户Id
+        /// </summary>
+        public long UserId { get; set; }
     }
 }

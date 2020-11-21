@@ -109,6 +109,8 @@ namespace KdyWeb.Job
             services.InitIdGenerate(Configuration)
                 .UseRedisCache(Configuration)
                 .AddMemoryCache();
+
+            services.AddMiniProfile();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -117,6 +119,7 @@ namespace KdyWeb.Job
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMiniProfile();
             }
 
             app.UseRouting();
@@ -130,7 +133,7 @@ namespace KdyWeb.Job
                 endpoints.MapControllers();
             });
 
-          
+
             app.InitDashboard();
 
             //È«¾ÖDIÈÝÆ÷

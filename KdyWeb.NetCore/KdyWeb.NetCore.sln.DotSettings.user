@@ -9,5 +9,6 @@
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.VideoMainTest.TestCreate&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.OldMigration.OldSysMainTest.OldToNew&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.UserSubscribeTest.TestQuery&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.KdyUser.KdyUserTest.GetUserInfoAsync&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

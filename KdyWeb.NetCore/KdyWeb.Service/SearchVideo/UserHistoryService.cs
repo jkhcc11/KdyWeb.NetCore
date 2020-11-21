@@ -10,6 +10,7 @@ using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -19,10 +20,13 @@ namespace KdyWeb.Service.SearchVideo
     public class UserHistoryService : BaseKdyService, IUserHistoryService
     {
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
+        private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
 
-        public UserHistoryService(IKdyRepository<UserHistory, long> userHistoryRepository, IUnitOfWork unitOfWork) : base(unitOfWork)
+        public UserHistoryService(IKdyRepository<UserHistory, long> userHistoryRepository, IUnitOfWork unitOfWork,
+            IKdyRepository<VideoEpisode, long> videoEpisodeRepository) : base(unitOfWork)
         {
             _userHistoryRepository = userHistoryRepository;
+            _videoEpisodeRepository = videoEpisodeRepository;
         }
 
         /// <summary>
@@ -31,7 +35,25 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult> CreateUserHistoryAsync(CreateUserHistoryInput input)
         {
-            var dbInput = input.MapToExt<UserHistory>();
+            //剧集信息
+            var dbEpInfo = await _videoEpisodeRepository.GetQuery()
+                .Include(a => a.VideoEpisodeGroup)
+                .FirstOrDefaultAsync(a => a.Id == input.EpId);
+            if (dbEpInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "影片信息错误");
+            }
+
+            //历史表
+            var dbInput = new UserHistory(dbEpInfo.VideoEpisodeGroup.MainId, input.EpId);
+            var exit = await _userHistoryRepository.GetAsNoTracking()
+                .AnyAsync(a => a.IsDelete == false &&
+                               a.EpId == input.EpId &&
+                               a.CreatedUserId == input.UserId);
+            if (exit)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "已存在");
+            }
 
             CreateUserHistoryHandler(dbInput, input);
             await _userHistoryRepository.CreateAsync(dbInput);

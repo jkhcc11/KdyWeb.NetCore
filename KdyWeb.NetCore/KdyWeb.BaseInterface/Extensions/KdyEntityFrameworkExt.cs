@@ -67,7 +67,7 @@ namespace KdyWeb.BaseInterface.Extensions
         /// </summary>
         /// <typeparam name="TEntity">实体类</typeparam>
         /// <param name="query">实体类Queryable</param>
-        /// <param name="input">DTO入参</param>
+        /// <param name="input">Input入参</param>
         /// <returns></returns>
         public static IQueryable<TEntity> CreateConditions<TEntity>(this IQueryable<TEntity> query, object input)
         {
@@ -87,6 +87,17 @@ namespace KdyWeb.BaseInterface.Extensions
                 {
                     continue;
                 }
+
+                //值类型默认值不生成表达式
+                if ((objValue is long ||
+                     objValue is int ||
+                     objValue is decimal
+                     ) && long.TryParse(objValue.ToString(), out long temp)
+                       && temp == 0)
+                {
+                    continue;
+                }
+
 
                 //获取属性字段含有KdyQuery特性标签
                 var kdyQueryList = propItem.GetCustomAttributes(typeof(KdyQueryAttribute), false)
