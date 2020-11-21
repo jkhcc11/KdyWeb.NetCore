@@ -199,7 +199,8 @@ namespace KdyWeb.Repository
                 return result;
             }
 
-            if (pageInput.OrderBy != null)
+            if (pageInput.OrderBy != null &&
+                pageInput.OrderBy.Any())
             {
                 dbQuery = dbQuery.KdyOrderBy(pageInput);
             }

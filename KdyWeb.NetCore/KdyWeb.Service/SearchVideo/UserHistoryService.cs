@@ -21,6 +21,10 @@ namespace KdyWeb.Service.SearchVideo
             _userHistoryRepository = userHistoryRepository;
         }
 
+        /// <summary>
+        /// 创建用户播放记录
+        /// </summary>
+        /// <returns></returns>
         public async Task<KdyResult> CreateUserHistoryAsync(CreateUserHistoryInput input)
         {
             var dbInput = input.MapToExt<UserHistory>();

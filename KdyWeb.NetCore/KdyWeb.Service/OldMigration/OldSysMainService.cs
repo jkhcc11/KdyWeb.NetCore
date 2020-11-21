@@ -314,7 +314,7 @@ namespace KdyWeb.Service.OldMigration
                     continue;
                 }
 
-                var historyItem = new UserSubscribe(videoItem.Id, videoItem.VideoContentFeature)
+                var historyItem = new UserSubscribe(videoItem.Id, videoItem.VideoContentFeature, UserSubscribeType.Vod)
                 {
                     CreatedUserId = userItem.Id,
                     UserEmail = userItem.UserEmail
