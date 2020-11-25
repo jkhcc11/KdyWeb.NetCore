@@ -67,6 +67,8 @@ namespace KdyWeb.NetCore
                 .InitIdGenerate(configuration)
                 .UseRedisCache(configuration)
                 .AddMemoryCache();
+
+            services.AddMiniProfile();
         }
     }
 }

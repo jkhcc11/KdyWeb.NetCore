@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity;
 
 namespace KdyWeb.Dto
@@ -7,7 +8,7 @@ namespace KdyWeb.Dto
     /// 用户信息查询 Dto
     /// </summary>
     [AutoMap(typeof(KdyUser))]
-    public class GetUserInfoDto
+    public class GetUserInfoDto : BaseEntityDto<long>
     {
         /// <summary>
         /// 用户名
@@ -44,5 +45,5 @@ namespace KdyWeb.Dto
         /// </summary>
         public KdyRoleDto KdyRole { get; set; }
     }
-    
+
 }

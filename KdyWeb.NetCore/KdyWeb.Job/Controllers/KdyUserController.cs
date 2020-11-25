@@ -25,7 +25,7 @@ namespace KdyWeb.Job.Controllers
         /// <returns></returns>
         [HttpGet("getInfo")]
         [ProducesResponseType(typeof(KdyResult<GetUserInfoDto>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> QueryUserSubscribeAsync([FromQuery] GetUserInfoInput input)
+        public async Task<IActionResult> GetUserInfoAsync([FromQuery] GetUserInfoInput input)
         {
             var result = await _kdyUserService.GetUserInfoAsync(input);
             return Ok(result);

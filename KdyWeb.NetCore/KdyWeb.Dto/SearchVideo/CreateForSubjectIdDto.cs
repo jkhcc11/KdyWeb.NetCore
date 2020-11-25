@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.Entity.SearchVideo;
 
@@ -8,7 +9,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 创建豆瓣信息Dto
     /// </summary>
     [AutoMap(typeof(DouBanInfo))]
-    public class CreateForSubjectIdDto
+    public class CreateForSubjectIdDto : BaseEntityDto<int>
     {
         /// <summary>
         /// 名称

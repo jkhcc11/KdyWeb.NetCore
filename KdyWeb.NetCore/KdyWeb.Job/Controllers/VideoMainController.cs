@@ -20,7 +20,7 @@ namespace KdyWeb.Job.Controllers
         }
 
         /// <summary>
-        /// 创建并获取豆瓣信息
+        /// 通过豆瓣信息创建影片信息
         /// </summary>
         /// <returns></returns>
         [HttpPost]

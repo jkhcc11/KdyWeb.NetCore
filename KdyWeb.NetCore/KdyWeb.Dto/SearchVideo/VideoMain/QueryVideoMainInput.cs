@@ -26,5 +26,13 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         [KdyQuery("VideoMainInfo.VideoGenres", KdyOperator.Like)]
         public string Genres { get; set; }
+
+        /// <summary>
+        /// 关键字
+        /// </summary>
+        [KdyQuery(nameof(VideoMain.KeyWord), KdyOperator.Like)]
+        [KdyQuery(nameof(VideoMain.Aka), KdyOperator.Like)]
+        [KdyQuery(nameof(VideoMain.SourceUrl), KdyOperator.StartsWith)]
+        public string KeyWord { get; set; }
     }
 }

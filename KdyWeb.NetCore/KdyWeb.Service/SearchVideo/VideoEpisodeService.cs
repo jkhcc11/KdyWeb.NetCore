@@ -59,6 +59,10 @@ namespace KdyWeb.Service.SearchVideo
         /// <summary>
         /// 创建剧集
         /// </summary>
+        /// <remarks>
+        /// 1、根据当前主键查询所有剧集
+        /// 2、根据剧集名查找新增的修改的
+        /// </remarks>
         /// <returns></returns>
         public async Task<KdyResult> CreateEpisodeAsync(CreateEpisodeInput input)
         {
@@ -67,6 +71,7 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "剧集不能为空");
             }
 
+            //影片剧集信息
             var dbEpisode = await _videoEpisodeRepository.GetAsNoTracking()
                 .Where(a => a.VideoEpisodeGroup.MainId == input.MainId)
                 .ToListAsync();
@@ -75,25 +80,45 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "更新失败，不存在剧集");
             }
 
-            //已存在得剧集Url
-            var epUrls = dbEpisode.Select(a => a.EpisodeUrl).ToList();
-            var canEditEp = input.EpItems
-                .Where(a => epUrls.Contains(a.EpisodeUrl) == false)
-                .ToList();
-            if (canEditEp.Any() == false)
-            {
-                return KdyResult.Error(KdyResultCode.Error, "可新增剧集为空");
-            }
-
             var groupId = dbEpisode.First().EpisodeGroupId;
-            //生成数据
-            var dbList = canEditEp.Select(episodeItem => new VideoEpisode(episodeItem.EpisodeName, episodeItem.EpisodeUrl)
+            var dbEpNames = dbEpisode.Select(a => a.EpisodeName).ToList();
+
+            //新增的剧集
+            var canAddEp = input.EpItems
+                .Where(a => dbEpNames.Contains(a.EpisodeName) == false)
+                .ToList();
+            var canAddDbEp = canAddEp.Select(episodeItem => new VideoEpisode(episodeItem.EpisodeName, episodeItem.EpisodeUrl)
             {
                 OrderBy = episodeItem.OrderBy ?? 0,
                 EpisodeGroupId = groupId
             }).ToList();
+            if (canAddDbEp.Any())
+            {
+                await _videoEpisodeRepository.CreateAsync(canAddDbEp);
+            }
 
-            await _videoEpisodeRepository.CreateAsync(dbList);
+            //更新的剧集
+            var canEditEp = input.EpItems
+                .Where(a => dbEpNames.Contains(a.EpisodeName))
+                .ToList();
+            var canEditList = new List<VideoEpisode>();
+            foreach (var epItem in canEditEp)
+            {
+                var dbItem = dbEpisode.FirstOrDefault(a => a.EpisodeName == epItem.EpisodeName);
+                if (dbItem == null)
+                {
+                    continue;
+                }
+
+                dbItem.EpisodeUrl = epItem.EpisodeUrl;
+                canEditList.Add(dbItem);
+            }
+
+            if (canEditList.Any())
+            {
+                _videoEpisodeRepository.Update(canEditList);
+            }
+
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success("剧集创建成功");
         }

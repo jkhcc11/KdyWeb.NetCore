@@ -32,6 +32,11 @@ namespace KdyWeb.Dto.SearchVideo
         public bool IsEnd { get; set; }
 
         /// <summary>
+        /// 是否匹配影片信息Url
+        /// </summary>
+        public bool IsMatchInfo { get; set; }
+
+        /// <summary>
         /// 视频名称
         /// </summary>
         public string KeyWord { get; set; }
@@ -61,6 +66,19 @@ namespace KdyWeb.Dto.SearchVideo
         /// 年份
         /// </summary>
         public int VideoYear { get; set; }
+
+        /// <summary>
+        /// 源Url特征码
+        /// </summary>
+        public string VideoContentFeature { get; set; }
+
+        /// <summary>
+        /// 源Url
+        /// </summary>
+        /// <remarks>
+        /// 影片来源url
+        /// </remarks>
+        public string SourceUrl { get; set; }
 
         /// <summary>
         /// 影片主表 扩展信息

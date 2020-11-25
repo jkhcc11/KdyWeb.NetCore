@@ -46,6 +46,7 @@ namespace KdyWeb.NetCore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMiniProfile();
             }
             else
             {

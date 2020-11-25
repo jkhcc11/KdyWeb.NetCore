@@ -7,6 +7,7 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
+using KdyWeb.Entity;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
@@ -21,12 +22,14 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
         private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
+        private readonly IKdyRepository<KdyUser, long> _kdyUserRepository;
 
         public UserHistoryService(IKdyRepository<UserHistory, long> userHistoryRepository, IUnitOfWork unitOfWork,
-            IKdyRepository<VideoEpisode, long> videoEpisodeRepository) : base(unitOfWork)
+            IKdyRepository<VideoEpisode, long> videoEpisodeRepository, IKdyRepository<KdyUser, long> kdyUserRepository) : base(unitOfWork)
         {
             _userHistoryRepository = userHistoryRepository;
             _videoEpisodeRepository = videoEpisodeRepository;
+            _kdyUserRepository = kdyUserRepository;
         }
 
         /// <summary>
@@ -38,14 +41,21 @@ namespace KdyWeb.Service.SearchVideo
             //剧集信息
             var dbEpInfo = await _videoEpisodeRepository.GetQuery()
                 .Include(a => a.VideoEpisodeGroup)
+                .ThenInclude(a=>a.VideoMain)
                 .FirstOrDefaultAsync(a => a.Id == input.EpId);
             if (dbEpInfo == null)
             {
                 return KdyResult.Error(KdyResultCode.Error, "影片信息错误");
             }
 
+            var userInfo = await _kdyUserRepository.FirstOrDefaultAsync(a => a.Id == input.UserId);
+            if (userInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "用户信息错误");
+            }
+
             //历史表
-            var dbInput = new UserHistory(dbEpInfo.VideoEpisodeGroup.MainId, input.EpId);
+            var dbHistory = new UserHistory(dbEpInfo.VideoEpisodeGroup.MainId, input.EpId);
             var exit = await _userHistoryRepository.GetAsNoTracking()
                 .AnyAsync(a => a.IsDelete == false &&
                                a.EpId == input.EpId &&
@@ -55,8 +65,13 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "已存在");
             }
 
-            CreateUserHistoryHandler(dbInput, input);
-            await _userHistoryRepository.CreateAsync(dbInput);
+            CreateUserHistoryHandler(dbHistory, input);
+            dbHistory.KeyId = dbEpInfo.VideoEpisodeGroup.MainId;
+            dbHistory.VodName = dbEpInfo.VideoEpisodeGroup.VideoMain.KeyWord;
+            dbHistory.EpName = dbEpInfo.EpisodeName;
+            dbHistory.UserName = userInfo.UserName;
+
+            await _userHistoryRepository.CreateAsync(dbHistory);
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success();
@@ -90,10 +105,7 @@ namespace KdyWeb.Service.SearchVideo
         {
             dbUserHistory.EpId = input.EpId;
             dbUserHistory.VodUrl = input.VodUrl;
-            dbUserHistory.KeyId = 1;
-            dbUserHistory.VodName = "测试名称";
-            dbUserHistory.EpName = "极速";
-            dbUserHistory.UserName = LoginUserInfo.UserName;
+            dbUserHistory.CreatedUserId = input.UserId;
         }
     }
 }
