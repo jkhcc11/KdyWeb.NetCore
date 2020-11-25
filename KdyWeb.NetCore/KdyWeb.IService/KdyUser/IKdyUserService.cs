@@ -15,5 +15,11 @@ namespace KdyWeb.IService
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<GetUserInfoDto>> GetUserInfoAsync(GetUserInfoInput input);
+
+        /// <summary>
+        /// 创建用户
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CreateUserAsync(CreateUserInput input);
     }
 }

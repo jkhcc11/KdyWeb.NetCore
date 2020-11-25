@@ -30,5 +30,17 @@ namespace KdyWeb.Job.Controllers
             var result = await _kdyUserService.GetUserInfoAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 创建用户
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("create")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> CreateUserAsync(CreateUserInput input)
+        {
+            var result = await _kdyUserService.CreateUserAsync(input);
+            return Ok(result);
+        }
     }
 }

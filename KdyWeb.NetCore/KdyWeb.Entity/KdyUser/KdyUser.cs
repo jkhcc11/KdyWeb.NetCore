@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Utility;
 
 namespace KdyWeb.Entity
 {
@@ -49,7 +50,7 @@ namespace KdyWeb.Entity
             UserName = userName;
             UserNick = userNick;
             UserEmail = userEmail;
-            UserPwd = userPwd;
+            UserPwd = $"{userPwd}{KdyWebConst.UserSalt}".Md5Ext();
             KdyRoleId = kdyRoleId;
         }
 

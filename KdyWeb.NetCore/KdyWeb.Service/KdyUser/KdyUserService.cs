@@ -17,10 +17,12 @@ namespace KdyWeb.IService
     public class KdyUserService : BaseKdyService, IKdyUserService
     {
         private readonly IKdyRepository<KdyUser, long> _kdyUserRepository;
+        private readonly IKdyRepository<KdyRole> _kdyRoleRepository;
 
-        public KdyUserService(IUnitOfWork unitOfWork, IKdyRepository<KdyUser, long> kdyUserRepository) : base(unitOfWork)
+        public KdyUserService(IUnitOfWork unitOfWork, IKdyRepository<KdyUser, long> kdyUserRepository, IKdyRepository<KdyRole> kdyRoleRepository) : base(unitOfWork)
         {
             _kdyUserRepository = kdyUserRepository;
+            _kdyRoleRepository = kdyRoleRepository;
         }
 
         /// <summary>
@@ -45,6 +47,27 @@ namespace KdyWeb.IService
             }
 
             return KdyResult.Success(userInfo);
+        }
+
+        /// <summary>
+        /// 创建用户
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> CreateUserAsync(CreateUserInput input)
+        {
+            var exit = await _kdyUserRepository.GetAsNoTracking()
+                .AnyAsync(a => a.UserName == input.UserName);
+            if (exit)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "用户名已存在");
+            }
+
+            var role = await _kdyRoleRepository.FirstOrDefaultAsync(a => a.KdyRoleType == KdyRoleType.Normal);
+            var dbUser = new KdyUser(input.UserName, input.UserNick, input.UserEmail, input.UserPwd, role.Id);
+
+            await _kdyUserRepository.CreateAsync(dbUser);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
         }
     }
 }

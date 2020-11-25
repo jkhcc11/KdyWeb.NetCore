@@ -174,7 +174,7 @@ namespace KdyWeb.Service.OldMigration
                 var roleId = item.UserRole == 3 ? 3 : 1;
                 var pwd = item.UserPwd.DesHexToStr(desKey);
 
-                var userItem = new KdyUser(item.UserName, item.UserNick, item.UserEmail, $"{pwd}{KdyWebConst.UserSalt}".Md5Ext(), roleId)
+                var userItem = new KdyUser(item.UserName, item.UserNick, item.UserEmail, pwd, roleId)
                 {
                     OldUserId = item.Id
                 };

@@ -19,8 +19,7 @@ namespace KdyWeb.EntityFramework.Mapping
             // builder.Property(a => a.Id).HasColumnName("KeyId");
             builder.Property(a => a.CreatedTime).HasColumnName("CreateTime");
 
-            builder.Ignore(a => a.IsDelete)
-                .Ignore(a => a.CreatedUserId)
+            builder.Ignore(a => a.CreatedUserId)
                 .Ignore(a => a.ModifyUserId);
         }
     }

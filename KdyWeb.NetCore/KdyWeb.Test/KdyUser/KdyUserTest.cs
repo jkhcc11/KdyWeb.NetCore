@@ -18,5 +18,19 @@ namespace KdyWeb.Test.KdyUser
             var result = await _service.GetUserInfoAsync(input);
             Assert.IsTrue(result.IsSuccess);
         }
+
+        [TestMethod]
+        public async Task CreateUserAsync()
+        {
+            var input = new CreateUserInput()
+            {
+                UserName = "test11",
+                UserEmail = "admin@111.com",
+                UserNick = "test11",
+                UserPwd = "123456"
+            };
+            var result = await _service.CreateUserAsync(input);
+            Assert.IsTrue(result.IsSuccess);
+        }
     }
 }
