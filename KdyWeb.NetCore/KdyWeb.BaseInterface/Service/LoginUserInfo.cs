@@ -22,8 +22,11 @@ namespace KdyWeb.BaseInterface.Service
         }
 
         public string UserAgent { get; set; }
+
         public string UserNick { get; set; }
+
         public string UserName { get; set; }
+
         public long? UserId { get; set; }
 
         /// <summary>

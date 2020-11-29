@@ -74,5 +74,45 @@ namespace KdyWeb.IService.SearchVideo
 
             return KdyResult.Success(result);
         }
+
+        /// <summary>
+        /// 创建用户收藏
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> CreateUserSubscribeAsync(CreateUserSubscribeInput input)
+        {
+            var exit = await _userSubscribeRepository.GetAsNoTracking()
+                .AnyAsync(a => a.CreatedUserId == input.UserId &&
+                               a.BusinessId == input.BusinessId &&
+                               a.UserSubscribeType == input.SubscribeType);
+            if (exit)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "已收藏，无需重复收藏");
+            }
+
+            long businessId=0;
+            var feature = string.Empty;
+            if (input.SubscribeType == UserSubscribeType.Vod)
+            {
+                #region 影片处理
+                var videoMain = await _videoMainRepository.FirstOrDefaultAsync(a => a.Id == input.BusinessId);
+                if (videoMain == null)
+                {
+                    return KdyResult.Error(KdyResultCode.Error, "影片Id错误");
+                }
+
+                businessId = videoMain.Id;
+                feature = videoMain.VideoContentFeature; 
+                #endregion
+            }
+
+            var dbSubscribe=new UserSubscribe(businessId, feature,input.SubscribeType)
+            {
+                CreatedUserId = input.UserId
+            };
+            await _userSubscribeRepository.CreateAsync(dbSubscribe);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
     }
 }

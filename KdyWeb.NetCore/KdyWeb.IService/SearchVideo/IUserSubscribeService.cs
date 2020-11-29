@@ -15,5 +15,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<PageList<QueryUserSubscribeDto>>> QueryUserSubscribeAsync(QueryUserSubscribeInput input);
+
+        /// <summary>
+        /// 创建用户收藏
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CreateUserSubscribeAsync(CreateUserSubscribeInput input);
     }
 }
