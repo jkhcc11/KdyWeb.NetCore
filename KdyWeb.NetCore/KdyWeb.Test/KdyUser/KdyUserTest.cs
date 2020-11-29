@@ -32,5 +32,16 @@ namespace KdyWeb.Test.KdyUser
             var result = await _service.CreateUserAsync(input);
             Assert.IsTrue(result.IsSuccess);
         }
+
+        [TestMethod]
+        public async Task CheckUserExitAsync()
+        {
+            var input = new CheckUserExitInput()
+            {
+                UserName = "test",
+            };
+            var result = await _service.CheckUserExitAsync(input);
+            Assert.IsTrue(result.IsSuccess == false);
+        }
     }
 }

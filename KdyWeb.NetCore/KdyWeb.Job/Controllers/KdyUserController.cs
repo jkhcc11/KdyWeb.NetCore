@@ -42,5 +42,17 @@ namespace KdyWeb.Job.Controllers
             var result = await _kdyUserService.CreateUserAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 检查用户是否存在
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("exit")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> CheckUserExitAsync([FromQuery] CheckUserExitInput input)
+        {
+            var result = await _kdyUserService.CheckUserExitAsync(input);
+            return Ok(result);
+        }
     }
 }

@@ -21,5 +21,11 @@ namespace KdyWeb.IService
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> CreateUserAsync(CreateUserInput input);
+
+        /// <summary>
+        /// 用户名或邮箱是否存在
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CheckUserExitAsync(CheckUserExitInput input);
     }
 }

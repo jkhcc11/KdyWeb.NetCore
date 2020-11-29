@@ -69,5 +69,22 @@ namespace KdyWeb.IService
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }
+
+        /// <summary>
+        /// 用户名或邮箱是否存在
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> CheckUserExitAsync(CheckUserExitInput input)
+        {
+            var check = await _kdyUserRepository.GetAsNoTracking()
+                .AnyAsync(a => a.UserName == input.UserName ||
+                               a.UserEmail == input.UserName);
+            if (check)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "用户名或邮箱已存在，请直接登录");
+            }
+
+            return KdyResult.Success();
+        }
     }
 }
