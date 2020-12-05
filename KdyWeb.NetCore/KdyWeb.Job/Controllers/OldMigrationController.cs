@@ -127,5 +127,29 @@ namespace KdyWeb.Job.Controllers
             return Ok("后台任务运行中");
         }
 
+        /// <summary>
+        /// 弹幕迁移
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("startDanMu/{maxPage}")]
+        public async Task<IActionResult> OldToNewDanMu(int maxPage)
+        {
+            if (maxPage <= 0 || maxPage >= 200)
+            {
+                maxPage = 1;
+            }
+
+            int page = 1, pageSize = 300;
+            while (page < maxPage)
+            {
+                var jobInput = new OldMigrationJobInput(page, pageSize);
+                BackgroundJob.Enqueue<OldMigrationJobService>(a => a.OldToNewDanMu(jobInput));
+
+                page++;
+                await Task.Delay(500);
+            }
+
+            return Ok("后台任务运行中");
+        }
     }
 }

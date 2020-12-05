@@ -84,7 +84,11 @@ namespace KdyWeb.Repository
                     case EntityState.Added:
                         {
                             entity.CreatedUserId ??= LoginUserInfo.UserId;
-                            entity.CreatedTime = DateTime.Now;
+                            if (entity.CreatedTime.Year == 1)
+                            {
+                                //无默认值时
+                                entity.CreatedTime = DateTime.Now;
+                            }
                             break;
                         }
                     case EntityState.Modified:

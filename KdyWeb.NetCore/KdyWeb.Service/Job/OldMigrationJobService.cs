@@ -94,5 +94,24 @@ namespace KdyWeb.Service.Job
 
             KdyLog.Trace($"迁移成功，pageInfo{input.ToJsonStr()}");
         }
+
+        public async Task OldToNewDanMu(OldMigrationJobInput input)
+        {
+            await Task.Delay(5000);
+
+            if (input.Page <= 0 || input.PageSize <= 0)
+            {
+                throw new ArgumentNullException(nameof(OldMigrationJobInput));
+            }
+
+            var migration = await _oldSysMainService.OldToNewDanMu(input.Page, input.PageSize);
+            if (migration.IsSuccess == false)
+            {
+                KdyLog.Warn($"迁移出错，pageInfo{input.ToJsonStr()}");
+                return;
+            }
+
+            KdyLog.Trace($"迁移成功，pageInfo{input.ToJsonStr()}");
+        }
     }
 }
