@@ -26,19 +26,6 @@ namespace KdyWeb.NetCore.Controllers
             _weiBoFileService = weiBoFileService;
         }
 
-        public async Task<IActionResult> Index(string url)
-        {
-            return Content("tttt");
-            //if (string.IsNullOrEmpty(url))
-            //{
-            //    await _douBanWebInfoService.GetInfoBySubjectId("111");
-            //    return Content("Url Is");
-            //}
-
-            //var result = await _kdyImgSaveService.PostFileByUrl(url);
-            //return Json(result);
-        }
-
         /// <summary>
         /// 获取微博cookie
         /// </summary>

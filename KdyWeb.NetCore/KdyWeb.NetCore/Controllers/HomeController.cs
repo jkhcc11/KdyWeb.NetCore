@@ -22,41 +22,9 @@ namespace KdyWeb.NetCore.Controllers
     public class HomeController : Controller
     {
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string url)
+        public IActionResult Index(string url)
         {
             return Content("这是首页");
-            ////var t = await _douBanInfoService.CreateForSubjectIdAsync(url);
-            ////return Json(t);
-            //// await _redisCache.GetCache().SetStringAsync("Index", url);
-
-            //// await _kdyImgSaveService.Test();
-            ////var emailInput = new SendEmailInput("137651076@qq.com","测试主题","测试内容");
-            ////_backgroundJobClient.Enqueue<SendEmailQueue>(a => a.Execute(emailInput));
-            //if (string.IsNullOrEmpty(url))
-            //{
-            //    return View();
-            //}
-
-            //var name = $"{DateTime.Now.Ticks:x}.jpg";
-            //var input = new MinIoFileInput("kdyimg", name, url);
-
-            //var result = await _minIoFileService.PostFile(input);
-            //return Json(result);
-
-            //if (string.IsNullOrEmpty(url))
-            //{
-            //    url = "https://www.baidu.com";
-            //}
-            //var reqInput = new KdyRequestCommonInput(url, HttpMethod.Get);
-            //var result = await _kdyRequestCommon.SendAsync(reqInput);
-            //if (result.IsSuccess == false)
-            //{
-            //    return Content(result.ErrMsg);
-            //}
-
-            //return Content(result.Data);
-
-            return View();
         }
 
 

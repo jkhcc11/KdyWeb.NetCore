@@ -8,7 +8,6 @@
     <Content Remove="Views\Home\Privacy.cshtml" />
     <Content Remove="Views\Shared\_Layout - 复制.cshtml" />
     <Content Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
-    <Content Remove="Views\_ViewImports.cshtml" />
     <Content Remove="wwwroot\lib\abphtml5\ABPlayer.js" />
     <Content Remove="wwwroot\lib\abphtml5\ABPMobile.js" />
     <Content Remove="wwwroot\lib\abphtml5\index.css" />
