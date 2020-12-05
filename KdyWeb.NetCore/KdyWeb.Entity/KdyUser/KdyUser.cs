@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Utility;
 
 namespace KdyWeb.Entity
 {
@@ -42,14 +43,12 @@ namespace KdyWeb.Entity
         /// <param name="userName">用户名</param>
         /// <param name="userNick">用户昵称</param>
         /// <param name="userEmail">邮箱</param>
-        /// <param name="userPwd">用户密码</param>
         /// <param name="kdyRoleId">角色id</param>
-        public KdyUser(string userName, string userNick, string userEmail, string userPwd, int kdyRoleId)
+        public KdyUser(string userName, string userNick, string userEmail, int kdyRoleId)
         {
             UserName = userName;
             UserNick = userNick;
             UserEmail = userEmail;
-            UserPwd = userPwd;
             KdyRoleId = kdyRoleId;
         }
 
@@ -97,5 +96,15 @@ namespace KdyWeb.Entity
         /// 用户角色
         /// </summary>
         public KdyRole KdyRole { get; set; }
+
+        /// <summary>
+        /// 重置新密码
+        /// </summary>
+        /// <param name="kdyUser"></param>
+        /// <param name="pwd">密码</param>
+        public static void SetPwd(KdyUser kdyUser, string pwd)
+        {
+            kdyUser.UserPwd = $"{pwd}{KdyWebConst.UserSalt}".Md5Ext();
+        }
     }
 }

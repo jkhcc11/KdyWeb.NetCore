@@ -21,6 +21,7 @@ namespace KdyWeb.Service.OldMigration
     {
         private readonly IKdyRepository<OldSearchSysMain> _mainRepository;
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
+        private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
 
         private readonly IKdyRepository<OldSearchSysUser> _oldUserRepository;
         private readonly IKdyRepository<OldUserHistory> _oldUserHistoryRepository;
@@ -30,10 +31,13 @@ namespace KdyWeb.Service.OldMigration
         private readonly IKdyRepository<OldUserSubscribe> _oldSubscribeRepository;
         private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
 
+        private readonly IKdyRepository<OldSearchSysDanMu> _oldSearchSysDanMuRepository;
+        private readonly IKdyRepository<VideoDanMu, long> _videoDanMuRepository;
+
         public OldSysMainService(IKdyRepository<OldSearchSysMain> mainRepository, IKdyRepository<VideoMain, long> videoMainRepository,
             IUnitOfWork unitOfWork, IKdyRepository<OldSearchSysUser> oldUserRepository, IKdyRepository<OldUserHistory> oldUserHistoryRepository,
             IKdyRepository<KdyUser, long> kdyUseRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<OldUserSubscribe> oldSubscribeRepository,
-            IKdyRepository<UserSubscribe, long> userSubscribeRepository) : base(unitOfWork)
+            IKdyRepository<UserSubscribe, long> userSubscribeRepository, IKdyRepository<OldSearchSysDanMu> oldSearchSysDanMuRepository, IKdyRepository<VideoDanMu, long> videoDanMuRepository, IKdyRepository<VideoEpisode, long> videoEpisodeRepository) : base(unitOfWork)
         {
             _mainRepository = mainRepository;
             _videoMainRepository = videoMainRepository;
@@ -43,6 +47,9 @@ namespace KdyWeb.Service.OldMigration
             _userHistoryRepository = userHistoryRepository;
             _oldSubscribeRepository = oldSubscribeRepository;
             _userSubscribeRepository = userSubscribeRepository;
+            _oldSearchSysDanMuRepository = oldSearchSysDanMuRepository;
+            _videoDanMuRepository = videoDanMuRepository;
+            _videoEpisodeRepository = videoEpisodeRepository;
         }
 
         public async Task<KdyResult> OldToNewMain(int page, int pageSize)
@@ -174,11 +181,11 @@ namespace KdyWeb.Service.OldMigration
                 var roleId = item.UserRole == 3 ? 3 : 1;
                 var pwd = item.UserPwd.DesHexToStr(desKey);
 
-                var userItem = new KdyUser(item.UserName, item.UserNick, item.UserEmail, $"{pwd}{KdyWebConst.UserSalt}".Md5Ext(), roleId)
+                var userItem = new KdyUser(item.UserName, item.UserNick, item.UserEmail, roleId)
                 {
                     OldUserId = item.Id
                 };
-
+                KdyUser.SetPwd(userItem, pwd);
                 newDb.Add(userItem);
             }
 
@@ -314,7 +321,7 @@ namespace KdyWeb.Service.OldMigration
                     continue;
                 }
 
-                var historyItem = new UserSubscribe(videoItem.Id, videoItem.VideoContentFeature)
+                var historyItem = new UserSubscribe(videoItem.Id, videoItem.VideoContentFeature, UserSubscribeType.Vod)
                 {
                     CreatedUserId = userItem.Id,
                     UserEmail = userItem.UserEmail
@@ -326,6 +333,62 @@ namespace KdyWeb.Service.OldMigration
             if (newDb.Any())
             {
                 await _userSubscribeRepository.CreateAsync(newDb);
+                await UnitOfWork.SaveChangesAsync();
+            }
+
+            return KdyResult.Success();
+        }
+
+        public async Task<KdyResult> OldToNewDanMu(int page, int pageSize)
+        {
+            var skip = (page - 1) * pageSize;
+
+            //旧用户订阅
+            var main = await _oldSearchSysDanMuRepository.GetQuery()
+                .OrderByDescending(a => a.CreatedTime)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
+            if (main.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无数据");
+            }
+
+            //所有Old剧集数据Key
+            var oldEpIds = main.Select(a => int.Parse(a.DVideoId)).ToList();
+
+            //新剧集数据
+            var videoEp = await _videoEpisodeRepository.GetQuery()
+                .Where(a => oldEpIds.Contains(a.OldEpId))
+                .ToListAsync();
+
+            //生成新数据
+            var newDb = new List<VideoDanMu>();
+            foreach (var item in main)
+            {
+                //新剧集
+                var epItem = videoEp.FirstOrDefault(a => a.OldEpId == int.Parse(item.DVideoId));
+                if (epItem == null)
+                {
+                    continue;
+                }
+
+                var historyItem = new VideoDanMu()
+                {
+                    DTime = item.DTime,
+                    DColor = item.DColor,
+                    Msg = item.DMsg,
+                    EpId = epItem.Id,
+                    DMode = item.DMode,
+                    DSize = item.DSize,
+                    CreatedTime = item.CreatedTime,
+                };
+                newDb.Add(historyItem);
+            }
+
+            if (newDb.Any())
+            {
+                await _videoDanMuRepository.CreateAsync(newDb);
                 await UnitOfWork.SaveChangesAsync();
             }
 

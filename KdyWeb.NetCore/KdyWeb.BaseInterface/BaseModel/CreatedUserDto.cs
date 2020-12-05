@@ -4,25 +4,39 @@ using Newtonsoft.Json;
 namespace KdyWeb.BaseInterface.BaseModel
 {
     /// <summary>
-    /// 创建和修改人信息Dto
+    /// Dto基类
     /// </summary>
-    public class CreatedUserDto<TKey>
+    /// <remarks>
+    ///  Id 
+    /// </remarks>
+    public class BaseEntityDto<TKey>
     {
         /// <summary>
         /// 主键
         /// </summary>
         [JsonConverter(typeof(JsonConverterLong))]
         public TKey Id { get; set; }
+    }
 
+    /// <summary>
+    /// 创建和修改人信息Dto
+    /// </summary>
+    /// <remarks>
+    ///  CreatedUserId、 ModifyUserId、CreatedTime、ModifyTime
+    /// </remarks>
+    public class CreatedUserDto<TKey> : BaseEntityDto<TKey>
+    {
         /// <summary>
         /// 创建用户
         /// </summary>
-        public int? CreatedUserId { get; set; }
+        [JsonConverter(typeof(JsonConverterLong))]
+        public long? CreatedUserId { get; set; }
 
         /// <summary>
         /// 修改用户
         /// </summary>
-        public int? ModifyUserId { get; set; }
+        [JsonConverter(typeof(JsonConverterLong))]
+        public long? ModifyUserId { get; set; }
 
         /// <summary>
         /// 创建时间

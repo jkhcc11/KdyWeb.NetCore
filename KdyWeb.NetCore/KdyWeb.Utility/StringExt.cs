@@ -330,6 +330,45 @@ namespace KdyWeb.Utility
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// 字符串转十六进制
+        /// </summary>
+        /// <param name="str">源字符串</param>
+        /// <returns></returns>
+        public static string StrToHex(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return string.Empty;
+            return BitConverter.ToString(Encoding.UTF8.GetBytes(str)).Replace("-", "");
+        }
+
+        /// <summary>
+        /// 字符串混淆
+        /// </summary>
+        /// <param name="str">待加密Str</param>
+        /// <param name="randLength">随机加密</param>
+        /// <returns></returns>
+        public static string ToStrConfuse(this string str, int randLength = 6)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
+            //类似360kan返回内容混淆
+            var n = str.Length / 2;
+            var o = str.Substring(0, n);
+            var i = str.Substring(n);
+            var rand = DateTime.Now.ToSecondTimestamp().ToString().Substring(0, randLength);
+            var endStr = o + rand + i;
+
+            //先随机加入字符串 转为16进制 然后逆序 
+            endStr = endStr.StrToHex();
+            var charArray = endStr.ToCharArray();
+            Array.Reverse(charArray);
+            return new string(charArray);
+        }
         #endregion
     }
 }

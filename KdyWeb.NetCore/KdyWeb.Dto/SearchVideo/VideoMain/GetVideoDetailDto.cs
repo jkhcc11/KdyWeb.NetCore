@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
@@ -16,6 +17,11 @@ namespace KdyWeb.Dto.SearchVideo
         /// 影片类型
         /// </summary>
         public Subtype Subtype { get; set; }
+
+        /// <summary>
+        /// 影片类型Str
+        /// </summary>
+        public string SubtypeStr => Subtype.GetDisplayName();
 
         /// <summary>
         /// 排序
@@ -49,11 +55,6 @@ namespace KdyWeb.Dto.SearchVideo
         /// 影片状态
         /// </summary>
         public VideoMainStatus VideoMainStatus { get; set; }
-
-        /// <summary>
-        /// 影片状态Str
-        /// </summary>
-        public string VideoMainStatusStr => VideoMainStatus.GetDisplayName();
 
         /// <summary>
         /// 又名 
@@ -101,6 +102,11 @@ namespace KdyWeb.Dto.SearchVideo
         /// 剧集信息组
         /// </summary>
         public List<VideoEpisodeGroupDto> EpisodeGroup { get; set; }
+
+        /// <summary>
+        /// 是否订阅
+        /// </summary>
+        public bool IsSubscribe { get; set; }
     }
 
     /// <summary>
@@ -155,7 +161,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 剧集信息组
     /// </summary>
     [AutoMap(typeof(VideoEpisodeGroup))]
-    public class VideoEpisodeGroupDto
+    public class VideoEpisodeGroupDto : BaseEntityDto<long>
     {
         /// <summary>
         /// 剧集组名
@@ -183,6 +189,14 @@ namespace KdyWeb.Dto.SearchVideo
         public string EpisodeGroupTypeStr => EpisodeGroupType.GetDisplayName();
 
         /// <summary>
+        /// 排序
+        /// </summary>
+        /// <remarks>
+        /// 越大越考前
+        /// </remarks>
+        public int OrderBy { get; set; }
+
+        /// <summary>
         /// 剧集
         /// </summary>
         public List<VideoEpisodeDto> Episodes { get; set; }
@@ -192,7 +206,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 剧集
     /// </summary>
     [AutoMap(typeof(VideoEpisode))]
-    public class VideoEpisodeDto
+    public class VideoEpisodeDto : BaseEntityDto<long>
     {
         /// <summary>
         /// 剧集Url
@@ -203,5 +217,48 @@ namespace KdyWeb.Dto.SearchVideo
         /// 剧集名
         /// </summary>
         public string EpisodeName { get; set; }
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        /// <remarks>
+        /// 越大越考前
+        /// </remarks>
+        public int OrderBy { get; set; }
+    }
+
+    /// <summary>
+    /// 剧集信息组 扩展
+    /// </summary>
+    public static class VideoEpisodeGroupDtoExtension
+    {
+        /// <summary>
+        /// 剧集组统一排序
+        /// </summary>
+        /// <returns></returns>
+        public static List<VideoEpisodeGroupDto> OrderByExt(this IList<VideoEpisodeGroupDto> list)
+        {
+            foreach (var groupItem in list)
+            {
+                groupItem.Episodes = groupItem.Episodes.OrderByDescending(a => a.OrderBy)
+                    .ThenBy(a => a.EpisodeName.Length)
+                    .ThenBy(a => a.EpisodeName)
+                    .ToList();
+            }
+
+            return list.OrderByDescending(a => a.OrderBy).ToList();
+        }
+
+        /// <summary>
+        /// 剧集组统一排序
+        /// </summary>
+        /// <returns></returns>
+        public static void OrderByExt(this VideoEpisodeGroupDto item)
+        {
+            item.Episodes = item.Episodes.OrderByDescending(a => a.OrderBy)
+                 .ThenBy(a => a.EpisodeName.Length)
+                 .ThenBy(a => a.EpisodeName)
+                 .ToList();
+        }
     }
 }

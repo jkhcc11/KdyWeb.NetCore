@@ -91,7 +91,7 @@ namespace KdyWeb.Job
                 })
                 .AddNewtonsoftJson(option =>
                 {
-                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:ss:ss";
+                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                 });
 
             //注入Hangfire
@@ -109,6 +109,8 @@ namespace KdyWeb.Job
             services.InitIdGenerate(Configuration)
                 .UseRedisCache(Configuration)
                 .AddMemoryCache();
+
+            services.AddMiniProfile();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -117,16 +119,20 @@ namespace KdyWeb.Job
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMiniProfile();
             }
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //todo:!!!! 这个得注意顺序 得放到Routing后
+            app.UseKdyLog();
 
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
 
             app.InitDashboard();
 

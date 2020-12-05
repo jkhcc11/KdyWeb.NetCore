@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.Repository;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,10 @@ namespace KdyWeb.BaseInterface.Service
         /// 登录信息
         /// </summary>
         protected readonly ILoginUserInfo LoginUserInfo;
+        /// <summary>
+        /// 可以单独更新字段
+        /// </summary>
+        protected readonly List<string> CanUpdateFieldList;
 
         protected BaseKdyService(IUnitOfWork unitOfWork)
         {
@@ -37,7 +42,7 @@ namespace KdyWeb.BaseInterface.Service
 
             UnitOfWork = unitOfWork;
             //UnitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
-
+            CanUpdateFieldList = new List<string>();
         }
 
         public virtual void Dispose()

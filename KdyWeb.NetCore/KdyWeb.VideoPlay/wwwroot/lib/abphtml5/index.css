@@ -1,0 +1,30 @@
+﻿body {
+}
+   a {
+            text-decoration: none;
+        }
+
+            a:link {
+                color: #FFFFFF;
+            }
+
+            a:visited {
+                color: #FFFFFF;
+            }
+
+            a:hover {
+                color: #CDCDCD;
+            }
+
+            a:active {
+                color: #3388FF;
+            }
+
+        html, body {
+            height: 100%;
+            -webkit-text-size-adjust: none;
+        }
+
+        .player {
+            height: 100%;
+        }

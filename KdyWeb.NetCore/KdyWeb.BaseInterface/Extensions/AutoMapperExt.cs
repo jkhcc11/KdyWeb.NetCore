@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KdyWeb.BaseInterface.Extensions
@@ -44,6 +46,21 @@ namespace KdyWeb.BaseInterface.Extensions
         {
             var mapper = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IMapper>();
             return mapper.Map<List<TTarget>>(source);
+        }
+
+        /// <summary>
+        /// AutoMapper ProjectTo扩展
+        /// </summary>
+        /// <typeparam name="TEntity">实体类</typeparam>
+        /// <typeparam name="TDto">Dto</typeparam>
+        /// <param name="queryable">IQueryable</param>
+        /// <returns></returns>
+        public static IQueryable<TDto> ProjectToExt<TEntity, TDto>(this IQueryable<TEntity> queryable)
+        where TDto : class, new()
+        {
+            //todo:IConfigurationProvider 这个必须是引用了 AutoMapper Extensions.DependencyInjection 然后AddAutoMapper后才有
+            var configuration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfigurationProvider>();
+            return queryable.ProjectTo<TDto>(configuration);
         }
     }
 }

@@ -12,10 +12,12 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         /// <param name="businessId">业务Id</param>
         /// <param name="businessFeature">业务特征码</param>
-        public UserSubscribe(long businessId, string businessFeature)
+        /// <param name="userSubscribeType">用户订阅类型</param>
+        public UserSubscribe(long businessId, string businessFeature, UserSubscribeType userSubscribeType)
         {
             BusinessId = businessId;
             BusinessFeature = businessFeature;
+            UserSubscribeType = userSubscribeType;
         }
 
         /// <summary>
@@ -35,5 +37,10 @@ namespace KdyWeb.Entity.SearchVideo
         /// 用户邮箱
         /// </summary>
         public string UserEmail { get; set; }
+
+        /// <summary>
+        /// 用户订阅类型
+        /// </summary>
+        public UserSubscribeType UserSubscribeType { get; set; }
     }
 }

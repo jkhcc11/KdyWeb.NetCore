@@ -81,6 +81,7 @@ namespace KdyWeb.Test
                 .InitIdGenerate(Configuration)
                 .UseRedisCache(Configuration)
                 .AddMemoryCache();
+            services.AddMiniProfile();
 
         }
 
