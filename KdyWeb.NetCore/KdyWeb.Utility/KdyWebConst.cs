@@ -9,6 +9,11 @@
         /// 密码盐
         /// </summary>
         public const string UserSalt = "20200412@kdyweb";
+
+        /// <summary>
+        /// Des Key
+        /// </summary>
+        public const string DesDecodeKey = "20201205";
     }
 
     /// <summary>

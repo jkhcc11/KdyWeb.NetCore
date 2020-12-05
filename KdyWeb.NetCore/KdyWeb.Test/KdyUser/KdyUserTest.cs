@@ -24,7 +24,7 @@ namespace KdyWeb.Test.KdyUser
         {
             var input = new CreateUserInput()
             {
-                UserName = "test11",
+                UserName = "test12",
                 UserEmail = "admin@111.com",
                 UserNick = "test11",
                 UserPwd = "123456"
@@ -42,6 +42,31 @@ namespace KdyWeb.Test.KdyUser
             };
             var result = await _service.CheckUserExitAsync(input);
             Assert.IsTrue(result.IsSuccess == false);
+        }
+
+        [TestMethod]
+        public async Task ModifyUserPwdAsync()
+        {
+            var input = new ModifyUserPwdInput()
+            {
+                UserId = 1333386925867929600,
+                OldPwd = "1234567",
+                NewPwd = "123456"
+            };
+            var result = await _service.ModifyUserPwdAsync(input);
+            Assert.IsTrue(result.IsSuccess);
+        }
+
+        [TestMethod]
+        public async Task FindUserPwdAsync()
+        {
+            var input = new FindUserPwdInput()
+            {
+                UserId = 1333386925867929600,
+                NewPwd = "1234567",
+            };
+            var result = await _service.FindUserPwdAsync(input);
+            Assert.IsTrue(result.IsSuccess);
         }
     }
 }

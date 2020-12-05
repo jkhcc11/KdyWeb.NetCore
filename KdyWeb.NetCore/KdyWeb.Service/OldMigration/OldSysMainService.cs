@@ -174,11 +174,11 @@ namespace KdyWeb.Service.OldMigration
                 var roleId = item.UserRole == 3 ? 3 : 1;
                 var pwd = item.UserPwd.DesHexToStr(desKey);
 
-                var userItem = new KdyUser(item.UserName, item.UserNick, item.UserEmail, pwd, roleId)
+                var userItem = new KdyUser(item.UserName, item.UserNick, item.UserEmail, roleId)
                 {
                     OldUserId = item.Id
                 };
-
+                KdyUser.SetPwd(userItem, pwd);
                 newDb.Add(userItem);
             }
 

@@ -13,17 +13,19 @@ namespace KdyWeb.EntityFramework.Mapping
     {
         public override void MapperConfigure(EntityTypeBuilder<KdyUser> builder)
         {
-            builder.HasData(
-                new KdyUser("admin", "管理员", "137651076@qq.com", $"123456{KdyWebConst.UserSalt}".Md5Ext(), 3)
-                {
-                    Id = 1
-                },
-                
-                new KdyUser("test", "普通用户测试", "123456@qq.com", $"123456{KdyWebConst.UserSalt}".Md5Ext(), 1)
-                {
-                    Id = 2
-                }
-            );
+            var test1 = new KdyUser("admin", "管理员", "137651076@qq.com", 3)
+            {
+                Id = 1
+            };
+            KdyUser.SetPwd(test1, "123456");
+
+            var test2 = new KdyUser("test", "普通用户测试", "123456@qq.com", 1)
+            {
+                Id = 2
+            };
+            KdyUser.SetPwd(test2, "123456");
+
+            builder.HasData(test1, test2);
 
             builder.Property(a => a.KdyRoleId).HasDefaultValue(1);
         }

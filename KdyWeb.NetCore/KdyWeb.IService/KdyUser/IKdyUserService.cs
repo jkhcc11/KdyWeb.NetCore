@@ -27,5 +27,17 @@ namespace KdyWeb.IService
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> CheckUserExitAsync(CheckUserExitInput input);
+
+        /// <summary>
+        /// 找回密码
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> FindUserPwdAsync(FindUserPwdInput input);
+
+        /// <summary>
+        /// 用户密码修改
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> ModifyUserPwdAsync(ModifyUserPwdInput input);
     }
 }

@@ -54,5 +54,29 @@ namespace KdyWeb.Job.Controllers
             var result = await _kdyUserService.CheckUserExitAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 找回密码
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("find")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> FindUserPwdAsync(FindUserPwdInput input)
+        {
+            var result = await _kdyUserService.FindUserPwdAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 用户密码修改
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("modify")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ModifyUserPwdAsync(ModifyUserPwdInput input)
+        {
+            var result = await _kdyUserService.ModifyUserPwdAsync(input);
+            return Ok(result);
+        }
     }
 }

@@ -8,10 +8,11 @@ using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
+using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace KdyWeb.IService.SearchVideo
+namespace KdyWeb.Service.SearchVideo
 {
     /// <summary>
     /// 用户订阅 服务实现

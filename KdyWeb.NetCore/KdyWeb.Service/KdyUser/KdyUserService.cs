@@ -63,8 +63,9 @@ namespace KdyWeb.IService
             }
 
             var role = await _kdyRoleRepository.FirstOrDefaultAsync(a => a.KdyRoleType == KdyRoleType.Normal);
-            var dbUser = new KdyUser(input.UserName, input.UserNick, input.UserEmail, input.UserPwd, role.Id);
+            var dbUser = new KdyUser(input.UserName, input.UserNick, input.UserEmail, role.Id);
 
+            KdyUser.SetPwd(dbUser, input.UserPwd);
             await _kdyUserRepository.CreateAsync(dbUser);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
@@ -84,6 +85,48 @@ namespace KdyWeb.IService
                 return KdyResult.Error(KdyResultCode.Error, "用户名或邮箱已存在，请直接登录");
             }
 
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 找回密码
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> FindUserPwdAsync(FindUserPwdInput input)
+        {
+            var dbUser = await _kdyUserRepository.FirstOrDefaultAsync(a => a.Id == input.UserId);
+            if (dbUser == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "用户信息错误，请重试");
+            }
+
+            KdyUser.SetPwd(dbUser, input.NewPwd);
+            _kdyUserRepository.Update(dbUser);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 用户密码修改
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> ModifyUserPwdAsync(ModifyUserPwdInput input)
+        {
+            var dbUser = await _kdyUserRepository.FirstOrDefaultAsync(a => a.Id == input.UserId);
+            if (dbUser == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "用户信息错误，请重试");
+            }
+
+            var oldMd5 = $"{input.OldPwd}{KdyWebConst.UserSalt}".Md5Ext();
+            if (oldMd5 != dbUser.UserPwd)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "旧密码错误，请重试");
+            }
+
+            KdyUser.SetPwd(dbUser, input.NewPwd);
+            _kdyUserRepository.Update(dbUser);
+            await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }
     }
