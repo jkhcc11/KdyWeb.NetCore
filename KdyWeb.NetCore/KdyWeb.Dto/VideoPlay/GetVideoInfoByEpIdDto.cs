@@ -37,5 +37,10 @@ namespace KdyWeb.Dto
         /// 下一集Id
         /// </summary>
         public long? NextEpId { get; set; }
+
+        /// <summary>
+        /// 扩展解析Host
+        /// </summary>
+        public string ExtensionParseHost { get; set; }
     }
 }
