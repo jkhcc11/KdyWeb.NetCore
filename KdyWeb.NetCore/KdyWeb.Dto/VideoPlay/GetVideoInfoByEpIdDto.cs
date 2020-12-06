@@ -1,4 +1,6 @@
 ﻿using System;
+using KdyWeb.BaseInterface;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Dto
 {
@@ -21,6 +23,7 @@ namespace KdyWeb.Dto
         /// <summary>
         /// 剧集Id(获取弹幕)
         /// </summary>
+        [JsonConverter(typeof(JsonConverterLong))]
         public long EpId { get; set; }
 
         /// <summary>
@@ -36,6 +39,7 @@ namespace KdyWeb.Dto
         /// <summary>
         /// 下一集Id
         /// </summary>
+        [JsonConverter(typeof(JsonConverterLong))]
         public long? NextEpId { get; set; }
 
         /// <summary>

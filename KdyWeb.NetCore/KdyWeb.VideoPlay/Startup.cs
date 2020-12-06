@@ -35,6 +35,10 @@ namespace KdyWeb.VideoPlay
 
                 options.HeaderName = "play.antiforgery";
                 options.FormFieldName = "play.antiforgery";
+
+                //如果不为true 则其他站无法使用iframe引用
+                //https://stackoverflow.com/questions/40523565/asp-net-core-x-frame-options-strange-behavior
+                options.SuppressXFrameOptionsHeader = true;
             });
 
             //添加自动防伪标记
