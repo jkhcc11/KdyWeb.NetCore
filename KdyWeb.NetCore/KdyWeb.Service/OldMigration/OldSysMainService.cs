@@ -10,6 +10,7 @@ using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.OldMigration;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.OldMigration
@@ -34,10 +35,13 @@ namespace KdyWeb.Service.OldMigration
         private readonly IKdyRepository<OldSearchSysDanMu> _oldSearchSysDanMuRepository;
         private readonly IKdyRepository<VideoDanMu, long> _videoDanMuRepository;
 
+        private readonly IKdyRepository<OldFeedBackInfo> _oldFeedBackInfoRepository;
+        private readonly IKdyRepository<FeedBackInfo> _feedBackInfoRepository;
+
         public OldSysMainService(IKdyRepository<OldSearchSysMain> mainRepository, IKdyRepository<VideoMain, long> videoMainRepository,
             IUnitOfWork unitOfWork, IKdyRepository<OldSearchSysUser> oldUserRepository, IKdyRepository<OldUserHistory> oldUserHistoryRepository,
             IKdyRepository<KdyUser, long> kdyUseRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<OldUserSubscribe> oldSubscribeRepository,
-            IKdyRepository<UserSubscribe, long> userSubscribeRepository, IKdyRepository<OldSearchSysDanMu> oldSearchSysDanMuRepository, IKdyRepository<VideoDanMu, long> videoDanMuRepository, IKdyRepository<VideoEpisode, long> videoEpisodeRepository) : base(unitOfWork)
+            IKdyRepository<UserSubscribe, long> userSubscribeRepository, IKdyRepository<OldSearchSysDanMu> oldSearchSysDanMuRepository, IKdyRepository<VideoDanMu, long> videoDanMuRepository, IKdyRepository<VideoEpisode, long> videoEpisodeRepository, IKdyRepository<OldFeedBackInfo> oldFeedBackInfoRepository, IKdyRepository<FeedBackInfo> feedBackInfoRepository) : base(unitOfWork)
         {
             _mainRepository = mainRepository;
             _videoMainRepository = videoMainRepository;
@@ -50,6 +54,8 @@ namespace KdyWeb.Service.OldMigration
             _oldSearchSysDanMuRepository = oldSearchSysDanMuRepository;
             _videoDanMuRepository = videoDanMuRepository;
             _videoEpisodeRepository = videoEpisodeRepository;
+            _oldFeedBackInfoRepository = oldFeedBackInfoRepository;
+            _feedBackInfoRepository = feedBackInfoRepository;
         }
 
         public async Task<KdyResult> OldToNewMain(int page, int pageSize)
@@ -389,6 +395,108 @@ namespace KdyWeb.Service.OldMigration
             if (newDb.Any())
             {
                 await _videoDanMuRepository.CreateAsync(newDb);
+                await UnitOfWork.SaveChangesAsync();
+            }
+
+            return KdyResult.Success();
+        }
+
+        public async Task<KdyResult> OldToNewFeedBackInfo(int page, int pageSize)
+        {
+            var skip = (page - 1) * pageSize;
+
+            //旧用户订阅
+            var main = await _oldFeedBackInfoRepository.GetQuery()
+                .OrderByDescending(a => a.CreatedTime)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
+            if (main.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无数据");
+            }
+
+            ////所有Old豆瓣信息Id
+            //var oldDouBanObjectId = main.Select(a => a.DouBanId).ToList();
+
+            //旧用户email
+            var oldEmail = main.Select(a => a.UserEmail).ToList();
+            var userInfo = await _kdyUseRepository.GetQuery()
+                .Where(a => oldEmail.Contains(a.UserEmail))
+                .ToListAsync();
+
+            //生成新数据
+            var newDb = new List<FeedBackInfo>();
+            foreach (var item in main)
+            {
+                //新用户
+                var userItem = userInfo.FirstOrDefault(a => a.UserEmail == item.UserEmail);
+                if (userItem == null)
+                {
+                    continue;
+                }
+
+                //影片信息
+                //var videoItem = videoInfo.FirstOrDefault(a => a.VideoInfoUrl.Contains(item.DouBanId));
+                //新影视数据
+                var videoInfo = await _videoMainRepository.GetQuery()
+                    .Where(a => a.VideoInfoUrl.Contains(item.DouBanId))
+                    .Select(a => new
+                    {
+                        a.KeyWord,
+                        a.VideoYear,
+                        a.VideoInfoUrl
+                    })
+                    .FirstOrDefaultAsync();
+                if (videoInfo == null)
+                {
+                    continue;
+                }
+
+                var newItem = new FeedBackInfo(UserDemandType.Input, item.Name, userItem.UserEmail)
+                {
+                    CreatedTime = item.CreatedTime,
+                    CreatedUserId = userItem.Id,
+                    VideoName = videoInfo.KeyWord
+                };
+
+                if (newItem.OriginalUrl.StartsWith("http:") ||
+                    newItem.OriginalUrl.StartsWith("https:"))
+                {
+                    newItem.OriginalUrl = newItem.OriginalUrl.Replace("http:", "")
+                        .Replace("https:", "");
+                }
+
+                switch (item.Status)
+                {
+                    case "已忽略":
+                        {
+                            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Ignore;
+                            break;
+                        }
+                    case "待审核":
+                        {
+                            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Pending;
+                            break;
+                        }
+                    case "正常":
+                        {
+                            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Processing;
+                            break;
+                        }
+                    case "资源录入完毕":
+                        {
+                            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Normal;
+                            break;
+                        }
+                }
+
+                newDb.Add(newItem);
+            }
+
+            if (newDb.Any())
+            {
+                await _feedBackInfoRepository.CreateAsync(newDb);
                 await UnitOfWork.SaveChangesAsync();
             }
 
