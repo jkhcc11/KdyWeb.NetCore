@@ -3,7 +3,10 @@
     <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/1.9.9/skins/default/index.css" />
     <script type="text/javascript" src="//g.alicdn.com/de/prismplayer/1.9.9/prism.js"></script>
     <script type="text/javascript" src="//cdn.staticfile.org/spark-md5/3.0.0/spark-md5.min.js"></script>
-    @*<script src="/js/parse.js"></script>*@
+    <environment exclude="Development">
+        <script src="/js/parse.js"></script>
+    </environment>
+    
     <script type="text/javascript" src="//cdn.staticfile.org/jquery/3.3.0/jquery.min.js"></script>
 }
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
@@ -33,7 +36,13 @@
     <script type="text/javascript">
         var dataJson = '@Html.Raw(ViewBag.OutModel)';
     </script>
-    <script src="/js/videoPlay/index.js?v=20191117"></script>
+    <environment include="Development">
+        <script src="/js/videoPlay/index.js?v=2020"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="/js/videoPlay/index.min.js"  asp-append-version="true"></script>
+    </environment>
+   
     <style type="text/css">
         #play-content {
             height: 100% !important;

@@ -174,11 +174,11 @@ InitVideoPlay.prototype = {
     },
     /**
      * 获取解析平台播放地址
-     * @param {} reqUrl 
-     * @param {} enUrl 
-     * @returns {} 
+     * @param { 请求Host} reqUrl
+     * @param { Des加密Url} enUrl
+     * @param { 剧集Id} epId
      */
-    getApiUrl: function (reqUrl, enUrl) {
+    getApiUrl: function (reqUrl, enUrl, epId) {
         var that = this, pd = {};
         pd.url = enUrl;
         $.ajax({
@@ -323,6 +323,13 @@ $(function () {
     var decodeData = JSON.parse(dataJson);
     if (decodeData.isSuccess === false) {
         $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">" + decodeData.msg + "</div>");
+        return;
+    }
+
+    if (decodeData.data.extensionParseHost != null &&
+        decodeData.data.extensionParseHost.length > 0) {
+        //网盘处理
+        initVideo.getApiUrl(decodeData.data.extensionParseHost, decodeData.data.playUrl, decodeData.data.epId);
         return;
     }
 

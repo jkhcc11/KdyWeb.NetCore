@@ -50,6 +50,11 @@
         /// Des加密密钥
         /// </summary>
         public const string DesKey = "DesKey";
+
+        /// <summary>
+        /// 云网盘解析域名
+        /// </summary>
+        public const string CloudDiskParseHost = "CloudDiskParseHost";
     }
 
     /// <summary>

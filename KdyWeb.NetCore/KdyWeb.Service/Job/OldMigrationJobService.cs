@@ -113,5 +113,43 @@ namespace KdyWeb.Service.Job
 
             KdyLog.Trace($"迁移成功，pageInfo{input.ToJsonStr()}");
         }
+
+        public async Task OldToNewFeedBackInfo(OldMigrationJobInput input)
+        {
+            await Task.Delay(5000);
+
+            if (input.Page <= 0 || input.PageSize <= 0)
+            {
+                throw new ArgumentNullException(nameof(OldMigrationJobInput));
+            }
+
+            var migration = await _oldSysMainService.OldToNewFeedBackInfo(input.Page, input.PageSize);
+            if (migration.IsSuccess == false)
+            {
+                KdyLog.Warn($"用户录入迁移出错，pageInfo{input.ToJsonStr()}");
+                return;
+            }
+
+            KdyLog.Trace($"用户录入迁移成功，pageInfo{input.ToJsonStr()}");
+        }
+
+        public async Task OldToNewSeries(OldMigrationJobInput input)
+        {
+            await Task.Delay(5000);
+
+            if (input.Page <= 0 || input.PageSize <= 0)
+            {
+                throw new ArgumentNullException(nameof(OldMigrationJobInput));
+            }
+
+            var migration = await _oldSysMainService.OldToNewSeries(input.Page, input.PageSize);
+            if (migration.IsSuccess == false)
+            {
+                KdyLog.Warn($"系列迁移出错，pageInfo{input.ToJsonStr()}");
+                return;
+            }
+
+            KdyLog.Trace($"系列迁移成功，pageInfo{input.ToJsonStr()}");
+        }
     }
 }

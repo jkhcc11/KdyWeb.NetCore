@@ -20,5 +20,12 @@ namespace KdyWeb.Test.OldMigration
             var result = await _service.OldToNewUser(1, 1);
             Assert.IsTrue(result.IsSuccess);
         }
+
+        [TestMethod]
+        public async Task OldToNewSeries()
+        {
+            var result = await _service.OldToNewSeries(1, 2);
+            Assert.IsTrue(result.IsSuccess);
+        }
     }
 }
