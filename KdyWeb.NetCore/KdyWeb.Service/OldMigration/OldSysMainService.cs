@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Exceptionless.Models.Data;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
@@ -38,10 +39,16 @@ namespace KdyWeb.Service.OldMigration
         private readonly IKdyRepository<OldFeedBackInfo> _oldFeedBackInfoRepository;
         private readonly IKdyRepository<FeedBackInfo> _feedBackInfoRepository;
 
+        private readonly IKdyRepository<OldSearchSysSeries> _oldSeriesRepository;
+        private readonly IKdyRepository<OldSearchSysSeriesList> _oldSeriesListRepository;
+        private readonly IKdyRepository<VideoSeries, long> _videoSeriesRepository;
+
         public OldSysMainService(IKdyRepository<OldSearchSysMain> mainRepository, IKdyRepository<VideoMain, long> videoMainRepository,
             IUnitOfWork unitOfWork, IKdyRepository<OldSearchSysUser> oldUserRepository, IKdyRepository<OldUserHistory> oldUserHistoryRepository,
             IKdyRepository<KdyUser, long> kdyUseRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<OldUserSubscribe> oldSubscribeRepository,
-            IKdyRepository<UserSubscribe, long> userSubscribeRepository, IKdyRepository<OldSearchSysDanMu> oldSearchSysDanMuRepository, IKdyRepository<VideoDanMu, long> videoDanMuRepository, IKdyRepository<VideoEpisode, long> videoEpisodeRepository, IKdyRepository<OldFeedBackInfo> oldFeedBackInfoRepository, IKdyRepository<FeedBackInfo> feedBackInfoRepository) : base(unitOfWork)
+            IKdyRepository<UserSubscribe, long> userSubscribeRepository, IKdyRepository<OldSearchSysDanMu> oldSearchSysDanMuRepository, IKdyRepository<VideoDanMu, long> videoDanMuRepository,
+            IKdyRepository<VideoEpisode, long> videoEpisodeRepository, IKdyRepository<OldFeedBackInfo> oldFeedBackInfoRepository, IKdyRepository<FeedBackInfo> feedBackInfoRepository,
+            IKdyRepository<OldSearchSysSeries> oldSeriesRepository, IKdyRepository<OldSearchSysSeriesList> oldSeriesListRepository, IKdyRepository<VideoSeries, long> videoSeriesRepository) : base(unitOfWork)
         {
             _mainRepository = mainRepository;
             _videoMainRepository = videoMainRepository;
@@ -56,6 +63,9 @@ namespace KdyWeb.Service.OldMigration
             _videoEpisodeRepository = videoEpisodeRepository;
             _oldFeedBackInfoRepository = oldFeedBackInfoRepository;
             _feedBackInfoRepository = feedBackInfoRepository;
+            _oldSeriesRepository = oldSeriesRepository;
+            _oldSeriesListRepository = oldSeriesListRepository;
+            _videoSeriesRepository = videoSeriesRepository;
         }
 
         public async Task<KdyResult> OldToNewMain(int page, int pageSize)
@@ -497,6 +507,85 @@ namespace KdyWeb.Service.OldMigration
             if (newDb.Any())
             {
                 await _feedBackInfoRepository.CreateAsync(newDb);
+                await UnitOfWork.SaveChangesAsync();
+            }
+
+            return KdyResult.Success();
+        }
+
+        public async Task<KdyResult> OldToNewSeries(int page, int pageSize)
+        {
+            var skip = (page - 1) * pageSize;
+
+            var main = await _oldSeriesRepository.GetQuery()
+                .OrderByDescending(a => a.CreatedTime)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
+            if (main.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无数据");
+            }
+
+            //系列列表
+            var allSeries = await _oldSeriesListRepository.GetAsNoTracking()
+                .Where(a => main.Select(b => b.Id).Contains(a.SeriesId))
+                .ToListAsync();
+
+            //影片列表
+            var oldIds = allSeries.Select(a => a.KeyId)
+                .ToList();
+            var allVideo = await _videoMainRepository.GetAsNoTracking()
+                .Where(a => oldIds.Contains(a.OldKeyId))
+                .ToListAsync();
+
+            var newDb = new List<VideoSeries>();
+            foreach (var item in main)
+            {
+                //生成系列信息
+                var dbSeries = new VideoSeries(item.SeriesName, item.SeriesImg)
+                {
+                    SeriesRemark = item.SeriesRemark,
+                    OrderBy = item.OrderBy,
+                    LiveUrl = item.LiveUrl,
+                    SeriesDesUrl = item.SeriesDesUrl,
+                    SeriesList = new List<VideoSeriesList>()
+                };
+                if (string.IsNullOrEmpty(dbSeries.SeriesImg) == false &&
+                    (dbSeries.SeriesImg.StartsWith("http:") ||
+                     dbSeries.SeriesImg.StartsWith("https:")))
+                {
+                    dbSeries.SeriesImg = dbSeries.SeriesImg.Replace("http:", "")
+                        .Replace("https:", "");
+                }
+
+                //当前系列列表
+                var itemList = allSeries.Where(a => a.SeriesId == item.Id)
+                    .ToList();
+                foreach (var tempItem in itemList)
+                {
+                    var videoItem = allVideo.FirstOrDefault(a => a.OldKeyId == tempItem.KeyId);
+                    if (videoItem == null)
+                    {
+                        continue;
+                    }
+
+                    dbSeries.SeriesList.Add(new VideoSeriesList()
+                    {
+                        OldKeyId = tempItem.KeyId,
+                        KeyId = videoItem.Id
+                    });
+                }
+
+                if (dbSeries.SeriesList.Any())
+                {
+                    newDb.Add(dbSeries);
+                }
+            }
+
+            if (newDb.Any())
+            {
+                await _videoSeriesRepository.CreateAsync(newDb);
                 await UnitOfWork.SaveChangesAsync();
             }
 
