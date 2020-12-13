@@ -1,5 +1,6 @@
 ﻿using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.Service.ServiceExtension;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -54,6 +55,8 @@ namespace KdyWeb.VideoPlay
                 });
 
             services.KdyRegisterInit(Configuration);
+
+            services.AddKdyWebParse(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -55,6 +55,22 @@
         /// 云网盘解析域名
         /// </summary>
         public const string CloudDiskParseHost = "CloudDiskParseHost";
+
+        /// <summary>
+        /// 解析配置节点
+        /// </summary>
+        public class KdyWebParseConfig
+        {
+            /// <summary>
+            /// CCTV解析配置节点
+            /// </summary>
+            public const string CctvConfig = "KdyWebParse:CctvConfig";
+
+            /// <summary>
+            /// 通用解析配置节点
+            /// </summary>
+            public const string NormalConfig = "KdyWebParse:NormalConfig";
+        }
     }
 
     /// <summary>
