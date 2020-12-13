@@ -82,6 +82,16 @@
         /// 微博缓存Key
         /// </summary>
         public const string WeiBoCookieKey = "WeiBoCookieKey";
+
+        /// <summary>
+        /// 弹幕缓存Key
+        /// </summary>
+        public const string DanMuKey = "DanMuKey";
+
+        /// <summary>
+        /// 视频缓存Key
+        /// </summary>
+        public const string VideoMainKey = "VideoMainKey";
     }
 
 }
