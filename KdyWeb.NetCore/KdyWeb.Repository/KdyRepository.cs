@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
-using KdyWeb.EntityFramework.ReadWrite;
-using KdyWeb.IRepository;
+using KdyWeb.BaseInterface.Service;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KdyWeb.Repository
 {
@@ -29,11 +30,17 @@ namespace KdyWeb.Repository
         /// 写库
         /// </summary>
         protected DbSet<TEntity> WriteDbSet;
+        /// <summary>
+        /// 用户登录信息
+        /// </summary>
+        protected ILoginUserInfo LoginUserInfo;
 
-        protected KdyRepository(IRwUnitOfWork unitOfWork)
+        protected KdyRepository(IUnitOfWork unitOfWork)
         {
+            // var unitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
             DbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Read).Set<TEntity>();
             WriteDbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Write).Set<TEntity>();
+            LoginUserInfo = KdyBaseServiceProvider.ServiceProvide.GetService<ILoginUserInfo>();
         }
 
         /// <summary>
@@ -78,7 +85,6 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual TEntity Update(TEntity entity)
         {
-            entity.ModifyTime = DateTime.Now;
             WriteDbSet.Update(entity);
             return entity;
         }
@@ -89,10 +95,11 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual void Update(List<TEntity> entity)
         {
-            foreach (var item in entity)
-            {
-                item.ModifyTime = DateTime.Now;
-            }
+            //foreach (var item in entity)
+            //{
+            //    item.ModifyUserId = LoginUserInfo.UserId;
+            //    // item.ModifyTime = DateTime.Now;
+            //}
 
             WriteDbSet.UpdateRange(entity);
         }
@@ -103,9 +110,26 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual void Delete(TEntity entity)
         {
+            entity.ModifyUserId = LoginUserInfo.UserId;
             entity.ModifyTime = DateTime.Now;
             entity.IsDelete = true;
             WriteDbSet.Update(entity);
+        }
+
+        /// <summary>
+        /// 批量软删除
+        /// </summary>
+        /// <returns></returns>
+        public virtual void Delete(List<TEntity> entity)
+        {
+            foreach (var item in entity)
+            {
+                item.ModifyUserId = LoginUserInfo.UserId;
+                item.ModifyTime = DateTime.Now;
+                item.IsDelete = true;
+            }
+
+            WriteDbSet.UpdateRange(entity);
         }
 
         /// <summary>
@@ -124,9 +148,8 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
-            entity.CreatedTime = DateTime.Now;
+            // entity.CreatedUserId = LoginUserInfo.UserId;
             await WriteDbSet.AddAsync(entity);
-            //  await _dbContext.SaveChangesAsync();
             return entity;
         }
 
@@ -136,13 +159,17 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public async Task CreateAsync(List<TEntity> entity)
         {
-            foreach (var item in entity)
-            {
-                item.CreatedTime = DateTime.Now;
-            }
+            //foreach (var item in entity)
+            //{
+            //    item.CreatedUserId = LoginUserInfo.UserId;
+            //}
 
             await WriteDbSet.AddRangeAsync(entity);
-            //   await _dbContext.SaveChangesAsync();
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
     }
 
@@ -172,7 +199,8 @@ namespace KdyWeb.Repository
                 return result;
             }
 
-            if (pageInput.OrderBy != null)
+            if (pageInput.OrderBy != null &&
+                pageInput.OrderBy.Any())
             {
                 dbQuery = dbQuery.KdyOrderBy(pageInput);
             }

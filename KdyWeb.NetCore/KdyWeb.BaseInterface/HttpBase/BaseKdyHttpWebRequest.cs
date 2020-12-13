@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using Newtonsoft.Json;
 
@@ -23,6 +24,10 @@ namespace KdyWeb.BaseInterface.HttpBase
         where TData : class
         where TInput : class, IHttpRequestInput<TExtData>
     {
+        protected BaseKdyHttpWebRequest(IUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
+
         /// <summary>
         /// 设置请求内容
         /// </summary>
@@ -270,5 +275,7 @@ namespace KdyWeb.BaseInterface.HttpBase
 
             input.Cookie = sb.ToString();
         }
+
+
     }
 }

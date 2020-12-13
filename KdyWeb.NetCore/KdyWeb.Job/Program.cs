@@ -46,11 +46,9 @@ namespace KdyWeb.Job
                     config.InitConfigCenter(context, consulUrl,
                         $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
                 })
-                .ConfigureServices((context, service) =>
-                {
-                    //后台运行的服务
-                    service.AddHostedService<TestJobService>();
-                })
+                //.ConfigureServices((context, service) =>
+                //{
+                //})
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

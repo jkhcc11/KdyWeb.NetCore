@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
+    <ProjectReference Include="..\KdyWeb.MiniProfiler\KdyWeb.MiniProfiler.csproj" />
     <ProjectReference Include="..\KdyWeb.Service\KdyWeb.Service.csproj" />
   </ItemGroup>
 

@@ -9,7 +9,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 获取最新50条豆瓣信息 Dto
     /// </summary>
     [AutoMap(typeof(DouBanInfo))]
-    public class GetTop50DouBanInfoDto : CreatedUserDto<int>
+    public class GetTop50DouBanInfoDto : CreatedUserDto<long>
     {
         /// <summary>
         /// 名称

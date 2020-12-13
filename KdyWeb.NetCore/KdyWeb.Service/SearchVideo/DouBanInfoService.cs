@@ -25,7 +25,8 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<DouBanInfo, int> _douBanInfoRepository;
         private readonly IKdyImgSaveService _kdyImgSaveService;
 
-        public DouBanInfoService(IDouBanWebInfoService douBanWebInfoService, IKdyRepository<DouBanInfo, int> douBanInfoRepository, IKdyImgSaveService kdyImgSaveService)
+        public DouBanInfoService(IDouBanWebInfoService douBanWebInfoService, IKdyRepository<DouBanInfo, int> douBanInfoRepository,
+            IKdyImgSaveService kdyImgSaveService, IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _douBanWebInfoService = douBanWebInfoService;
             _douBanInfoRepository = douBanInfoRepository;
@@ -105,6 +106,47 @@ namespace KdyWeb.Service.SearchVideo
                 .GetDtoPageListAsync<DouBanInfo, QueryDouBanInfoDto>(input);
 
             return KdyResult.Success(pageList);
+        }
+
+        /// <summary>
+        /// 获取豆瓣信息
+        /// </summary>
+        /// <param name="douBanInfoId">豆瓣信息Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult<GetDouBanInfoForIdDto>> GetDouBanInfoForIdAsync(int douBanInfoId)
+        {
+            var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == douBanInfoId);
+            if (dbDouBanInfo == null)
+            {
+                return KdyResult.Error<GetDouBanInfoForIdDto>(KdyResultCode.Error, "Id错误");
+            }
+
+            var result = dbDouBanInfo.MapToExt<GetDouBanInfoForIdDto>();
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 变更豆瓣信息状态
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> ChangeDouBanInfoStatusAsync(ChangeDouBanInfoStatusInput input)
+        {
+            var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanInfoId);
+            if (dbDouBanInfo == null)
+            {
+                return KdyResult.Error<GetDouBanInfoForIdDto>(KdyResultCode.Error, "Id错误");
+            }
+
+            if (dbDouBanInfo.DouBanInfoStatus == DouBanInfoStatus.SearchEnd)
+            {
+                return KdyResult.Error<GetDouBanInfoForIdDto>(KdyResultCode.Error, "状态已完成，不能更改");
+            }
+
+            dbDouBanInfo.DouBanInfoStatus = input.DouBanInfoStatus;
+            _douBanInfoRepository.Update(dbDouBanInfo);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success();
         }
     }
 }

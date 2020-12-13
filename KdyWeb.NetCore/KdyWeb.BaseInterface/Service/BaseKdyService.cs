@@ -1,4 +1,6 @@
-﻿using KdyWeb.BaseInterface.KdyLog;
+﻿using System;
+using System.Collections.Generic;
+using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,14 +24,31 @@ namespace KdyWeb.BaseInterface.Service
         /// 工作单元
         /// </summary>
         protected readonly IUnitOfWork UnitOfWork;
+        /// <summary>
+        /// 登录信息
+        /// </summary>
+        protected readonly ILoginUserInfo LoginUserInfo;
+        /// <summary>
+        /// 可以单独更新字段
+        /// </summary>
+        protected readonly List<string> CanUpdateFieldList;
 
-        protected BaseKdyService()
+        protected BaseKdyService(IUnitOfWork unitOfWork)
         {
+            //todo:UnitOfWork 用scope时 无法直接获取 先直接构造器注入 后面调整
             KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
-           // UnitOfWork = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IUnitOfWork>();
+            LoginUserInfo = KdyBaseServiceProvider.ServiceProvide.GetService<ILoginUserInfo>();
 
+            UnitOfWork = unitOfWork;
+            //UnitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
+            CanUpdateFieldList = new List<string>();
         }
 
+        public virtual void Dispose()
+        {
+            UnitOfWork?.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }

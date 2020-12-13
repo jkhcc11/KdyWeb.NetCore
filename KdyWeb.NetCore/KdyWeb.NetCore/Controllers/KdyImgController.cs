@@ -19,26 +19,11 @@ namespace KdyWeb.NetCore.Controllers
     {
         private readonly IKdyImgSaveService _kdyImgSaveService;
         private readonly IWeiBoFileService _weiBoFileService;
-        private readonly IDouBanWebInfoService _douBanWebInfoService;
 
-        public KdyImgController(IKdyImgSaveService kdyImgSaveService, IWeiBoFileService weiBoFileService, IDouBanWebInfoService douBanWebInfoService)
+        public KdyImgController(IKdyImgSaveService kdyImgSaveService, IWeiBoFileService weiBoFileService)
         {
             _kdyImgSaveService = kdyImgSaveService;
             _weiBoFileService = weiBoFileService;
-            _douBanWebInfoService = douBanWebInfoService;
-        }
-
-        public async Task<IActionResult> Index(string url)
-        {
-            return Content("tttt");
-            //if (string.IsNullOrEmpty(url))
-            //{
-            //    await _douBanWebInfoService.GetInfoBySubjectId("111");
-            //    return Content("Url Is");
-            //}
-
-            //var result = await _kdyImgSaveService.PostFileByUrl(url);
-            //return Json(result);
         }
 
         /// <summary>

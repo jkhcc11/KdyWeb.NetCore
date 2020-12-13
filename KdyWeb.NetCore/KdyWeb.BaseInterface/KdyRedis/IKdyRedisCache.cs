@@ -16,7 +16,7 @@ namespace KdyWeb.BaseInterface.KdyRedis
         IDatabase GetDb(int i = 0);
 
         /// <summary>
-        /// 获取StackExchange 主 IServer 从节点将抛出异常
+        /// 获取StackExchange 主 IServer 无节点将抛出异常
         /// </summary>
         /// <returns></returns>
         IServer GetServer();

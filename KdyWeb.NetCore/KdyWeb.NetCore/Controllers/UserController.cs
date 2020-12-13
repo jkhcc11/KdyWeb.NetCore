@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.NetCore.Controllers
 {
-
-    [AllowAnonymous]
     public class UserController : Controller
     {
         private readonly IKdyRedisCache _kdyRedisCache;
@@ -24,6 +22,7 @@ namespace KdyWeb.NetCore.Controllers
             _kdyRedisCache = kdyRedisCache;
         }
 
+        [AllowAnonymous]
         public IActionResult Login()
         {
             var key = "fea7c9ccb6c24cf8ad3f8b1d224a99f9@185";
@@ -39,6 +38,11 @@ namespace KdyWeb.NetCore.Controllers
             //    new ClaimsPrincipal(claimsIdentity),
             //    authProperties);
 
+            return Content("未登录");
+        }
+
+        public IActionResult Info()
+        {
             return Content("未登录");
         }
     }

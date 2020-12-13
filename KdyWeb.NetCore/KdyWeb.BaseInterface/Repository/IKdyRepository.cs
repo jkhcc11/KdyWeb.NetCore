@@ -13,7 +13,7 @@ namespace KdyWeb.BaseInterface.Repository
     /// </summary>
     /// <typeparam name="TEntity">实体类</typeparam>
     /// <typeparam name="TKey">主键</typeparam>
-    public interface IKdyRepository<TEntity, TKey> : IKdyScoped
+    public interface IKdyRepository<TEntity, TKey> : IKdyScoped, IDisposable
         where TEntity : class
         where TKey : struct
     {
@@ -22,6 +22,12 @@ namespace KdyWeb.BaseInterface.Repository
         /// </summary>
         /// <returns></returns>
         IQueryable<TEntity> GetQuery();
+
+        /// <summary>
+        /// 未跟踪查询
+        /// </summary>
+        /// <returns></returns>
+        IQueryable<TEntity> GetAsNoTracking();
 
         /// <summary>
         /// 获取单个
@@ -52,6 +58,12 @@ namespace KdyWeb.BaseInterface.Repository
         /// </summary>
         /// <returns></returns>
         void Delete(TEntity entity);
+
+        /// <summary>
+        /// 批量软删除
+        /// </summary>
+        /// <param name="entity"></param>
+        void Delete(List<TEntity> entity);
 
         /// <summary>
         /// 硬删除

@@ -55,12 +55,12 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 创建用户Id
         /// </summary>
-        int? CreatedUserId { get; set; }
+        long? CreatedUserId { get; set; }
 
         /// <summary>
         /// 修改用户Id
         /// </summary>
-        int? ModifyUserId { get; set; }
+        long? ModifyUserId { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -92,12 +92,12 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 创建用户
         /// </summary>
-        public int? CreatedUserId { get; set; }
+        public long? CreatedUserId { get; set; }
 
         /// <summary>
         /// 修改用户
         /// </summary>
-        public int? ModifyUserId { get; set; }
+        public long? ModifyUserId { get; set; }
 
         /// <summary>
         /// 创建时间

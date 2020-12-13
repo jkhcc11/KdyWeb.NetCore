@@ -3,11 +3,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.KdyFile;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KdyWeb.Service.KdyFile
 {
@@ -15,14 +20,25 @@ namespace KdyWeb.Service.KdyFile
     /// 文件存储 抽象基类
     /// </summary>
     /// <typeparam name="T">扩展参数</typeparam>
-    public abstract class BaseKdyFileService<T> : BaseKdyService, IKdyFileService<T>
+    public abstract class BaseKdyFileService<T> : IKdyService, IKdyFileService<T>
         where T : class, IBaseKdyFileInput
     {
+        /// <summary>
+        /// 统一日志
+        /// </summary>
+        protected readonly IKdyLog KdyLog;
+        /// <summary>
+        /// 统一配置
+        /// </summary>
+        protected readonly IConfiguration KdyConfiguration;
+
         protected readonly IHttpClientFactory _httpClientFactory;
 
         protected BaseKdyFileService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
+            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
+            KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
         }
 
         /// <summary>
@@ -128,6 +144,10 @@ namespace KdyWeb.Service.KdyFile
             //计算data字节数组的哈希值
             var md5Data = md5.ComputeHash(fileBytes);
             return md5Data.Aggregate("", (current, t) => current + t.ToString("x").PadLeft(2, '0'));
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

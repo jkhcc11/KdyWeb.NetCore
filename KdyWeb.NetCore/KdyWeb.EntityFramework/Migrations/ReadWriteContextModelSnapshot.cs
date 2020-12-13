@@ -15,7 +15,7 @@ namespace KdyWeb.EntityFramework.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.3")
+                .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -27,8 +27,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FileMd5")
                         .HasColumnType("nvarchar(32)")
@@ -46,8 +46,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("OneUrl")
                         .HasColumnType("nvarchar(200)")
@@ -93,8 +93,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsActivate")
                         .HasColumnType("bit");
@@ -114,8 +114,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("NavIcon")
                         .HasColumnType("nvarchar(50)")
@@ -142,8 +142,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsActivate")
                         .HasColumnType("bit");
@@ -161,8 +161,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -213,8 +213,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsActivate")
                         .HasColumnType("bit");
@@ -230,8 +230,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -247,16 +247,14 @@ namespace KdyWeb.EntityFramework.Migrations
 
             modelBuilder.Entity("KdyWeb.Entity.KdyUser", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
@@ -271,7 +269,10 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifyUserId")
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OldUserId")
                         .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
@@ -303,10 +304,11 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Id = 1L,
+                            CreatedTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDelete = false,
                             KdyRoleId = 3,
+                            OldUserId = 0,
                             UserEmail = "137651076@qq.com",
                             UserName = "admin",
                             UserNick = "管理员",
@@ -314,15 +316,399 @@ namespace KdyWeb.EntityFramework.Migrations
                         },
                         new
                         {
-                            Id = 2,
-                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Id = 2L,
+                            CreatedTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDelete = false,
                             KdyRoleId = 1,
+                            OldUserId = 0,
                             UserEmail = "123456@qq.com",
                             UserName = "test",
                             UserNick = "普通用户测试",
                             UserPwd = "496ec666bef4a074ac39915dfb645e51"
                         });
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldFeedBackInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DouBanId")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Old.SearchSys.Wait");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysDanMu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DColor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DMode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DMsg")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DSize")
+                        .HasColumnType("int");
+
+                    b.Property<float>("DTime")
+                        .HasColumnType("real");
+
+                    b.Property<string>("DVideoId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Old.SearchSys.DanMu");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysEpisode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("EpId")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EpisodeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EpisodeUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("KeyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeyId");
+
+                    b.ToTable("Old.SearchSys.Episode");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysMain", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("KeyId")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BanVideoJumpUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IsEnd")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IsMatchInfo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("KeyWord")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MovieType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NarrateUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResultImg")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResultUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoCasts")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoContentFeature")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoCountries")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoDescribe")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoDetail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoDirectors")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("VideoDouBan")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("VideoStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VideoType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("VideoYear")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Old.SearchSys.Main");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysSeries", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LiveUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OrderBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SeriesDesUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeriesImg")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeriesName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SeriesRemark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Old.SearchSys.Series");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysSeriesList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("KeyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SeriesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Old.SearchSys.SeriesList");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserNick")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserPwd")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserRole")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Old.SearchSys.User");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldUserHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EpId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EpName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("KeyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VodName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VodUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Old.SearchSys.UserHistory");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldUserSubscribe", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnName("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ObjId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Old.SearchSys.Subscribe");
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.QrImgSave", b =>
@@ -333,8 +719,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FileMd5")
                         .HasColumnType("nvarchar(32)")
@@ -351,8 +737,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("UserId")
                         .HasColumnType("bigint");
@@ -379,8 +765,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<byte>("DouBanInfoStatus")
                         .ValueGeneratedOnAdd()
@@ -399,8 +785,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("OldStatus")
                         .HasColumnType("nvarchar(max)");
@@ -474,8 +860,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("DemandType")
                         .HasColumnType("int");
@@ -491,8 +877,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ModifyUserId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("OriginalUrl")
                         .HasColumnType("nvarchar(200)")
@@ -515,18 +901,475 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.ToTable("FeedBackInfo");
                 });
 
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.UserHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("EpId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("EpName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<long>("KeyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VodName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VodUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserHistory");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.UserSubscribe", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BusinessFeature")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("UserSubscribeType")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserSubscribe");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoDanMu", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("DColor")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<int>("DMode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DSize")
+                        .HasColumnType("int");
+
+                    b.Property<float>("DTime")
+                        .HasColumnType("real");
+
+                    b.Property<long>("EpId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Msg")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VideoDanMu");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoEpisode", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("EpisodeGroupId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("EpisodeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(80)")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("EpisodeUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(280)")
+                        .HasMaxLength(280);
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OldEpId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EpisodeGroupId");
+
+                    b.ToTable("VideoEpisode");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoEpisodeGroup", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<byte>("EpisodeGroupStatus")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("EpisodeGroupType")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<long>("MainId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OrderBy")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MainId");
+
+                    b.ToTable("VideoEpisodeGroup");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoMain", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Aka")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsEnd")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMatchInfo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OldKeyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SourceUrl")
+                        .HasColumnType("nvarchar(280)")
+                        .HasMaxLength(280);
+
+                    b.Property<byte>("Subtype")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("VideoContentFeature")
+                        .HasColumnType("nvarchar(32)")
+                        .HasMaxLength(32);
+
+                    b.Property<double>("VideoDouBan")
+                        .HasColumnType("float");
+
+                    b.Property<string>("VideoImg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("VideoInfoUrl")
+                        .HasColumnType("nvarchar(280)")
+                        .HasMaxLength(280);
+
+                    b.Property<byte>("VideoMainStatus")
+                        .HasColumnType("tinyint");
+
+                    b.Property<int>("VideoYear")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VideoMain");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoMainInfo", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BanVideoJumpUrl")
+                        .HasColumnType("nvarchar(280)")
+                        .HasMaxLength(280);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<long>("MainId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("NarrateUrl")
+                        .HasColumnType("nvarchar(280)")
+                        .HasMaxLength(280);
+
+                    b.Property<string>("VideoCasts")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("VideoCountries")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("VideoDirectors")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("VideoGenres")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("VideoSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MainId")
+                        .IsUnique();
+
+                    b.ToTable("VideoMainInfo");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoSeries", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LiveUrl")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OrderBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SeriesDesUrl")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("SeriesImg")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("SeriesName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("SeriesRemark")
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VideoSeries");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoSeriesList", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<long>("KeyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OldKeyId")
+                        .HasColumnType("int");
+
+                    b.Property<long>("SeriesId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeyId")
+                        .IsUnique();
+
+                    b.HasIndex("SeriesId");
+
+                    b.ToTable("VideoSeriesList");
+                });
+
             modelBuilder.Entity("KdyWeb.Entity.KdyRoleMenu", b =>
                 {
                     b.HasOne("KdyWeb.Entity.KdyMenu", "KdyMenu")
                         .WithMany("KdyRoleMenus")
                         .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("KdyWeb.Entity.KdyRole", "KdyRole")
                         .WithMany("KdyRoleMenus")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -535,7 +1378,58 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasOne("KdyWeb.Entity.KdyRole", "KdyRole")
                         .WithMany("KdyUsers")
                         .HasForeignKey("KdyRoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysEpisode", b =>
+                {
+                    b.HasOne("KdyWeb.Entity.OldVideo.OldSearchSysMain", "Main")
+                        .WithMany("Episodes")
+                        .HasForeignKey("KeyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoEpisode", b =>
+                {
+                    b.HasOne("KdyWeb.Entity.SearchVideo.VideoEpisodeGroup", "VideoEpisodeGroup")
+                        .WithMany("Episodes")
+                        .HasForeignKey("EpisodeGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoEpisodeGroup", b =>
+                {
+                    b.HasOne("KdyWeb.Entity.SearchVideo.VideoMain", "VideoMain")
+                        .WithMany("EpisodeGroup")
+                        .HasForeignKey("MainId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoMainInfo", b =>
+                {
+                    b.HasOne("KdyWeb.Entity.SearchVideo.VideoMain", "VideoMain")
+                        .WithOne("VideoMainInfo")
+                        .HasForeignKey("KdyWeb.Entity.SearchVideo.VideoMainInfo", "MainId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.SearchVideo.VideoSeriesList", b =>
+                {
+                    b.HasOne("KdyWeb.Entity.SearchVideo.VideoMain", "VideoMain")
+                        .WithOne()
+                        .HasForeignKey("KdyWeb.Entity.SearchVideo.VideoSeriesList", "KeyId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KdyWeb.Entity.SearchVideo.VideoSeries", "VideoSeries")
+                        .WithMany("SeriesList")
+                        .HasForeignKey("SeriesId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -24,27 +24,27 @@ namespace KdyWeb.Dto.SearchVideo
         /// 2、录入 ->豆瓣Url、搜狗详情、百度百科等
         /// </remarks>
         [StringLength(FeedBackInfo.OriginalUrlLength)]
-        [Required]
+        [Required(ErrorMessage = "Url必填")]
         public string OriginalUrl { get; set; }
 
         /// <summary>
         /// 反馈类型
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "类型必填")]
         public UserDemandType DemandType { get; set; }
 
         /// <summary>
         /// 视频名称
         /// </summary>
         [StringLength(FeedBackInfo.VideoNameLength)]
-        [Required]
+        [Required(ErrorMessage = "视频名称必填")]
         public string VideoName { get; set; }
 
         /// <summary>
         /// 用户Email
         /// </summary>
         [StringLength(FeedBackInfo.UserEmailLength)]
-        [Required]
+        [Required(ErrorMessage = "Email必填")]
         public string UserEmail { get; set; }
     }
 }

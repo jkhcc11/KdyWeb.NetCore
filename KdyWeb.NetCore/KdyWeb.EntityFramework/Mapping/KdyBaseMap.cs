@@ -1,6 +1,5 @@
-﻿using System;
+﻿using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -51,7 +50,10 @@ namespace KdyWeb.EntityFramework.Mapping
             //long类型非自增
             if (typeof(long) == typeof(TKey))
             {
-                builder.Property(a => a.Id).ValueGeneratedNever();
+                builder.Property(a => a.Id)
+                    .IsRequired()
+                    .HasValueGenerator<GenerateForLong>()
+                    .ValueGeneratedNever();
             }
 
             builder.Property(a => a.IsDelete).HasDefaultValue(false);

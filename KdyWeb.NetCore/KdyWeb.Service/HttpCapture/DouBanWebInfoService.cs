@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Dto.KdyHttp;
@@ -31,7 +32,7 @@ namespace KdyWeb.Service.HttpCapture
         private const string PcHostUrl = "https://movie.douban.com";
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
 
-        public DouBanWebInfoService(IKdyRequestClientCommon kdyRequestClientCommon)
+        public DouBanWebInfoService(IKdyRequestClientCommon kdyRequestClientCommon, IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _kdyRequestClientCommon = kdyRequestClientCommon;
         }
@@ -150,12 +151,12 @@ namespace KdyWeb.Service.HttpCapture
             var tempJObject = JObject.Parse(jsonStr);
             var id = tempJObject.GetValueExt("url").RemoveStrExt("subject").Trim('/');
             var title = tempJObject.GetValueExt("name").Split(' ').First();
-            Enum.TryParse(tempJObject.GetValueExt("@type").Replace("TVSeries","Tv"), out Subtype subtype);
+            Enum.TryParse(tempJObject.GetValueExt("@type").Replace("TVSeries", "Tv"), out Subtype subtype);
 
             var result = new GetDouBanOut(title, year, pic, id)
             {
                 Subtype = subtype,
-                Actors = tempJObject.GetValueExt("actor", "name").HtmlPersonNameHandler(',',' '),
+                Actors = tempJObject.GetValueExt("actor", "name").HtmlPersonNameHandler(',', ' '),
                 Directors = tempJObject.GetValueExt("director", "name").HtmlPersonNameHandler(',', ' '),
                 Tags = tempJObject.GetValueExt("genre"),
                 Rating = tempJObject.GetValueExt("aggregateRating.ratingValue").ToDouble(),

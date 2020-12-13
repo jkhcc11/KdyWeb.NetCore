@@ -32,7 +32,10 @@ namespace KdyWeb.NetCore
             //添加自动防伪标记
             services.AddControllersWithViews(options =>
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()))
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(option =>
+                {
+                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+                });
 
             services.KdyRegisterInit(Configuration);
         }
@@ -43,6 +46,7 @@ namespace KdyWeb.NetCore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMiniProfile();
             }
             else
             {
@@ -67,6 +71,7 @@ namespace KdyWeb.NetCore
 
             //全局DI容器
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
+            KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             app.InitExceptionLess(Configuration);
         }
     }

@@ -6,10 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KdyWeb.Entity\KdyWeb.Entity.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Job\" />
+    <ProjectReference Include="..\KdyWeb.WebParse\KdyWeb.WebParse.csproj" />
   </ItemGroup>
 
 </Project>

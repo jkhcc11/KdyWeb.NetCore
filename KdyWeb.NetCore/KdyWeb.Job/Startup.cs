@@ -11,18 +11,24 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
+using KdyWeb.Dto.HttpCapture;
 using KdyWeb.EntityFramework;
-using KdyWeb.EntityFramework.ReadWrite;
-using KdyWeb.IRepository;
+using KdyWeb.IService.KdyWebParse;
+using KdyWeb.Job.JobService;
 using KdyWeb.Repository;
+using KdyWeb.Service.KdyWebParse;
+using KdyWeb.Service.ServiceExtension;
+using KdyWeb.WebParse;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace KdyWeb.Job
 {
@@ -38,10 +44,11 @@ namespace KdyWeb.Job
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //一主多从数据库
-            services.AddScoped<IRwContextFactory, RwContextFactory>();
-            services.AddScoped<IRwUnitOfWork, UnitOfWork>();
-
+            //关闭ModelState自动校验
+            services.Configure<ApiBehaviorOptions>(option =>
+            {
+                option.SuppressModelStateInvalidFilter = true;
+            });
             services.KdyRegister();
 
             //注入通用泛型仓储
@@ -84,10 +91,13 @@ namespace KdyWeb.Job
             var entityAssembly = typeof(BaseEntity<>).Assembly;
             services.AddAutoMapper(dtoAssembly, entityAssembly);
 
-            services.AddControllers()
+            services.AddControllers(opt =>
+                {
+                    opt.Filters.Add<ModelStateValidFilter>();
+                })
                 .AddNewtonsoftJson(option =>
                 {
-                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:ss:ss";
+                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                 });
 
             //注入Hangfire
@@ -105,6 +115,11 @@ namespace KdyWeb.Job
             services.InitIdGenerate(Configuration)
                 .UseRedisCache(Configuration)
                 .AddMemoryCache();
+
+            services.AddMiniProfile();
+
+            //注入自用站点解析
+            services.AddKdyWebParse(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,21 +128,26 @@ namespace KdyWeb.Job
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMiniProfile();
             }
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //todo:!!!! 这个得注意顺序 得放到Routing后
+            app.UseKdyLog();
 
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
+
             app.InitDashboard();
 
             //全局DI容器
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
+            KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             app.InitExceptionLess(Configuration);
         }
     }

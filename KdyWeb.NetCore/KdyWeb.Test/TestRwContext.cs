@@ -30,7 +30,7 @@ namespace KdyWeb.Test
         public async Task TestRollback()
         {
             var writerRepository = _host.Services.GetService<IKdyRepository<DouBanInfo, int>>();
-            var uw = _host.Services.GetService<IRwUnitOfWork>();
+            var uw = _host.Services.GetService<IUnitOfWork>();
 
             var guid = Guid.NewGuid().ToString("N");
             //写库

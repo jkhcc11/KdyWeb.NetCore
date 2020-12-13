@@ -45,11 +45,13 @@ namespace KdyWeb.EntityFramework.Mapping
 
             builder.HasMany(a => a.KdyRoleMenus)
                 .WithOne(a => a.KdyRole)
-                .HasForeignKey(a => a.RoleId);
+                .HasForeignKey(a => a.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(a => a.KdyUsers)
                 .WithOne(a => a.KdyRole)
-                .HasForeignKey(a => a.KdyRoleId);
+                .HasForeignKey(a => a.KdyRoleId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(a => a.KdyRoleType).HasDefaultValue(KdyRoleType.Normal);
         }

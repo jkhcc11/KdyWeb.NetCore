@@ -9,6 +9,11 @@
         /// 密码盐
         /// </summary>
         public const string UserSalt = "20200412@kdyweb";
+
+        /// <summary>
+        /// Des Key
+        /// </summary>
+        public const string DesDecodeKey = "20201205";
     }
 
     /// <summary>
@@ -40,6 +45,32 @@
         /// 邮件服务器配置
         /// </summary>
         public const string SmtpKey = "SmtpConfig";
+
+        /// <summary>
+        /// Des加密密钥
+        /// </summary>
+        public const string DesKey = "DesKey";
+
+        /// <summary>
+        /// 云网盘解析域名
+        /// </summary>
+        public const string CloudDiskParseHost = "CloudDiskParseHost";
+
+        /// <summary>
+        /// 解析配置节点
+        /// </summary>
+        public class KdyWebParseConfig
+        {
+            /// <summary>
+            /// CCTV解析配置节点
+            /// </summary>
+            public const string CctvConfig = "KdyWebParse:CctvConfig";
+
+            /// <summary>
+            /// 通用解析配置节点
+            /// </summary>
+            public const string NormalConfig = "KdyWebParse:NormalConfig";
+        }
     }
 
     /// <summary>
