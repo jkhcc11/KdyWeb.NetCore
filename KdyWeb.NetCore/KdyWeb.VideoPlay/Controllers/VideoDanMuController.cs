@@ -9,10 +9,8 @@ namespace KdyWeb.VideoPlay.Controllers
     /// <summary>
     /// 视频弹幕
     /// </summary>
-    [Route("api/[controller]")]
-    [ApiController]
     [AllowAnonymous]
-    public class VideoDanMuController : ControllerBase
+    public class VideoDanMuController : BaseApiController
     {
         private readonly IVideoDanMuService _videoDanMuService;
 

@@ -1,4 +1,6 @@
-﻿@section Styles
+﻿@using KdyWeb.Utility
+@using Microsoft.Extensions.Configuration
+@section Styles
 {
     <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/1.9.9/skins/default/index.css" />
     <script type="text/javascript" src="//g.alicdn.com/de/prismplayer/1.9.9/prism.js"></script>
@@ -6,20 +8,26 @@
     <environment exclude="Development">
         <script src="/js/parse.js"></script>
     </environment>
-    
+
     <script type="text/javascript" src="//cdn.staticfile.org/jquery/3.3.0/jquery.min.js"></script>
 }
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@inject IConfiguration Configuration
 @functions{
     public string GetAntiXsrfRequestToken()
     {
         return Xsrf.GetAndStoreTokens(Context).RequestToken;
     }
+
+    public string GetDefaultImg()
+    {
+        return Configuration.GetValue<string>(KdyWebServiceConst.ImgHostKey) + "/kdyImg/path/1168149110100987904";
+    }
 }
 <input type="hidden" id="vToken" name="vToken" value="@GetAntiXsrfRequestToken()">
 <div id="play-content" style="background: #000">
     <div style="text-align: center">
-        <img src="//img.zsxcb.net/kdyImg/path/1168149110100987904" style="width: 300px; height: 250px;" />
+        <img src="@GetDefaultImg()" style="width: 300px; height: 250px;" />
     </div>
 </div>
 
@@ -34,15 +42,15 @@
     <script src="//cdn.staticfile.org/hls.js/0.10.1/hls.min.js"></script>
 
     <script type="text/javascript">
-        var dataJson = '@Html.Raw(ViewBag.OutModel)';
+        var epId = '@ViewBag.EpId';
     </script>
     <environment include="Development">
         <script src="/js/videoPlay/index.js?v=2020"></script>
     </environment>
     <environment exclude="Development">
-        <script src="/js/videoPlay/index.min.js"  asp-append-version="true"></script>
+        <script src="/js/videoPlay/index.min.js" asp-append-version="true"></script>
     </environment>
-   
+
     <style type="text/css">
         #play-content {
             height: 100% !important;

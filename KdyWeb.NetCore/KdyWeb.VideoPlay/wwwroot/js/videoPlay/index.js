@@ -271,12 +271,13 @@ InitVideoPlay.prototype = {
      * */
     autoNext: function (vurl) {
         var kdyVideo = document.getElementById("kdy_video"),
-            positionMark = "kdy666." + SparkMD5.hash(vurl);
+            positionMark = "kdy666." + SparkMD5.hash(vurl),
+            dataJson = this._dataJson;
 
         //结束事件
         kdyVideo.addEventListener("ended",
             function () {
-                var decodeData = JSON.parse(dataJson);
+                var decodeData = dataJson;
                 var pushData = {},
                     nextEpId = decodeData.data.nextEpId;
                 pushData.epId = nextEpId;
@@ -308,32 +309,44 @@ InitVideoPlay.prototype = {
                     kdyVideo.currentTime = parsePm;
                 }
             }, false);
+    },
+    /**
+     * 设置私有属性
+     * @param {解析后的值} dataJson
+     */
+    setData: function(dataJson) {
+        this._dataJson = dataJson;
     }
 }
 
 $(function () {
 
-    var host = location.hostname;
-    //if (host !== "api.hcc11.com") {
-    //    $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">解析失败，请尝试刷新或更换播放地址！请加QQ群：128931211反馈</div>");
-    //    return;
-    //}
-    var initVideo = new InitVideoPlay();
+    var vToken = $("#vToken").val();
+    $.ajax({
+        type: "post",
+        url: '/api/PlayApi/getResult/' + epId,
+        headers: { "play.antiforgery": vToken },
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (json) {
+            var initVideo = new InitVideoPlay();
+            initVideo.setData(json);
 
-    var decodeData = JSON.parse(dataJson);
-    if (decodeData.isSuccess === false) {
-        $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">" + decodeData.msg + "</div>");
-        return;
-    }
+            if (json.isSuccess === false) {
+                $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">" + json.msg + "</div>");
+                return;
+            }
 
-    if (decodeData.data.extensionParseHost != null &&
-        decodeData.data.extensionParseHost.length > 0) {
-        //网盘处理
-        initVideo.getApiUrl(decodeData.data.extensionParseHost, decodeData.data.playUrl, decodeData.data.epId);
-        return;
-    }
+            if (json.data.extensionParseHost != null &&
+                json.data.extensionParseHost.length > 0) {
+                //网盘处理
+                initVideo.getApiUrl(json.data.extensionParseHost, json.data.playUrl, json.data.epId);
+                return;
+            }
 
-    var deCodeUrl = initVideo.jie(decodeData.data.playUrl);
-    initVideo.init('play-content', deCodeUrl, decodeData.data.epId);
+            var deCodeUrl = initVideo.jie(json.data.playUrl);
+            initVideo.init('play-content', deCodeUrl, json.data.epId);
+        }
+    });
 });
 
