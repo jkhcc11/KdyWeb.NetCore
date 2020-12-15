@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.IService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.VideoPlay.Controllers
@@ -22,8 +23,8 @@ namespace KdyWeb.VideoPlay.Controllers
         /// 解析
         /// </summary>
         /// <returns></returns>
-        [HttpPost("getResult/{epId}")]
-        public async Task<IActionResult> Index(long epId)
+        [HttpPost("result")]
+        public async Task<IActionResult> Index([FromForm] long epId)
         {
             var result = await _videoPlayService.GetVideoInfoByEpIdAsync(epId);
             return Ok(result);

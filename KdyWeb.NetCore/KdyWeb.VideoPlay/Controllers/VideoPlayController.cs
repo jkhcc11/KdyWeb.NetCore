@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using KdyWeb.IService;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.VideoPlay.Controllers
 {

@@ -3,6 +3,14 @@
  * 初始化
  */
 function InitVideoPlay() {
+    this._playResultApi = '/api/PlayApi/result';
+    this._getDanmuApi = '/api/VideoDanMu/get';
+    this._sendDanmuApi = '/api/VideoDanMu/create';
+
+    this.postType = {
+        'json': 0,
+        'form': 1
+    }
 }
 
 InitVideoPlay.prototype = {
@@ -73,6 +81,7 @@ InitVideoPlay.prototype = {
      * epId：弹幕标识
      */
     intDanMu: function (playId, vurl, epId) {
+        var that = this;
         //document.write('');
         $("#" + playId).html('');
         $("body")
@@ -132,7 +141,7 @@ InitVideoPlay.prototype = {
         var timer = setInterval(loadDandu, 30000);
 
         function loadDandu() {
-            var url = '/api/VideoDanMu/get/' + epId + '?timestamp=' + Math.round(new Date() / 1000);
+            var url = that._getDanmuApi + '/' + epId + '?timestamp=' + Math.round(new Date() / 1000);
             // 弹幕加载
             CommentLoader(url, abpinst.cmManager);
         }
@@ -144,7 +153,7 @@ InitVideoPlay.prototype = {
         abpinst.playerUnit.addEventListener('sendcomment',
             function (e) {
                 //console.log(e);
-                var pd = {}, vToken = $("#vToken").val();
+                var pd = {};
                 pd.DSize = e.detail.fontsize;
                 pd.DColor = e.detail.color;
                 pd.Msg = e.detail.message;
@@ -152,14 +161,7 @@ InitVideoPlay.prototype = {
                 pd.DMode = e.detail.mode;
                 pd.EpId = epId;
 
-                $.ajax({
-                    type: "put",
-                    url: "/api/VideoDanMu/create",
-                    headers: { "play.antiforgery": vToken },
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(pd),
-                    dataType: "json"
-                });
+                that.sendPost(that._sendDanmuApi, pd, that.postType.json);
             });
         abpinst.txtText.style.textAlign = 'center';
         //abpinst.btnDm.addEventListener('click', recordTid);
@@ -314,26 +316,49 @@ InitVideoPlay.prototype = {
      * 设置私有属性
      * @param {解析后的值} dataJson
      */
-    setData: function(dataJson) {
+    setData: function (dataJson) {
         this._dataJson = dataJson;
+    },
+    /**
+     * 发送post请求 待防伪标记
+     * @param { Api地址 } url
+     * @param { 请求对象 } pd
+     * @param { 请求类型 eg:json } dataType
+     * @param { 成功回调 } successCallBack
+     */
+    sendPost: function (url, pd, dataType, successCallBack) {
+        var vToken = $("#vToken").val(),
+            contentType = "application/x-www-form-urlencoded";
+        if (dataType === 0) {
+            contentType = "application/json; charset=utf-8";
+            pd = JSON.stringify(pd);
+        }
+        $.ajax({
+            type: "post",
+            url: url,
+            headers: { "_antiforgery": vToken },
+            contentType: contentType,
+            data: pd,
+            // dataType: "json",
+            success: successCallBack
+        });
     }
 }
 
 $(function () {
 
-    var vToken = $("#vToken").val();
-    $.ajax({
-        type: "post",
-        url: '/api/PlayApi/getResult/' + epId,
-        headers: { "play.antiforgery": vToken },
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (json) {
-            var initVideo = new InitVideoPlay();
+    var pd = {};
+    pd.epId = epId;
+    var initVideo = new InitVideoPlay();
+    initVideo.sendPost(initVideo._playResultApi,
+        pd,
+        initVideo.postType.form,
+        function (json) {
             initVideo.setData(json);
-
             if (json.isSuccess === false) {
-                $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">" + json.msg + "</div>");
+                $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">" +
+                    json.msg +
+                    "</div>");
                 return;
             }
 
@@ -346,7 +371,6 @@ $(function () {
 
             var deCodeUrl = initVideo.jie(json.data.playUrl);
             initVideo.init('play-content', deCodeUrl, json.data.epId);
-        }
-    });
+        });
 });
 

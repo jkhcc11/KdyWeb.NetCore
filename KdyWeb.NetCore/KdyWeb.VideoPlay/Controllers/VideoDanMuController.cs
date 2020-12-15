@@ -35,7 +35,7 @@ namespace KdyWeb.VideoPlay.Controllers
         /// 弹幕
         /// </summary>
         /// <returns></returns>
-        [HttpPut("create")]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateDanMuAsync(CreateDanMuInput input)
         {
             await _videoDanMuService.CreateDanMuAsync(input);
