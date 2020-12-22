@@ -2,7 +2,7 @@
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.WebParse;
 
-namespace KdyWeb.IService.KdyWebParse
+namespace KdyWeb.IService.HttpCapture
 {
     /// <summary>
     /// CCTV解析 服务接口

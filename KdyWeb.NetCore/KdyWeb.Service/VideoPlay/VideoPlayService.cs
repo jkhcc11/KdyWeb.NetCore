@@ -8,7 +8,7 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.IService;
-using KdyWeb.IService.KdyWebParse;
+using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;
 using KdyWeb.WebParse;

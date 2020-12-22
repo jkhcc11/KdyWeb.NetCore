@@ -5,12 +5,11 @@ using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.KdyHttp;
-using KdyWeb.IService.KdyWebParse;
 using KdyWeb.WebParse;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace KdyWeb.Service.KdyWebParse
+namespace KdyWeb.Service.HttpCapture
 {
     /// <summary>
     /// 通用站点解析 服务实现

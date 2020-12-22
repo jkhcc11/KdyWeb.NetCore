@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.HttpCapture;
-using KdyWeb.IService.KdyWebParse;
+using KdyWeb.IService.HttpCapture;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.VideoPlay.Controllers

@@ -11,14 +11,9 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
-using KdyWeb.Dto.HttpCapture;
-using KdyWeb.EntityFramework;
-using KdyWeb.IService.KdyWebParse;
 using KdyWeb.Job.JobService;
 using KdyWeb.Repository;
-using KdyWeb.Service.KdyWebParse;
 using KdyWeb.Service.ServiceExtension;
-using KdyWeb.WebParse;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +23,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace KdyWeb.Job
 {
@@ -120,6 +114,7 @@ namespace KdyWeb.Job
 
             //注入自用站点解析
             services.AddKdyWebParse(Configuration);
+            services.AddKdyPageParse(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
