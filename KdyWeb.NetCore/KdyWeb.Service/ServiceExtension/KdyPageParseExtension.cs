@@ -19,8 +19,8 @@ namespace KdyWeb.Service.ServiceExtension
         /// <returns></returns>
         public static IServiceCollection AddKdyPageParse(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IPageParseService<NormalPageParseOut, NormalPageParseInput>, NormalPageParseService>();
-            services.AddTransient<IPageParseService<NormalPageParseOut, NormalPageParseInput>, ZyPageParseService>();
+            services.AddScoped<IPageParseService<NormalPageParseOut, NormalPageParseInput>, NormalPageParseService>();
+            services.AddScoped<IPageParseService<NormalPageParseOut, NormalPageParseInput>, ZyPageParseService>();
 
             return services;
         }

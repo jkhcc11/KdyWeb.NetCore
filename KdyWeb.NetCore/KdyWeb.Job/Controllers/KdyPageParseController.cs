@@ -12,11 +12,11 @@ namespace KdyWeb.Job.Controllers
     /// </summary>
     public class KdyPageParseController : OldBaseApiController
     {
-        private readonly INormalPageParseService _normalPageParseService;
+        private readonly IPageSearchConfigService _pageSearchConfigService;
 
-        public KdyPageParseController(INormalPageParseService normalPageParseService)
+        public KdyPageParseController(IPageSearchConfigService pageSearchConfigService)
         {
-            _normalPageParseService = normalPageParseService;
+            _pageSearchConfigService = pageSearchConfigService;
         }
 
         /// <summary>
@@ -27,7 +27,19 @@ namespace KdyWeb.Job.Controllers
         [ProducesResponseType(typeof(KdyResult<NormalPageParseOut>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetResultAsync([FromQuery] NormalPageParseInput input)
         {
-            var result = await _normalPageParseService.GetResultAsync(input);
+            var parseInput=new GetPageParseInstanceInput()
+            {
+                ConfigId = input.ConfigId,
+              //  BaseHost = input.
+            };
+
+            var pageResult = await _pageSearchConfigService.GetPageParseInstanceAsync(parseInput);
+            if (pageResult.IsSuccess == false)
+            {
+                return Ok(pageResult);
+            }
+
+            var result =await pageResult.Data.GetResultAsync(input);
             return Ok(result);
         }
     }

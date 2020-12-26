@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -7,8 +9,10 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Entity.HttpCapture;
 using KdyWeb.IService.HttpCapture;
+using KdyWeb.PageParse;
 using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KdyWeb.Service.HttpCapture
 {
@@ -98,6 +102,42 @@ namespace KdyWeb.Service.HttpCapture
             var result = await _pageSearchConfigRepository.GetAsNoTracking()
                 .GetDtoPageListAsync<PageSearchConfig, GetDetailConfigDto>(input);
             return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 获取页面搜索实例
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<IPageParseService<NormalPageParseOut, NormalPageParseInput>>> GetPageParseInstanceAsync(GetPageParseInstanceInput input)
+        {
+            if (input.ConfigId.HasValue == false &&
+                input.ConfigId <= 0 &&
+                string.IsNullOrEmpty(input.BaseHost))
+            {
+                return KdyResult.Error<IPageParseService<NormalPageParseOut, NormalPageParseInput>>(KdyResultCode.Error, "域名或配置Id不能为空");
+            }
+
+            var query = _pageSearchConfigRepository.GetAsNoTracking();
+            if (input.ConfigId != null)
+            {
+                query = query.Where(a => a.Id == input.ConfigId);
+            }
+            else
+            {
+                query = query.Where(a => a.BaseHost == input.BaseHost ||
+                                         a.OtherHost.Contains(input.BaseHost));
+            }
+
+            //配置类名
+            var fullName = await query.Select(a => a.ServiceFullName).FirstOrDefaultAsync();
+            if (string.IsNullOrEmpty(fullName))
+            {
+                return KdyResult.Error<IPageParseService<NormalPageParseOut, NormalPageParseInput>>(KdyResultCode.Error, $"ConfigId:{input.ConfigId},BaseHost:{input.BaseHost} 当前搜索配置未生效");
+            }
+
+            var pageParseService = KdyBaseServiceProvider.HttpContextServiceProvide.GetServices<IPageParseService<NormalPageParseOut, NormalPageParseInput>>();
+            var service = pageParseService.First(a => a.GetType().FullName == fullName);
+            return KdyResult.Success(service);
         }
 
         /// <summary>

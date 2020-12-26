@@ -40,8 +40,19 @@ namespace KdyWeb.Service.HttpCapture
 
             foreach (var item in hnc)
             {
-                //完结
-                var endText = item.SelectSingleNode(BaseConfig.SearchConfig.EndXpath)?.InnerText;
+                var endText = string.Empty;
+                bool? isEnd = null;
+                if (string.IsNullOrEmpty(BaseConfig.SearchConfig.EndXpath) == false)
+                {
+                    //完结
+                    endText = item.SelectSingleNode(BaseConfig.SearchConfig.EndXpath)?.InnerText;
+                }
+
+                if (string.IsNullOrEmpty(endText) == false)
+                {
+                    isEnd = endText.Contains(BaseConfig.SearchConfig.NotEndKey) == false;
+                }
+
                 var detailUrl = item.GetAttributeValue("href", "");
                 if (detailUrl.StartsWith("http") == false)
                 {
@@ -87,7 +98,7 @@ namespace KdyWeb.Service.HttpCapture
 
                 var resultItem = new KdyWebPageSearchOutItem(name.RemoveStrExt(" "), detailUrl)
                 {
-                    IsEnd = endText?.Contains(BaseConfig.SearchConfig.NotEndKey) == false,
+                    IsEnd = isEnd,
                     ImgUrl = img
                 };
 

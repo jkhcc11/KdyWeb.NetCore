@@ -2,6 +2,7 @@
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
+using KdyWeb.PageParse;
 
 namespace KdyWeb.IService.HttpCapture
 {
@@ -33,5 +34,11 @@ namespace KdyWeb.IService.HttpCapture
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<PageList<GetDetailConfigDto>>> SearchConfigAsync(SearchConfigInput input);
+
+        /// <summary>
+        /// 获取页面搜索实例
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<IPageParseService<NormalPageParseOut, NormalPageParseInput>>> GetPageParseInstanceAsync(GetPageParseInstanceInput input);
     }
 }
