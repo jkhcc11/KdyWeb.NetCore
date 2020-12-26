@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
@@ -46,14 +48,18 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<string>> GetVideoDanMuAsync(long epId)
         {
-            var dbList = await _videoDanMuRepository.GetAsNoTracking()
-                .Where(a => a.EpId == epId)
-                .OrderBy(a => a.DTime)
-                .ToListAsync();
+            var cacheKey = $"{KdyServiceCacheKey.DanMuKey}:{epId}";
+            var list = await GetCacheValueAsync(cacheKey, async () =>
+            {
+                return await _videoDanMuRepository.GetAsNoTracking()
+                         .Where(a => a.EpId == epId)
+                         .OrderBy(a => a.DTime)
+                         .ToListAsync();
+            });
 
             var dm = new StringBuilder();
             dm.Append("<i>");
-            foreach (var item in dbList)
+            foreach (var item in list)
             {
                 var unix = item.CreatedTime.ToSecondTimestamp();
                 //时间节点，模式，字体大小，颜色，时间戳，stime,用户名，时间戳

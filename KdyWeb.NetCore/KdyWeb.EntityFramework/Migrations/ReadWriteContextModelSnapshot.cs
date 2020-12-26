@@ -19,6 +19,107 @@ namespace KdyWeb.EntityFramework.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("KdyWeb.Entity.HttpCapture.PageSearchConfig", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BaseHost")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<byte>("ConfigHttpMethod")
+                        .HasColumnType("tinyint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("DetailEndXpath")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("DetailImgXpath")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("DetailNameXpath")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("DetailXpath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("EndXpath")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("HostName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("HostRemark")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("ImgAttr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("NameAttr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NotEndKey")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("OtherHost")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("SearchData")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("SearchPath")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("SearchXpath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("ServiceFullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)")
+                        .HasMaxLength(150);
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PageSearchConfig");
+                });
+
             modelBuilder.Entity("KdyWeb.Entity.KdyImgSave", b =>
                 {
                     b.Property<long>("Id")
@@ -1423,7 +1524,7 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasOne("KdyWeb.Entity.SearchVideo.VideoMain", "VideoMain")
                         .WithOne()
                         .HasForeignKey("KdyWeb.Entity.SearchVideo.VideoSeriesList", "KeyId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("KdyWeb.Entity.SearchVideo.VideoSeries", "VideoSeries")

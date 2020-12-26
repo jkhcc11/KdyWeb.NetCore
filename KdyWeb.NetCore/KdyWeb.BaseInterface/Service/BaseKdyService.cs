@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.BaseInterface.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +35,10 @@ namespace KdyWeb.BaseInterface.Service
         /// 可以单独更新字段
         /// </summary>
         protected readonly List<string> CanUpdateFieldList;
+        /// <summary>
+        /// 缓存
+        /// </summary>
+        protected readonly IKdyRedisCache KdyRedisCache;
 
         protected BaseKdyService(IUnitOfWork unitOfWork)
         {
@@ -39,10 +46,30 @@ namespace KdyWeb.BaseInterface.Service
             KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
             LoginUserInfo = KdyBaseServiceProvider.ServiceProvide.GetService<ILoginUserInfo>();
+            KdyRedisCache = KdyBaseServiceProvider.ServiceProvide.GetService<IKdyRedisCache>();
 
             UnitOfWork = unitOfWork;
             //UnitOfWork = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<IUnitOfWork>();
             CanUpdateFieldList = new List<string>();
+        }
+
+        /// <summary>
+        /// 获取缓存
+        /// todo:待改造
+        /// </summary>
+        /// <returns></returns>
+        protected async Task<T> GetCacheValueAsync<T>(string cacheKey, Func<Task<T>> action)
+        {
+            var redisDb = KdyRedisCache.GetDb(1);
+            var cacheV = await redisDb.GetValueAsync<T>(cacheKey);
+            if (cacheV != null)
+            {
+                return cacheV;
+            }
+
+            var result = KdyAsyncHelper.Run(action);
+            await redisDb.SetValueAsync(cacheKey, result, TimeSpan.FromMinutes(5));
+            return result;
         }
 
         public virtual void Dispose()

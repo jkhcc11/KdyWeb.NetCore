@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
+using KdyWeb.Dto.HttpCapture;
 using KdyWeb.IService;
+using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;
+using KdyWeb.WebParse;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KdyWeb.Service
 {
@@ -47,7 +52,12 @@ namespace KdyWeb.Service
             var epUrl = epInfo.Data.EpisodeUrl;
             var cloudDiskParseHost = _configuration.GetValue<string>(KdyWebServiceConst.CloudDiskParseHost);
             var desKey = _configuration.GetValue<string>(KdyWebServiceConst.DesKey);
-            if (epUrl.Contains("/Cloud/Down"))
+            if (epUrl.EndsWith(".m3u8") ||
+                epUrl.EndsWith(".mp4"))
+            {
+                result = KdyResult.Success(outModel);
+            }
+            else if (epUrl.Contains("/Cloud/Down"))
             {
                 //云网盘解析
                 if (epUrl.StartsWith("//"))
@@ -62,8 +72,18 @@ namespace KdyWeb.Service
 
                 outModel.ExtensionParseHost = $"//{cloudDiskParseHost}";
                 outModel.PlayUrl = epInfo.Data.EpisodeUrl.ToDesHexExt(desKey);
+                result = KdyResult.Success(outModel);
+            }
+            else
+            {
+                result = await GetNoCloudParse(outModel, epUrl);
             }
             #endregion
+
+            if (result.IsSuccess == false)
+            {
+                return KdyResult.Error<GetVideoInfoByEpIdDto>(result.Code, result.Msg);
+            }
 
             var nowIndex = epInfo.Data.VideoEpisodeGroup.Episodes
                 .FindIndex(a => a.Id == epId);
@@ -74,6 +94,58 @@ namespace KdyWeb.Service
             }
 
             return KdyResult.Success(outModel, "操作成功");
+        }
+
+        /// <summary>
+        /// 非网盘解析
+        /// </summary>
+        /// <returns></returns>
+        private async Task<KdyResult<GetVideoInfoByEpIdDto>> GetNoCloudParse(GetVideoInfoByEpIdDto outModel, string epUrl)
+        {
+            var reqInput = new KdyWebParseInput()
+            {
+                DetailUrl = epUrl
+            };
+
+            KdyResult<KdyWebParseOut> parseResult = null;
+            if (epUrl.Contains("cctv.com"))
+            {
+                var cctvParse = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<ICctvWebParseService>();
+                if (cctvParse == null)
+                {
+                    return KdyResult.Error<GetVideoInfoByEpIdDto>(KdyResultCode.Error, "站点未配置");
+                }
+
+                parseResult = await cctvParse.GetResultAsync(reqInput);
+            }
+            else if (epUrl.StartsWith("detail,"))
+            {
+                var parse = KdyBaseServiceProvider.HttpContextServiceProvide.GetService<INormalWebParseService>();
+                if (parse == null)
+                {
+                    return KdyResult.Error<GetVideoInfoByEpIdDto>(KdyResultCode.Error, "站点未配置");
+                }
+
+                //detail,http://www.yc2050.com/play/56368/1/31.html|hcc11.cn
+                reqInput.DetailUrl = reqInput.DetailUrl.Replace("detail,", "")
+                    .Replace("|hcc11.cn", "")
+                    .Replace("|hcc11.com", "");
+
+                parseResult = await parse.GetResultAsync(reqInput);
+            }
+
+            if (parseResult == null)
+            {
+                return KdyResult.Error<GetVideoInfoByEpIdDto>(KdyResultCode.Error, "未知站点，请联系管理员");
+            }
+
+            if (parseResult.IsSuccess)
+            {
+                outModel.PlayUrl = parseResult.Data.ResultUrl.ToStrConfuse();
+                return KdyResult.Success(outModel);
+            }
+
+            return KdyResult.Error<GetVideoInfoByEpIdDto>(parseResult.Code, parseResult.Msg);
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -51,6 +54,23 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryVideoSeriesDto>>> QueryVideoSeriesAsync(QueryVideoSeriesInput input)
         {
+            if (input.OrderBy == null || input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(VideoSeries.OrderBy),
+                        OrderBy = KdyEfOrderBy.Desc
+                    },
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(VideoSeries.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
             var pageList = await _videoSeriesRepository.GetQuery()
                 .GetDtoPageListAsync<VideoSeries, QueryVideoSeriesDto>(input);
             return KdyResult.Success(pageList);
@@ -62,8 +82,21 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryVideoSeriesListDto>>> QueryVideoSeriesListAsync(QueryVideoSeriesListInput input)
         {
+            if (input.OrderBy == null || input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(VideoSeriesList.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
             var pageList = await _videoSeriesListRepository.GetQuery()
                 .Include(a => a.VideoMain)
+                .ThenInclude(a => a.VideoMainInfo)
                 .GetDtoPageListAsync<VideoSeriesList, QueryVideoSeriesListDto>(input);
             return KdyResult.Success(pageList);
         }
@@ -92,6 +125,81 @@ namespace KdyWeb.Service.SearchVideo
 
             VideoSeriesEdit(dbSeries, input);
             _videoSeriesRepository.Update(dbSeries);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 获取影片系列
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<SelectedItemOut>> GetVideoSeriesListAsync()
+        {
+            var result = await _videoSeriesRepository.GetAsNoTracking()
+                .ToListAsync();
+            if (result.Any() == false)
+            {
+                return new List<SelectedItemOut>();
+            }
+
+            return result.Select(a => new SelectedItemOut(a.SeriesName, a.Id + ""))
+                .ToList();
+        }
+
+        /// <summary>
+        /// 获取影片系列详情
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<QueryVideoSeriesDto>> GetVideoSeriesDetailAsync(long seriesId)
+        {
+            var result = await _videoSeriesRepository.GetAsNoTracking()
+                .Where(a => a.Id == seriesId)
+                .ProjectToExt<VideoSeries, QueryVideoSeriesDto>()
+                .FirstOrDefaultAsync();
+            if (result == null)
+            {
+                return KdyResult.Error<QueryVideoSeriesDto>(KdyResultCode.Error, "错误的系列Id");
+            }
+
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 创建影片系列列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> CreateVideoSeriesListAsync(CreateVideoSeriesListInput input)
+        {
+            if (input.VideoMainId == null || input.VideoMainId.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "影片列表不能为空");
+            }
+
+            //系列
+            var series = await _videoSeriesRepository.GetAsNoTracking()
+                .Where(a => a.Id == input.SeriesId)
+                .FirstOrDefaultAsync();
+            if (series == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "错误的系列Id");
+            }
+
+            //查重
+            var keyIds = input.VideoMainId.ToList();
+            var dbKeyIds = await _videoSeriesListRepository.GetAsNoTracking()
+                .Where(a => keyIds.Contains(a.KeyId) &&
+                            a.SeriesId == input.SeriesId)
+                .Select(a => a.KeyId)
+                .ToListAsync();
+
+            var canSeriesList = keyIds.Except(dbKeyIds);
+            var dbSeriesList = canSeriesList.Select(a => new VideoSeriesList()
+            {
+                SeriesId = series.Id,
+                KeyId = a
+            }).ToList();
+
+            await _videoSeriesListRepository.CreateAsync(dbSeriesList);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }

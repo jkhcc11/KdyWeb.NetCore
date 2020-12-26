@@ -92,12 +92,6 @@ namespace KdyWeb.BaseInterface
             context.Response.Body = responseBody;
             //执行其他
             await _next(context);
-            if (response.StatusCode != 200)
-            {
-                //非200不要记录
-                await _next(context);
-                return;
-            }
 
             //重置
             responseBody.Seek(0, SeekOrigin.Begin);

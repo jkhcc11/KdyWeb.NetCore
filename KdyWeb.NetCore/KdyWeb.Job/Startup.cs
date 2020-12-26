@@ -11,9 +11,9 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
-using KdyWeb.EntityFramework;
 using KdyWeb.Job.JobService;
 using KdyWeb.Repository;
+using KdyWeb.Service.ServiceExtension;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -111,6 +111,10 @@ namespace KdyWeb.Job
                 .AddMemoryCache();
 
             services.AddMiniProfile();
+
+            //注入自用站点解析
+            services.AddKdyWebParse(Configuration);
+            services.AddKdyPageParse(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

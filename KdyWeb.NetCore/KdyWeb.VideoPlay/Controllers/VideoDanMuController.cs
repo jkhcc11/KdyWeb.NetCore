@@ -9,10 +9,8 @@ namespace KdyWeb.VideoPlay.Controllers
     /// <summary>
     /// 视频弹幕
     /// </summary>
-    [Route("api/[controller]")]
-    [ApiController]
     [AllowAnonymous]
-    public class VideoDanMuController : ControllerBase
+    public class VideoDanMuController : BaseApiController
     {
         private readonly IVideoDanMuService _videoDanMuService;
 
@@ -37,7 +35,7 @@ namespace KdyWeb.VideoPlay.Controllers
         /// 弹幕
         /// </summary>
         /// <returns></returns>
-        [HttpPut("create")]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateDanMuAsync(CreateDanMuInput input)
         {
             await _videoDanMuService.CreateDanMuAsync(input);
