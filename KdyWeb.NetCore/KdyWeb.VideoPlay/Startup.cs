@@ -1,5 +1,6 @@
 ﻿using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.Service.ServiceExtension;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -32,9 +33,15 @@ namespace KdyWeb.VideoPlay
             services.AddAntiforgery(options =>
             {
                 options.Cookie.Name = "play.antiforgery";
+                //todo:非同源使用iframe引用时 不能使用Lax 否则cookie不生效,得使用None
+                options.Cookie.SameSite = SameSiteMode.None;
+                //options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
-                options.HeaderName = "play.antiforgery";
-                options.FormFieldName = "play.antiforgery";
+                //优先header 然后form
+                options.HeaderName = "_antiforgery";
+                //todo:前端必须是application/x-www-form-urlencoded controller用fromform
+                options.FormFieldName = "_antiforgery";
 
                 //如果不为true 则其他站无法使用iframe引用
                 //https://stackoverflow.com/questions/40523565/asp-net-core-x-frame-options-strange-behavior
@@ -54,6 +61,8 @@ namespace KdyWeb.VideoPlay
                 });
 
             services.KdyRegisterInit(Configuration);
+
+            services.AddKdyWebParse(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,8 +78,8 @@ namespace KdyWeb.VideoPlay
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
-
             app.UseRouting();
+
             app.UseKdyAuth(new KdyAuthMiddlewareOption()
             {
                 LoginUrl = "/User/Login"

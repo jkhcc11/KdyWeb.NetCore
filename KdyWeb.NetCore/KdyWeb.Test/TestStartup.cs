@@ -7,6 +7,7 @@ using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
 using KdyWeb.Repository;
+using KdyWeb.Service.ServiceExtension;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
@@ -83,6 +84,7 @@ namespace KdyWeb.Test
                 .AddMemoryCache();
             services.AddMiniProfile();
 
+            services.AddKdyPageParse(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

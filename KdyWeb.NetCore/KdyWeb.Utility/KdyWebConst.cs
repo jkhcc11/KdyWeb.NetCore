@@ -55,6 +55,22 @@
         /// 云网盘解析域名
         /// </summary>
         public const string CloudDiskParseHost = "CloudDiskParseHost";
+
+        /// <summary>
+        /// 解析配置节点
+        /// </summary>
+        public class KdyWebParseConfig
+        {
+            /// <summary>
+            /// CCTV解析配置节点
+            /// </summary>
+            public const string CctvConfig = "KdyWebParse:CctvConfig";
+
+            /// <summary>
+            /// 通用解析配置节点
+            /// </summary>
+            public const string NormalConfig = "KdyWebParse:NormalConfig";
+        }
     }
 
     /// <summary>
@@ -66,6 +82,16 @@
         /// 微博缓存Key
         /// </summary>
         public const string WeiBoCookieKey = "WeiBoCookieKey";
+
+        /// <summary>
+        /// 弹幕缓存Key
+        /// </summary>
+        public const string DanMuKey = "DanMuKey";
+
+        /// <summary>
+        /// 视频缓存Key
+        /// </summary>
+        public const string VideoMainKey = "VideoMainKey";
     }
 
 }

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using KdyWeb.IService;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.VideoPlay.Controllers
 {
@@ -9,23 +7,15 @@ namespace KdyWeb.VideoPlay.Controllers
     /// </summary>
     public class VideoPlayController : BaseController
     {
-        private readonly IVideoPlayService _videoPlayService;
-
-        public VideoPlayController(IVideoPlayService videoPlayService)
-        {
-            _videoPlayService = videoPlayService;
-        }
-
         /// <summary>
         /// 播放页
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> Index(long id)
+        public IActionResult Index(long id)
         {
             ViewData["Title"] = "看电影";
 
-            var result = await _videoPlayService.GetVideoInfoByEpIdAsync(id);
-            ViewBag.OutModel = ToJsonStr(result);
+            ViewBag.EpId = id;
             return View();
         }
     }
