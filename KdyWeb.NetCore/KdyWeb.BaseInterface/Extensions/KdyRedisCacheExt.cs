@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.KdyRedis;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace KdyWeb.BaseInterface.Extensions
@@ -42,6 +44,48 @@ namespace KdyWeb.BaseInterface.Extensions
                  opt.DistributedCache = new RedisCache(option);
              });
         }
+
+        #region 序列化扩展
+        /// <summary>
+        /// Redis设置值 异步
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<bool> SetValueAsync<T>(this IDatabase db, string key, T input, TimeSpan? ts = null)
+        {
+            var str = JsonConvert.SerializeObject(input);
+            return await db.StringSetAsync(key, str, ts);
+        }
+
+        /// <summary>
+        /// Redis获取值 异步
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<T> GetValueAsync<T>(this IDatabase db, string key)
+        {
+            var v = await db.StringGetAsync(key);
+            return v.IsNullOrEmpty ? default : JsonConvert.DeserializeObject<T>(v);
+        }
+
+        /// <summary>
+        /// Redis设置值
+        /// </summary>
+        /// <returns></returns>
+        public static bool SetValue<T>(this IDatabase db, string key, T input, TimeSpan? ts = null)
+        {
+            var str = JsonConvert.SerializeObject(input);
+            return db.StringSet(key, str, ts);
+        }
+
+        /// <summary>
+        /// Redis获取值
+        /// </summary>
+        /// <returns></returns>
+        public static T GetValue<T>(this IDatabase db, string key)
+        {
+            var v = db.StringGet(key);
+            return v.IsNullOrEmpty ? default : JsonConvert.DeserializeObject<T>(v);
+        }
+        #endregion
 
         /// <summary>
         /// 使用StackExchange.Redis 微软DistributedRedisCache 不能获取实例

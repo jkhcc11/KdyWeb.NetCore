@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KdyWeb.Entity\KdyWeb.Entity.csproj" />
+    <ProjectReference Include="..\KdyWeb.PageParse\KdyWeb.PageParse.csproj" />
+    <ProjectReference Include="..\KdyWeb.WebParse\KdyWeb.WebParse.csproj" />
   </ItemGroup>
 
 </Project>

@@ -35,5 +35,22 @@ namespace KdyWeb.IService.SearchVideo
         /// <returns></returns>
         Task<KdyResult> ModifyVideoSeriesAsync(ModifyVideoSeriesInput input);
 
+        /// <summary>
+        /// 获取影片系列
+        /// </summary>
+        /// <returns></returns>
+        Task<List<SelectedItemOut>> GetVideoSeriesListAsync();
+
+        /// <summary>
+        /// 获取影片系列详情
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<QueryVideoSeriesDto>> GetVideoSeriesDetailAsync(long seriesId);
+
+        /// <summary>
+        /// 创建影片系列列表
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CreateVideoSeriesListAsync(CreateVideoSeriesListInput input);
     }
 }
