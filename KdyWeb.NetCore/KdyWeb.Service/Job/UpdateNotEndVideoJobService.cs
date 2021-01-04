@@ -54,7 +54,7 @@ namespace KdyWeb.Service.Job
                 {
                     {"JobInput",input},
                     {"PageResult",pageResult}
-                });
+                }, input.MainId.ToString());
 
                 throw new Exception(pageResult.Msg);
             }
@@ -65,7 +65,7 @@ namespace KdyWeb.Service.Job
                 {
                     {"JobInput",input},
                     {"PageResult",pageResult}
-                });
+                }, input.MainId.ToString());
                 return;
             }
             #endregion
@@ -84,8 +84,9 @@ namespace KdyWeb.Service.Job
             KdyLog.Warn($"主键:{input.MainId} 抓取更新完成，{pageResult.Msg}", new Dictionary<string, object>()
             {
                 {"JobInput",input},
-                {"InputResult",inputResult}
-            });
+                {"InputResult",inputResult},
+                {"PageResult",pageResult}
+            }, input.MainId.ToString());
             #endregion
         }
 

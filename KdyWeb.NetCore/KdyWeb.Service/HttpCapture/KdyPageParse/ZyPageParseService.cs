@@ -119,8 +119,8 @@ namespace KdyWeb.Service.HttpCapture
                     url = tempArray[1];
                 }
 
-                if (url.EndsWith(".m3u8") == false &&
-                    url.EndsWith(".mp4") == false)
+                //todo:加配置获取或使用api获取
+                if (url.EndsWith(".m3u8") == false)
                 {
                     continue;
                 }
@@ -172,7 +172,7 @@ namespace KdyWeb.Service.HttpCapture
             if (input.DetailUrl.Contains("ac=videolist"))
             {
                 //api地址 转详情
-                var detailId = input.DetailUrl.GetDetailId();
+                var detailId = input.DetailUrl.GetNumber();
                 input.DetailUrl = $"{BaseConfig.BaseHost}/?m=vod-detail-id-{detailId}.html";
             }
 

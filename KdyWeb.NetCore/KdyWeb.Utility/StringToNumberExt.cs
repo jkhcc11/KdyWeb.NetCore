@@ -30,13 +30,13 @@ namespace KdyWeb.Utility
         }
 
         /// <summary>
-        /// 详情页id提取
+        /// 获取纯数字
         /// 如：http://www.baiwanzy.com/?m=vod-detail-id-14348.html  =》14348 <br/>
         /// http://agmov.com/video/play/17506 =》17506
         /// </summary>
         /// <param name="detailUrl">详情url</param>
         /// <returns></returns>
-        public static string GetDetailId(this string detailUrl)
+        public static string GetNumber(this string detailUrl)
         {
             var reg = new Regex(@"[1-9]\d*", RegexOptions.RightToLeft);
             var match = reg.Match(detailUrl);
