@@ -119,7 +119,8 @@ namespace KdyWeb.Service.HttpCapture
                     url = tempArray[1];
                 }
 
-                if (url.EndsWith(".m3u8") == false)
+                if (url.EndsWith(".m3u8") == false &&
+                    url.EndsWith(".mp4") == false)
                 {
                     continue;
                 }
@@ -160,6 +161,37 @@ namespace KdyWeb.Service.HttpCapture
             return KdyResult.Success(result);
         }
 
+        /// <summary>
+        /// 重写详情请求
+        /// </summary>
+        /// <param name="searchOut"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public override async Task<KdyResult<KdyRequestCommonResult>> SendDetailAsync(KdyWebPageSearchOutItem searchOut, KdyWebPagePageInput input)
+        {
+            if (input.DetailUrl.Contains("ac=videolist"))
+            {
+                //api地址 转详情
+                var detailId = input.DetailUrl.GetDetailId();
+                input.DetailUrl = $"{BaseConfig.BaseHost}/?m=vod-detail-id-{detailId}.html";
+            }
+
+            var reqInput = new KdyRequestCommonInput(input.DetailUrl, HttpMethod.Get)
+            {
+                UserAgent = BaseConfig.UserAgent,
+                TimeOut = 3000
+            };
+
+            //请求
+            var reqResult = await KdyRequestClientCommon.SendAsync(reqInput);
+            if (reqResult.IsSuccess == false)
+            {
+                return KdyResult.Error<KdyRequestCommonResult>(KdyResultCode.Error, $"解析失败，获取详情失败.{reqResult.ErrMsg}");
+            }
+
+            return KdyResult.Success(reqResult);
+        }
+
         protected override async Task<NormalPageParseConfig> GetConfigAsync(long configId)
         {
             var dbConfig = await _pageSearchConfigRepository.FirstOrDefaultAsync(a => a.Id == configId);
@@ -169,31 +201,6 @@ namespace KdyWeb.Service.HttpCapture
             }
 
             return dbConfig.ToNormalPageParseConfig();
-
-            //var config = new NormalPageParseConfig
-            //{
-            //    BaseHost = "https://okzyw.com",
-            //    UserAgent =
-            //        "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0",
-            //    SearchConfig = new BaseSearchConfig()
-            //    {
-            //        Method = HttpMethod.Post,
-            //        SearchPath = "/index.php?m=vod-search",
-            //        SearchData = "wd={0}&submit=search",
-            //        SearchXpath = "//span[@class='xing_vb4']/a",
-            //        EndXpath = "./text()",
-            //        NotEndKey = "更新"
-            //    },
-            //    PageConfig = new BasePageConfig()
-            //    {
-            //        DetailXpath = "//div[@id='2']/ul/li/text()",
-            //        ImgXpath = "//div[@class='vodImg']/img",
-            //        NameXpath = "//div[@class='vodh']/h2",
-            //        EndXpath = "//div[@class='vodh']/span",
-            //    }
-            //};
-
-            //return config;
         }
     }
 }

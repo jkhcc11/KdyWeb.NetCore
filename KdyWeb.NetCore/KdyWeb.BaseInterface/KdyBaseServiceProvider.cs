@@ -24,7 +24,8 @@ namespace KdyWeb.BaseInterface
         public static IHttpContextAccessor HttpContextAccessor { get; set; }
 
         /// <summary>
-        /// 用于获取Scoped 实例
+        /// 用于获取Scoped 实例 <br/>
+        /// 无HttpContext时 创建一个Scope 
         /// </summary>
         public static IServiceProvider HttpContextServiceProvide
         {
@@ -36,10 +37,9 @@ namespace KdyWeb.BaseInterface
                     return contextServiceProvide;
                 }
 
-                return ServiceProvide;
+                // return ServiceProvide;
                 //无HttpContext时 创建一个Scope
-                // var scope = ServiceProvide.GetService<IServiceScopeFactory>();
-                // return scope.CreateScope().ServiceProvider;
+                return ServiceProvide.CreateScope().ServiceProvider;
             }
         }
     }

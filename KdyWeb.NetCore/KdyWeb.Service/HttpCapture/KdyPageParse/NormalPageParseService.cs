@@ -158,9 +158,20 @@ namespace KdyWeb.Service.HttpCapture
             {
                 var url = nodeItem.GetAttributeValue("href", "");
                 var name = nodeItem.InnerText;
+                if (url == "#" || url.Contains("javascript"))
+                {
+                    continue;
+                }
+
                 if (url.StartsWith("http") == false)
                 {
                     url = $"{BaseConfig.BaseHost}{url}";
+                }
+
+                if (BaseConfig.BaseHost.Contains("360kan.com") == false)
+                {
+                    //360影视 除外
+                    url = $"detail,{url}";
                 }
 
                 var pageOutItem = new KdyWebPagePageOut(md5, url, name);

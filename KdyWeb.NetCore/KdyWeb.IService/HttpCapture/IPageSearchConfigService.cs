@@ -39,6 +39,6 @@ namespace KdyWeb.IService.HttpCapture
         /// 获取页面搜索实例
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult<IPageParseService<NormalPageParseOut, NormalPageParseInput>>> GetPageParseInstanceAsync(GetPageParseInstanceInput input);
+        Task<KdyResult<GetPageParseInstanceDto>> GetPageParseInstanceAsync(GetPageParseInstanceInput input);
     }
 }

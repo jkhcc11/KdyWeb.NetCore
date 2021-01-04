@@ -136,5 +136,9 @@
         /// </summary>
         ParError = 800,
 
+        /// <summary>
+        ///  系统错误
+        /// </summary>
+        SystemError = 500,
     }
 }

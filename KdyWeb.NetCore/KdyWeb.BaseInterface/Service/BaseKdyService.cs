@@ -58,7 +58,7 @@ namespace KdyWeb.BaseInterface.Service
         /// todo:待改造
         /// </summary>
         /// <returns></returns>
-        protected async Task<T> GetCacheValueAsync<T>(string cacheKey, Func<Task<T>> action)
+        protected async Task<T> GetCacheValueAsync<T>(string cacheKey, Func<Task<T>> action, TimeSpan? cacheTime = null)
         {
             var redisDb = KdyRedisCache.GetDb(1);
             var cacheV = await redisDb.GetValueAsync<T>(cacheKey);
@@ -67,8 +67,13 @@ namespace KdyWeb.BaseInterface.Service
                 return cacheV;
             }
 
+            if (cacheTime == null)
+            {
+                cacheTime = TimeSpan.FromMinutes(5);
+            }
+
             var result = KdyAsyncHelper.Run(action);
-            await redisDb.SetValueAsync(cacheKey, result, TimeSpan.FromMinutes(5));
+            await redisDb.SetValueAsync(cacheKey, result, cacheTime);
             return result;
         }
 

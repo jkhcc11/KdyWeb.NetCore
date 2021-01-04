@@ -70,52 +70,10 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "剧集不能为空");
             }
 
-            //影片剧集信息
-            var dbEpisode = await _videoEpisodeRepository.GetAsNoTracking()
-                .Where(a => a.VideoEpisodeGroup.MainId == input.MainId)
-                .ToListAsync();
-            if (dbEpisode.Any() == false)
+            var saveResult = await SaveEpisodeInfo(input.MainId, input.EpItems);
+            if (saveResult.IsSuccess == false)
             {
-                return KdyResult.Error(KdyResultCode.Error, "更新失败，不存在剧集");
-            }
-
-            var groupId = dbEpisode.First().EpisodeGroupId;
-            var dbEpNames = dbEpisode.Select(a => a.EpisodeName).ToList();
-
-            //新增的剧集
-            var canAddEp = input.EpItems
-                .Where(a => dbEpNames.Contains(a.EpisodeName) == false)
-                .ToList();
-            var canAddDbEp = canAddEp.Select(episodeItem => new VideoEpisode(episodeItem.EpisodeName, episodeItem.EpisodeUrl)
-            {
-                OrderBy = episodeItem.OrderBy ?? 0,
-                EpisodeGroupId = groupId
-            }).ToList();
-            if (canAddDbEp.Any())
-            {
-                await _videoEpisodeRepository.CreateAsync(canAddDbEp);
-            }
-
-            //更新的剧集
-            var canEditEp = input.EpItems
-                .Where(a => dbEpNames.Contains(a.EpisodeName))
-                .ToList();
-            var canEditList = new List<VideoEpisode>();
-            foreach (var epItem in canEditEp)
-            {
-                var dbItem = dbEpisode.FirstOrDefault(a => a.EpisodeName == epItem.EpisodeName);
-                if (dbItem == null)
-                {
-                    continue;
-                }
-
-                dbItem.EpisodeUrl = epItem.EpisodeUrl;
-                canEditList.Add(dbItem);
-            }
-
-            if (canEditList.Any())
-            {
-                _videoEpisodeRepository.Update(canEditList);
+                return KdyResult.Error(saveResult.Code, saveResult.Msg);
             }
 
             await UnitOfWork.SaveChangesAsync();
@@ -169,5 +127,65 @@ namespace KdyWeb.Service.SearchVideo
             return KdyResult.Success(result);
         }
 
+        /// <summary>
+        /// 更新未完结影片数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> UpdateNotEndVideoAsync(UpdateNotEndVideoInput input)
+        {
+            if (input.EpItems.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "剧集列表为空，更新失败");
+            }
+
+            var dbMain = await _videoMainRepository.FirstOrDefaultAsync(a => a.Id == input.MainId);
+            if (dbMain == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "影片主键错误");
+            }
+
+            //更新主表
+            dbMain.IsEnd = input.IsEnd;
+            dbMain.VideoContentFeature = input.VideoContentFeature;
+            _videoMainRepository.Update(dbMain);
+
+            var saveResult = await SaveEpisodeInfo(input.MainId, input.EpItems);
+            if (saveResult.IsSuccess == false)
+            {
+                return KdyResult.Error(saveResult.Code, saveResult.Msg);
+            }
+
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success("更新成功");
+        }
+
+        /// <summary>
+        /// 保存剧集信息
+        /// </summary>
+        /// <returns></returns>
+        private async Task<KdyResult> SaveEpisodeInfo(long mainId, List<EditEpisodeItem> epItems)
+        {
+            //影片剧集信息
+            var dbEpisode = await _videoEpisodeRepository.GetAsNoTracking()
+                .Where(a => a.VideoEpisodeGroup.MainId == mainId)
+                .ToListAsync();
+            if (dbEpisode.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "更新失败，不存在剧集");
+            }
+
+            var result = epItems.GetEditInfoExt(dbEpisode);
+            if (result.AddEpInfo.Any())
+            {
+                await _videoEpisodeRepository.CreateAsync(result.AddEpInfo);
+            }
+
+            if (result.UpdateEpInfo.Any())
+            {
+                _videoEpisodeRepository.Update(result.UpdateEpInfo);
+            }
+
+            return KdyResult.Success();
+        }
     }
 }
