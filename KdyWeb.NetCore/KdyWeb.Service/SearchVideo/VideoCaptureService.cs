@@ -32,13 +32,16 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IDouBanInfoService _douBanInfoService;
 
         private readonly IKdyRepository<PageSearchConfig, long> _pageSearchRepository;
+        private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
         public VideoCaptureService(IUnitOfWork unitOfWork, IKdyRepository<VideoMain, long> videoMainRepository,
-            IPageSearchConfigService pageSearchConfigService, IDouBanInfoService douBanInfoService, IKdyRepository<PageSearchConfig, long> pageSearchRepository) : base(unitOfWork)
+            IPageSearchConfigService pageSearchConfigService, IDouBanInfoService douBanInfoService,
+            IKdyRepository<PageSearchConfig, long> pageSearchRepository, IKdyRepository<DouBanInfo> douBanInfoRepository) : base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
             _pageSearchConfigService = pageSearchConfigService;
             _douBanInfoService = douBanInfoService;
             _pageSearchRepository = pageSearchRepository;
+            _douBanInfoRepository = douBanInfoRepository;
         }
 
         /// <summary>
@@ -100,6 +103,11 @@ namespace KdyWeb.Service.SearchVideo
             {
                 return KdyResult.Error(KdyResultCode.Error, $"影片已存在,影片采集失败。{name}");
             }
+
+            //更新豆瓣状态
+            var dbDouBan = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == douBanInfo.Data.Id);
+            dbDouBan.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
+            _douBanInfoRepository.Update(dbDouBan);
 
             //生成影片信息
             var dbVideoMain = new VideoMain(douBanInfo.Data.Subtype, name, douBanInfo.Data.VideoImg, input.DetailUrl, pageResult.Data.PageMd5);
