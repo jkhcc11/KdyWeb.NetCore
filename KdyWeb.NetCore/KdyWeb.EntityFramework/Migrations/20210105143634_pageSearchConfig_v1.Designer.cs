@@ -4,14 +4,16 @@ using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    partial class ReadWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20210105143634_pageSearchConfig_v1")]
+    partial class pageSearchConfig_v1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,9 +108,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<string>("PlayUrlSuffix")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte>("SearchConfigStatus")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("SearchData")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
@@ -130,9 +129,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<string>("UserAgent")
                         .HasColumnType("nvarchar(300)")
                         .HasMaxLength(300);
-
-                    b.Property<string>("YearXpath")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
