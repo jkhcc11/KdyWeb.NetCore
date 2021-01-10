@@ -135,6 +135,11 @@ namespace KdyWeb.Dto.HttpCapture
         public string[] PlayUrlSuffix { get; set; }
 
         /// <summary>
+        /// 详情页年份Xpath
+        /// </summary>
+        public string YearXpath { get; set; }
+
+        /// <summary>
         /// 采集详情地址 
         /// </summary>
         public string[] CaptureDetailUrl { get; set; }
