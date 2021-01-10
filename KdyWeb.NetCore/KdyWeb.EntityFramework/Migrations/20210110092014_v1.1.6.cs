@@ -2,10 +2,37 @@
 
 namespace KdyWeb.EntityFramework.Migrations
 {
-    public partial class pageSearchConfigYear : Migration
+    public partial class v116 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "CaptureDetailNameSplit",
+                table: "PageSearchConfig",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "CaptureDetailUrl",
+                table: "PageSearchConfig",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "CaptureDetailXpath",
+                table: "PageSearchConfig",
+                maxLength: 100,
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "PlayUrlSuffix",
+                table: "PageSearchConfig",
+                nullable: true);
+
+            migrationBuilder.AddColumn<byte>(
+                name: "SearchConfigStatus",
+                table: "PageSearchConfig",
+                nullable: false,
+                defaultValue: (byte)0);
+
             migrationBuilder.AddColumn<string>(
                 name: "YearXpath",
                 table: "PageSearchConfig",
@@ -56,6 +83,26 @@ namespace KdyWeb.EntityFramework.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "CaptureDetailNameSplit",
+                table: "PageSearchConfig");
+
+            migrationBuilder.DropColumn(
+                name: "CaptureDetailUrl",
+                table: "PageSearchConfig");
+
+            migrationBuilder.DropColumn(
+                name: "CaptureDetailXpath",
+                table: "PageSearchConfig");
+
+            migrationBuilder.DropColumn(
+                name: "PlayUrlSuffix",
+                table: "PageSearchConfig");
+
+            migrationBuilder.DropColumn(
+                name: "SearchConfigStatus",
+                table: "PageSearchConfig");
+
             migrationBuilder.DropColumn(
                 name: "YearXpath",
                 table: "PageSearchConfig");

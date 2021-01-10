@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    [Migration("20210105143634_pageSearchConfig_v1")]
-    partial class pageSearchConfig_v1
+    [Migration("20210110092014_v1.1.6")]
+    partial class v116
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -108,6 +108,9 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<string>("PlayUrlSuffix")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte>("SearchConfigStatus")
+                        .HasColumnType("tinyint");
+
                     b.Property<string>("SearchData")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
@@ -129,6 +132,9 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<string>("UserAgent")
                         .HasColumnType("nvarchar(300)")
                         .HasMaxLength(300);
+
+                    b.Property<string>("YearXpath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
