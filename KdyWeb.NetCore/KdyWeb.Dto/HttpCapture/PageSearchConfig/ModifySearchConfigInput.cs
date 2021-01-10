@@ -36,6 +36,11 @@ namespace KdyWeb.Dto.HttpCapture
             dbConfig.DetailNameXpath = input.DetailNameXpath;
             dbConfig.DetailEndXpath = input.DetailEndXpath;
             dbConfig.HostRemark = input.HostRemark;
+
+            dbConfig.PlayUrlSuffix = input.PlayUrlSuffix;
+            dbConfig.CaptureDetailUrl = input.CaptureDetailUrl;
+            dbConfig.CaptureDetailXpath = input.CaptureDetailXpath;
+            dbConfig.CaptureDetailNameSplit = input.CaptureDetailNameSplit;
         }
     }
 }

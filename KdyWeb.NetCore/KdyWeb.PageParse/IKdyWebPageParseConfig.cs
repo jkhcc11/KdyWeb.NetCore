@@ -86,5 +86,10 @@ namespace KdyWeb.PageParse
         /// 详情完结xpath
         /// </summary>
         string EndXpath { get; set; }
+
+        /// <summary>
+        /// 年份Xpath
+        /// </summary>
+        string YearXpath { get; set; }
     }
 }

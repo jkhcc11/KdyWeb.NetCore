@@ -106,7 +106,25 @@ namespace KdyWeb.Service.HttpCapture
                 searchOut.IsEnd = endText?.Contains(BaseConfig.SearchConfig.NotEndKey) == false;
             }
 
+            //年份
+            int year = -1;
+            if (string.IsNullOrEmpty(BaseConfig.PageConfig.YearXpath) == false)
+            {
+                var yearText = searchResult.Data.GetHtmlNodeByXpath(BaseConfig.PageConfig.YearXpath)?.InnerText;
+                int.TryParse(yearText, out year);
+            }
+
             var md5 = hnc.First().ParentNode.ParentNode.InnerHtml.Md5Ext();
+
+            //设置默认后缀
+            if (BaseConfig.PageConfig.PlayUrlSuffix == null ||
+                BaseConfig.PageConfig.PlayUrlSuffix.Any() == false)
+            {
+                BaseConfig.PageConfig.PlayUrlSuffix = new[] { ".m3u8" };
+            }
+
+            //获取优先匹配的后缀
+            var prioritySuffix = string.Empty;
             foreach (var nodeItem in hnc)
             {
                 var url = string.Empty;
@@ -119,13 +137,29 @@ namespace KdyWeb.Service.HttpCapture
                     url = tempArray[1];
                 }
 
-                //todo:加配置获取或使用api获取
-                if (url.EndsWith(".m3u8") == false)
+                //优先匹配给定后缀 没有则直接跳过 有则后面以此为标准
+                if (string.IsNullOrEmpty(prioritySuffix))
+                {
+                    foreach (var suffixItem in BaseConfig.PageConfig.PlayUrlSuffix)
+                    {
+                        if (url.EndsWith(suffixItem) == false)
+                        {
+                            continue;
+                        }
+
+                        prioritySuffix = suffixItem;
+                        break;
+                    }
+                }
+                else if (url.EndsWith(prioritySuffix) == false)
                 {
                     continue;
                 }
 
-                var pageOutItem = new KdyWebPagePageOut(md5, url, name);
+                var pageOutItem = new KdyWebPagePageOut(md5, url, name)
+                {
+                    VideoYear = year
+                };
                 result.Add(pageOutItem);
             }
 
@@ -152,6 +186,7 @@ namespace KdyWeb.Service.HttpCapture
             var result = new NormalPageParseOut()
             {
                 PageMd5 = detailResult.First().PageMd5,
+                VideoYear = detailResult.First().VideoYear,
                 DetailUrl = searchItem.DetailUrl,
                 IsEnd = searchItem.IsEnd ?? false,
                 ResultName = NameHandler(searchItem.ResultName),

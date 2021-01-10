@@ -131,6 +131,135 @@ namespace KdyWeb.Utility
             return HttpUtility.UrlDecode(str);
         }
 
+        /// <summary>
+        /// 提取名称中的季数信息  
+        /// 【生活大爆炸10】 ---> 10  <br/>
+        /// 【生活大爆炸第10季】 ---> 10  <br/>
+        /// 【生活大爆炸第十季】 ---> 10 
+        /// </summary>
+        /// <param name="name">需要提取的关键字</param>
+        /// <returns>返回阿拉伯数字</returns>
+        public static int GetVideoNameNumberExt(this string name)
+        {
+            var index = 0;
+            var reg = new Regex(@"\w*第([0-9,一,二,三,四,五,六,七,八,九,十]{1,2})([季,章,部]{1})", RegexOptions.RightToLeft);
+            var match = reg.Match(name);
+            if (match.Groups.Count < 2)
+            {
+                //匹配类似 七宗罪    和   生活大爆炸10 类似
+                reg = new Regex(@"\w*([0-9,一,二,三,四,五,六,七,八,九,十]{1,2})", RegexOptions.RightToLeft);
+                match = reg.Match(name);
+                if (match.Groups.Count < 2)
+                {
+                    return index;
+                }
+            }
+
+            var temp = match.Groups[1].Value;
+            switch (temp)
+            {
+                case "一": temp = "1"; break;
+                case "二":
+                    temp = "2"; break;
+                case "三":
+                    temp = "3"; break;
+                case "四":
+                    temp = "4"; break;
+                case "五":
+                    temp = "5"; break;
+                case "六":
+                    temp = "6"; break;
+                case "七":
+                    temp = "7"; break;
+                case "八":
+                    temp = "8"; break;
+                case "九":
+                    temp = "9"; break;
+                case "十":
+                    temp = "10"; break;
+            }
+            int.TryParse(temp, out index);
+            return index;
+        }
+
+        /// <summary>
+        /// 比较两个关键字是否相等
+        /// </summary>
+        /// <remarks>
+        ///  适用于第三方站点关键字 和 豆瓣搜索结果匹配
+        /// </remarks>
+        /// <param name="oldKey">第三方站点关键字</param>
+        /// <param name="newKey">豆瓣关键字</param>
+        public static bool KeyWordCompare(string oldKey, string newKey)
+        {
+            if (string.IsNullOrEmpty(oldKey) || string.IsNullOrEmpty(newKey))
+            {
+                return false;
+            }
+
+            if (newKey.Length - oldKey.Length > 5 &&
+                newKey.StartsWith(oldKey) == false)
+            {
+                //差距超过2且 非开头 则跳过
+                return false;
+            }
+
+            string oldName = oldKey.RemoveStrExt(" "), newName = newKey.RemoveStrExt(" ");
+            //精确匹配
+            if (oldName == newName)
+            {
+                return true;
+            }
+
+            //获取第几季
+            var oldEp = oldName.GetVideoNameNumberExt();
+            var newEp = newName.GetVideoNameNumberExt();
+            if (oldEp == newEp)
+            {
+                int minLength = 3;
+
+                if (oldName.Length < minLength ||
+                    newName.Length < minLength)
+                {
+                    //小于3字 默认即可
+                    return true;
+                }
+
+                var oldStart = oldName.Substring(0, minLength);
+                var newStart = newName.Substring(0, minLength);
+                if (oldStart != newStart)
+                {
+                    //名称中数字一样 但是开头不一样
+                    // 永远的第一名   第一名  这种返回false
+                    return false;
+                }
+
+                return true;
+            }
+
+            if (oldEp == 0 &&
+                newEp == 1 &&
+                newName.StartsWith(oldName))
+            {
+                //xxx 和 xxx 第一季
+                return true;
+            }
+
+            //不匹配
+            return false;
+
+            //else
+            //{
+            //    //季数不相等 结果不一致
+            //    if (x == 1 && y == 0) //允许 搜索带1 返回不带1 的
+            //    {
+            //        return true;
+            //    }
+
+            //}
+            //return true;
+        }
+
         #region 加密相关
         /// <summary>
         /// Md5扩展

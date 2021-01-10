@@ -89,6 +89,11 @@ namespace KdyWeb.Service.HttpCapture
                 return KdyResult.Error<GetDetailConfigDto>(KdyResultCode.Error, "获取配置详情失败，Id错误");
             }
 
+            if (dbConfig.SearchConfigStatus != SearchConfigStatus.Normal)
+            {
+                return KdyResult.Error<GetDetailConfigDto>(KdyResultCode.Error, $"配置Id:{configId},配置非正常状态");
+            }
+
             var result = dbConfig.MapToExt<GetDetailConfigDto>();
             return KdyResult.Success(result);
         }

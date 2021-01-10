@@ -12,6 +12,7 @@ using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
+using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
@@ -147,6 +148,73 @@ namespace KdyWeb.Service.SearchVideo
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 根据关键字创建豆瓣信息
+        /// </summary>
+        /// <remarks>
+        ///  若未匹配则直接返回失败
+        /// </remarks>
+        /// <param name="keyWord">关键字</param>
+        /// <param name="year">年份</param>
+        /// <returns></returns>
+        public async Task<KdyResult<CreateForSubjectIdDto>> CreateForKeyWordAsync(string keyWord, int year)
+        {
+            //如果名称相等则直接匹配详情
+            //不相等则 先匹配名称和 对应的季数
+            var douBanInfo = await _douBanWebInfoService.GetDouBanInfoByKeyWordAsync(keyWord);
+            if (douBanInfo.IsSuccess == false)
+            {
+                return KdyResult.Error<CreateForSubjectIdDto>(douBanInfo.Code, douBanInfo.Msg);
+            }
+
+            //避免搜索和详情请求太快
+            await Task.Delay(1800);
+
+            var result = KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, $"匹配豆瓣信息失败，未找到匹配01。{keyWord}");
+            foreach (var douBanItem in douBanInfo.Data)
+            {
+                var oldKey = keyWord.RemoveStrExt(" ");
+                var douBanName = douBanItem.ResultName.RemoveStrExt(" ");
+                result = await CreateForSubjectIdAsync(douBanItem.DouBanSubjectId);
+
+                if (result.Data.VideoYear != year)
+                {
+                    result = KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, $"匹配豆瓣信息失败，年份不一致。{keyWord}");
+                    continue;
+                }
+
+                //年份和名称都一样
+                if (oldKey == douBanName)
+                {
+                    break;
+                }
+
+                var same = StringExt.KeyWordCompare(oldKey, douBanName);
+                if (same)
+                {
+                    //名称季数都一样
+                    break;
+                }
+
+                if (string.IsNullOrEmpty(result.Data.Aka) == false &&
+                    result.Data.Aka.Contains(oldKey))
+                {
+                    //备用名称 直接包含就行
+                    break;
+                }
+
+                KdyLog.Warn($"影片采集遇到歧义名称，已跳过。第三方名称：{oldKey} 豆瓣名称：{douBanName}");
+                await Task.Delay(1500);
+            }
+
+            if (result.IsSuccess == false)
+            {
+                return KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, $"匹配豆瓣信息失败，未找到匹配02。{keyWord}");
+            }
+
+            return result;
         }
     }
 }

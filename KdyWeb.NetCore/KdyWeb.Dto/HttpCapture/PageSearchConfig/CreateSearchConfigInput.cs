@@ -137,5 +137,39 @@ namespace KdyWeb.Dto.HttpCapture
         /// </summary>
         [StringLength(PageSearchConfig.HostRemarkLength)]
         public string HostRemark { get; set; }
+
+        /// <summary>
+        /// 播放地址后缀 
+        /// </summary>
+        /// <remarks>
+        ///  适用于资源站(从前往后匹配)
+        /// </remarks>
+        public string[] PlayUrlSuffix { get; set; }
+
+        /// <summary>
+        /// 采集详情地址 
+        /// </summary>
+        public string[] CaptureDetailUrl { get; set; }
+
+        /// <summary>
+        /// 采集详情匹配Xpath
+        /// </summary>
+        [StringLength(PageSearchConfig.XpathLength)]
+        public string CaptureDetailXpath { get; set; }
+
+        /// <summary>
+        /// 采集详情名称处理
+        /// </summary>
+        /// <remarks>
+        ///  xxxxBD高清->xxxx <br/>
+        ///  xxxxHD高清->xxxx <br/>
+        ///  xxxx更新至36集->xxxx <br/>
+        /// </remarks>
+        public string[] CaptureDetailNameSplit { get; set; }
+
+        /// <summary>
+        /// 配置状态
+        /// </summary>
+        public SearchConfigStatus SearchConfigStatus { get; set; }
     }
 }

@@ -153,6 +153,14 @@ namespace KdyWeb.Service.HttpCapture
                 searchItem.IsEnd = endText?.Contains(BaseConfig.SearchConfig.NotEndKey) == false;
             }
 
+            //年份
+            int year = -1;
+            if (string.IsNullOrEmpty(BaseConfig.PageConfig.YearXpath) == false)
+            {
+                var yearText = searchResult.Data.GetHtmlNodeByXpath(BaseConfig.PageConfig.YearXpath)?.InnerText;
+                int.TryParse(yearText, out year);
+            }
+
             var md5 = hnc.First().ParentNode.ParentNode.InnerHtml.Md5Ext();
             foreach (var nodeItem in hnc)
             {
@@ -174,7 +182,10 @@ namespace KdyWeb.Service.HttpCapture
                     url = $"detail,{url}";
                 }
 
-                var pageOutItem = new KdyWebPagePageOut(md5, url, name);
+                var pageOutItem = new KdyWebPagePageOut(md5, url, name)
+                {
+                    VideoYear = year
+                };
                 result.Add(pageOutItem);
             }
 
@@ -201,6 +212,7 @@ namespace KdyWeb.Service.HttpCapture
             var result = new NormalPageParseOut()
             {
                 PageMd5 = detailResult.First().PageMd5,
+                VideoYear = detailResult.First().VideoYear,
                 DetailUrl = searchItem.DetailUrl,
                 IsEnd = searchItem.IsEnd ?? false,
                 ResultName = NameHandler(searchItem.ResultName),
