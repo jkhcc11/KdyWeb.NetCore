@@ -190,6 +190,11 @@ namespace KdyWeb.Repository
                 return new PageList<TEntity>(0, 0);
             }
 
+            if (pageInput.Page <= 0)
+            {
+                pageInput.Page = 1;
+            }
+
             var result = new PageList<TEntity>(pageInput.Page, pageInput.PageSize);
             dbQuery = dbQuery.CreateConditions(input);
             result.DataCount = await dbQuery.CountAsync();
@@ -222,6 +227,11 @@ namespace KdyWeb.Repository
             if (pageInput == null)
             {
                 return new PageList<TDto>(0, 0);
+            }
+
+            if (pageInput.Page <= 0)
+            {
+                pageInput.Page = 1;
             }
 
             var dbResult = await dbQuery.GetPageListAsync(input);

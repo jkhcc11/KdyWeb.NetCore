@@ -42,5 +42,16 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> ChangeDouBanInfoStatusAsync(ChangeDouBanInfoStatusInput input);
+
+        /// <summary>
+        /// 根据关键字创建豆瓣信息
+        /// </summary>
+        /// <remarks>
+        ///  若未匹配则直接返回失败
+        /// </remarks>
+        /// <param name="keyWord">关键字</param>
+        /// <param name="year">年份</param>
+        /// <returns></returns>
+        Task<KdyResult<CreateForSubjectIdDto>> CreateForKeyWordAsync(string keyWord, int year);
     }
 }

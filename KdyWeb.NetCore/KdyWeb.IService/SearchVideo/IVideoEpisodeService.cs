@@ -21,7 +21,10 @@ namespace KdyWeb.IService.SearchVideo
         /// <summary>
         /// 创建剧集
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>
+        /// 1、根据当前主键查询所有剧集
+        /// 2、根据剧集名查找新增的修改的
+        /// </remarks>
         Task<KdyResult> CreateEpisodeAsync(CreateEpisodeInput input);
 
         /// <summary>
@@ -37,5 +40,10 @@ namespace KdyWeb.IService.SearchVideo
         /// <returns></returns>
         Task<KdyResult<GetEpisodeInfoDto>> GetEpisodeInfoAsync(long epId);
 
+        /// <summary>
+        /// 更新未完结影片数据
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> UpdateNotEndVideoAsync(UpdateNotEndVideoInput input);
     }
 }

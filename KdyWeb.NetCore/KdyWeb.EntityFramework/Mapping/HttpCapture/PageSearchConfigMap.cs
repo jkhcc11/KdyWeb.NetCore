@@ -25,6 +25,22 @@ namespace KdyWeb.EntityFramework.Mapping
                 .HasConversion(
                     a => string.Join(',', a),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
+            builder.Property(a => a.PlayUrlSuffix)
+                .HasConversion(
+                    a => string.Join(',', a),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
+            builder.Property(a => a.CaptureDetailUrl)
+                .HasConversion(
+                    a => string.Join(',', a),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
+            builder.Property(a => a.CaptureDetailNameSplit)
+                .HasConversion(
+                    a => string.Join(',', a),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
+using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
@@ -11,6 +14,7 @@ using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
+using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
@@ -94,6 +98,27 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = main.MapToExt<GetVideoDetailDto>();
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
+            if (result.IsEnd)
+            {
+                //已完结 不用更新
+                return KdyResult.Success(result);
+            }
+
+            //todo:后面改成cap
+            var cacheKey = $"NotEndKey:{main.Id}";
+            var redisDb = KdyRedisCache.GetDb(1);
+            var cacheV = await redisDb.GetValueAsync<string>(cacheKey);
+            if (cacheV != null)
+            {
+                return KdyResult.Success(result);
+            }
+
+            var jobInput = new UpdateNotEndVideoMainJobInput(main.Id, main.SourceUrl, main.VideoContentFeature)
+            {
+                KeyWord = main.KeyWord
+            };
+            BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.Execute(jobInput));
+            await redisDb.SetValueAsync(cacheKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), TimeSpan.FromHours(20));
 
             return KdyResult.Success(result);
         }

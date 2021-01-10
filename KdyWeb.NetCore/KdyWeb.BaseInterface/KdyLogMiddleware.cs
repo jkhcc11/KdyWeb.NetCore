@@ -6,9 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Exceptionless;
+using Exceptionless.AspNetCore;
+using Exceptionless.Plugins;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.KdyLog;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface
 {
@@ -34,9 +40,11 @@ namespace KdyWeb.BaseInterface
     {
         private readonly RequestDelegate _next;
         private readonly Stopwatch _stopwatch;
-        public KdyLogMiddleware(RequestDelegate next)
+        private readonly IHostingEnvironment _environment;
+        public KdyLogMiddleware(RequestDelegate next, IHostingEnvironment environment)
         {
             _next = next;
+            _environment = environment;
             _stopwatch = new Stopwatch();
 
         }
@@ -44,7 +52,7 @@ namespace KdyWeb.BaseInterface
         public async Task Invoke(HttpContext context)
         {
             var request = context.Request;
-            var response = context.Response;
+            // var response = context.Response;
             if (request == null)
             {
                 return;
@@ -90,26 +98,49 @@ namespace KdyWeb.BaseInterface
             var originalBodyStream = context.Response.Body;
             var responseBody = new MemoryStream();
             context.Response.Body = responseBody;
-            //执行其他
-            await _next(context);
 
-            //重置
-            responseBody.Seek(0, SeekOrigin.Begin);
-            var reader = new StreamReader(responseBody);
-            var str = await reader.ReadToEndAsync();
+            try
+            {
+                //执行其他
+                await _next(context);
 
-            //todo:如果这里有请求慢的时候 两个请求会在一起 导致add字典异常
-            data.TryAdd("response.body", str);
-            data.TryAdd("response.executeEndTime", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                //重置
+                responseBody.Seek(0, SeekOrigin.Begin);
+                var reader = new StreamReader(responseBody);
+                var str = await reader.ReadToEndAsync();
 
-            responseBody.Seek(0, SeekOrigin.Begin);
-            await responseBody.CopyToAsync(originalBodyStream);
+                //todo:如果这里有请求慢的时候 两个请求会在一起 导致add字典异常
+                data.TryAdd("response.body", str);
+                data.TryAdd("response.executeEndTime", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
-            _stopwatch.Stop();
-            data.TryAdd("time", _stopwatch.ElapsedMilliseconds + "ms");
-            //记录日志
-            kdyLog.Info($"用户请求{request.Path.Value}结束", data.ToDictionary(a => a.Key, a => a.Value));
+                responseBody.Seek(0, SeekOrigin.Begin);
+                await responseBody.CopyToAsync(originalBodyStream);
 
+                _stopwatch.Stop();
+                data.TryAdd("time", _stopwatch.ElapsedMilliseconds + "ms");
+                //记录日志
+                kdyLog.Info($"用户请求{request.Path.Value}结束", data.ToDictionary(a => a.Key, a => a.Value));
+
+            }
+            catch (Exception ex)
+            {
+                ex.ToExceptionless().Submit();
+
+                var errResult = KdyResult.Error(KdyResultCode.SystemError, "系统错误，请稍后再试");
+                if (_environment.IsDevelopment())
+                {
+                    errResult.Msg = ex.Message;
+                }
+
+                var str = JsonConvert.SerializeObject(errResult);
+                var bytes = Encoding.UTF8.GetBytes(str);
+                var newStream = new MemoryStream(bytes);
+
+                context.Response.Clear();
+                context.Response.StatusCode = (int)KdyResultCode.SystemError;
+                context.Response.ContentType = "text/json;charset=utf-8;";
+                await newStream.CopyToAsync(originalBodyStream);
+            }
         }
     }
 }

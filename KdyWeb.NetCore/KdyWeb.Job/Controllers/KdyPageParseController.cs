@@ -39,7 +39,7 @@ namespace KdyWeb.Job.Controllers
                 return Ok(pageResult);
             }
 
-            var result =await pageResult.Data.GetResultAsync(input);
+            var result =await pageResult.Data.Instance.GetResultAsync(input);
             return Ok(result);
         }
     }

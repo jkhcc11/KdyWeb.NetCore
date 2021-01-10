@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -196,6 +197,63 @@ namespace KdyWeb.Service.HttpCapture
                 }
             }
 
+            if (string.IsNullOrEmpty(result.Aka) == false &&
+                result.Aka.Length > 100)
+            {
+                result.Aka = result.Aka.Substring(0, 95) + "...";
+            }
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 根据关键字获取豆瓣搜索结果
+        /// </summary>
+        /// <param name="keyWord">关键字</param>
+        /// <returns></returns>
+        public async Task<KdyResult<List<GetDouBanInfoByKeyWordOut>>> GetDouBanInfoByKeyWordAsync(string keyWord)
+        {
+            if (keyWord.IsEmptyExt())
+            {
+                return KdyResult.Error<List<GetDouBanInfoByKeyWordOut>>(KdyResultCode.ParError, "关键字不能为空");
+            }
+
+            var reqInput = new KdyRequestCommonInput($"{MobileHostUrl}/search/?query={keyWord}&type=movie", HttpMethod.Get)
+            {
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"
+            };
+
+            //请求豆瓣
+            var reqResult = await _kdyRequestClientCommon.SendAsync(reqInput);
+            if (reqResult.IsSuccess == false)
+            {
+                return KdyResult.Error<List<GetDouBanInfoByKeyWordOut>>(KdyResultCode.Error, $"搜索失败 {reqResult.ErrMsg}");
+            }
+
+            //开始解析搜索结果
+            var hnc = reqResult.Data.GetNodeCollection("//ul[@class='search_results_subjects']/li/a//span[@class='subject-title']");
+            if (hnc == null || hnc.Count <= 0)
+            {
+                return KdyResult.Error<List<GetDouBanInfoByKeyWordOut>>(KdyResultCode.Error, $"搜索失败 Xpath解析失败");
+            }
+
+            var result = new List<GetDouBanInfoByKeyWordOut>();
+            for (int i = 0; i < hnc.Count; i++)
+            {
+                if (i > 4)
+                {
+                    break;
+                }
+
+                var item = hnc[i];
+                var aNode = item.SelectSingleNode("../..");
+                var detailUrl = aNode.GetAttributeValue("href", "");
+                var resultItem = new GetDouBanInfoByKeyWordOut()
+                {
+                    ResultName = item.InnerText,
+                    DouBanSubjectId = detailUrl.GetNumber()
+                };
+                result.Add(resultItem);
+            }
 
             return KdyResult.Success(result);
         }

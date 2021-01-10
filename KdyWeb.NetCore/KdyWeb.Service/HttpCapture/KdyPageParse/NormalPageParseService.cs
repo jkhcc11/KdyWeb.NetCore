@@ -153,17 +153,39 @@ namespace KdyWeb.Service.HttpCapture
                 searchItem.IsEnd = endText?.Contains(BaseConfig.SearchConfig.NotEndKey) == false;
             }
 
+            //年份
+            int year = -1;
+            if (string.IsNullOrEmpty(BaseConfig.PageConfig.YearXpath) == false)
+            {
+                var yearText = searchResult.Data.GetHtmlNodeByXpath(BaseConfig.PageConfig.YearXpath)?.InnerText;
+                int.TryParse(yearText, out year);
+            }
+
             var md5 = hnc.First().ParentNode.ParentNode.InnerHtml.Md5Ext();
             foreach (var nodeItem in hnc)
             {
                 var url = nodeItem.GetAttributeValue("href", "");
                 var name = nodeItem.InnerText;
+                if (url == "#" || url.Contains("javascript"))
+                {
+                    continue;
+                }
+
                 if (url.StartsWith("http") == false)
                 {
                     url = $"{BaseConfig.BaseHost}{url}";
                 }
 
-                var pageOutItem = new KdyWebPagePageOut(md5, url, name);
+                if (BaseConfig.BaseHost.Contains("360kan.com") == false)
+                {
+                    //360影视 除外
+                    url = $"detail,{url}";
+                }
+
+                var pageOutItem = new KdyWebPagePageOut(md5, url, name)
+                {
+                    VideoYear = year
+                };
                 result.Add(pageOutItem);
             }
 
@@ -190,6 +212,7 @@ namespace KdyWeb.Service.HttpCapture
             var result = new NormalPageParseOut()
             {
                 PageMd5 = detailResult.First().PageMd5,
+                VideoYear = detailResult.First().VideoYear,
                 DetailUrl = searchItem.DetailUrl,
                 IsEnd = searchItem.IsEnd ?? false,
                 ResultName = NameHandler(searchItem.ResultName),

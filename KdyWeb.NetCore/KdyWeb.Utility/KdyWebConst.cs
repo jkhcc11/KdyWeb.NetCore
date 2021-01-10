@@ -71,6 +71,17 @@
             /// </summary>
             public const string NormalConfig = "KdyWebParse:NormalConfig";
         }
+
+        /// <summary>
+        /// Job Cron表达式
+        /// </summary>
+        public class JobCron
+        {
+            /// <summary>
+            /// 影片采集Cron
+            /// </summary>
+            public const string RecurringVideoJob = "JobCron:RecurringVideoJob";
+        }
     }
 
     /// <summary>

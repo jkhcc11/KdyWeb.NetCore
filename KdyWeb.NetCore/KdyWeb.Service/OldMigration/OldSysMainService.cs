@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Exceptionless.Models.Data;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity;
 using KdyWeb.Entity.OldVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.OldMigration;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.OldMigration

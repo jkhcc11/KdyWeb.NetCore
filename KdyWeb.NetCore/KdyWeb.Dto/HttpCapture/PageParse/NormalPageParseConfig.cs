@@ -47,6 +47,9 @@ namespace KdyWeb.Dto.HttpCapture
                     ImgXpath = dbConfig.DetailImgXpath,
                     NameXpath = dbConfig.DetailNameXpath,
                     EndXpath = dbConfig.DetailEndXpath,
+
+                    PlayUrlSuffix = dbConfig.PlayUrlSuffix,
+                    YearXpath = dbConfig.YearXpath
                 }
             };
 

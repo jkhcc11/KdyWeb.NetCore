@@ -30,6 +30,7 @@ namespace KdyWeb.Dto.HttpCapture
         /// 名称所在A标签属性name
         /// </summary>
         public string[] NameAttr { get; set; }
+
     }
 
     /// <summary>
@@ -43,9 +44,19 @@ namespace KdyWeb.Dto.HttpCapture
 
         public string EndXpath { get; set; }
 
+        public string YearXpath { get; set; }
+
         /// <summary>
         /// 名称xpath
         /// </summary>
         public string NameXpath { get; set; }
+
+        /// <summary>
+        /// 播放地址后缀 
+        /// </summary>
+        /// <remarks>
+        ///  适用于资源站(从前往后匹配)
+        /// </remarks>
+        public string[] PlayUrlSuffix { get; set; }
     }
 }

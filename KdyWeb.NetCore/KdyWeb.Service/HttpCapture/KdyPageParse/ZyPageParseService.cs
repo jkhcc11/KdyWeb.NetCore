@@ -106,7 +106,25 @@ namespace KdyWeb.Service.HttpCapture
                 searchOut.IsEnd = endText?.Contains(BaseConfig.SearchConfig.NotEndKey) == false;
             }
 
+            //年份
+            int year = -1;
+            if (string.IsNullOrEmpty(BaseConfig.PageConfig.YearXpath) == false)
+            {
+                var yearText = searchResult.Data.GetHtmlNodeByXpath(BaseConfig.PageConfig.YearXpath)?.InnerText;
+                int.TryParse(yearText, out year);
+            }
+
             var md5 = hnc.First().ParentNode.ParentNode.InnerHtml.Md5Ext();
+
+            //设置默认后缀
+            if (BaseConfig.PageConfig.PlayUrlSuffix == null ||
+                BaseConfig.PageConfig.PlayUrlSuffix.Any() == false)
+            {
+                BaseConfig.PageConfig.PlayUrlSuffix = new[] { ".m3u8" };
+            }
+
+            //获取优先匹配的后缀
+            var prioritySuffix = string.Empty;
             foreach (var nodeItem in hnc)
             {
                 var url = string.Empty;
@@ -119,12 +137,29 @@ namespace KdyWeb.Service.HttpCapture
                     url = tempArray[1];
                 }
 
-                if (url.EndsWith(".m3u8") == false)
+                //优先匹配给定后缀 没有则直接跳过 有则后面以此为标准
+                if (string.IsNullOrEmpty(prioritySuffix))
+                {
+                    foreach (var suffixItem in BaseConfig.PageConfig.PlayUrlSuffix)
+                    {
+                        if (url.EndsWith(suffixItem) == false)
+                        {
+                            continue;
+                        }
+
+                        prioritySuffix = suffixItem;
+                        break;
+                    }
+                }
+                else if (url.EndsWith(prioritySuffix) == false)
                 {
                     continue;
                 }
 
-                var pageOutItem = new KdyWebPagePageOut(md5, url, name);
+                var pageOutItem = new KdyWebPagePageOut(md5, url, name)
+                {
+                    VideoYear = year
+                };
                 result.Add(pageOutItem);
             }
 
@@ -151,6 +186,7 @@ namespace KdyWeb.Service.HttpCapture
             var result = new NormalPageParseOut()
             {
                 PageMd5 = detailResult.First().PageMd5,
+                VideoYear = detailResult.First().VideoYear,
                 DetailUrl = searchItem.DetailUrl,
                 IsEnd = searchItem.IsEnd ?? false,
                 ResultName = NameHandler(searchItem.ResultName),
@@ -158,6 +194,37 @@ namespace KdyWeb.Service.HttpCapture
                 Results = detailResult.MapToListExt<NormalPageParseItem>()
             };
             return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 重写详情请求
+        /// </summary>
+        /// <param name="searchOut"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public override async Task<KdyResult<KdyRequestCommonResult>> SendDetailAsync(KdyWebPageSearchOutItem searchOut, KdyWebPagePageInput input)
+        {
+            if (input.DetailUrl.Contains("ac=videolist"))
+            {
+                //api地址 转详情
+                var detailId = input.DetailUrl.GetNumber();
+                input.DetailUrl = $"{BaseConfig.BaseHost}/?m=vod-detail-id-{detailId}.html";
+            }
+
+            var reqInput = new KdyRequestCommonInput(input.DetailUrl, HttpMethod.Get)
+            {
+                UserAgent = BaseConfig.UserAgent,
+                TimeOut = 3000
+            };
+
+            //请求
+            var reqResult = await KdyRequestClientCommon.SendAsync(reqInput);
+            if (reqResult.IsSuccess == false)
+            {
+                return KdyResult.Error<KdyRequestCommonResult>(KdyResultCode.Error, $"解析失败，获取详情失败.{reqResult.ErrMsg}");
+            }
+
+            return KdyResult.Success(reqResult);
         }
 
         protected override async Task<NormalPageParseConfig> GetConfigAsync(long configId)
@@ -169,31 +236,6 @@ namespace KdyWeb.Service.HttpCapture
             }
 
             return dbConfig.ToNormalPageParseConfig();
-
-            //var config = new NormalPageParseConfig
-            //{
-            //    BaseHost = "https://okzyw.com",
-            //    UserAgent =
-            //        "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0",
-            //    SearchConfig = new BaseSearchConfig()
-            //    {
-            //        Method = HttpMethod.Post,
-            //        SearchPath = "/index.php?m=vod-search",
-            //        SearchData = "wd={0}&submit=search",
-            //        SearchXpath = "//span[@class='xing_vb4']/a",
-            //        EndXpath = "./text()",
-            //        NotEndKey = "更新"
-            //    },
-            //    PageConfig = new BasePageConfig()
-            //    {
-            //        DetailXpath = "//div[@id='2']/ul/li/text()",
-            //        ImgXpath = "//div[@class='vodImg']/img",
-            //        NameXpath = "//div[@class='vodh']/h2",
-            //        EndXpath = "//div[@class='vodh']/span",
-            //    }
-            //};
-
-            //return config;
         }
     }
 }

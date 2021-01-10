@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
@@ -26,5 +27,12 @@ namespace KdyWeb.IService.HttpCapture
         /// <param name="subjectId">豆瓣Id</param>
         /// <returns></returns>
         Task<KdyResult<GetDouBanOut>> GetInfoBySubjectIdForPcWeb(string subjectId);
+
+        /// <summary>
+        /// 根据关键字获取豆瓣搜索结果
+        /// </summary>
+        /// <param name="keyWord">关键字</param>
+        /// <returns></returns>
+        Task<KdyResult<List<GetDouBanInfoByKeyWordOut>>> GetDouBanInfoByKeyWordAsync(string keyWord);
     }
 }

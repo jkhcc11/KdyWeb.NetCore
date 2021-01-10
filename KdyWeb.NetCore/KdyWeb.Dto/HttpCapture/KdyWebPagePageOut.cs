@@ -1,4 +1,6 @@
-﻿using KdyWeb.PageParse;
+﻿using System;
+using KdyWeb.PageParse;
+using KdyWeb.Utility;
 
 namespace KdyWeb.Dto.HttpCapture
 {
@@ -16,8 +18,15 @@ namespace KdyWeb.Dto.HttpCapture
         public KdyWebPagePageOut(string pageMd5, string resultUrl, string resultName)
         {
             PageMd5 = pageMd5;
+            var index = resultUrl.IndexOf("?vfm", StringComparison.OrdinalIgnoreCase);
+            if (index > 0)
+            {
+                //360影视 无用参数
+                resultUrl = resultUrl.Substring(0, index);
+            }
+
             ResultUrl = resultUrl;
-            ResultName = resultName;
+            ResultName = resultName.RemoveStrExt("\r", "\n", " ").GetNumber();
         }
 
         public string PageMd5 { get; set; }
@@ -30,5 +39,10 @@ namespace KdyWeb.Dto.HttpCapture
         /// 海报
         /// </summary>
         public string ImgUrl { get; set; }
+
+        /// <summary>
+        /// 年份
+        /// </summary>
+        public int VideoYear { get; set; }
     }
 }

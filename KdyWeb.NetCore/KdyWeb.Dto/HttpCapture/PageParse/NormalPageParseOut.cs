@@ -38,6 +38,11 @@ namespace KdyWeb.Dto.HttpCapture
         /// 海报Url
         /// </summary>
         public string ImgUrl { get; set; }
+
+        /// <summary>
+        /// 年份
+        /// </summary>
+        public int VideoYear { get; set; }
     }
 
     /// <summary>
