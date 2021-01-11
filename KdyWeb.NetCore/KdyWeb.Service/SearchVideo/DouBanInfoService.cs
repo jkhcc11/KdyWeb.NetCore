@@ -161,6 +161,9 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<CreateForSubjectIdDto>> CreateForKeyWordAsync(string keyWord, int year)
         {
+            //避免两次请求搜索太快
+            await Task.Delay(1800);
+
             //如果名称相等则直接匹配详情
             //不相等则 先匹配名称和 对应的季数
             var douBanInfo = await _douBanWebInfoService.GetDouBanInfoByKeyWordAsync(keyWord);
@@ -175,6 +178,8 @@ namespace KdyWeb.Service.SearchVideo
             var result = KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, $"匹配豆瓣信息失败，未找到匹配01。{keyWord}");
             foreach (var douBanItem in douBanInfo.Data)
             {
+                await Task.Delay(1500);
+
                 var oldKey = keyWord.RemoveStrExt(" ");
                 var douBanName = douBanItem.ResultName.RemoveStrExt(" ");
                 result = await CreateForSubjectIdAsync(douBanItem.DouBanSubjectId);
@@ -206,7 +211,6 @@ namespace KdyWeb.Service.SearchVideo
                 }
 
                 KdyLog.Warn($"影片采集遇到歧义名称，已跳过。第三方名称：{oldKey} 豆瓣名称：{douBanName}");
-                await Task.Delay(1500);
             }
 
             if (result.IsSuccess == false)
