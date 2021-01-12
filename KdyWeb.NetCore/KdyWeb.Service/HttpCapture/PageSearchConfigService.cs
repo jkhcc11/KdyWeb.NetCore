@@ -156,6 +156,37 @@ namespace KdyWeb.Service.HttpCapture
         }
 
         /// <summary>
+        /// 一键复制站点配置
+        /// </summary>
+        /// <param name="oldKeyId">旧Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult> OneCopyAsync(long oldKeyId)
+        {
+            if (oldKeyId <= 0)
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "配置Id不能为空");
+            }
+
+            var dbOldConfig = await _pageSearchConfigRepository.FirstOrDefaultAsync(a => a.Id == oldKeyId);
+            if (dbOldConfig == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "配置不存在");
+            }
+
+            var newConfig = dbOldConfig.MapToExt<PageSearchConfig>();
+            newConfig.Id = 0;
+            newConfig.ModifyTime = null;
+            newConfig.ModifyUserId = null;
+            newConfig.CreatedUserId = null;
+            newConfig.CreatedTime = DateTime.Now;
+            newConfig.HostName = $"{newConfig.HostName} 副本";
+            await _pageSearchConfigRepository.CreateAsync(newConfig);
+
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
         /// 检查入参
         /// </summary>
         /// <returns></returns>

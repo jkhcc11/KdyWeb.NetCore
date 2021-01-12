@@ -75,7 +75,6 @@ namespace KdyWeb.Service.SearchVideo
             _douBanInfoRepository.Update(douBanInfo);
 
             await UnitOfWork.SaveChangesAsync();
-
             return KdyResult.Success();
         }
 
@@ -189,6 +188,38 @@ namespace KdyWeb.Service.SearchVideo
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success("剧集删除成功");
+        }
+
+        /// <summary>
+        /// 匹配豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> MatchDouBanInfoAsync(MatchDouBanInfoInput input)
+        {
+            var dbMain = await _videoMainRepository
+                .GetQuery()
+                .Include(a => a.VideoMainInfo)
+                .FirstOrDefaultAsync(a => a.Id == input.KeyId);
+            if (dbMain == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "影片信息不存在");
+            }
+
+            var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanId);
+            if (dbDouBanInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息不存在");
+            }
+
+            dbMain.ToVideoMain(dbDouBanInfo);
+            dbMain.IsMatchInfo = true;
+            _videoMainRepository.Update(dbMain);
+
+            dbDouBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
+            _douBanInfoRepository.Update(dbDouBanInfo);
+
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
         }
     }
 }

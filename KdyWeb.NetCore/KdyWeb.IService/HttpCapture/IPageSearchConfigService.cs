@@ -40,5 +40,12 @@ namespace KdyWeb.IService.HttpCapture
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<GetPageParseInstanceDto>> GetPageParseInstanceAsync(GetPageParseInstanceInput input);
+
+        /// <summary>
+        /// 一键复制站点配置
+        /// </summary>
+        /// <param name="oldKeyId">旧Id</param>
+        /// <returns></returns>
+        Task<KdyResult> OneCopyAsync(long oldKeyId);
     }
 }

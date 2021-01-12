@@ -15,10 +15,23 @@ namespace KdyWeb.Dto.SearchVideo
             videoMain.VideoDouBan = douBanInfo.VideoRating;
             videoMain.VideoYear = douBanInfo.VideoYear;
             videoMain.VideoInfoUrl = $"//movie.douban.com/subject/{douBanInfo.VideoDetailId}/";
-            videoMain.VideoMainInfo = new VideoMainInfo(douBanInfo.VideoGenres, douBanInfo.VideoCasts, douBanInfo.VideoDirectors, douBanInfo.VideoCountries)
+            if (videoMain.VideoMainInfo == null)
             {
-                VideoSummary = douBanInfo.VideoSummary
-            };
+                videoMain.VideoMainInfo = new VideoMainInfo(douBanInfo.VideoGenres, douBanInfo.VideoCasts, douBanInfo.VideoDirectors, douBanInfo.VideoCountries)
+                {
+                    VideoSummary = douBanInfo.VideoSummary
+                };
+            }
+            else
+            {
+                videoMain.VideoMainInfo.VideoGenres = douBanInfo.VideoGenres;
+                videoMain.VideoMainInfo.VideoCasts = douBanInfo.VideoCasts;
+                videoMain.VideoMainInfo.VideoDirectors = douBanInfo.VideoDirectors;
+                videoMain.VideoMainInfo.VideoCountries = douBanInfo.VideoCountries;
+                videoMain.VideoMainInfo.VideoSummary = douBanInfo.VideoSummary;
+            }
+
+
         }
 
         /// <summary>

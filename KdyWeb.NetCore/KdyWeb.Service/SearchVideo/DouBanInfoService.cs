@@ -65,6 +65,12 @@ namespace KdyWeb.Service.SearchVideo
                 douBanWebResult.Data.Pic = $"{imgResult.Data}";
             }
 
+            KdyLog.Trace($"豆瓣Id:{subjectId}图片上传返回:{imgResult.Msg}", new Dictionary<string, object>()
+            {
+                {"subjectId",subjectId},
+                {"ImgResult",imgResult}
+            });
+
             //保存数据库
             dbDouBanInfo = douBanWebResult.Data.MapToExt<DouBanInfo>();
             await _douBanInfoRepository.CreateAsync(dbDouBanInfo);
