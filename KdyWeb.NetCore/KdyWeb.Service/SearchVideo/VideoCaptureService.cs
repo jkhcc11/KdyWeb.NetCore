@@ -66,6 +66,14 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(pageService.Code, $"获取站点配置失败,{pageService.Msg}");
             }
 
+            //检查详情
+            var any = await _videoMainRepository.GetAsNoTracking()
+                .AnyAsync(a => a.SourceUrl == input.DetailUrl);
+            if (any)
+            {
+                return KdyResult.Error(KdyResultCode.Error, $"影片详情已存在,影片采集失败。{input.DetailUrl}");
+            }
+
             #region 获取最新结果
             var pageResult = await pageService.Data.Instance.GetResultAsync(new NormalPageParseInput()
             {
@@ -90,18 +98,19 @@ namespace KdyWeb.Service.SearchVideo
                 name = pageResult.Data.ResultName;
             }
 
+            //检查名称
+            any = await _videoMainRepository.GetAsNoTracking()
+               .AnyAsync(a => a.KeyWord == name);
+            if (any)
+            {
+                return KdyResult.Error(KdyResultCode.Error, $"影片名称已存在,影片采集失败。{name}");
+            }
+
             //豆瓣信息
             var douBanInfo = await _douBanInfoService.CreateForKeyWordAsync(name, pageResult.Data.VideoYear);
             if (douBanInfo.IsSuccess == false)
             {
                 return KdyResult.Error(douBanInfo.Code, $"获取豆瓣信息失败，{douBanInfo.Msg}");
-            }
-
-            var any = await _videoMainRepository.GetAsNoTracking()
-                .AnyAsync(a => a.KeyWord == name);
-            if (any)
-            {
-                return KdyResult.Error(KdyResultCode.Error, $"影片已存在,影片采集失败。{name}");
             }
 
             //更新豆瓣状态
