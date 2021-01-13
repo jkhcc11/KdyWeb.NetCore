@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +40,7 @@ namespace KdyWeb.Job.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getTop/{top}")]
+        [ProducesResponseType(typeof(KdyResult<List<GetTop50DouBanInfoDto>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetTopDouBanInfoAsync(int top)
         {
             var result = await _douBanInfoService.GetTopDouBanInfoAsync(top);
@@ -49,6 +53,7 @@ namespace KdyWeb.Job.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("query")]
+        [ProducesResponseType(typeof(KdyResult<PageList<QueryDouBanInfoDto>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> QueryDouBanInfoAsync([FromQuery] QueryDouBanInfoInput input)
         {
             var result = await _douBanInfoService.QueryDouBanInfoAsync(input);
@@ -60,6 +65,7 @@ namespace KdyWeb.Job.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("detail/{id}")]
+        [ProducesResponseType(typeof(KdyResult<GetDouBanInfoForIdDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDouBanInfoForIdAsync(int id)
         {
             var result = await _douBanInfoService.GetDouBanInfoForIdAsync(id);
@@ -71,9 +77,22 @@ namespace KdyWeb.Job.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("change")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ChangeDouBanInfoAsync(ChangeDouBanInfoStatusInput input)
         {
             var result = await _douBanInfoService.ChangeDouBanInfoStatusAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 重试保存图片
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("retrySaveImg/{id}")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> RetrySaveImgAsync(int id)
+        {
+            var result = await _douBanInfoService.RetrySaveImgAsync(id);
             return Ok(result);
         }
     }

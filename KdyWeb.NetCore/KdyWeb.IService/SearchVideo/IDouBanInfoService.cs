@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 
 namespace KdyWeb.IService.SearchVideo
@@ -53,5 +54,14 @@ namespace KdyWeb.IService.SearchVideo
         /// <param name="year">年份</param>
         /// <returns></returns>
         Task<KdyResult<CreateForSubjectIdDto>> CreateForKeyWordAsync(string keyWord, int year);
+
+        /// <summary>
+        /// 重试保存图片
+        /// </summary>
+        /// <remarks>
+        /// 任务没保存成功时 手动再重写保存
+        /// </remarks>
+        /// <returns></returns>
+        Task<KdyResult> RetrySaveImgAsync(int douBanInfoId);
     }
 }

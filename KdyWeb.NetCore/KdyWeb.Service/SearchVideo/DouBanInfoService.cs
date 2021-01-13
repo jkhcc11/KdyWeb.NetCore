@@ -226,5 +226,39 @@ namespace KdyWeb.Service.SearchVideo
 
             return result;
         }
+
+        /// <summary>
+        /// 重试保存图片
+        /// </summary>
+        /// <remarks>
+        /// 任务没保存成功时 手动再重写保存
+        /// </remarks>
+        /// <returns></returns>
+        public async Task<KdyResult> RetrySaveImgAsync(int douBanInfoId)
+        {
+            var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == douBanInfoId);
+            if (dbDouBanInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "Id错误");
+            }
+
+            if (string.IsNullOrEmpty(dbDouBanInfo.VideoImg) ||
+                dbDouBanInfo.VideoImg.Contains("doubanio") == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "图片为空或非豆瓣图片 重传失败");
+            }
+
+            //上传图片
+            var imgResult = await _kdyImgSaveService.PostFileByUrl(dbDouBanInfo.VideoImg);
+            if (imgResult.IsSuccess == false)
+            {
+                return KdyResult.Error(imgResult.Code, imgResult.Msg);
+            }
+
+            dbDouBanInfo.VideoImg = imgResult.Data;
+            _douBanInfoRepository.Update(dbDouBanInfo);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
     }
 }

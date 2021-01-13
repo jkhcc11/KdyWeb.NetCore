@@ -134,16 +134,37 @@ namespace KdyWeb.Service.SearchVideo
                 {
                     new KdyEfOrderConditions()
                     {
-                        Key = "CreatedTime",
+                        Key = nameof(VideoMain.CreatedTime),
                         OrderBy = KdyEfOrderBy.Desc
                     }
                 };
             }
 
-            var pageData = await _videoMainRepository.GetQuery()
+            //生成条件和排序规则
+            var query = _videoMainRepository.GetQuery()
                 .Include(a => a.VideoMainInfo)
-                .GetDtoPageListAsync<VideoMain, QueryVideoMainDto>(input);
-            return KdyResult.Success(pageData);
+                .CreateConditions(input);
+            var count = await query.CountAsync();
+            if (string.IsNullOrEmpty(input.KeyWord) == false)
+            {
+                //关键字不为空时 按照长度排序
+                query = query
+                   .OrderBy(a => a.KeyWord.Length)
+                   .KdyThenOrderBy(input)
+                   .KdyPageList(input);
+            }
+            else
+            {
+                query = query.KdyOrderBy(input).KdyPageList(input);
+            }
+
+            var data = await query.ToListAsync();
+            var result = new PageList<QueryVideoMainDto>(input.Page, input.PageSize)
+            {
+                DataCount = count,
+                Data = data.MapToListExt<QueryVideoMainDto>()
+            };
+            return KdyResult.Success(result);
         }
 
         /// <summary>
@@ -212,6 +233,7 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             dbMain.ToVideoMain(dbDouBanInfo);
+            dbMain.VideoImg = dbDouBanInfo.VideoImg;
             dbMain.IsMatchInfo = true;
             _videoMainRepository.Update(dbMain);
 
