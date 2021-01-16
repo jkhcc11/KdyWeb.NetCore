@@ -61,6 +61,16 @@ namespace KdyWeb.Repository
             return DbSet.AsNoTracking();
         }
 
+        public IQueryable<TEntity> GetWriteQuery()
+        {
+            return WriteDbSet.AsQueryable();
+        }
+
+        public IQueryable<TEntity> GetWriteAsNoTracking()
+        {
+            return WriteDbSet.AsNoTracking();
+        }
+
         /// <summary>
         /// 获取单个
         /// </summary>
@@ -100,7 +110,6 @@ namespace KdyWeb.Repository
             //    item.ModifyUserId = LoginUserInfo.UserId;
             //    // item.ModifyTime = DateTime.Now;
             //}
-
             WriteDbSet.UpdateRange(entity);
         }
 
@@ -130,6 +139,19 @@ namespace KdyWeb.Repository
             }
 
             WriteDbSet.UpdateRange(entity);
+        }
+
+        /// <summary>
+        /// 条件软删除
+        /// </summary>
+        /// <returns></returns>
+        public async Task Delete(Expression<Func<TEntity, bool>> whereExpression)
+        {
+            var list = await WriteDbSet.Where(whereExpression).ToListAsync();
+            if (list.Any())
+            {
+                Delete(list);
+            }
         }
 
         /// <summary>

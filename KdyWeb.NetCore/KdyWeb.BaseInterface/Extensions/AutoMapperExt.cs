@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,19 @@ namespace KdyWeb.BaseInterface.Extensions
         {
             var mapper = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IMapper>();
             return mapper.Map<TTarget>(source);
+        }
+
+        /// <summary>
+        /// AutoMapper自动映射 部分更新
+        /// </summary>
+        /// <typeparam name="TInput">Input</typeparam>
+        /// <typeparam name="TTarget">DbModel</typeparam>
+        /// <param name="input">入参</param>
+        /// <param name="dbModel">数据库DB</param>
+        public static void MapToPartExt<TInput, TTarget>(this TInput input, TTarget dbModel)
+        {
+            var mapper = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IMapper>();
+            mapper.Map(input, dbModel);
         }
 
         /// <summary>

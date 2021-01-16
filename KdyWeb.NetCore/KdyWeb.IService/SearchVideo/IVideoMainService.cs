@@ -46,5 +46,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> MatchDouBanInfoAsync(MatchDouBanInfoInput input);
+
+        /// <summary>
+        /// 更新影片主表信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> ModifyVideoMainAsync(ModifyVideoMainInput input);
     }
 }

@@ -8,6 +8,11 @@ namespace KdyWeb.Entity.SearchVideo
     /// </summary>
     public class VideoMainInfo : BaseEntity<long>
     {
+        public VideoMainInfo()
+        {
+
+        }
+
         /// <summary>
         /// 构造
         /// </summary>

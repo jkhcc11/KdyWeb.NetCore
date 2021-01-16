@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Hangfire;
 using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
@@ -27,12 +28,18 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
         private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
+        private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
+        private readonly IKdyRepository<VideoEpisodeGroup, long> _videoEpisodeGroupRepository;
 
-        public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository, IUnitOfWork unitOfWork) :
+        public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
+            IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
+            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
             _douBanInfoRepository = douBanInfoRepository;
+            _videoEpisodeRepository = videoEpisodeRepository;
+            _videoEpisodeGroupRepository = videoEpisodeGroupRepository;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -240,6 +247,71 @@ namespace KdyWeb.Service.SearchVideo
             dbDouBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
             _douBanInfoRepository.Update(dbDouBanInfo);
 
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 更新影片主表信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> ModifyVideoMainAsync(ModifyVideoMainInput input)
+        {
+            var main = await _videoMainRepository.GetAsNoTracking()
+                .Include(a => a.VideoMainInfo)
+                .Include(a => a.EpisodeGroup)
+                .Where(a => a.Id == input.Id)
+                .FirstOrDefaultAsync();
+            if (main == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "keyId错误");
+            }
+
+            input.MapToPartExt(main);
+
+            var downEpGroupId = main.EpisodeGroup
+                .Where(a => a.GroupName == "默认下载")
+                .Select(a => a.Id)
+                .FirstOrDefault();
+            if (string.IsNullOrEmpty(input.DownUrl) == false)
+            {
+                if (downEpGroupId > 0)
+                {
+                    await _videoEpisodeRepository.Delete(a => a.EpisodeGroupId == downEpGroupId);
+                }
+
+                #region 下载处理
+                //格式
+                //名称$下载地址
+                //名称2$下载地址2
+                //名称3$下载地址3
+                var downEp = new List<VideoEpisode>();
+                var tempDownArray = input.DownUrl.Split(new[] { '\r', '\n', '#' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var tempItem in tempDownArray)
+                {
+                    if (tempItem.Contains("$") == false)
+                    {
+                        continue;
+                    }
+
+                    var nameArray = tempItem.Split('$');
+
+                    downEp.Add(new VideoEpisode(nameArray[0], nameArray[1]));
+                }
+
+                var downGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoDown, "默认下载")
+                {
+                    Episodes = downEp,
+                    MainId = input.Id
+                };
+
+                await _videoEpisodeGroupRepository.CreateAsync(downGroup);
+                // main.EpisodeGroup.Add(downGroup);
+
+                #endregion
+            }
+
+            _videoMainRepository.Update(main);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }
