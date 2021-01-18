@@ -115,7 +115,7 @@ namespace KdyWeb.Service.SearchVideo
 
             //更新豆瓣状态
             var dbDouBan = await _douBanInfoRepository
-                .GetWriteQuery()
+                .GetQuery()
                 .FirstOrDefaultAsync(a => a.Id == douBanInfo.Data.Id);
             dbDouBan.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
             _douBanInfoRepository.Update(dbDouBan);

@@ -41,6 +41,16 @@ namespace KdyWeb.Repository
         {
             InitEntityDefaultValue();
             var changes = await _dbContext.SaveChangesAsync();
+            if (changes > 0)
+            {
+                //保存成功后 重置所有读库上下文跟踪状态为 未更改 todo:saveChange如果不重置 先保存后更改会报错 
+                foreach (var item in _dbContext.ChangeTracker.Entries()
+                    .Where(a => a.Entity != null))
+                {
+                    _readDbContext.Attach(item.Entity).State = EntityState.Unchanged;
+                }
+            }
+
             return changes;
         }
 
