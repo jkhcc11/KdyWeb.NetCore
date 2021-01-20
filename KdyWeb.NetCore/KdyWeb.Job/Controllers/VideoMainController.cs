@@ -91,5 +91,17 @@ namespace KdyWeb.Job.Controllers
             var result = await _videoMainService.MatchDouBanInfoAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 修改影片详情
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("modify")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ModifyVideoMainAsync(ModifyVideoMainInput input)
+        {
+            var result = await _videoMainService.ModifyVideoMainAsync(input);
+            return Ok(result);
+        }
     }
 }
