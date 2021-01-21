@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -72,13 +73,10 @@ namespace KdyWeb.Service.ImageSave
 
             //微博
             var weiBoInput = new BaseKdyFileInput(imgUrl);
-            var weiBoResult = await _weiBoFileService.PostFile(weiBoInput);
+            var weiBoResult = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "待调整");
+            //var weiBoResult = await _weiBoFileService.PostFile(weiBoInput);
 
-            //普通上传
-            var normalInput = new NormalFileInput("https://niupic.com/index/upload/process", "image_field",
-                "data", fileName, imgUrl);
-            var normalResult = await _normalFileService.PostFile(normalInput);
-
+            var normalResult = await NormalUpload(fileName, imgUrl);
             if (weiBoResult.IsSuccess)
             {
                 dbImg = new KdyImgSave(minIoResult.Data.FileMd5, weiBoResult.Data.Url, minIoResult.Data.Url);
@@ -187,6 +185,66 @@ namespace KdyWeb.Service.ImageSave
             }
 
             return url;
+        }
+
+        /// <summary>
+        /// 普通文件上传
+        /// </summary>
+        /// <returns></returns>
+        private async Task<KdyResult<KdyFileDto>> NormalUpload(string fileName, string imgUrl)
+        {
+            var result = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "上传失败-1");
+
+            //普通上传
+            //var normalInput = new NormalFileInput("https://niupic.com/index/upload/process", "image_field",
+            //    "data", fileName, imgUrl);
+            //var normalResult = await _normalFileService.PostFile(normalInput);
+
+            //超星
+            var uid = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxPUid);
+            var token = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxToken);
+            if (string.IsNullOrEmpty(uid) == false &&
+                string.IsNullOrEmpty(token) == false)
+            {
+                var normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
+                    "data.thumbnail", fileName, imgUrl)
+                {
+                    PostParDic = new Dictionary<string, string>()
+                    {
+                        {"id","WU_FILE_0"},
+                        {"type",fileName.FileNameToContentType()},
+                        {"puid",uid},
+                        {"_token",token},
+                    }
+                };
+                result = await _normalFileService.PostFile(normalInput);
+            }
+
+            if (result.IsSuccess)
+            {
+                return result;
+            }
+
+            //腾讯文档 防盗 不能直接使用
+            //var cookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigTxDocCookie);
+            //var id = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigTxDocId);
+            //if (string.IsNullOrEmpty(cookie) == false &&
+            //    string.IsNullOrEmpty(id) == false)
+            //{
+            //    var normalInput = new NormalFileInput($"https://docs.qq.com/v1/image/upload?globalPadId={id}", "file",
+            //        "url", fileName, imgUrl)
+            //    {
+            //        Referer = "https://docs.qq.com/doc/Ber22u2Q7NEp16bFF94wEJ9i1Em3pq3bVlYN4IQmKC2Cjyb92t3Kd93F0NWs3tprNM2iBB6w",
+            //        Cookie = cookie
+            //    };
+            //    result = await _normalFileService.PostFile(normalInput);
+            //    if (result.IsSuccess)
+            //    {
+            //        result.Data.Url = result.Data.Url.GetStrMathExt(":", "\\?w\\=");
+            //    }
+            //}
+
+            return result;
         }
     }
 }

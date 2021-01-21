@@ -110,31 +110,6 @@ namespace KdyWeb.Service.KdyFile
         }
 
         /// <summary>
-        /// 文件名转ContentType 若文件名无后缀则是流类型
-        /// </summary>
-        /// <returns></returns>
-        protected string FileNameToContentType(string fileName)
-        {
-            if (fileName.ToLower().EndsWith(".jpg") ||
-                fileName.ToLower().EndsWith(".png"))
-            {
-                return "image/jpeg";
-            }
-
-            if (fileName.ToLower().EndsWith(".gif"))
-            {
-                return "image/gif";
-            }
-
-            if (fileName.ToLower().EndsWith(".webp"))
-            {
-                return "image/webp";
-            }
-
-            return "application/octet-stream";
-        }
-
-        /// <summary>
         /// 获取文件Md5
         /// </summary>
         /// <returns></returns>
