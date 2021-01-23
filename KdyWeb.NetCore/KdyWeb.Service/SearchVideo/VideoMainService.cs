@@ -18,6 +18,7 @@ using KdyWeb.Repository;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -104,6 +105,7 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = main.MapToExt<GetVideoDetailDto>();
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
+            VideoDetailHandler(result);
             if (result.IsEnd)
             {
                 //已完结 不用更新
@@ -171,6 +173,11 @@ namespace KdyWeb.Service.SearchVideo
                 DataCount = count,
                 Data = data.MapToListExt<QueryVideoMainDto>()
             };
+
+            foreach (var item in result.Data)
+            {
+                VideoDetailHandler(item);
+            }
             return KdyResult.Success(result);
         }
 
@@ -314,6 +321,34 @@ namespace KdyWeb.Service.SearchVideo
             _videoMainRepository.Update(main);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 详情处理
+        /// </summary>
+        private void VideoDetailHandler(GetVideoDetailDto detail)
+        {
+            //var douBanProxy = KdyConfiguration.GetValue<string>(KdyWebServiceConst.DouBanProxyUrl);
+            //if (string.IsNullOrEmpty(douBanProxy) ||
+            //    string.IsNullOrEmpty(detail.VideoImg) ||
+            //    detail.VideoImg.Contains("view/movie_poster_cover") == false)
+            //{
+            //    return;
+            //}
+
+            //https://img9.doubanio.com        /view/photo/s_ratio_poster/public/p2625825416.jpg
+            //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
+            detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
+        }
+
+        /// <summary>
+        /// 详情处理
+        /// </summary>
+        private void VideoDetailHandler(QueryVideoMainDto detail)
+        {
+            //https://img9.doubanio.com        /view/photo/s_ratio_poster/public/p2625825416.jpg
+            //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
+            detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
         }
     }
 }

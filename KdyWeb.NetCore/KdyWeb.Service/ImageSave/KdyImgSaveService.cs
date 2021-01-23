@@ -73,8 +73,8 @@ namespace KdyWeb.Service.ImageSave
 
             //微博
             var weiBoInput = new BaseKdyFileInput(imgUrl);
-            var weiBoResult = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "待调整");
-            //var weiBoResult = await _weiBoFileService.PostFile(weiBoInput);
+           // var weiBoResult = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "待调整");
+            var weiBoResult = await _weiBoFileService.PostFile(weiBoInput);
 
             var normalResult = await NormalUpload(fileName, imgUrl);
             if (weiBoResult.IsSuccess)

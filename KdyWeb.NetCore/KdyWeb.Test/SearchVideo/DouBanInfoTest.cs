@@ -48,6 +48,13 @@ namespace KdyWeb.Test.SearchVideo
         }
 
         [TestMethod]
+        public async Task GetInfoBySubjectIdForPcWeb()
+        {
+            var result = await _douBanWebInfoService.GetInfoBySubjectIdForPcWeb("11504572");
+            Assert.IsTrue(result.IsSuccess);
+        }
+
+        [TestMethod]
         public async Task TestGetDouBanInfoByKeyWord()
         {
             var result = await _douBanWebInfoService.GetDouBanInfoByKeyWordAsync("永远的第一名");

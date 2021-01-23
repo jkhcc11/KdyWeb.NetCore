@@ -56,7 +56,7 @@ namespace KdyWeb.Utility
             {
                 str = str.Replace(item, "");
             }
-            return str;
+            return str.Trim();
         }
 
         /// <summary>

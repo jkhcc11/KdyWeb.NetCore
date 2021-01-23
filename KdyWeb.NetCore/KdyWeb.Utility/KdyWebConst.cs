@@ -21,6 +21,11 @@
     /// </summary>
     public class KdyWebServiceConst
     {
+        ///// <summary>
+        ///// 豆瓣图片代理Url
+        ///// </summary>
+        //public const string DouBanProxyUrl = "DouBanProxyUrl";
+
         /// <summary>
         /// Minio配置文件节点
         /// </summary>
@@ -107,6 +112,12 @@
             /// 腾讯文档cookie
             /// </summary>
             public const string UploadConfigTxDocCookie= "UploadConfig:tx_cookie";
+
+
+            /// <summary>
+            /// 微博cookie
+            /// </summary>
+            public const string WeiBoCookie = "UploadConfig:wb_cookie";
         }
     }
 
