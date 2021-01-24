@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 
 namespace KdyWeb.IService.SearchVideo
@@ -22,5 +23,17 @@ namespace KdyWeb.IService.SearchVideo
         /// <param name="epId">剧集Id</param>
         /// <returns></returns>
         Task<KdyResult<string>> GetVideoDanMuAsync(long epId);
+
+        /// <summary>
+        /// 搜索弹幕
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<SearchDanMuDto>>> SearchDanMuAsync(SearchDanMuInput input);
+
+        /// <summary>
+        /// 批量删除弹幕
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DeleteAsync(BatchDeleteForLongKeyInput input);
     }
 }

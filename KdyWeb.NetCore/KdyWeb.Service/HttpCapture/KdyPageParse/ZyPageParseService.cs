@@ -151,8 +151,11 @@ namespace KdyWeb.Service.HttpCapture
                         break;
                     }
                 }
-                else if (url.EndsWith(prioritySuffix) == false)
+
+                if (string.IsNullOrEmpty(prioritySuffix) ||
+                    url.EndsWith(prioritySuffix) == false)
                 {
+                    //未匹配到后缀 或者当前url不是后缀
                     continue;
                 }
 

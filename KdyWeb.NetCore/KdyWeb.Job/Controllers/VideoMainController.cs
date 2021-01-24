@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
@@ -25,6 +27,7 @@ namespace KdyWeb.Job.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("create")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
         {
             var result = await _videoMainService.CreateForDouBanInfoAsync(input);
@@ -58,6 +61,7 @@ namespace KdyWeb.Job.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("updateField")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateValueByFieldAsync(UpdateValueByFieldInput input)
         {
             var result = await _videoMainService.UpdateValueByFieldAsync(input);
@@ -69,9 +73,34 @@ namespace KdyWeb.Job.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete("delete")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteAsync(BatchDeleteForLongKeyInput input)
         {
             var result = await _videoMainService.DeleteAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 匹配豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("matchDouBanInfo")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> MatchDouBanInfoAsync(MatchDouBanInfoInput input)
+        {
+            var result = await _videoMainService.MatchDouBanInfoAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 修改影片详情
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("modify")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ModifyVideoMainAsync(ModifyVideoMainInput input)
+        {
+            var result = await _videoMainService.ModifyVideoMainAsync(input);
             return Ok(result);
         }
     }

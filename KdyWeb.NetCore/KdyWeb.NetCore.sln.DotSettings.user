@@ -15,10 +15,9 @@
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.HttpCapture.NormalPageParseServiceTest.GetZyResultAsync&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.VideoEpisodeTest.TestUpdateNotEnd&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.VideoCaptureTest.TestCreate&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.PageSearchConfigTest.TestQuery&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.VideoMainTest.ModifyVideoMainAsync&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.HttpCapture.KdyImgSaveTest.PostFileByUrl&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8622bcde_002D6dd0_002D4c65_002D8ab1_002D4d03f19bda59/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetResultAsync" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.HttpCapture.NormalPageParseServiceTest.GetResultAsync&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+	</wpf:ResourceDictionary>

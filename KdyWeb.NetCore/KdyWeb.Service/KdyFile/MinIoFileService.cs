@@ -42,7 +42,7 @@ namespace KdyWeb.Service.KdyFile
             }
 
             var minIoClient = GetMinIoClient();
-            var contentType = FileNameToContentType(input.FileName);
+            var contentType = input.FileName.FileNameToContentType();
             var result = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "上传失败");
             try
             {

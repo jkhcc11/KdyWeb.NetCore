@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Hangfire;
 using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
@@ -17,6 +18,7 @@ using KdyWeb.Repository;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -27,12 +29,18 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
         private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
+        private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
+        private readonly IKdyRepository<VideoEpisodeGroup, long> _videoEpisodeGroupRepository;
 
-        public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository, IUnitOfWork unitOfWork) :
+        public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
+            IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
+            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
             _douBanInfoRepository = douBanInfoRepository;
+            _videoEpisodeRepository = videoEpisodeRepository;
+            _videoEpisodeGroupRepository = videoEpisodeGroupRepository;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -75,7 +83,6 @@ namespace KdyWeb.Service.SearchVideo
             _douBanInfoRepository.Update(douBanInfo);
 
             await UnitOfWork.SaveChangesAsync();
-
             return KdyResult.Success();
         }
 
@@ -98,6 +105,7 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = main.MapToExt<GetVideoDetailDto>();
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
+            VideoDetailHandler(result);
             if (result.IsEnd)
             {
                 //已完结 不用更新
@@ -135,16 +143,42 @@ namespace KdyWeb.Service.SearchVideo
                 {
                     new KdyEfOrderConditions()
                     {
-                        Key = "CreatedTime",
+                        Key = nameof(VideoMain.CreatedTime),
                         OrderBy = KdyEfOrderBy.Desc
                     }
                 };
             }
 
-            var pageData = await _videoMainRepository.GetQuery()
+            //生成条件和排序规则
+            var query = _videoMainRepository.GetQuery()
                 .Include(a => a.VideoMainInfo)
-                .GetDtoPageListAsync<VideoMain, QueryVideoMainDto>(input);
-            return KdyResult.Success(pageData);
+                .CreateConditions(input);
+            var count = await query.CountAsync();
+            if (string.IsNullOrEmpty(input.KeyWord) == false)
+            {
+                //关键字不为空时 按照长度排序
+                query = query
+                   .OrderBy(a => a.KeyWord.Length)
+                   .KdyThenOrderBy(input)
+                   .KdyPageList(input);
+            }
+            else
+            {
+                query = query.KdyOrderBy(input).KdyPageList(input);
+            }
+
+            var data = await query.ToListAsync();
+            var result = new PageList<QueryVideoMainDto>(input.Page, input.PageSize)
+            {
+                DataCount = count,
+                Data = data.MapToListExt<QueryVideoMainDto>()
+            };
+
+            foreach (var item in result.Data)
+            {
+                VideoDetailHandler(item);
+            }
+            return KdyResult.Success(result);
         }
 
         /// <summary>
@@ -189,6 +223,132 @@ namespace KdyWeb.Service.SearchVideo
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success("剧集删除成功");
+        }
+
+        /// <summary>
+        /// 匹配豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> MatchDouBanInfoAsync(MatchDouBanInfoInput input)
+        {
+            var dbMain = await _videoMainRepository
+                .GetQuery()
+                .Include(a => a.VideoMainInfo)
+                .FirstOrDefaultAsync(a => a.Id == input.KeyId);
+            if (dbMain == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "影片信息不存在");
+            }
+
+            var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanId);
+            if (dbDouBanInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息不存在");
+            }
+
+            dbMain.ToVideoMain(dbDouBanInfo);
+            dbMain.VideoImg = dbDouBanInfo.VideoImg;
+            dbMain.IsMatchInfo = true;
+            _videoMainRepository.Update(dbMain);
+
+            dbDouBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
+            _douBanInfoRepository.Update(dbDouBanInfo);
+
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 更新影片主表信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> ModifyVideoMainAsync(ModifyVideoMainInput input)
+        {
+            var main = await _videoMainRepository.GetAsNoTracking()
+                .Include(a => a.VideoMainInfo)
+                .Include(a => a.EpisodeGroup)
+                .Where(a => a.Id == input.Id)
+                .FirstOrDefaultAsync();
+            if (main == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "keyId错误");
+            }
+
+            input.MapToPartExt(main);
+
+            var downEpGroupId = main.EpisodeGroup
+                .Where(a => a.GroupName == "默认下载")
+                .Select(a => a.Id)
+                .FirstOrDefault();
+            if (string.IsNullOrEmpty(input.DownUrl) == false)
+            {
+                if (downEpGroupId > 0)
+                {
+                    await _videoEpisodeRepository.Delete(a => a.EpisodeGroupId == downEpGroupId);
+                }
+
+                #region 下载处理
+                //格式
+                //名称$下载地址
+                //名称2$下载地址2
+                //名称3$下载地址3
+                var downEp = new List<VideoEpisode>();
+                var tempDownArray = input.DownUrl.Split(new[] { '\r', '\n', '#' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var tempItem in tempDownArray)
+                {
+                    if (tempItem.Contains("$") == false)
+                    {
+                        continue;
+                    }
+
+                    var nameArray = tempItem.Split('$');
+
+                    downEp.Add(new VideoEpisode(nameArray[0], nameArray[1]));
+                }
+
+                var downGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoDown, "默认下载")
+                {
+                    Episodes = downEp,
+                    MainId = input.Id
+                };
+
+                await _videoEpisodeGroupRepository.CreateAsync(downGroup);
+                // main.EpisodeGroup.Add(downGroup);
+
+                #endregion
+            }
+
+            _videoMainRepository.Update(main);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 详情处理
+        /// </summary>
+        private void VideoDetailHandler(GetVideoDetailDto detail)
+        {
+            //var douBanProxy = KdyConfiguration.GetValue<string>(KdyWebServiceConst.DouBanProxyUrl);
+            //if (string.IsNullOrEmpty(douBanProxy) ||
+            //    string.IsNullOrEmpty(detail.VideoImg) ||
+            //    detail.VideoImg.Contains("view/movie_poster_cover") == false)
+            //{
+            //    return;
+            //}
+
+            //https://img9.doubanio.com        /view/photo/s_ratio_poster/public/p2625825416.jpg
+            //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
+            detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
+        }
+
+        /// <summary>
+        /// 详情处理
+        /// </summary>
+        private void VideoDetailHandler(QueryVideoMainDto detail)
+        {
+            //https://img9.doubanio.com        /view/photo/s_ratio_poster/public/p2625825416.jpg
+            //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
+            detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
         }
     }
 }

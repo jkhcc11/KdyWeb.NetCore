@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using KdyWeb.BaseInterface.BaseModel;
@@ -151,8 +152,9 @@ namespace KdyWeb.Service.HttpCapture
             var jsonStr = reqResult.Data.GetValueByXpath("//script[@type='application/ld+json']", "text");
             var tempJObject = JObject.Parse(jsonStr);
             var id = tempJObject.GetValueExt("url").RemoveStrExt("subject").Trim('/');
-            var title = tempJObject.GetValueExt("name").Split(' ').First();
             Enum.TryParse(tempJObject.GetValueExt("@type").Replace("TVSeries", "Tv"), out Subtype subtype);
+           // var tempName = tempJObject.GetValueExt("name");
+           var title = reqResult.Data.GetHtmlNodeByXpath("//title").InnerText.RemoveStrExt("(豆瓣)");
 
             var result = new GetDouBanOut(title, year, pic, id)
             {

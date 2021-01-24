@@ -46,15 +46,15 @@ namespace KdyWeb.Service.KdyHttp
                 var fileContent = new ByteArrayContent(input.ExtData.FileBytes);
                 multiContent.Add(fileContent, input.ExtData.NameField, input.ExtData.FileName);
 
-                if (input.ExtData.PostParDic != null && input.ExtData.PostParDic.Any() == false)
+                if (input.ExtData.PostParDic != null && input.ExtData.PostParDic.Any())
                 {
                     foreach (var key in input.ExtData.PostParDic)
                     {
-                        multiContent.Add(fileContent, key.Key, key.Value);
+                        multiContent.Add(new StringContent(key.Value), key.Key);
                     }
                 }
 
-                req.Content = multiContent; 
+                req.Content = multiContent;
                 #endregion
             }
 

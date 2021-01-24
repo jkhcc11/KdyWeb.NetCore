@@ -41,5 +41,16 @@ namespace KdyWeb.IService.SearchVideo
         /// <returns></returns>
         Task<KdyResult> DeleteAsync(BatchDeleteForLongKeyInput input);
 
+        /// <summary>
+        /// 匹配豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> MatchDouBanInfoAsync(MatchDouBanInfoInput input);
+
+        /// <summary>
+        /// 更新影片主表信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> ModifyVideoMainAsync(ModifyVideoMainInput input);
     }
 }

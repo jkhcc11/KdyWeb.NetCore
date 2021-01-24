@@ -13,7 +13,7 @@ namespace KdyWeb.BaseInterface.Repository
     /// </summary>
     /// <typeparam name="TEntity">实体类</typeparam>
     /// <typeparam name="TKey">主键</typeparam>
-    public interface IKdyRepository<TEntity, TKey> : IKdyScoped, IDisposable
+    public interface IKdyRepository<TEntity, TKey> : IKdyTransient, IDisposable
         where TEntity : class
         where TKey : struct
     {
@@ -28,6 +28,24 @@ namespace KdyWeb.BaseInterface.Repository
         /// </summary>
         /// <returns></returns>
         IQueryable<TEntity> GetAsNoTracking();
+
+        /// <summary>
+        /// 生成查询
+        /// </summary>
+        /// <remarks>
+        /// 多次事务时 二次修改用写库
+        /// </remarks>
+        /// <returns></returns>
+        IQueryable<TEntity> GetWriteQuery();
+
+        /// <summary>
+        /// 未跟踪查询
+        /// </summary>
+        /// <remarks>
+        /// 多次事务时 二次修改用写库
+        /// </remarks>
+        /// <returns></returns>
+        IQueryable<TEntity> GetWriteAsNoTracking();
 
         /// <summary>
         /// 获取单个
@@ -64,6 +82,12 @@ namespace KdyWeb.BaseInterface.Repository
         /// </summary>
         /// <param name="entity"></param>
         void Delete(List<TEntity> entity);
+
+        /// <summary>
+        /// 条件软删除
+        /// </summary>
+        /// <returns></returns>
+        Task Delete(Expression<Func<TEntity, bool>> whereExpression);
 
         /// <summary>
         /// 硬删除

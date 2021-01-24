@@ -97,10 +97,15 @@ namespace KdyWeb.Service.KdyFile
                 return result;
             }
 
-            if (resultImgUrl.StartsWith("http://") == false && resultImgUrl.StartsWith("https://") == false)
+            if (resultImgUrl.StartsWith("http://") == false && 
+                resultImgUrl.StartsWith("https://") == false)
             {
                 //自动url拼接
                 uploadResult.Url = $"https://{resultImgUrl}";
+            }
+            else
+            {
+                uploadResult.Url = resultImgUrl;
             }
 
             result = KdyResult.Success(uploadResult);

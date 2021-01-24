@@ -30,17 +30,5 @@ namespace KdyWeb.Job.Controllers
             var result = await _videoCaptureService.CreateVideoInfoByDetailAsync(input);
             return Ok(result);
         }
-
-        /// <summary>
-        /// 初始化 定时影片录入Job
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("initJob")]
-        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CreateRecurringVideoJobAsync()
-        {
-            var result = await _videoCaptureService.CreateRecurringVideoJobAsync();
-            return Ok(result);
-        }
     }
 }

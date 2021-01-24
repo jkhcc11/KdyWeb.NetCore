@@ -66,5 +66,17 @@ namespace KdyWeb.Job.Controllers
             var result = await _pageSearchConfigService.GetDetailConfigAsync(configId);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 一键复制站点配置
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("copy/{configId}")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> OneCopyAsync(long configId)
+        {
+            var result = await _pageSearchConfigService.OneCopyAsync(configId);
+            return Ok(result);
+        }
     }
 }

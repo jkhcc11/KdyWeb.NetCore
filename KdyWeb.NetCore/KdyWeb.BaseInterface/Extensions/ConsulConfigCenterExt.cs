@@ -16,6 +16,14 @@ namespace KdyWeb.BaseInterface.Extensions
         public const string ConsulConfigUrl = "ConsulConfigUrl";
 
         /// <summary>
+        /// 客户端名称
+        /// </summary>
+        /// <remarks>
+        /// 同一台服务器部署多个时
+        /// </remarks>
+        public const string ConfigClientName = "ConfigClientName";
+
+        /// <summary>
         /// 初始化配置中心
         /// </summary>
         /// <param name="configurationBuilder"></param>

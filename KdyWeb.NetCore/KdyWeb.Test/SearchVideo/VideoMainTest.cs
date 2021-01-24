@@ -4,6 +4,7 @@ using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Test.SearchVideo
 {
@@ -57,6 +58,23 @@ namespace KdyWeb.Test.SearchVideo
             };
 
             var result = await _service.UpdateValueByFieldAsync(input);
+            Assert.IsTrue(result.IsSuccess);
+        }
+
+        [TestMethod]
+        public async Task ModifyVideoMainAsync()
+        {
+            var input = new ModifyVideoMainInput()
+            {
+                Id = 1348202780468318208,
+               // VideoImg = "tttt",
+                Subtype = Subtype.Movie,
+                VideoMainStatus = VideoMainStatus.Normal,
+                DownUrl = "下载地址$www.baidu.com/1111\r\n下载地址1$www.baidu.com/1111",
+                VideoGenres="ttttt1111"
+            };
+
+            var result = await _service.ModifyVideoMainAsync(input);
             Assert.IsTrue(result.IsSuccess);
         }
     }

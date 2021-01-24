@@ -43,8 +43,14 @@ namespace KdyWeb.Job
                     var env = context.HostingEnvironment;
                     context.Configuration = config.Build();
                     string consulUrl = context.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
+                    var clientName = context.Configuration[ConsulConfigCenterExt.ConfigClientName];
+                    if (string.IsNullOrEmpty(clientName) == false)
+                    {
+                        clientName = "." + clientName;
+                    }
+
                     config.InitConfigCenter(context, consulUrl,
-                        $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
+                        $"{env.ApplicationName}/appsettings.{env.EnvironmentName}{clientName}.json");
                 })
                 //.ConfigureServices((context, service) =>
                 //{

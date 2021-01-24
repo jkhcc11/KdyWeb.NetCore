@@ -43,8 +43,15 @@ namespace KdyWeb.Test.SearchVideo
         [TestMethod]
         public async Task TestGetDetail()
         {
-            var result = await _service.GetDouBanInfoForIdAsync(14);
+            var result = await _service.GetDouBanInfoForIdAsync(240);
             Assert.IsTrue(result.Data.Id > 0);
+        }
+
+        [TestMethod]
+        public async Task GetInfoBySubjectIdForPcWeb()
+        {
+            var result = await _douBanWebInfoService.GetInfoBySubjectIdForPcWeb("11504572");
+            Assert.IsTrue(result.IsSuccess);
         }
 
         [TestMethod]

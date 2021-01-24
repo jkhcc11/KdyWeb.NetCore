@@ -41,6 +41,9 @@ namespace KdyWeb.Dto.HttpCapture
             dbConfig.CaptureDetailUrl = input.CaptureDetailUrl;
             dbConfig.CaptureDetailXpath = input.CaptureDetailXpath;
             dbConfig.CaptureDetailNameSplit = input.CaptureDetailNameSplit;
+
+            dbConfig.YearXpath = input.YearXpath;
+            dbConfig.SearchConfigStatus = input.SearchConfigStatus;
         }
     }
 }

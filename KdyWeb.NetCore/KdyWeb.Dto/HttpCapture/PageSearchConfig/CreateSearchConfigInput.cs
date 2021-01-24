@@ -139,6 +139,11 @@ namespace KdyWeb.Dto.HttpCapture
         public string HostRemark { get; set; }
 
         /// <summary>
+        /// 详情页年份Xpath
+        /// </summary>
+        public string YearXpath { get; set; }
+
+        /// <summary>
         /// 播放地址后缀 
         /// </summary>
         /// <remarks>

@@ -73,7 +73,7 @@ namespace KdyWeb.Service.Job
         /// </summary>
         public void RecurringUrlJob(RecurringUrlJobInput input)
         {
-            RecurringJob.AddOrUpdate<RecurringUrlJobService>(input.JobId, x => x.Execute(input), input.Cron, TimeZoneInfo.Utc);
+            //  RecurringJob.AddOrUpdate<RecurringUrlJobService>(input.JobId, x => x.Execute(input), input.Cron, TimeZoneInfo.Utc);
         }
 
         /// <summary>

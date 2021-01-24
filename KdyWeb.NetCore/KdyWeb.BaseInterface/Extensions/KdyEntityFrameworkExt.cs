@@ -21,6 +21,34 @@ namespace KdyWeb.BaseInterface.Extensions
         /// 排序扩展
         /// </summary>
         /// <returns></returns>
+        public static IQueryable<TEntity> KdyThenOrderBy<TEntity>(this IOrderedQueryable<TEntity> query, ISortInput sortInput)
+        {
+            if (sortInput == null ||
+                sortInput.OrderBy == null ||
+                sortInput.OrderBy.Any() == false)
+            {
+                return query;
+            }
+
+            var orderByStr = new StringBuilder();
+
+            foreach (var item in sortInput.OrderBy)
+            {
+                if (string.IsNullOrEmpty(item.Key))
+                {
+                    continue;
+                }
+
+                orderByStr.Append($"{item.Key} {item.OrderBy},");
+            }
+
+            return query.ThenBy(orderByStr.ToString().Trim(','));
+        }
+
+        /// <summary>
+        /// 排序扩展
+        /// </summary>
+        /// <returns></returns>
         public static IQueryable<TEntity> KdyOrderBy<TEntity>(this IQueryable<TEntity> query, ISortInput sortInput)
         {
             if (sortInput == null ||

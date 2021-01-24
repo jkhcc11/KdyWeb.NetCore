@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -55,10 +56,10 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         public virtual async Task<TResult> SendAsync(TInput input)
         {
-            KdyLog.Info("Http请求开始", new Dictionary<string, object>()
-            {
-                {"HttpInput",input}
-            });
+            //KdyLog.Info("Http请求开始", new Dictionary<string, object>()
+            //{
+            //    {"HttpInput",input}
+            //});
 
             //todo:待验证cookie问题 需要改造
             //这里的name必须和注入时保持一致时 注入的配置才生效
@@ -83,11 +84,6 @@ namespace KdyWeb.BaseInterface.HttpBase
 
             var result = new TResult() { IsSuccess = true };
             await GetResult(httpClient, request, result, input);
-
-            KdyLog.Info("Http请求结束", new Dictionary<string, object>()
-            {
-                {"HttpResult",result}
-            });
             return result;
         }
 
@@ -101,6 +97,8 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         protected virtual async Task<TResult> GetResult(HttpClient httpClient, HttpRequestMessage request, TResult result, TInput input)
         {
+            var watch = new Stopwatch();
+            watch.Start();
             try
             {
                 var response = await httpClient.SendAsync(request);
@@ -113,8 +111,9 @@ namespace KdyWeb.BaseInterface.HttpBase
                 if (response.Headers.Contains("Set-Cookie"))
                 {
                     #region cookie处理
+
                     var sb = new StringBuilder();
-                    var tempArray = response.Headers.GetValues("Set-Cookie");
+                    var tempArray = response.Headers.GetValues("Set-Cookie").ToList();
                     if (tempArray.Any())
                     {
                         foreach (var item in tempArray)
@@ -122,15 +121,27 @@ namespace KdyWeb.BaseInterface.HttpBase
                             //用;分隔取第一个
                             var temp = item.Split(';').First();
                             sb.Append($"{temp.Trim()};");
-                            if (temp.Contains("="))
+                            if (temp.Contains("=") == false)
                             {
-                                var tempA = temp.Split('=');
-                                result.CookieDic.Add(tempA[0].Trim(), tempA[1].Trim());
+                                continue;
                             }
+
+                            var tempA = temp.Split('=');
+                            string key = tempA[0].Trim(),
+                                value = tempA[1].Trim();
+                            if (result.CookieDic.ContainsKey(key))
+                            {
+                                //有些站点还有重复得。。。
+                                continue;
+                            }
+
+                            result.CookieDic.Add(key, value);
 
                         }
                     }
+
                     result.Cookie = sb.ToString();
+
                     #endregion
                 }
 
@@ -170,6 +181,15 @@ namespace KdyWeb.BaseInterface.HttpBase
                 result.ErrMsg = $"Http程序异常：{ex.Message}";
                 ex.ToExceptionless().Submit();
                 return result;
+            }
+            finally
+            {
+                watch.Stop();
+                KdyLog.Info($"Http请求结束,Url:{input.Url},耗时：{watch.ElapsedMilliseconds}ms", new Dictionary<string, object>()
+                {
+                    {"HttpResult",result},
+                    {"HttpInput",input}
+                });
             }
         }
 

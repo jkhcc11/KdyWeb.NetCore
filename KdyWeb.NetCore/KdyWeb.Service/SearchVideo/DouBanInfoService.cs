@@ -65,6 +65,12 @@ namespace KdyWeb.Service.SearchVideo
                 douBanWebResult.Data.Pic = $"{imgResult.Data}";
             }
 
+            KdyLog.Trace($"豆瓣Id:{subjectId}图片上传返回:{imgResult.Msg}", new Dictionary<string, object>()
+            {
+                {"subjectId",subjectId},
+                {"ImgResult",imgResult}
+            });
+
             //保存数据库
             dbDouBanInfo = douBanWebResult.Data.MapToExt<DouBanInfo>();
             await _douBanInfoRepository.CreateAsync(dbDouBanInfo);
@@ -161,6 +167,9 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<CreateForSubjectIdDto>> CreateForKeyWordAsync(string keyWord, int year)
         {
+            //避免两次请求搜索太快
+            await Task.Delay(1800);
+
             //如果名称相等则直接匹配详情
             //不相等则 先匹配名称和 对应的季数
             var douBanInfo = await _douBanWebInfoService.GetDouBanInfoByKeyWordAsync(keyWord);
@@ -175,6 +184,8 @@ namespace KdyWeb.Service.SearchVideo
             var result = KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, $"匹配豆瓣信息失败，未找到匹配01。{keyWord}");
             foreach (var douBanItem in douBanInfo.Data)
             {
+                await Task.Delay(1500);
+
                 var oldKey = keyWord.RemoveStrExt(" ");
                 var douBanName = douBanItem.ResultName.RemoveStrExt(" ");
                 result = await CreateForSubjectIdAsync(douBanItem.DouBanSubjectId);
@@ -206,7 +217,6 @@ namespace KdyWeb.Service.SearchVideo
                 }
 
                 KdyLog.Warn($"影片采集遇到歧义名称，已跳过。第三方名称：{oldKey} 豆瓣名称：{douBanName}");
-                await Task.Delay(1500);
             }
 
             if (result.IsSuccess == false)
@@ -215,6 +225,40 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 重试保存图片
+        /// </summary>
+        /// <remarks>
+        /// 任务没保存成功时 手动再重写保存
+        /// </remarks>
+        /// <returns></returns>
+        public async Task<KdyResult> RetrySaveImgAsync(int douBanInfoId)
+        {
+            var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == douBanInfoId);
+            if (dbDouBanInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "Id错误");
+            }
+
+            if (string.IsNullOrEmpty(dbDouBanInfo.VideoImg) ||
+                dbDouBanInfo.VideoImg.Contains("doubanio") == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "图片为空或非豆瓣图片 重传失败");
+            }
+
+            //上传图片
+            var imgResult = await _kdyImgSaveService.PostFileByUrl(dbDouBanInfo.VideoImg);
+            if (imgResult.IsSuccess == false)
+            {
+                return KdyResult.Error(imgResult.Code, imgResult.Msg);
+            }
+
+            dbDouBanInfo.VideoImg = imgResult.Data;
+            _douBanInfoRepository.Update(dbDouBanInfo);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
         }
     }
 }

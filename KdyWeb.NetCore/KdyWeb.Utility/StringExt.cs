@@ -56,7 +56,7 @@ namespace KdyWeb.Utility
             {
                 str = str.Replace(item, "");
             }
-            return str;
+            return str.Trim();
         }
 
         /// <summary>
@@ -247,17 +247,36 @@ namespace KdyWeb.Utility
 
             //不匹配
             return false;
+        }
 
-            //else
-            //{
-            //    //季数不相等 结果不一致
-            //    if (x == 1 && y == 0) //允许 搜索带1 返回不带1 的
-            //    {
-            //        return true;
-            //    }
+        /// <summary>
+        /// 文件名转ContentType 若文件名无后缀则是流类型
+        /// </summary>
+        /// <returns></returns>
+        public static string FileNameToContentType(this string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                throw new ArgumentNullException(nameof(FileNameToContentType) + "参数为空");
+            }
 
-            //}
-            //return true;
+            if (fileName.ToLower().EndsWith(".jpg") ||
+                fileName.ToLower().EndsWith(".png"))
+            {
+                return "image/jpeg";
+            }
+
+            if (fileName.ToLower().EndsWith(".gif"))
+            {
+                return "image/gif";
+            }
+
+            if (fileName.ToLower().EndsWith(".webp"))
+            {
+                return "image/webp";
+            }
+
+            return "application/octet-stream";
         }
 
         #region 加密相关
