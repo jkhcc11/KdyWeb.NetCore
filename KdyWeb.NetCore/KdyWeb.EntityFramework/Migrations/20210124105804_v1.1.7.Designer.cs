@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    [Migration("20210124100529_recurrentUrlConfig")]
-    partial class recurrentUrlConfig
+    [Migration("20210124105804_v1.1.7")]
+    partial class v117
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -187,6 +187,10 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<byte>("SearchConfigStatus")
                         .HasColumnType("tinyint");
+
+                    b.Property<string>("SuccessFlag")
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
 
                     b.Property<string>("UrlCron")
                         .HasColumnType("nvarchar(20)")

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KdyWeb.EntityFramework.Migrations
 {
-    public partial class recurrentUrlConfig : Migration
+    public partial class v117 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,6 +24,7 @@ namespace KdyWeb.EntityFramework.Migrations
                     Cookie = table.Column<string>(nullable: true),
                     MsgXpath = table.Column<string>(maxLength: 100, nullable: true),
                     UrlCron = table.Column<string>(maxLength: 20, nullable: true),
+                    SuccessFlag = table.Column<string>(maxLength: 20, nullable: true),
                     SearchConfigStatus = table.Column<byte>(nullable: false)
                 },
                 constraints: table =>
