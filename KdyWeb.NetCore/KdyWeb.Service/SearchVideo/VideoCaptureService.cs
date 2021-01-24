@@ -2,23 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hangfire;
-using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
-using KdyWeb.Dto.Job;
 using KdyWeb.Dto.SearchVideo;
-using KdyWeb.Entity.HttpCapture;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.HttpCapture;
-using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Service.Job;
-using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -31,16 +23,14 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IPageSearchConfigService _pageSearchConfigService;
         private readonly IDouBanInfoService _douBanInfoService;
 
-        private readonly IKdyRepository<PageSearchConfig, long> _pageSearchRepository;
         private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
         public VideoCaptureService(IUnitOfWork unitOfWork, IKdyRepository<VideoMain, long> videoMainRepository,
-            IPageSearchConfigService pageSearchConfigService, IDouBanInfoService douBanInfoService,
-            IKdyRepository<PageSearchConfig, long> pageSearchRepository, IKdyRepository<DouBanInfo> douBanInfoRepository) : base(unitOfWork)
+            IPageSearchConfigService pageSearchConfigService, IDouBanInfoService douBanInfoService, 
+            IKdyRepository<DouBanInfo> douBanInfoRepository) : base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
             _pageSearchConfigService = pageSearchConfigService;
             _douBanInfoService = douBanInfoService;
-            _pageSearchRepository = pageSearchRepository;
             _douBanInfoRepository = douBanInfoRepository;
         }
 
@@ -140,44 +130,6 @@ namespace KdyWeb.Service.SearchVideo
             await _videoMainRepository.CreateAsync(dbVideoMain);
 
             await UnitOfWork.SaveChangesAsync();
-            return KdyResult.Success();
-        }
-
-        /// <summary>
-        /// 创建定时影片录入Job
-        /// </summary>
-        /// <returns></returns>
-        public async Task<KdyResult> CreateRecurringVideoJobAsync()
-        {
-            var normalList = await _pageSearchRepository.GetAsNoTracking()
-                .Where(a => a.SearchConfigStatus == SearchConfigStatus.Normal)
-                .ToListAsync();
-            var jobCron = KdyConfiguration.GetValue<string>(KdyWebServiceConst.JobCron.RecurringVideoJob);
-
-            foreach (var item in normalList)
-            {
-                if (item.CaptureDetailUrl == null ||
-                    item.CaptureDetailUrl.Any() == false)
-                {
-                    continue;
-                }
-
-                foreach (var detailItem in item.CaptureDetailUrl)
-                {
-                    var recurringJobInput = new RecurringVideoJobInput()
-                    {
-                        BaseHost = item.BaseHost,
-                        CaptureDetailNameSplit = item.CaptureDetailNameSplit,
-                        CaptureDetailXpath = item.CaptureDetailXpath,
-                        OriginUrl = $"{item.BaseHost}{detailItem}"
-                    };
-
-                    var jobId = $"Capture.RecurringJob.{item.BaseHost.Replace("http://", "").Replace("https://", "")}";
-
-                    RecurringJob.AddOrUpdate<RecurringVideoJobService>(jobId, a => a.ExecuteAsync(recurringJobInput), jobCron);
-                }
-            }
-
             return KdyResult.Success();
         }
     }

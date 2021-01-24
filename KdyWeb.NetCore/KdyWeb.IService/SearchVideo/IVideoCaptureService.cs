@@ -19,11 +19,5 @@ namespace KdyWeb.IService.SearchVideo
         /// </remarks>
         /// <returns></returns>
         Task<KdyResult> CreateVideoInfoByDetailAsync(CreateVideoInfoByDetailInput input);
-
-        /// <summary>
-        /// 创建定时影片录入Job
-        /// </summary>
-        /// <returns></returns>
-        Task<KdyResult> CreateRecurringVideoJobAsync();
     }
 }

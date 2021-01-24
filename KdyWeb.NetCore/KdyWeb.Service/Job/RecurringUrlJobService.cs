@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Net.Http;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Hangfire;
-using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.HangFire;
 using KdyWeb.BaseInterface.KdyLog;
-using KdyWeb.Dto.KdyHttp;
-using KdyWeb.IService.KdyHttp;
-using KdyWeb.Utility;
+using KdyWeb.Dto.Job;
+using KdyWeb.IService.HttpCapture;
 
 namespace KdyWeb.Service.Job
 {
@@ -15,29 +15,26 @@ namespace KdyWeb.Service.Job
     /// 定时循环请求Url任务Job 
     /// </summary>
     [Queue(HangFireQueue.Capture)]
-    public class RecurringUrlJobService : BaseKdyJob<RecurringUrlJobInput>
+    public class RecurringUrlJobService : BaseKdyJob<RecurrentUrlJobInput>
     {
-        private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
-        public RecurringUrlJobService(IKdyLog kdyLog, IKdyRequestClientCommon kdyRequestClientCommon) : base(kdyLog)
+        private readonly IRecurrentUrlConfigService _recurrentUrlConfigService;
+        public RecurringUrlJobService(IKdyLog kdyLog, IRecurrentUrlConfigService recurrentUrlConfigService) : base(kdyLog)
         {
-            _kdyRequestClientCommon = kdyRequestClientCommon;
+            _recurrentUrlConfigService = recurrentUrlConfigService;
         }
 
-        public override void Execute(RecurringUrlJobInput input)
+        public override async Task ExecuteAsync(RecurrentUrlJobInput input)
         {
-            var reqInput = new KdyRequestCommonInput(input.RequestUrl, HttpMethod.Post)
+            var result = await _recurrentUrlConfigService.RecurrentUrlAsync(input);
+            KdyLog.Trace("定时循环请求Url完成", new Dictionary<string, object>()
             {
-                ExtData = new KdyRequestCommonExtInput()
-                {
-                    PostData = "kdytask=hcc11.cn"
-                }
-            };
+                {"Input",input},
+                {"Result",result}
+            });
 
-            var reqResult = KdyAsyncHelper.Run(() => _kdyRequestClientCommon.SendAsync(reqInput));
-            KdyLog.Debug($"循环Url返回：{reqResult.ToJsonStr()}");
-            if (reqResult.IsSuccess == false)
+            if (result.Code == KdyResultCode.SystemError)
             {
-                throw new Exception(reqResult.ErrMsg);
+                throw new Exception(result.Msg);
             }
         }
     }

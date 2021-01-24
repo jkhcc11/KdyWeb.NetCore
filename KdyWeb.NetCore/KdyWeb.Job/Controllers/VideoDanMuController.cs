@@ -12,7 +12,7 @@ namespace KdyWeb.Job.Controllers
     /// <summary>
     /// 视频弹幕
     /// </summary>
-    [AllowAnonymous]
+    //[AllowAnonymous]
     public class VideoDanMuController : OldBaseApiController
     {
         private readonly IVideoDanMuService _videoDanMuService;

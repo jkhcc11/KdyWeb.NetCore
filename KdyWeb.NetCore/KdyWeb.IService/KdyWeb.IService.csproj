@@ -9,10 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Job\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Minio" Version="3.1.13" />
   </ItemGroup>
 

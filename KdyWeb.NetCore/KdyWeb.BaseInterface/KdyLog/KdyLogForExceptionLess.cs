@@ -107,7 +107,7 @@ namespace KdyWeb.BaseInterface.KdyLog
                         classType = classType.DeclaringType;
                     }
 
-                    sourceName = $"{className}__{methodInfo}:{frame.GetNativeOffset()}";
+                    sourceName = $"{className}->{methodInfo}:{frame.GetNativeOffset()}";
                 }
             }
 

@@ -102,10 +102,14 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Success(pageData);
             }
 
+            var epIds = pageData.Data.Select(a => a.EpId)
+                .ToList();
+
             //剧集信息
             var epInfo = await _videoEpisodeRepository.GetQuery()
                 .Include(a => a.VideoEpisodeGroup)
                 .ThenInclude(a => a.VideoMain)
+                .Where(a=> epIds.Contains(a.Id))
                 .Select(a => new
                 {
                     a.EpisodeName,
