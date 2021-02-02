@@ -56,10 +56,11 @@ namespace KdyWeb.Service.Job
                         BaseHost = item.BaseHost,
                         CaptureDetailNameSplit = item.CaptureDetailNameSplit,
                         CaptureDetailXpath = item.CaptureDetailXpath,
-                        OriginUrl = $"{item.BaseHost}{detailItem}"
+                        OriginUrl = $"{item.BaseHost}{detailItem}",
+                        ServiceFullName = item.ServiceFullName
                     };
-
-                    var jobId = $"Capture.RecurringJob.{item.BaseHost.Replace("http://", "").Replace("https://", "")}";
+                    var uri = new Uri(recurringJobInput.OriginUrl);
+                    var jobId = $"Capture.RecurringJob.{uri.Host}{uri.AbsolutePath}";
 
                     RecurringJob.AddOrUpdate<RecurringVideoJobService>(jobId, a => a.ExecuteAsync(recurringJobInput), jobCron);
                 }

@@ -26,7 +26,8 @@ namespace KdyWeb.Dto.HttpCapture
             }
 
             ResultUrl = resultUrl;
-            ResultName = resultName.RemoveStrExt("\r", "\n", " ").GetNumber();
+            ResultName = resultName;
+            //ResultName = resultName.RemoveStrExt("\r", "\n", " ").GetNumber();
         }
 
         public string PageMd5 { get; set; }

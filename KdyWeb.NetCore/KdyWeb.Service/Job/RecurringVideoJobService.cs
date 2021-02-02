@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Hangfire;
+using HtmlAgilityPack;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.HangFire;
@@ -52,12 +53,18 @@ namespace KdyWeb.Service.Job
                 return;
             }
 
-            var md5 = hnc.First().ParentNode.ParentNode.InnerHtml.Md5Ext();
+            //firstUrl
+            var firstUrl = DetailUrlHandler(hnc.First(), input);
+            if (string.IsNullOrEmpty(firstUrl))
+            {
+                return;
+            }
+
             var redisDb = _kdyRedisCache.GetDb();
             var cacheKey = $"capture,{input.OriginUrl}";
             var cacheV = await redisDb.GetValueAsync<string>(cacheKey);
             if (string.IsNullOrEmpty(cacheV) == false &&
-                cacheV == md5)
+                cacheV == firstUrl)
             {
                 KdyLog.Warn($"影片定时录入失败，未发现更新剧集,{input.OriginUrl}", new Dictionary<string, object>()
                 {
@@ -66,16 +73,11 @@ namespace KdyWeb.Service.Job
                 return;
             }
 
-            await redisDb.SetValueAsync(cacheKey, md5, TimeSpan.FromDays(1));
+            await redisDb.SetValueAsync(cacheKey, firstUrl, TimeSpan.FromDays(1));
 
             foreach (var item in hnc)
             {
-                var detailUrl = item.GetAttributeValue("href", "");
-                if (detailUrl.StartsWith("http") == false)
-                {
-                    detailUrl = $"{input.BaseHost}{detailUrl}";
-                }
-
+                var detailUrl = DetailUrlHandler(item, input);
                 if (string.IsNullOrEmpty(detailUrl))
                 {
                     continue;
@@ -104,14 +106,41 @@ namespace KdyWeb.Service.Job
                     }
                 }
 
-                var captureInput = new VideoCaptureJobInput()
-                {
-                    DetailUrl = detailUrl,
-                    VideoName = name
-                };
+                var captureInput = new VideoCaptureJobInput(detailUrl, name, input.ServiceFullName);
 
+                //2秒延迟
+                await Task.Delay(2000);
                 BackgroundJob.Enqueue<VideoCaptureJobService>(a => a.ExecuteAsync(captureInput));
+
             }
+        }
+
+        /// <summary>
+        /// 详情Url处理
+        /// </summary>
+        /// <param name="aNode">A标签</param>
+        /// <param name="input">Input</param>
+        /// <returns></returns>
+        private string DetailUrlHandler(HtmlNode aNode, RecurringVideoJobInput input)
+        {
+            if (aNode == null)
+            {
+                return string.Empty;
+            }
+
+            var detailUrl = aNode.GetAttributeValue("href", "");
+            if (string.IsNullOrEmpty(detailUrl))
+            {
+                return detailUrl;
+            }
+
+            detailUrl = detailUrl.TrimStart('.');
+            if (detailUrl.StartsWith("http") == false)
+            {
+                detailUrl = $"{input.BaseHost}{detailUrl}";
+            }
+
+            return detailUrl;
         }
     }
 }

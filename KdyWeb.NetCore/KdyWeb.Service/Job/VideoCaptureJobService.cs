@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Hangfire;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.HangFire;
 using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto.Job;
@@ -25,11 +26,28 @@ namespace KdyWeb.Service.Job
 
         public override async Task ExecuteAsync(VideoCaptureJobInput input)
         {
-            var result = await _videoCaptureService.CreateVideoInfoByDetailAsync(new CreateVideoInfoByDetailInput()
+            KdyResult result;
+            switch (input.ServiceFullName)
             {
-                DetailUrl = input.DetailUrl,
-                VideoName = input.VideoName
-            });
+                case VideoCaptureJobInput.ServiceFullNameConst.DownServiceFullName:
+                    {
+                        result = await _videoCaptureService.CreateVideoDownByDetailAsync(new CreateVideoInfoByDetailInput()
+                        {
+                            DetailUrl = input.DetailUrl,
+                            VideoName = input.VideoName
+                        });
+                        break;
+                    }
+                default:
+                    {
+                        result = await _videoCaptureService.CreateVideoInfoByDetailAsync(new CreateVideoInfoByDetailInput()
+                        {
+                            DetailUrl = input.DetailUrl,
+                            VideoName = input.VideoName
+                        });
+                        break;
+                    }
+            }
 
             KdyLog.Trace($"影片采集 {result.IsSuccess},详情：{input.DetailUrl}", new Dictionary<string, object>()
             {
