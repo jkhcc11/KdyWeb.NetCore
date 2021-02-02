@@ -29,5 +29,10 @@
         ///  xxxx更新至36集->xxxx <br/>
         /// </remarks>
         public string[] CaptureDetailNameSplit { get; set; }
+
+        /// <summary>
+        /// 处理服务名
+        /// </summary>
+        public string ServiceFullName { get; set; }
     }
 }
