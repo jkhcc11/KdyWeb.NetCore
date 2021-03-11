@@ -112,7 +112,7 @@ namespace KdyWeb.Job.Controllers
         /// <returns></returns>
         [HttpGet("getCountInfo")]
         [ProducesResponseType(typeof(KdyResult<List<GetCountInfoBySubtypeDto>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetCountInfoBySubtypeAsync(GetCountInfoBySubtypeInput input)
+        public async Task<IActionResult> GetCountInfoBySubtypeAsync([FromQuery] GetCountInfoBySubtypeInput input)
         {
             var result = await _videoMainService.GetCountInfoBySubtypeAsync(input);
             return Ok(result);
