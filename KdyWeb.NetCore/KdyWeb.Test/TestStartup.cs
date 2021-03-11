@@ -6,6 +6,7 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
 using KdyWeb.EntityFramework;
+using KdyWeb.MiniProfiler;
 using KdyWeb.Repository;
 using KdyWeb.Service.ServiceExtension;
 using Microsoft.AspNetCore.Builder;

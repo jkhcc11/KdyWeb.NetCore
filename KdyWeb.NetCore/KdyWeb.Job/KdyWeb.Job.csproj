@@ -5,6 +5,11 @@
     <UserSecretsId>bbd001bb-65f8-48dd-a7c2-594c898c271c</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1591</NoWarn>
+    <DocumentationFile>bin\Debug\netcoreapp3.1\KdyWeb.Job.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Remove="hosting.json" />
   </ItemGroup>
@@ -14,6 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.9" />
     <PackageReference Include="SkyAPM.Agent.AspNetCore" Version="0.9.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.7" />
   </ItemGroup>
 
   <ItemGroup>

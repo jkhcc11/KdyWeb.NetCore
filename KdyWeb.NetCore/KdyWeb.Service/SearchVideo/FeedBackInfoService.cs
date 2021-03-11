@@ -6,6 +6,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
@@ -107,6 +108,52 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             return KdyResult.Success(dbModel.MapToExt<GetFeedBackInfoDto>());
+        }
+
+        /// <summary>
+        /// 批量删除反馈信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> BatchDeleteAsync(BatchDeleteForIntKeyInput input)
+        {
+            if (input.Ids == null || input.Ids.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "Id不能为空");
+            }
+
+            var dbEp = await _kdyRepository.GetQuery()
+                .Where(a => input.Ids.Contains(a.Id))
+                .ToListAsync();
+            _kdyRepository.Delete(dbEp);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success("删除成功");
+        }
+
+        /// <summary>
+        /// 获取反馈统计信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<GetCountInfoDto>>> GetCountInfoAsync(GetCountInfoInput input)
+        {
+            var query = _kdyRepository.GetAsNoTracking()
+                .Where(a => a.CreatedTime >= input.StartTime &&
+                            a.CreatedTime <= input.EndTime);
+            if (input.FeedBackInfoStatus != null)
+            {
+                query = query.Where(a => a.FeedBackInfoStatus == input.FeedBackInfoStatus.Value);
+            }
+
+            var dbCount = await query
+                .GroupBy(a => a.DemandType)
+                .Select(a => new GetCountInfoDto
+                {
+                    DemandType = a.Key,
+                    Count = a.Count()
+                })
+                .ToListAsync();
+
+            return KdyResult.Success(dbCount);
         }
     }
 }

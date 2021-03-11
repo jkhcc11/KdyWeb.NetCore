@@ -77,5 +77,16 @@ namespace KdyWeb.Test.SearchVideo
             var result = await _service.ModifyVideoMainAsync(input);
             Assert.IsTrue(result.IsSuccess);
         }
+
+        [TestMethod]
+        public async Task GetCountInfoBySubtypeAsync()
+        {
+            var input = new GetCountInfoBySubtypeInput()
+            {
+            };
+
+            var result = await _service.GetCountInfoBySubtypeAsync(input);
+            Assert.IsTrue(result.IsSuccess);
+        }
     }
 }

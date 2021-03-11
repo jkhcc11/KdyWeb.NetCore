@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.MiniProfiler;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

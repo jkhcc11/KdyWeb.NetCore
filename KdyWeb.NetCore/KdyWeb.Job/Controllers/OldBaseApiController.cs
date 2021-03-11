@@ -7,6 +7,7 @@ namespace KdyWeb.Job.Controllers
     /// </summary>
     [Route("api/old/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "v1")]
     public abstract class OldBaseApiController: ControllerBase
     {
     }

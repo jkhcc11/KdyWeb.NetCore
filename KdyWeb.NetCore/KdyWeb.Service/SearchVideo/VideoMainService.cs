@@ -324,6 +324,36 @@ namespace KdyWeb.Service.SearchVideo
         }
 
         /// <summary>
+        /// 获取影片统计信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<GetCountInfoBySubtypeDto>>> GetCountInfoBySubtypeAsync(GetCountInfoBySubtypeInput input)
+        {
+            var query = _videoMainRepository.GetAsNoTracking();
+            if (input.StartTime != null)
+            {
+                query = query.Where(a => a.CreatedTime >= input.StartTime.Value);
+            }
+
+            if (input.EndTime != null)
+            {
+                query = query.Where(a => a.CreatedTime <= input.EndTime.Value);
+            }
+
+            var dbCount = await query
+                .GroupBy(a => a.Subtype)
+                .Select(a => new GetCountInfoBySubtypeDto
+                {
+                    Subtype = a.Key,
+                    Count = a.Count()
+                })
+                .ToListAsync();
+
+            return KdyResult.Success(dbCount);
+        }
+
+        #region 私有
+        /// <summary>
         /// 详情处理
         /// </summary>
         private void VideoDetailHandler(GetVideoDetailDto detail)
@@ -350,5 +380,6 @@ namespace KdyWeb.Service.SearchVideo
             //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
             detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
         }
+        #endregion
     }
 }

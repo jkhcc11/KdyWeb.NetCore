@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Profiling.Storage;
 
-namespace KdyWeb.BaseInterface.Extensions
+namespace KdyWeb.MiniProfiler
 {
     /// <summary>
     /// MiniProfiler扩展
