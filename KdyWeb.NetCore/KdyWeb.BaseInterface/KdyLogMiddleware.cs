@@ -14,6 +14,7 @@ using KdyWeb.BaseInterface.KdyLog;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface
@@ -72,6 +73,15 @@ namespace KdyWeb.BaseInterface
                 return;
             }
 
+            //跳过记录 通过EndPoint获取Controller特性
+            var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
+            var anonymous = endpoint?.Metadata?.GetMetadata<DisableKdyLogAttribute>();
+            if (anonymous != null)
+            {
+                await _next(context);
+                return;
+            }
+
             _stopwatch.Restart();
 
             var data = new ConcurrentDictionary<string, object>();
@@ -119,7 +129,7 @@ namespace KdyWeb.BaseInterface
                 _stopwatch.Stop();
                 data.TryAdd("time", _stopwatch.ElapsedMilliseconds + "ms");
                 //记录日志
-                kdyLog.Info($"用户请求{request.Path.Value}结束", data.ToDictionary(a => a.Key, a => a.Value));
+                kdyLog.Info($"用户请求{request.Path.Value}结束,时间：{_stopwatch.ElapsedMilliseconds}ms", data.ToDictionary(a => a.Key, a => a.Value));
 
             }
             catch (Exception ex)

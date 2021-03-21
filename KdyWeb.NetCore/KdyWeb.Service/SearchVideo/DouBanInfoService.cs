@@ -6,6 +6,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto.KdyImg;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.HttpCapture;
@@ -58,7 +59,11 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             //上传图片
-            var imgResult = await _kdyImgSaveService.PostFileByUrl(douBanWebResult.Data.Pic);
+            var postUrlInput = new PostFileByUrlInput()
+            {
+                ImgUrl = douBanWebResult.Data.Pic
+            };
+            var imgResult = await _kdyImgSaveService.PostFileByUrl(postUrlInput);
             if (imgResult.IsSuccess)
             {
                 //上传成功时
@@ -249,7 +254,11 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             //上传图片
-            var imgResult = await _kdyImgSaveService.PostFileByUrl(dbDouBanInfo.VideoImg);
+            var postUrlInput = new PostFileByUrlInput()
+            {
+                ImgUrl = dbDouBanInfo.VideoImg
+            };
+            var imgResult = await _kdyImgSaveService.PostFileByUrl(postUrlInput);
             if (imgResult.IsSuccess == false)
             {
                 return KdyResult.Error(imgResult.Code, imgResult.Msg);

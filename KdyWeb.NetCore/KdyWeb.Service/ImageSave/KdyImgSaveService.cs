@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.KdyFile;
+using KdyWeb.Dto.KdyImg;
 using KdyWeb.Entity;
 using KdyWeb.IRepository.ImageSave;
 using KdyWeb.IService.ImageSave;
@@ -33,6 +35,27 @@ namespace KdyWeb.Service.ImageSave
         /// MinIO存储桶
         /// </summary>
         private const string bucketName = "kdyimg";
+        private static readonly Dictionary<string, List<byte[]>> FileSignature =
+            new Dictionary<string, List<byte[]>>
+            {
+                { ".jpg", new List<byte[]>
+                    {
+                        new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 },
+                        new byte[] { 0xFF, 0xD8, 0xFF, 0xE2 },
+                        new byte[] { 0xFF, 0xD8, 0xFF, 0xE3 },
+                    }
+                },
+                { ".png", new List<byte[]>
+                    {
+                        new byte[] { 0x89, 0x50 ,0x4E ,0x47,0x0D,0x0A,0x1A,0x0A }
+                    }
+                },
+                { ".gif", new List<byte[]>
+                    {
+                        new byte[] { 0x47,0x49,0x46,0x38 }
+                    }
+                },
+            };
 
         public KdyImgSaveService(IKdyImgSaveRepository kdyImgSaveRepository, IMemoryCache memoryCache, IMinIoFileService minIoFileService,
             IWeiBoFileService weiBoFileService, INormalFileService normalFileService, IUnitOfWork unitOfWork) : base(unitOfWork)
@@ -47,57 +70,23 @@ namespace KdyWeb.Service.ImageSave
         /// <summary>
         /// 通过Url上传
         /// </summary>
-        /// <param name="imgUrl">图片Url</param>
         /// <returns></returns>
-        public async Task<KdyResult<string>> PostFileByUrl(string imgUrl)
+        public async Task<KdyResult<string>> PostFileByUrl(PostFileByUrlInput input)
         {
-            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
-            var ext = Path.GetExtension(imgUrl);
-            var result = KdyResult.Error<string>(KdyResultCode.Error, "图片上传失败");
+            var ext = Path.GetExtension(input.ImgUrl);
+            if (string.IsNullOrEmpty(ext))
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "文件后缀不能为空，仅支持.jpg,.png,.gif");
+            }
+
+            if (FileSignature.ContainsKey(ext) == false)
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "仅支持.jpg,.png,.gif");
+            }
 
             //自有必传备用 微博成功则设置为主、否则备用设置为主 
             var fileName = $"{DateTime.Now.Ticks:x}{ext}";
-            //自有MinIo
-            var minIoInput = new MinIoFileInput(bucketName, fileName, imgUrl);
-            var minIoResult = await _minIoFileService.PostFile(minIoInput);
-            if (minIoResult.IsSuccess == false)
-            {
-                return KdyResult.Error<string>(KdyResultCode.Error, $"上传主通道失败，请稍后 {minIoResult.Msg}");
-            }
-
-            var dbImg = await _kdyImgSaveRepository.FirstOrDefaultAsync(a => a.FileMd5 == minIoResult.Data.FileMd5);
-            if (dbImg != null)
-            {
-                return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
-            }
-
-            //微博
-            var weiBoInput = new BaseKdyFileInput(imgUrl);
-           // var weiBoResult = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "待调整");
-            var weiBoResult = await _weiBoFileService.PostFile(weiBoInput);
-
-            var normalResult = await NormalUpload(fileName, imgUrl);
-            if (weiBoResult.IsSuccess)
-            {
-                dbImg = new KdyImgSave(minIoResult.Data.FileMd5, weiBoResult.Data.Url, minIoResult.Data.Url);
-                if (normalResult.IsSuccess)
-                {
-                    dbImg.TwoUrl = normalResult.Data.Url;
-                }
-            }
-            else if (normalResult.IsSuccess)
-            {
-                dbImg = new KdyImgSave(minIoResult.Data.FileMd5, normalResult.Data.Url, minIoResult.Data.Url);
-            }
-            else
-            {
-                return result;
-            }
-
-            await _kdyImgSaveRepository.CreateAsync(dbImg);
-            await UnitOfWork.SaveChangesAsync();
-
-            return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
+            return await UploadAsync(fileName, input.ImgUrl);
         }
 
         /// <summary>
@@ -123,6 +112,43 @@ namespace KdyWeb.Service.ImageSave
             _memoryCache.Set(cacheKey, url, TimeSpan.FromHours(1));
 
             return url;
+        }
+
+        /// <summary>
+        /// 通过Byte上传
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<string>> PostFileByByteAsync(PostFileByByteInput input)
+        {
+            await using var memoryStream = new MemoryStream();
+            await input.KdyFile.CopyToAsync(memoryStream);
+            var maxSize = KdyConfiguration.GetValue<int>(KdyWebServiceConst.UploadConfig.UploadImgMaxSize);
+
+            if (memoryStream.Length > maxSize * 1024 * 1024)
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "请重新选择文件，超过5MB");
+            }
+
+            var ext = Path.GetExtension(input.KdyFile.FileName);
+            //二进制文件
+            var bytes = memoryStream.ToArray();
+            var tempList = bytes.ToList();
+
+            var signatures = FileSignature[ext];
+            var maxHeaderSize = signatures.Max(m => m.Length);
+
+            //文件头字节
+            var headerBytes = tempList.Take(maxHeaderSize);
+            var isCheck = signatures.Any(item =>
+                headerBytes.Take(item.Length).SequenceEqual(item));
+            if (isCheck == false)
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "仅支持.jpg,.png,.gif");
+            }
+
+            //自有必传备用 微博成功则设置为主、否则备用设置为主 
+            var fileName = $"{DateTime.Now.Ticks:x}{ext}";
+            return await UploadAsync(fileName, bytes);
         }
 
         /// <summary>
@@ -191,7 +217,7 @@ namespace KdyWeb.Service.ImageSave
         /// 普通文件上传
         /// </summary>
         /// <returns></returns>
-        private async Task<KdyResult<KdyFileDto>> NormalUpload(string fileName, string imgUrl)
+        private async Task<KdyResult<KdyFileDto>> NormalUploadAsync(string fileName, object imgData)
         {
             var result = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "上传失败-1");
 
@@ -206,17 +232,32 @@ namespace KdyWeb.Service.ImageSave
             if (string.IsNullOrEmpty(uid) == false &&
                 string.IsNullOrEmpty(token) == false)
             {
-                var normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
-                    "data.thumbnail", fileName, imgUrl)
+                NormalFileInput normalInput = null;
+                if (imgData is string imgUrl)
                 {
-                    PostParDic = new Dictionary<string, string>()
-                    {
-                        {"id","WU_FILE_0"},
-                        {"type",fileName.FileNameToContentType()},
-                        {"puid",uid},
-                        {"_token",token},
-                    }
+                    normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
+                        "data.thumbnail", fileName, imgUrl);
+                }
+
+                if (imgData is byte[] bytes)
+                {
+                    normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
+                        "data.thumbnail", fileName, bytes);
+                }
+
+                if (normalInput == null)
+                {
+                    throw new KdyCustomException($"普通文件上传失败，无效上传数据。{imgData.GetType()}");
+                }
+
+                normalInput.PostParDic = new Dictionary<string, string>()
+                {
+                    {"id", "WU_FILE_0"},
+                    {"type", fileName.FileNameToContentType()},
+                    {"puid", uid},
+                    {"_token", token},
                 };
+
                 result = await _normalFileService.PostFile(normalInput);
             }
 
@@ -245,6 +286,71 @@ namespace KdyWeb.Service.ImageSave
             //}
 
             return result;
+        }
+
+        /// <summary>
+        /// 至少传两个通道
+        /// </summary>
+        /// <returns></returns>
+        private async Task<KdyResult<string>> UploadAsync(string fileName, object imgData)
+        {
+            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
+            var result = KdyResult.Error<string>(KdyResultCode.Error, "图片上传失败");
+
+            MinIoFileInput minIoInput = null;
+            BaseKdyFileInput weiBoInput = null;
+            if (imgData is string imgUrl)
+            {
+                //自有MinIo
+                minIoInput = new MinIoFileInput(bucketName, fileName, imgUrl);
+                //微博
+                weiBoInput = new BaseKdyFileInput(imgUrl);
+            }
+            else if (imgData is byte[] bytes)
+            {
+                minIoInput = new MinIoFileInput(bucketName, fileName, bytes);
+                weiBoInput = new BaseKdyFileInput(bytes);
+            }
+
+            if (minIoInput == null)
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "非imgUrl和Bytes 上传失败");
+            }
+
+            var minIoResult = await _minIoFileService.PostFile(minIoInput);
+            if (minIoResult.IsSuccess == false)
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, $"上传主通道失败，请稍后 {minIoResult.Msg}");
+            }
+
+            var dbImg = await _kdyImgSaveRepository.FirstOrDefaultAsync(a => a.FileMd5 == minIoResult.Data.FileMd5);
+            if (dbImg != null)
+            {
+                return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
+            }
+
+            var weiBoResult = await _weiBoFileService.PostFile(weiBoInput);
+            var normalResult = await NormalUploadAsync(fileName, imgData);
+            if (weiBoResult.IsSuccess)
+            {
+                dbImg = new KdyImgSave(minIoResult.Data.FileMd5, weiBoResult.Data.Url, minIoResult.Data.Url);
+                if (normalResult.IsSuccess)
+                {
+                    dbImg.TwoUrl = normalResult.Data.Url;
+                }
+            }
+            else if (normalResult.IsSuccess)
+            {
+                dbImg = new KdyImgSave(minIoResult.Data.FileMd5, normalResult.Data.Url, minIoResult.Data.Url);
+            }
+            else
+            {
+                return result;
+            }
+
+            await _kdyImgSaveRepository.CreateAsync(dbImg);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
         }
     }
 }

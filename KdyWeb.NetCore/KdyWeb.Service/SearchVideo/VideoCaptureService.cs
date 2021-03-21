@@ -7,6 +7,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
+using KdyWeb.Dto.KdyImg;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.HttpCapture;
@@ -189,8 +190,12 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var resultOut = pageResult.Data;
+            var postUrlInput = new PostFileByUrlInput()
+            {
+                ImgUrl = resultOut.ImgUrl
+            };
             //存图床
-            var img = await _kdyImgSaveService.PostFileByUrl(resultOut.ImgUrl);
+            var img = await _kdyImgSaveService.PostFileByUrl(postUrlInput);
             if (img.IsSuccess == false)
             {
                 throw new KdyCustomException($"上传图片失败，详情Url:{input.DetailUrl} 源图片Url:{resultOut.ImgUrl}");
