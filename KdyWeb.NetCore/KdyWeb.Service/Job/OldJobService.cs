@@ -95,7 +95,8 @@ namespace KdyWeb.Service.Job
                     VideoName = result.Data.VideoTitle,
                     OriginalUrl = url,
                     DemandType = UserDemandType.Input,
-                    UserEmail = input.UserEmail
+                    UserEmail = input.UserEmail,
+                    Remark = input.Remark
                 };
 
                 var createResult = KdyAsyncHelper.Run(() => _feedBackInfoService.CreateFeedBackInfoAsync(feedBackInfo));

@@ -143,6 +143,11 @@ namespace KdyWeb.Service.SearchVideo
                 {
                     new KdyEfOrderConditions()
                     {
+                        Key = nameof(VideoMain.OrderBy),
+                        OrderBy = KdyEfOrderBy.Desc
+                    },
+                    new KdyEfOrderConditions()
+                    {
                         Key = nameof(VideoMain.CreatedTime),
                         OrderBy = KdyEfOrderBy.Desc
                     }

@@ -5,8 +5,8 @@
 		<!--生成xml注释文档-->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageId>Kdy.StandardJob</PackageId>
-		<Version>1.0.6</Version>
-		<Description>旧版job调整</Description>
+		<Version>1.0.7</Version>
+		<Description>保存用户反馈调整</Description>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	</PropertyGroup>
 
