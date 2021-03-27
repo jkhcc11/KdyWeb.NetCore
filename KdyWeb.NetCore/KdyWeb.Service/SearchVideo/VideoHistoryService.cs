@@ -73,6 +73,12 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var query = _videoHistoryRepository.GetAsNoTracking();
+            if (input.IsShowBan == false)
+            {
+                query = query.Where(a => a.VideoMain.VideoDouBan > 0 &&
+                                         a.VideoMain.IsMatchInfo);
+            }
+
             if (input.Subtype != null)
             {
                 query = query.Where(a => a.VideoMain.Subtype == input.Subtype.Value);

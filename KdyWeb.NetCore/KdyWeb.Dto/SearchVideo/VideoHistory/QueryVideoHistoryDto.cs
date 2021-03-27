@@ -9,7 +9,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 查询视频播放记录 Dto
     /// </summary>
     [AutoMap(typeof(VideoHistory))]
-    public class QueryVideoHistoryDto : BaseEntityDto<long>
+    public class QueryVideoHistoryDto : CreatedUserDto<long>
     {
         /// <summary>
         /// 主表主键Key
