@@ -39,6 +39,7 @@ namespace KdyWeb.Job.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("detail/{keyId}")]
+        [ProducesResponseType(typeof(KdyResult<GetVideoDetailDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetVideoDetailAsync(long keyId)
         {
             var result = await _videoMainService.GetVideoDetailAsync(keyId);
@@ -50,6 +51,7 @@ namespace KdyWeb.Job.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("query")]
+        [ProducesResponseType(typeof(KdyResult<PageList<QueryVideoMainDto>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> QueryVideoMainAsync([FromQuery] QueryVideoMainInput input)
         {
             var result = await _videoMainService.QueryVideoMainAsync(input);
@@ -101,6 +103,18 @@ namespace KdyWeb.Job.Controllers
         public async Task<IActionResult> ModifyVideoMainAsync(ModifyVideoMainInput input)
         {
             var result = await _videoMainService.ModifyVideoMainAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 获取影片统计信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("getCountInfo")]
+        [ProducesResponseType(typeof(KdyResult<List<GetCountInfoBySubtypeDto>>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetCountInfoBySubtypeAsync([FromQuery] GetCountInfoBySubtypeInput input)
+        {
+            var result = await _videoMainService.GetCountInfoBySubtypeAsync(input);
             return Ok(result);
         }
     }

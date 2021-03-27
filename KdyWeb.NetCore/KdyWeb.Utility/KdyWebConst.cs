@@ -113,11 +113,15 @@
             /// </summary>
             public const string UploadConfigTxDocCookie= "UploadConfig:tx_cookie";
 
-
             /// <summary>
             /// 微博cookie
             /// </summary>
             public const string WeiBoCookie = "UploadConfig:wb_cookie";
+
+            /// <summary>
+            /// 图片上传大小限制（MB）
+            /// </summary>
+            public const string UploadImgMaxSize = "UploadConfig:uploadImg_max_size";
         }
     }
 

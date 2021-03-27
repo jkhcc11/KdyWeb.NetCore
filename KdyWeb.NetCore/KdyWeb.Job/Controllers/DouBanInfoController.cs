@@ -11,6 +11,7 @@ namespace KdyWeb.Job.Controllers
     /// <summary>
     /// 豆瓣信息
     /// </summary>
+    //[ApiExplorerSettings(GroupName = "v2")]
     public class DouBanInfoController : OldBaseApiController
     {
         private readonly IDouBanInfoService _douBanInfoService;
@@ -25,8 +26,8 @@ namespace KdyWeb.Job.Controllers
         /// </summary>
         /// <param name="subject">豆瓣Id</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("createGet/{subject}")]
+        [HttpPost("createGet/{subject}")]
+        [ProducesResponseType(typeof(KdyResult<CreateForSubjectIdDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateForSubjectIdAsync(string subject)
         {
             var result = await _douBanInfoService.CreateForSubjectIdAsync(subject);
@@ -38,8 +39,7 @@ namespace KdyWeb.Job.Controllers
         /// </summary>
         /// <param name="top">最新几条</param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("getTop/{top}")]
+        [HttpGet("getTop/{top}")]
         [ProducesResponseType(typeof(KdyResult<List<GetTop50DouBanInfoDto>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetTopDouBanInfoAsync(int top)
         {
@@ -51,8 +51,7 @@ namespace KdyWeb.Job.Controllers
         /// 查询豆瓣信息
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        [Route("query")]
+        [HttpGet("query")]
         [ProducesResponseType(typeof(KdyResult<PageList<QueryDouBanInfoDto>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> QueryDouBanInfoAsync([FromQuery] QueryDouBanInfoInput input)
         {

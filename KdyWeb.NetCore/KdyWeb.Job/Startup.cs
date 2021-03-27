@@ -12,6 +12,7 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto;
 using KdyWeb.Job.JobService;
+using KdyWeb.MiniProfiler;
 using KdyWeb.Repository;
 using KdyWeb.Service.ServiceExtension;
 using Microsoft.AspNetCore.Builder;
@@ -23,6 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace KdyWeb.Job
 {
@@ -115,6 +117,30 @@ namespace KdyWeb.Job
             //注入自用站点解析
             services.AddKdyWebParse(Configuration);
             services.AddKdyPageParse(Configuration);
+
+            //Swagger
+            services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "看电影旧版迁移Api",
+                    Version = "v1"
+                });
+
+                //option.SwaggerDoc("v2", new OpenApiInfo
+                //{
+                //    Title = "看电影Api",
+                //    Version = "v2"
+                //});
+
+                var xmlPath = AppDomain.CurrentDomain.BaseDirectory;
+                var filePath = Directory.GetFiles(xmlPath, "KdyWeb.*.xml");
+                foreach (var item in filePath)
+                {
+                    option.IncludeXmlComments(item, true);
+                }
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -143,6 +169,17 @@ namespace KdyWeb.Job
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
             KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             app.InitExceptionLess(Configuration);
+
+            if (env.IsDevelopment())
+            {
+                //swagger
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                    // c.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+                });
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace KdyWeb.BaseInterface.BaseModel
 {
@@ -8,51 +9,16 @@ namespace KdyWeb.BaseInterface.BaseModel
     public abstract class BasePageInput : IPageInput
     {
         /// <summary>
-        /// 最大分页
-        /// </summary>
-        public const int MaxPageSize = 100;
-
-        /// <summary>
         /// 页数
         /// </summary>
+        [Range(1, 10000, ErrorMessage = "分页错误")]
         public int Page { get; set; } = 1;
 
         /// <summary>
         /// 分页大小
         /// </summary>
-        private int _pageSize { get; set; }
-        /// <summary>
-        /// 分页大小
-        /// </summary>
-        public int PageSize
-        {
-            get
-            {
-                if (_pageSize <= 0)
-                {
-                    return 10;
-                }
-
-                return _pageSize;
-            }
-            //set => _pageSize = value > 100 ? 100 : (value <= 0 ? 10 : value);
-            set
-            {
-                if (value <= 0)
-                {
-                    _pageSize = 10;
-                    return;
-                }
-
-                if (value >= MaxPageSize)
-                {
-                    _pageSize = MaxPageSize;
-                    return;
-                }
-
-                _pageSize = value;
-            }
-        }
+        [Range(1, 100, ErrorMessage = "分页大小错误")]
+        public int PageSize { get; set; } = 10;
 
         /// <summary>
         /// 排序

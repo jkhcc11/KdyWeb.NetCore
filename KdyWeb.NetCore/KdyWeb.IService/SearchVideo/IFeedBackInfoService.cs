@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 
 namespace KdyWeb.IService.SearchVideo
@@ -33,5 +35,17 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<GetFeedBackInfoDto>> GetFeedBackInfoAsync(int id);
+
+        /// <summary>
+        /// 批量删除反馈信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> BatchDeleteAsync(BatchDeleteForIntKeyInput input);
+
+        /// <summary>
+        /// 获取反馈统计信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<List<GetCountInfoDto>>> GetCountInfoAsync(GetCountInfoInput input);
     }
 }

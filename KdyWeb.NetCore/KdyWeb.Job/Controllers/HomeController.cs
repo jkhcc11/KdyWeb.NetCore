@@ -8,6 +8,7 @@ namespace KdyWeb.Job.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class HomeController : ControllerBase
     {
         private readonly IBackgroundJobClient _backgroundJobClient;

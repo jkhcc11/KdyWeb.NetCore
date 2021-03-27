@@ -5,6 +5,7 @@ using Kdy.StandardJob.JobService;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.Repository;
+using KdyWeb.Dto.KdyImg;
 using KdyWeb.Dto.Message;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
@@ -44,7 +45,11 @@ namespace KdyWeb.Service.Job
         /// </remarks>
         public string UploadImgJob(UploadImgJobInput input)
         {
-            var result = KdyAsyncHelper.Run(() => _kdyImgSaveService.PostFileByUrl(input.ImgUrl));
+            var postUrlInput = new PostFileByUrlInput()
+            {
+                ImgUrl = input.ImgUrl
+            };
+            var result = KdyAsyncHelper.Run(() => _kdyImgSaveService.PostFileByUrl(postUrlInput));
             _kdyLog.Debug($"图片上传返回{result.ToJsonStr()}");
             if (result.IsSuccess == false)
             {
@@ -90,7 +95,8 @@ namespace KdyWeb.Service.Job
                     VideoName = result.Data.VideoTitle,
                     OriginalUrl = url,
                     DemandType = UserDemandType.Input,
-                    UserEmail = input.UserEmail
+                    UserEmail = input.UserEmail,
+                    Remark = input.Remark
                 };
 
                 var createResult = KdyAsyncHelper.Run(() => _feedBackInfoService.CreateFeedBackInfoAsync(feedBackInfo));

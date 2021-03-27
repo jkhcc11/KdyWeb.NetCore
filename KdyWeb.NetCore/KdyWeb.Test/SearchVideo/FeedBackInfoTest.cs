@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
@@ -45,6 +47,26 @@ namespace KdyWeb.Test.SearchVideo
                 Ids = new[] { 9 },
                 FeedBackInfoStatus = FeedBackInfoStatus.Processing
             });
+            Assert.IsTrue(result.IsSuccess);
+        }
+
+        [TestMethod]
+        public async Task BatchDeleteAsync()
+        {
+            var result = await _service.BatchDeleteAsync(new BatchDeleteForIntKeyInput()
+            {
+               Ids = new List<int>()
+               {
+                   1
+               }
+            });
+            Assert.IsTrue(result.IsSuccess);
+        }
+
+        [TestMethod]
+        public async Task GetCountInfoAsync()
+        {
+            var result = await _service.GetCountInfoAsync(new GetCountInfoInput());
             Assert.IsTrue(result.IsSuccess);
         }
     }

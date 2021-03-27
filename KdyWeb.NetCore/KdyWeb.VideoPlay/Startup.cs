@@ -1,5 +1,6 @@
 ﻿using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.MiniProfiler;
 using KdyWeb.Service.ServiceExtension;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
