@@ -31,16 +31,18 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
         private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
         private readonly IKdyRepository<VideoEpisodeGroup, long> _videoEpisodeGroupRepository;
+        private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
 
         public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
             IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
-            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository) :
+            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
             _douBanInfoRepository = douBanInfoRepository;
             _videoEpisodeRepository = videoEpisodeRepository;
             _videoEpisodeGroupRepository = videoEpisodeGroupRepository;
+            _userSubscribeRepository = userSubscribeRepository;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -104,6 +106,10 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var result = main.MapToExt<GetVideoDetailDto>();
+            result.IsSubscribe = await _userSubscribeRepository.GetAsNoTracking()
+                .AnyAsync(a => a.BusinessId == main.Id &&
+                               a.UserSubscribeType == UserSubscribeType.Vod);
+
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
             VideoDetailHandler(result);
             if (result.IsEnd)

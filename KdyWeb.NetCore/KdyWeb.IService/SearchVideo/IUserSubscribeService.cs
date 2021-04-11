@@ -21,5 +21,12 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> CreateUserSubscribeAsync(CreateUserSubscribeInput input);
+
+        /// <summary>
+        /// 取消用户收藏
+        /// </summary>
+        /// <param name="subId">收藏Id</param>
+        /// <returns></returns>
+        Task<KdyResult> CancelUserSubscribeAsync(long subId);
     }
 }

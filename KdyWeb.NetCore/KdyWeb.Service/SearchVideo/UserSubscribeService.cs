@@ -91,7 +91,7 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "已收藏，无需重复收藏");
             }
 
-            long businessId=0;
+            long businessId = 0;
             var feature = string.Empty;
             if (input.SubscribeType == UserSubscribeType.Vod)
             {
@@ -103,16 +103,34 @@ namespace KdyWeb.Service.SearchVideo
                 }
 
                 businessId = videoMain.Id;
-                feature = videoMain.VideoContentFeature; 
+                feature = videoMain.VideoContentFeature;
                 #endregion
             }
 
-            var dbSubscribe=new UserSubscribe(businessId, feature,input.SubscribeType)
+            var dbSubscribe = new UserSubscribe(businessId, feature, input.SubscribeType)
             {
                 CreatedUserId = input.UserId
             };
             await _userSubscribeRepository.CreateAsync(dbSubscribe);
             await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 取消用户收藏
+        /// </summary>
+        /// <param name="subId">收藏Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult> CancelUserSubscribeAsync(long subId)
+        {
+            var dbSubscribe = await _userSubscribeRepository
+                .FirstOrDefaultAsync(a => a.Id == subId);
+            if (dbSubscribe == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "参数错误");
+            }
+
+            _userSubscribeRepository.Delete(dbSubscribe);
             return KdyResult.Success();
         }
     }
