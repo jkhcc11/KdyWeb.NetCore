@@ -106,9 +106,11 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var result = main.MapToExt<GetVideoDetailDto>();
+
             result.IsSubscribe = await _userSubscribeRepository.GetAsNoTracking()
                 .AnyAsync(a => a.BusinessId == main.Id &&
-                               a.UserSubscribeType == UserSubscribeType.Vod);
+                               a.UserSubscribeType == UserSubscribeType.Vod &&
+                               a.CreatedUserId == LoginUserInfo.UserId);
 
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
             VideoDetailHandler(result);

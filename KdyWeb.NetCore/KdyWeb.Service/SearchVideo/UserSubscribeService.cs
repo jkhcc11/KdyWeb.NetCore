@@ -7,9 +7,11 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
+using KdyWeb.Entity;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
+using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
@@ -21,12 +23,13 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
-
+        private readonly IKdyRepository<KdyUser, long> _kdyUserRepository;
         public UserSubscribeService(IUnitOfWork unitOfWork, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
-            IKdyRepository<VideoMain, long> videoMainRepository) : base(unitOfWork)
+            IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<KdyUser, long> kdyUserRepository) : base(unitOfWork)
         {
             _userSubscribeRepository = userSubscribeRepository;
             _videoMainRepository = videoMainRepository;
+            _kdyUserRepository = kdyUserRepository;
         }
 
         /// <summary>
@@ -82,8 +85,13 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult> CreateUserSubscribeAsync(CreateUserSubscribeInput input)
         {
+            if (LoginUserInfo.UserEmail.IsEmptyExt())
+            {
+                return KdyResult.Error(KdyResultCode.Error, "收藏失败，用户信息丢失");
+            }
+
             var exit = await _userSubscribeRepository.GetAsNoTracking()
-                .AnyAsync(a => a.CreatedUserId == input.UserId &&
+                .AnyAsync(a => a.CreatedUserId == LoginUserInfo.UserId &&
                                a.BusinessId == input.BusinessId &&
                                a.UserSubscribeType == input.SubscribeType);
             if (exit)
@@ -92,7 +100,7 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             long businessId = 0;
-            var feature = string.Empty;
+            string feature = string.Empty;
             if (input.SubscribeType == UserSubscribeType.Vod)
             {
                 #region 影片处理
@@ -109,7 +117,8 @@ namespace KdyWeb.Service.SearchVideo
 
             var dbSubscribe = new UserSubscribe(businessId, feature, input.SubscribeType)
             {
-                CreatedUserId = input.UserId
+                CreatedUserId = LoginUserInfo.UserId,
+                UserEmail = LoginUserInfo.UserEmail
             };
             await _userSubscribeRepository.CreateAsync(dbSubscribe);
             await UnitOfWork.SaveChangesAsync();

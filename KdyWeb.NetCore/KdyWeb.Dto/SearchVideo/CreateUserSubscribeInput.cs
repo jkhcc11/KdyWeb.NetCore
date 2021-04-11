@@ -13,11 +13,6 @@ namespace KdyWeb.Dto.SearchVideo
         public long BusinessId { get; set; }
 
         /// <summary>
-        /// 用户id
-        /// </summary>
-        public long UserId { get; set; }
-
-        /// <summary>
         /// 订阅类型
         /// </summary>
         public UserSubscribeType SubscribeType { get; set; }

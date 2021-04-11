@@ -1,6 +1,7 @@
 ﻿using System;
 using KdyWeb.BaseInterface.KdyRedis;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface.Service
 {
@@ -27,7 +28,11 @@ namespace KdyWeb.BaseInterface.Service
 
         public string UserName { get; set; }
 
+        public string UserEmail { get; set; }
+
         public long? UserId { get; set; }
+
+        public bool IsSuperAdmin { get; set; }
 
         /// <summary>
         /// 从当前请求初始化登录信息
@@ -37,14 +42,14 @@ namespace KdyWeb.BaseInterface.Service
         {
             //todo:后期改成统一认证获取
             var request = httpContext.Request;
-            if (request.Cookies.ContainsKey(KdyBaseConst.CookieKey) == false)
+            if (request.Headers.ContainsKey(KdyBaseConst.OldApiAuthKey) == false)
             {
                 //无登录cookie
                 return;
             }
 
-            var cookie = request.Cookies[KdyBaseConst.CookieKey];
-            if (string.IsNullOrEmpty(cookie))
+            var authKey = request.Headers[KdyBaseConst.OldApiAuthKey];
+            if (string.IsNullOrEmpty(authKey))
             {
                 //cookie为空
                 return;
@@ -55,17 +60,23 @@ namespace KdyWeb.BaseInterface.Service
                 throw new Exception($"{nameof(LoginUserInfo)} IKdyRedisCache为空");
             }
 
-            var value = (string)_kdyRedisCache.GetDb(1).StringGet(cookie);
+            var value = (string)_kdyRedisCache.GetDb(1).StringGet($"parse:{authKey}");
             if (string.IsNullOrEmpty(value))
             {
                 return;
             }
 
-            long.TryParse(cookie.Split('@')[1], out long userId);
-            if (userId > 0)
-            {
-                UserId = userId;
-            }
+            var temp = JsonConvert.DeserializeObject<LoginUserInfo>(value);
+            UserId = temp.UserId;
+            UserName = temp.UserName;
+            UserEmail = temp.UserEmail;
+            UserNick = temp.UserNick;
+            IsSuperAdmin = temp.IsSuperAdmin;
+            //long.TryParse(cookie.Split('@')[1], out long userId);
+            //if (userId > 0)
+            //{
+            //    UserId = userId;
+            //}
 
         }
     }
