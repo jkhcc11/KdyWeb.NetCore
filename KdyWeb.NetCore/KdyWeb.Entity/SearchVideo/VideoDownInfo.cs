@@ -48,7 +48,9 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 下载地址
         /// </summary>
-        /// 序列化<seealso cref="DownUrlJsonItem"/>对象
+        /// <remarks>
+        ///  序列化<seealso cref="DownUrlJsonItem"/>对象
+        /// </remarks>
         public string DownJson { get; set; }
 
         /// <summary>

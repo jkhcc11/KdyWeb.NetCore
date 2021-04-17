@@ -140,6 +140,7 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             _userSubscribeRepository.Delete(dbSubscribe);
+            await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }
     }
