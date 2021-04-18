@@ -120,22 +120,11 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Success(result);
             }
 
-            //todo:后面改成cap
-            var cacheKey = $"NotEndKey:{main.Id}";
-            var redisDb = KdyRedisCache.GetDb(1);
-            var cacheV = await redisDb.GetValueAsync<string>(cacheKey);
-            if (cacheV != null)
-            {
-                return KdyResult.Success(result);
-            }
-
             var jobInput = new UpdateNotEndVideoMainJobInput(main.Id, main.SourceUrl, main.VideoContentFeature)
             {
                 KeyWord = main.KeyWord
             };
             BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.Execute(jobInput));
-            await redisDb.SetValueAsync(cacheKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), TimeSpan.FromHours(20));
-
             return KdyResult.Success(result);
         }
 
@@ -363,6 +352,38 @@ namespace KdyWeb.Service.SearchVideo
                 .ToListAsync();
 
             return KdyResult.Success(dbCount);
+        }
+
+        /// <summary>
+        /// 强制同步影片主表
+        /// </summary>
+        /// <param name="mainId">影片Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult> ForceSyncVideoMainAsync(long mainId)
+        {
+            var main = await _videoMainRepository.GetAsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == mainId);
+            if (main == null)
+            {
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "keyId错误");
+            }
+
+            if (main.IsEnd)
+            {
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "影片已完结，无需同步");
+            }
+
+            var db = KdyRedisCache.GetDb(1);
+            await db.KeyDeleteAsync($"{KdyServiceCacheKey.NotEndKey}:{mainId}");
+
+            var jobInput = new UpdateNotEndVideoMainJobInput(main.Id, main.SourceUrl, main.VideoContentFeature)
+            {
+                KeyWord = main.KeyWord
+            };
+            var jobId = BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.ExecuteAsync(jobInput));
+
+            return KdyResult.Success($"任务Id:{jobId} 已添加");
+
         }
 
         #region 私有

@@ -59,5 +59,12 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<List<GetCountInfoBySubtypeDto>>> GetCountInfoBySubtypeAsync(GetCountInfoBySubtypeInput input);
+
+        /// <summary>
+        /// 强制同步影片主表
+        /// </summary>
+        /// <param name="mainId">影片Id</param>
+        /// <returns></returns>
+        Task<KdyResult> ForceSyncVideoMainAsync(long mainId);
     }
 }

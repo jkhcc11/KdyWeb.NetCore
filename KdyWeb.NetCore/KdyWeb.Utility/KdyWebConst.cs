@@ -149,6 +149,12 @@
         /// 视频缓存Key
         /// </summary>
         public const string VideoMainKey = "VideoMainKey";
+
+        /// <summary>
+        /// 未完结更新缓存Key
+        /// </summary>
+
+        public const string NotEndKey = "NotEndKey";
     }
 
 }

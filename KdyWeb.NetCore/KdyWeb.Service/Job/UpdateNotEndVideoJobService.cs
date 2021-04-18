@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Hangfire;
 using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.HangFire;
 using KdyWeb.BaseInterface.KdyLog;
+using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.SearchVideo;
+using KdyWeb.Utility;
 
 namespace KdyWeb.Service.Job
 {
@@ -22,21 +26,36 @@ namespace KdyWeb.Service.Job
     {
         private readonly IVideoEpisodeService _videoEpisodeService;
         private readonly IPageSearchConfigService _pageSearchConfigService;
-        public UpdateNotEndVideoJobService(IKdyLog kdyLog, IVideoEpisodeService videoEpisodeService, IPageSearchConfigService pageSearchConfigService) : base(kdyLog)
+        private readonly IKdyRedisCache _kdyRedisCache;
+
+        public UpdateNotEndVideoJobService(IKdyLog kdyLog, IVideoEpisodeService videoEpisodeService, IPageSearchConfigService pageSearchConfigService, IKdyRedisCache kdyRedisCache) : base(kdyLog)
         {
             _videoEpisodeService = videoEpisodeService;
             _pageSearchConfigService = pageSearchConfigService;
+            _kdyRedisCache = kdyRedisCache;
         }
 
-        public override void Execute(UpdateNotEndVideoMainJobInput input)
+        public override async Task ExecuteAsync(UpdateNotEndVideoMainJobInput input)
         {
+            var cacheKey = $"{KdyServiceCacheKey.NotEndKey}:{input.MainId}";
+            var redisDb = _kdyRedisCache.GetDb(1);
+            var cacheV = await redisDb.GetValueAsync<string>(cacheKey);
+            if (string.IsNullOrEmpty(cacheV) == false)
+            {
+                //已有不用更新
+                return;
+            }
+
+            //标识未完结处理
+            await redisDb.SetValueAsync(cacheKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), TimeSpan.FromHours(2));
+
             var host = new Uri(input.SourceUrl).Host;
 
             //获取实例
-            var pageService = KdyAsyncHelper.Run(() => _pageSearchConfigService.GetPageParseInstanceAsync(new GetPageParseInstanceInput()
+            var pageService = await _pageSearchConfigService.GetPageParseInstanceAsync(new GetPageParseInstanceInput()
             {
                 BaseHost = host
-            }));
+            });
             if (pageService.IsSuccess == false)
             {
                 return;

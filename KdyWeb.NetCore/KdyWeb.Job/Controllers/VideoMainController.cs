@@ -117,5 +117,17 @@ namespace KdyWeb.Job.Controllers
             var result = await _videoMainService.GetCountInfoBySubtypeAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 强制同步影片主表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("forceSync/{mainId}")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ForceSyncVideoMainAsync(long mainId)
+        {
+            var result = await _videoMainService.ForceSyncVideoMainAsync(mainId);
+            return Ok(result);
+        }
     }
 }
