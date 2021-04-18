@@ -62,6 +62,11 @@
         public const string CloudDiskParseHost = "CloudDiskParseHost";
 
         /// <summary>
+        /// nginx反代域名 用于解决403问题
+        /// </summary>
+        public const string NgProxyKey = "NgProxy";
+
+        /// <summary>
         /// 解析配置节点
         /// </summary>
         public class KdyWebParseConfig

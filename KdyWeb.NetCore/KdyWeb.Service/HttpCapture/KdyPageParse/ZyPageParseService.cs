@@ -164,6 +164,7 @@ namespace KdyWeb.Service.HttpCapture
                     VideoYear = year
                 };
                 pageOutItem.ResultName = pageOutItem.ResultName.RemoveStrExt("\r", "\n", " ").GetNumber();
+                pageOutItem.SpecialResultName();
                 result.Add(pageOutItem);
             }
 

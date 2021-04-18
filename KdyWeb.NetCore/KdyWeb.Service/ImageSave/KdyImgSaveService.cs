@@ -109,7 +109,7 @@ namespace KdyWeb.Service.ImageSave
             //todo:后期定时校验
             var dbImg = await _kdyImgSaveRepository.FirstOrDefaultAsync(a => a.Id == imgId);
             var url = ImgHandler(dbImg);
-            _memoryCache.Set(cacheKey, url, TimeSpan.FromHours(1));
+            _memoryCache.Set(cacheKey, url, TimeSpan.FromDays(1));
 
             return url;
         }
@@ -204,10 +204,20 @@ namespace KdyWeb.Service.ImageSave
         private string UrlHandler(string url)
         {
             var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
+            var proxyHost = KdyConfiguration.GetValue<string>(KdyWebServiceConst.NgProxyKey);
 
             if (url.StartsWith($"/{bucketName}"))
             {
                 return $"{host}{url}";
+            }
+
+            //http://pan-yz.chaoxing.com/thumbnail/origin/a37bb135f9192799960ca97c488747f7?type=img
+            //=>//dbproxy.hcc11.com/cximg/60c70132a7b45d8c902cb099add0ba7f.png
+            if (url.Contains("pan-yz.chaoxing.com"))
+            {
+                //超星替换 否则403
+                url = url.Replace("http://pan-yz.chaoxing.com/thumbnail/origin/", $"{proxyHost}/cximg/")
+                    .Replace("?type=img", ".png");
             }
 
             return url;

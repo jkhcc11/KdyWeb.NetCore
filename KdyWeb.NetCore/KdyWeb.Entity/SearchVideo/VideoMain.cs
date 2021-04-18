@@ -140,5 +140,13 @@ namespace KdyWeb.Entity.SearchVideo
         /// 剧集信息组
         /// </summary>
         public virtual ICollection<VideoEpisodeGroup> EpisodeGroup { get; set; }
+
+        /// <summary>
+        /// 设置豆瓣信息匹配
+        /// </summary>
+        public void SetMatchDouBanInfo()
+        {
+            IsMatchInfo = true;
+        }
     }
 }

@@ -133,7 +133,7 @@ namespace KdyWeb.Service.SearchVideo
                     Episodes = epList
                 }
             };
-            dbVideoMain.IsMatchInfo = false;
+            dbVideoMain.SetMatchDouBanInfo();
             dbVideoMain.IsEnd = pageResult.Data.IsEnd;
             await _videoMainRepository.CreateAsync(dbVideoMain);
 
