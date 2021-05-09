@@ -124,7 +124,7 @@ namespace KdyWeb.Service.SearchVideo
             {
                 KeyWord = main.KeyWord
             };
-            BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.Execute(jobInput));
+            BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.ExecuteAsync(jobInput));
             return KdyResult.Success(result);
         }
 

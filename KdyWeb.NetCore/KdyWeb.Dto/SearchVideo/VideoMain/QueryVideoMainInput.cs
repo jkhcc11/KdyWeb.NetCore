@@ -47,5 +47,11 @@ namespace KdyWeb.Dto.SearchVideo
         [KdyQuery(nameof(VideoMain.Aka), KdyOperator.Like)]
         [KdyQuery(nameof(VideoMain.SourceUrl), KdyOperator.StartsWith)]
         public string KeyWord { get; set; }
+
+        /// <summary>
+        /// 演员
+        /// </summary>
+        [KdyQuery("VideoMainInfo.VideoCasts", KdyOperator.Like)]
+        public string VideoCasts { get; set; }
     }
 }
