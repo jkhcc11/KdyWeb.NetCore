@@ -88,5 +88,17 @@ namespace KdyWeb.Test.SearchVideo
             var result = await _service.GetCountInfoBySubtypeAsync(input);
             Assert.IsTrue(result.IsSuccess);
         }
+
+        [TestMethod]
+        public async Task QuerySameVideoByActorAsync()
+        {
+            var input = new QuerySameVideoByActorInput()
+            {
+                Actor = "马库斯·格雷厄姆"
+            };
+
+            var result = await _service.QuerySameVideoByActorAsync(input);
+            Assert.IsTrue(result.IsSuccess);
+        }
     }
 }

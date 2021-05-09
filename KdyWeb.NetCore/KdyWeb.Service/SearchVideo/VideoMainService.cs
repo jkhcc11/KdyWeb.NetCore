@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Hangfire;
 using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
@@ -14,11 +13,9 @@ using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Repository;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -32,10 +29,11 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
         private readonly IKdyRepository<VideoEpisodeGroup, long> _videoEpisodeGroupRepository;
         private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
+        private readonly IKdyRepository<VideoMainInfo, long> _videoMainInfoRepository;
 
         public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
             IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
-            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository) :
+            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository, IKdyRepository<VideoMainInfo, long> videoMainInfoRepository) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
@@ -43,6 +41,7 @@ namespace KdyWeb.Service.SearchVideo
             _videoEpisodeRepository = videoEpisodeRepository;
             _videoEpisodeGroupRepository = videoEpisodeGroupRepository;
             _userSubscribeRepository = userSubscribeRepository;
+            _videoMainInfoRepository = videoMainInfoRepository;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -384,6 +383,23 @@ namespace KdyWeb.Service.SearchVideo
 
             return KdyResult.Success($"任务Id:{jobId} 已添加");
 
+        }
+
+        /// <summary>
+        /// 查询同演员影片列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<QuerySameVideoByActorDto>>> QuerySameVideoByActorAsync(QuerySameVideoByActorInput input)
+        {
+            var query = _videoMainInfoRepository.GetAsNoTracking()
+                .Include(a => a.VideoMain)
+                .Where(a => a.VideoCasts.Contains(input.Actor) ||
+                          a.VideoDirectors.Contains(input.Actor));
+            var result = await query.Take(6)
+                .ProjectToExt<VideoMainInfo, QuerySameVideoByActorDto>()
+                .ToListAsync();
+
+            return KdyResult.Success(result);
         }
 
         #region 私有

@@ -129,5 +129,17 @@ namespace KdyWeb.Job.Controllers
             var result = await _videoMainService.ForceSyncVideoMainAsync(mainId);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 查询同演员影片列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("querySameVideoByActor")]
+        [ProducesResponseType(typeof(KdyResult<List<QuerySameVideoByActorDto>>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> QuerySameVideoByActorAsync([FromQuery] QuerySameVideoByActorInput input)
+        {
+            var result = await _videoMainService.QuerySameVideoByActorAsync(input);
+            return Ok(result);
+        }
     }
 }

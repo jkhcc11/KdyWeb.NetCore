@@ -66,5 +66,11 @@ namespace KdyWeb.IService.SearchVideo
         /// <param name="mainId">影片Id</param>
         /// <returns></returns>
         Task<KdyResult> ForceSyncVideoMainAsync(long mainId);
+
+        /// <summary>
+        /// 查询同演员影片列表
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<List<QuerySameVideoByActorDto>>> QuerySameVideoByActorAsync(QuerySameVideoByActorInput input);
     }
 }
