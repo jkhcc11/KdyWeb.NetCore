@@ -1,9 +1,12 @@
 ﻿using System;
 using Hangfire;
+using Hangfire.Dashboard.BasicAuthorization;
 using Hangfire.SqlServer;
+using KdyWeb.BaseInterface.HangFire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace KdyWeb.BaseInterface.Extensions
 {
@@ -19,6 +22,8 @@ namespace KdyWeb.BaseInterface.Extensions
         /// <param name="configuration"></param>
         public static IServiceCollection InitHangFireServer(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<KdyHangFireAuthOption>(configuration.GetSection("HangFireAuthConfig"));
+
             services.AddHangfireServer(config =>
             {
                 config.Queues = new[] { "default", HangFireQueue.Email, HangFireQueue.Capture, HangFireQueue.DouBan };
@@ -68,7 +73,36 @@ namespace KdyWeb.BaseInterface.Extensions
                 Attempts = 5,
                 DelaysInSeconds = new[] { 10, 15, 20 }
             });
-            app.UseHangfireDashboard("/kdyHangFire");
+
+            var hangFireOption = app.ApplicationServices.GetService<IOptions<KdyHangFireAuthOption>>()?.Value;
+            if (hangFireOption == null)
+            {
+                return app;
+            }
+
+            //启用base认证
+            var dashboardOpt = new DashboardOptions
+            {
+                Authorization = new[]
+                {
+                    new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
+                    {
+                        RequireSsl = hangFireOption.RequireSsl,
+                        SslRedirect = hangFireOption.SslRedirect,
+                        LoginCaseSensitive = hangFireOption.LoginCaseSensitive,
+                        Users = new[]
+                        {
+                            new BasicAuthAuthorizationUser
+                            {
+                                Login = hangFireOption.UserName,
+                                PasswordClear = hangFireOption.Pwd
+                            }
+                        }
+                    })
+                }
+            };
+
+            app.UseHangfireDashboard(hangFireOption.BasePath, dashboardOpt);
             return app;
         }
     }
