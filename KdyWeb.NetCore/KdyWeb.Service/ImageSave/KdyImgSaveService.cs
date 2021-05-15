@@ -7,13 +7,16 @@ using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyImg;
 using KdyWeb.Entity;
 using KdyWeb.IRepository.ImageSave;
 using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.KdyFile;
+using KdyWeb.Repository;
 using KdyWeb.Utility;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 
@@ -65,6 +68,82 @@ namespace KdyWeb.Service.ImageSave
             _minIoFileService = minIoFileService;
             _weiBoFileService = weiBoFileService;
             _normalFileService = normalFileService;
+
+            CanUpdateFieldList.AddRange(new[]
+            {
+                nameof(KdyImgSave.FileMd5),
+                nameof(KdyImgSave.MainUrl),
+                nameof(KdyImgSave.OneUrl),
+                nameof(KdyImgSave.TwoUrl),
+                nameof(KdyImgSave.Urls),
+            });
+        }
+
+        /// <summary>
+        /// 分页查询图床
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryKdyImgDto>>> QueryKdyImgAsync(QueryKdyImgInput input)
+        {
+            if (input.OrderBy == null || input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(KdyImgSave.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
+            var result = await _kdyImgSaveRepository.GetAsNoTracking()
+                .GetDtoPageListAsync<KdyImgSave, QueryKdyImgDto>(input);
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 更新字段值
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> UpdateValueByFieldAsync(UpdateValueByFieldInput input)
+        {
+            var dbImg = await _kdyImgSaveRepository.FirstOrDefaultAsync(a => a.Id == input.Id);
+            if (dbImg == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "Id错误");
+            }
+
+            if (CanUpdateFieldList.Contains(input.Field) == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, $"更新失败，当前字段：{input.Field} 不支持更新");
+            }
+
+            dbImg.UpdateModelField(input.Field, input.Value);
+
+            _kdyImgSaveRepository.Update(dbImg);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 批量删除图床
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> DeleteAsync(BatchDeleteForLongKeyInput input)
+        {
+            if (input.Ids == null || input.Ids.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "Id不能为空");
+            }
+
+            var dbImg = await _kdyImgSaveRepository.GetQuery()
+                .Where(a => input.Ids.Contains(a.Id))
+                .ToListAsync();
+            _kdyImgSaveRepository.Delete(dbImg);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success("图床删除成功");
         }
 
         /// <summary>
@@ -151,6 +230,7 @@ namespace KdyWeb.Service.ImageSave
             return await UploadAsync(fileName, bytes);
         }
 
+        #region 私有
         /// <summary>
         /// 图片处理
         /// </summary>
@@ -362,5 +442,6 @@ namespace KdyWeb.Service.ImageSave
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
         }
+        #endregion
     }
 }
