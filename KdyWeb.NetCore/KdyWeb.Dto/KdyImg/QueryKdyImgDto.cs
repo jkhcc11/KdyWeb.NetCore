@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity;
-
 namespace KdyWeb.Dto.KdyImg
 {
     /// <summary>
@@ -44,5 +43,10 @@ namespace KdyWeb.Dto.KdyImg
         ///  后期可扩展多个Url 
         /// </summary>
         public string[] Urls { get; set; }
+
+        /// <summary>
+        /// 完整图床路径
+        /// </summary>
+        public string FullImgUrl { get; set; }
     }
 }

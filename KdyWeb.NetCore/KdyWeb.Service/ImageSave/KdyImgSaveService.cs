@@ -85,6 +85,7 @@ namespace KdyWeb.Service.ImageSave
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryKdyImgDto>>> QueryKdyImgAsync(QueryKdyImgInput input)
         {
+            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
             if (input.OrderBy == null || input.OrderBy.Any() == false)
             {
                 input.OrderBy = new List<KdyEfOrderConditions>()
@@ -99,6 +100,11 @@ namespace KdyWeb.Service.ImageSave
 
             var result = await _kdyImgSaveRepository.GetAsNoTracking()
                 .GetDtoPageListAsync<KdyImgSave, QueryKdyImgDto>(input);
+            foreach (var item in result.Data)
+            {
+                item.FullImgUrl = $"{host}/kdyImg/path/{item.Id}";
+            }
+
             return KdyResult.Success(result);
         }
 
