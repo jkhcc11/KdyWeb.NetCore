@@ -71,11 +71,23 @@ namespace KdyWeb.Job.Controllers
         /// 用户密码修改
         /// </summary>
         /// <returns></returns>
-        [HttpPost("modify")]
+        [HttpPost("modifyPwd")]
         [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ModifyUserPwdAsync(ModifyUserPwdInput input)
         {
             var result = await _kdyUserService.ModifyUserPwdAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 用户信息修改
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("modifyInfo")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ModifyUserInfoAsync(ModifyUserInfoInput input)
+        {
+            var result = await _kdyUserService.ModifyUserInfoAsync(input);
             return Ok(result);
         }
     }

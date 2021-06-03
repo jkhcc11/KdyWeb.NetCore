@@ -129,5 +129,23 @@ namespace KdyWeb.IService
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }
+
+        /// <summary>
+        /// 用户信息修改
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> ModifyUserInfoAsync(ModifyUserInfoInput input)
+        {
+            var dbUser = await _kdyUserRepository.FirstOrDefaultAsync(a => a.Id == input.UserId);
+            if (dbUser == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "用户信息错误，请重试");
+            }
+
+            dbUser.SetUserInfo(input.UserEmail,input.UserNick);
+            _kdyUserRepository.Update(dbUser);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
     }
 }

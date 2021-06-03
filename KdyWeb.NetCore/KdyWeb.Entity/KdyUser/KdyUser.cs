@@ -106,5 +106,16 @@ namespace KdyWeb.Entity
         {
             kdyUser.UserPwd = $"{pwd}{KdyWebConst.UserSalt}".Md5Ext();
         }
+
+        /// <summary>
+        /// 用户信息修改
+        /// </summary>
+        /// <param name="userEmail">邮箱</param>
+        /// <param name="userNick">昵称</param>
+        public void SetUserInfo(string userEmail,string userNick)
+        {
+            UserEmail = userEmail;
+            UserNick = userNick;
+        }
     }
 }

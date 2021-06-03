@@ -39,5 +39,11 @@ namespace KdyWeb.IService
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> ModifyUserPwdAsync(ModifyUserPwdInput input);
+
+        /// <summary>
+        /// 用户信息修改
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> ModifyUserInfoAsync(ModifyUserInfoInput input);
     }
 }

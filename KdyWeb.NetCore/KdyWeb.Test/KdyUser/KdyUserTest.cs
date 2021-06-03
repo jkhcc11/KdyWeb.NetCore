@@ -68,5 +68,18 @@ namespace KdyWeb.Test.KdyUser
             var result = await _service.FindUserPwdAsync(input);
             Assert.IsTrue(result.IsSuccess);
         }
+
+        [TestMethod]
+        public async Task ModifyUserInfoAsync()
+        {
+            var input = new ModifyUserInfoInput()
+            {
+                UserId = 1333386925867929600,
+                UserEmail = "11@qq.com",
+                UserNick = "eeee"
+            };
+            var result = await _service.ModifyUserInfoAsync(input);
+            Assert.IsTrue(result.IsSuccess);
+        }
     }
 }
