@@ -83,6 +83,13 @@ namespace KdyWeb.Utility
                 return;
             }
 
+            if (typeof(Enum).IsAssignableFrom(property.PropertyType))
+            {
+                //枚举特殊处理
+                var temp = Enum.Parse(property.PropertyType, value.ToString());
+                value = temp;
+            }
+
             //动态更改值
             var changeV = Convert.ChangeType(value, property.PropertyType);
             property.SetValue(model, changeV, null);

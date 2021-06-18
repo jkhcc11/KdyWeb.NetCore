@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using KdyWeb.Utility;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -36,19 +37,19 @@ namespace KdyWeb.Test
             byte[] keyByte = encoding.GetBytes("1000390abcdefgabcdefg12");
             byte[] dataBytes = encoding.GetBytes("bohejing0");
 
-          //  var hmac = new HMACMD5(keyByte);
+            //  var hmac = new HMACMD5(keyByte);
 
             using (var hmacmd5 = new HMACMD5(keyByte))
             {
 
                 byte[] hashData = hmacmd5.ComputeHash(dataBytes);
                 //var aesKey= Convert.ToBase64String(hashData);
-               // string t2 = BitConverter.ToString(hashData);
-              //  var aesKey = t2.Replace("-", "");
+                // string t2 = BitConverter.ToString(hashData);
+                //  var aesKey = t2.Replace("-", "");
 
-               // var newAesKey = aesKey.PadRight(32, ' ');
+                // var newAesKey = aesKey.PadRight(32, ' ');
                 RijndaelManaged aes = new RijndaelManaged();
-               // byte[] iv = Encoding.UTF8.GetBytes(aesKey);
+                // byte[] iv = Encoding.UTF8.GetBytes(aesKey);
                 aes.Key = hashData;
                 aes.Mode = CipherMode.CBC;
                 aes.IV = hashData;
@@ -63,6 +64,46 @@ namespace KdyWeb.Test
             }
 
             Assert.IsTrue(false);
+        }
+
+        /// <summary>
+        /// 冒泡排序
+        /// </summary>
+        [TestMethod]
+        public void TestSort()
+        {
+            int[] Start(params int[] number)
+            {
+                if (number == null || number.Any() == false)
+                {
+                    return new int[] { };
+                }
+
+                return Sort(number);
+            }
+
+            int[] Sort(int[] number)
+            {
+                for (var i = 0; i < number.Length; i++)
+                {
+                    for (var j = i + 1; j < number.Length; j++)
+                    {
+                        if (number[i] > number[j])
+                        {
+                            var temp = number[i];
+                            number[i] = number[j];
+                            number[j] = temp;
+                        }
+                    }
+                }
+
+                return number;
+            }
+
+            var testArrays = Start(5, 7, 34, 2, 41, 1, 3);
+
+            Console.WriteLine(string.Join(",", testArrays));
+            Assert.IsTrue(testArrays.Any());
         }
     }
 }

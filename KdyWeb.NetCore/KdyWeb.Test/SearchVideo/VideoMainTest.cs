@@ -51,10 +51,12 @@ namespace KdyWeb.Test.SearchVideo
             var input = new UpdateValueByFieldInput()
             {
                 Id = 1326171992466001920,
-                //Field = "SourceUrl",
-                //Value = "test"
-                Field = "IsMatchInfo",
-                Value = "true"
+                Field = "SourceUrl",
+                Value = "systeminput"
+                //Field = "IsMatchInfo",
+                //Value = "true",
+                //Field = "VideoMainStatus",
+                //Value = "Ban"
             };
 
             var result = await _service.UpdateValueByFieldAsync(input);

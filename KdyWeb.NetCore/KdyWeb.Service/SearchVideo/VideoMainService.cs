@@ -391,13 +391,37 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<List<QuerySameVideoByActorDto>>> QuerySameVideoByActorAsync(QuerySameVideoByActorInput input)
         {
+            //先获取数据库10条 然后程序处理 数据库用的是字符串 无法精确匹配 eg: input:张三  =>  db:张三1  也可以搜索
             var query = _videoMainInfoRepository.GetAsNoTracking()
                 .Include(a => a.VideoMain)
                 .Where(a => a.VideoCasts.Contains(input.Actor) ||
                           a.VideoDirectors.Contains(input.Actor));
-            var result = await query.Take(6)
-                .ProjectToExt<VideoMainInfo, QuerySameVideoByActorDto>()
+            var dbResult = await query.Take(10)
+                .OrderBy(a => Guid.NewGuid())
                 .ToListAsync();
+
+            var result = new List<QuerySameVideoByActorDto>();
+            foreach (var item in dbResult)
+            {
+                if (result.Count >= 6)
+                {
+                    //最多6条
+                    continue;
+                }
+
+                if (item.VideoCasts.IsEmptyExt() == false &&
+                    item.VideoCasts.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries).Any(a => a == input.Actor))
+                {
+                    result.Add(item.MapToExt<QuerySameVideoByActorDto>());
+                    continue;
+                }
+
+                if (item.VideoDirectors.IsEmptyExt() == false &&
+                    item.VideoDirectors.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries).Any(a => a == input.Actor))
+                {
+                    result.Add(item.MapToExt<QuerySameVideoByActorDto>());
+                }
+            }
 
             return KdyResult.Success(result);
         }

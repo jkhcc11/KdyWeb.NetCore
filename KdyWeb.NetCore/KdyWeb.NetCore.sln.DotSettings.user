@@ -22,6 +22,8 @@
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.TestStringExt.TestT&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.VideoMainTest.QuerySameVideoByActorAsync&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.KdyUser.KdyUserTest.ModifyUserInfoAsync&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.TestStringExt.TestSort&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.VideoMainTest.TestUpdateValueByFieldAsync&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>
