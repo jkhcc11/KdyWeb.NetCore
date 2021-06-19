@@ -186,6 +186,11 @@ namespace KdyWeb.Dto.SearchVideo
                     opt.Condition(a => string.IsNullOrEmpty(a.Source.NarrateUrl) == false);
                     opt.MapFrom(c => c.NarrateUrl);
                 })
+                .ForPath(a => a.VideoMainInfo.VideoSummary, opt =>
+                  {
+                      opt.Condition(a => string.IsNullOrEmpty(a.Source.VideoSummary) == false);
+                      opt.MapFrom(c => c.VideoSummary);
+                  })
                 .ForPath(a => a.VideoMainInfo.BanVideoJumpUrl, opt =>
                 {
                     opt.Condition(a => string.IsNullOrEmpty(a.Source.BanVideoJumpUrl) == false);
