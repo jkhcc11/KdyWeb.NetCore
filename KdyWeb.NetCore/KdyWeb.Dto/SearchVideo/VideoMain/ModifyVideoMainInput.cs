@@ -128,6 +128,11 @@ namespace KdyWeb.Dto.SearchVideo
         /// 下载地址 多个换行
         /// </summary>
         public string DownUrl { get; set; }
+
+        /// <summary>
+        /// 年份
+        /// </summary>
+        public int VideoYear { get; set; }
     }
 
     public class ModifyVideoMainInputProfile : Profile
@@ -161,6 +166,11 @@ namespace KdyWeb.Dto.SearchVideo
                     opt.PreCondition(a => string.IsNullOrEmpty(a.VideoImg) == false);
                     opt.MapFrom(c => c.VideoImg);
                 })
+                  .ForMember(a => a.VideoYear, opt =>
+                  {
+                      opt.PreCondition(a => a.VideoYear > 1000);
+                      opt.MapFrom(c => c.VideoYear);
+                  })
                 .ForPath(a => a.VideoMainInfo.VideoGenres, opt =>
                 {
                     opt.Condition(a => string.IsNullOrEmpty(a.Source.VideoGenres) == false);

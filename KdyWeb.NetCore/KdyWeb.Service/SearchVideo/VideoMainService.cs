@@ -154,6 +154,31 @@ namespace KdyWeb.Service.SearchVideo
             var query = _videoMainRepository.GetQuery()
                 .Include(a => a.VideoMainInfo)
                 .CreateConditions(input);
+            switch (input.SearchType)
+            {
+                case SearchType.IsNoEnd:
+                    {
+                        query = query.Where(a => a.IsEnd == false);
+                        break;
+                    }
+                case SearchType.IsToday:
+                    {
+                        query = query.Where(a => a.ModifyTime != null &&
+                        a.ModifyTime.Value.Date == DateTime.Today);
+                        break;
+                    }
+                case SearchType.IsNoMatchDouBan:
+                    {
+                        query = query.Where(a => a.IsMatchInfo == false);
+                        break;
+                    }
+                case SearchType.IsNarrateUrl:
+                    {
+                        query = query.Where(a => string.IsNullOrEmpty(a.VideoMainInfo.NarrateUrl) == false);
+                        break;
+                    }
+            }
+
             var count = await query.CountAsync();
             if (string.IsNullOrEmpty(input.KeyWord) == false)
             {

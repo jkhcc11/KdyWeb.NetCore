@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.AspNetCore.Mvc;
@@ -92,6 +93,18 @@ namespace KdyWeb.Job.Controllers
         public async Task<IActionResult> RetrySaveImgAsync(int id)
         {
             var result = await _douBanInfoService.RetrySaveImgAsync(id);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("batchDelete")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> BatchDeleteAsync(BatchDeleteForIntKeyInput input)
+        {
+            var result = await _douBanInfoService.DeleteAsync(input);
             return Ok(result);
         }
     }

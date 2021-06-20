@@ -6,6 +6,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.KdyImg;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
@@ -268,6 +269,26 @@ namespace KdyWeb.Service.SearchVideo
             _douBanInfoRepository.Update(dbDouBanInfo);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> DeleteAsync(BatchDeleteForIntKeyInput input)
+        {
+            if (input.Ids == null || input.Ids.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "Id不能为空");
+            }
+
+            var dbEp = await _douBanInfoRepository.GetQuery()
+                .Where(a => input.Ids.Contains(a.Id))
+                .ToListAsync();
+            _douBanInfoRepository.Delete(dbEp);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success("豆瓣信息删除成功");
         }
     }
 }
