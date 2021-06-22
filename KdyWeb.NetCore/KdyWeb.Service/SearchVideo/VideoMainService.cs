@@ -30,10 +30,13 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<VideoEpisodeGroup, long> _videoEpisodeGroupRepository;
         private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
         private readonly IKdyRepository<VideoMainInfo, long> _videoMainInfoRepository;
+        private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
+        private readonly IKdyRepository<VideoSeriesList, long> _videoSeriesListRepository;
 
         public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
             IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
-            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository, IKdyRepository<VideoMainInfo, long> videoMainInfoRepository) :
+            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
+            IKdyRepository<VideoMainInfo, long> videoMainInfoRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<VideoSeriesList, long> videoSeriesListRepository) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
@@ -42,6 +45,8 @@ namespace KdyWeb.Service.SearchVideo
             _videoEpisodeGroupRepository = videoEpisodeGroupRepository;
             _userSubscribeRepository = userSubscribeRepository;
             _videoMainInfoRepository = videoMainInfoRepository;
+            _userHistoryRepository = userHistoryRepository;
+            _videoSeriesListRepository = videoSeriesListRepository;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -106,13 +111,35 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = main.MapToExt<GetVideoDetailDto>();
 
-            result.IsSubscribe = await _userSubscribeRepository.GetAsNoTracking()
-                .AnyAsync(a => a.BusinessId == main.Id &&
-                               a.UserSubscribeType == UserSubscribeType.Vod &&
-                               a.CreatedUserId == LoginUserInfo.UserId);
+          
 
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
             VideoDetailHandler(result);
+
+            if (LoginUserInfo.UserId.HasValue)
+            {
+                //登录用户就获取最新历史记录
+                var dbNewHistory = await _userHistoryRepository.GetAsNoTracking()
+                    .Where(a => a.KeyId == keyId && a.CreatedUserId == LoginUserInfo.UserId)
+                    .OrderByDescending(a => a.CreatedTime)
+                    .FirstOrDefaultAsync();
+                result.NewUserHistory = dbNewHistory?.MapToExt<QueryUserHistoryDto>();
+
+                //是否订阅
+                result.IsSubscribe = await _userSubscribeRepository.GetAsNoTracking()
+                    .AnyAsync(a => a.BusinessId == main.Id &&
+                                   a.UserSubscribeType == UserSubscribeType.Vod &&
+                                   a.CreatedUserId == LoginUserInfo.UserId);
+            }
+
+            //影片所属系列
+            var dbVideoSeries = await _videoSeriesListRepository.GetAsNoTracking()
+                .Include(a => a.VideoSeries)
+                .Where(a => a.KeyId == keyId)
+                .Select(a => a.VideoSeries)
+                .FirstOrDefaultAsync();
+            result.VideoSeries = dbVideoSeries?.MapToExt<QueryVideoSeriesDto>();
+
             if (result.IsEnd)
             {
                 //已完结 不用更新

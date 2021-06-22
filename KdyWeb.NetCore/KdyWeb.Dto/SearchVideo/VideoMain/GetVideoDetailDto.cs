@@ -107,6 +107,16 @@ namespace KdyWeb.Dto.SearchVideo
         /// 是否订阅
         /// </summary>
         public bool IsSubscribe { get; set; }
+
+        /// <summary>
+        /// 影片所属系列
+        /// </summary>
+        public QueryVideoSeriesDto VideoSeries { get; set; }
+
+        /// <summary>
+        /// 最新的用户历史记录
+        /// </summary>
+        public QueryUserHistoryDto NewUserHistory { get; set; }
     }
 
     /// <summary>
