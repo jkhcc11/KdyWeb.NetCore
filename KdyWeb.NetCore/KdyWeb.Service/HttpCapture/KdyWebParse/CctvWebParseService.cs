@@ -41,7 +41,7 @@ namespace KdyWeb.Service.HttpCapture
             var guid = reqResult.Data.Replace(" ", "")
                 .GetStrMathExt("guid=\"", "\";");
             var key = GetVc();
-            var apiUrl = $"{BaseConfig.ApiHost}/api/getIpadVideoInfo.do?pid={guid}&tai=ipad&from=html5&tsp={key.Item1}&vn={BaseConfig.Vn}&vc={key.Item2}&uid={GetOneKey()}&wlan=";
+            var apiUrl = $"{BaseConfig.ApiHost}/api/getHttpVideoInfo.do?pid={guid}&client=flash&tsp={key.Item1}&vn={BaseConfig.Vn}&vc={key.Item2}&uid={GetOneKey()}&wlan=";
             reqInput = new KdyRequestCommonInput(apiUrl, HttpMethod.Get)
             {
                 UserAgent = BaseConfig.UserAgent,

@@ -142,6 +142,11 @@ namespace KdyWeb.BaseInterface
                     errResult.Msg = ex.Message;
                 }
 
+                kdyLog.Error(ex, new Dictionary<string, object>()
+                {
+                    {"SystemErr","系统错误"},
+                    {"SystemErrInfo",ex.Message},
+                });
                 var str = JsonConvert.SerializeObject(errResult);
                 var bytes = Encoding.UTF8.GetBytes(str);
                 var newStream = new MemoryStream(bytes);
