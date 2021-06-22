@@ -95,6 +95,7 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var pageList = await _videoSeriesListRepository.GetQuery()
+                .Include(a=>a.VideoSeries)
                 .Include(a => a.VideoMain)
                 .ThenInclude(a => a.VideoMainInfo)
                 .GetDtoPageListAsync<VideoSeriesList, QueryVideoSeriesListDto>(input);

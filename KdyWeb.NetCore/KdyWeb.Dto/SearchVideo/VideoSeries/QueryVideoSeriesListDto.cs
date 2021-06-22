@@ -25,5 +25,10 @@ namespace KdyWeb.Dto.SearchVideo
         /// 影片
         /// </summary>
         public QueryVideoMainDto VideoMain { get; set; }
+
+        /// <summary>
+        /// 影片系列信息
+        /// </summary>
+        public QueryVideoSeriesDto VideoSeries { get; set; }
     }
 }
