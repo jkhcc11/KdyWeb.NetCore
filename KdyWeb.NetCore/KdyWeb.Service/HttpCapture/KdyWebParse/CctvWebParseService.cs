@@ -54,8 +54,7 @@ namespace KdyWeb.Service.HttpCapture
             }
 
             //获取m3u8地址
-            var tempJson = reqResult.Data.Replace(" ", "")
-                .GetStrMathExt("'", "'");
+            var tempJson = reqResult.Data;
             var jObject = JObject.Parse(tempJson);
             string url = jObject.GetValueExt("hls_url");
             if (string.IsNullOrEmpty(url))
