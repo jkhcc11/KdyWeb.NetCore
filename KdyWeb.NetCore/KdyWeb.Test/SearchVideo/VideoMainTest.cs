@@ -17,7 +17,7 @@ namespace KdyWeb.Test.SearchVideo
         {
             var input = new CreateForDouBanInfoInput()
             {
-                DouBanInfoId = 40,
+                DouBanInfoId = 268,
                 EpisodeGroupType = EpisodeGroupType.VideoPlay,
                 EpUrl = "//www.baidu.com/play.m3u8"
             };

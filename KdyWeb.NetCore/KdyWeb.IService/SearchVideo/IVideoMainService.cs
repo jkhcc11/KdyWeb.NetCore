@@ -16,7 +16,7 @@ namespace KdyWeb.IService.SearchVideo
         /// 通过豆瓣信息创建影片信息
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input);
+        Task<KdyResult<CreateForDouBanInfoDto>> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input);
 
         /// <summary>
         /// 获取影片信息

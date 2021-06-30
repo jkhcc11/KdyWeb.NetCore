@@ -58,13 +58,13 @@ namespace KdyWeb.Service.SearchVideo
         /// 通过豆瓣信息创建影片信息
         /// </summary>
         /// <returns></returns>
-        public async Task<KdyResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
+        public async Task<KdyResult<CreateForDouBanInfoDto>> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
         {
             //获取豆瓣信息
             var douBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanInfoId);
             if (douBanInfo == null)
             {
-                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息Id错误");
+                return KdyResult.Error<CreateForDouBanInfoDto>(KdyResultCode.Error, "豆瓣信息Id错误");
             }
 
             var epName = input.EpisodeGroupType == EpisodeGroupType.VideoPlay ? "极速" : "点击下载";
@@ -89,7 +89,9 @@ namespace KdyWeb.Service.SearchVideo
             _douBanInfoRepository.Update(douBanInfo);
 
             await UnitOfWork.SaveChangesAsync();
-            return KdyResult.Success();
+
+            var result = dbVideoMain.MapToExt<CreateForDouBanInfoDto>();
+            return KdyResult.Success(result);
         }
 
         /// <summary>
@@ -111,7 +113,7 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = main.MapToExt<GetVideoDetailDto>();
 
-          
+
 
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
             VideoDetailHandler(result);

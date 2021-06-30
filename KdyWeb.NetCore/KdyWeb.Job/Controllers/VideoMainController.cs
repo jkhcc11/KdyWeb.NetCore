@@ -27,7 +27,7 @@ namespace KdyWeb.Job.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("create")]
-        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(KdyResult<CreateForDouBanInfoDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
         {
             var result = await _videoMainService.CreateForDouBanInfoAsync(input);
