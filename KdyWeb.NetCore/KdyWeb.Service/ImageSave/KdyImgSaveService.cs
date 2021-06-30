@@ -298,7 +298,7 @@ namespace KdyWeb.Service.ImageSave
             }
 
             //http://pan-yz.chaoxing.com/thumbnail/origin/a37bb135f9192799960ca97c488747f7?type=img
-            //=>//dbproxy.hcc11.com/cximg/60c70132a7b45d8c902cb099add0ba7f.png
+            //=>//xxx.com/cximg/60c70132a7b45d8c902cb099add0ba7f.png
             if (url.Contains("pan-yz.chaoxing.com"))
             {
                 //超星替换 否则403
@@ -306,6 +306,13 @@ namespace KdyWeb.Service.ImageSave
                     .Replace("?type=img", ".png");
             }
 
+            if (url.Contains("pan-yz.chaoxing.com"))
+            {
+                //豆瓣替换 否则403
+                //https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2665925017.jpg
+                //=>//xxx.com/dbimg/p2665925017.jpg
+                url = url.Replace("https://img1.doubanio.com/view/photo/s_ratio_poster/public/", $"{proxyHost}/dbimg/");
+            }
             return url;
         }
 
@@ -318,49 +325,69 @@ namespace KdyWeb.Service.ImageSave
             var result = KdyResult.Error<KdyFileDto>(KdyResultCode.Error, "上传失败-1");
 
             //普通上传
-            //var normalInput = new NormalFileInput("https://niupic.com/index/upload/process", "image_field",
-            //    "data", fileName, imgUrl);
-            //var normalResult = await _normalFileService.PostFile(normalInput);
-
-            //超星
-            var uid = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxPUid);
-            var token = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxToken);
-            if (string.IsNullOrEmpty(uid) == false &&
-                string.IsNullOrEmpty(token) == false)
+            NormalFileInput normalInput = null;
+            if (imgData is string imgUrl)
             {
-                NormalFileInput normalInput = null;
-                if (imgData is string imgUrl)
-                {
-                    normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
-                        "data.thumbnail", fileName, imgUrl);
-                }
-
-                if (imgData is byte[] bytes)
-                {
-                    normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
-                        "data.thumbnail", fileName, bytes);
-                }
-
-                if (normalInput == null)
-                {
-                    throw new KdyCustomException($"普通文件上传失败，无效上传数据。{imgData.GetType()}");
-                }
-
-                normalInput.PostParDic = new Dictionary<string, string>()
-                {
-                    {"id", "WU_FILE_0"},
-                    {"type", fileName.FileNameToContentType()},
-                    {"puid", uid},
-                    {"_token", token},
-                };
-
-                result = await _normalFileService.PostFile(normalInput);
+                normalInput = new NormalFileInput("https://niupic.com/index/upload/process", "image_field",
+                "data", fileName, imgUrl);
             }
 
+            if (imgData is byte[] bytes)
+            {
+                normalInput = new NormalFileInput("https://niupic.com/index/upload/process", "image_field",
+                "data", fileName, bytes);
+            }
+
+            if (normalInput == null)
+            {
+                throw new KdyCustomException($"普通文件上传失败，无效上传数据。{imgData.GetType()}");
+            }
+
+            result = await _normalFileService.PostFile(normalInput);
             if (result.IsSuccess)
             {
                 return result;
             }
+
+            //超星
+            //var uid = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxPUid);
+            //var token = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxToken);
+            //if (string.IsNullOrEmpty(uid) == false &&
+            //    string.IsNullOrEmpty(token) == false)
+            //{
+            //    NormalFileInput normalInput = null;
+            //    if (imgData is string imgUrl)
+            //    {
+            //        normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
+            //            "data.thumbnail", fileName, imgUrl);
+            //    }
+
+            //    if (imgData is byte[] bytes)
+            //    {
+            //        normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
+            //            "data.thumbnail", fileName, bytes);
+            //    }
+
+            //    if (normalInput == null)
+            //    {
+            //        throw new KdyCustomException($"普通文件上传失败，无效上传数据。{imgData.GetType()}");
+            //    }
+
+            //    normalInput.PostParDic = new Dictionary<string, string>()
+            //    {
+            //        {"id", "WU_FILE_0"},
+            //        {"type", fileName.FileNameToContentType()},
+            //        {"puid", uid},
+            //        {"_token", token},
+            //    };
+
+            //    result = await _normalFileService.PostFile(normalInput);
+            //}
+
+            //if (result.IsSuccess)
+            //{
+            //    return result;
+            //}
 
             //腾讯文档 防盗 不能直接使用
             //var cookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigTxDocCookie);
