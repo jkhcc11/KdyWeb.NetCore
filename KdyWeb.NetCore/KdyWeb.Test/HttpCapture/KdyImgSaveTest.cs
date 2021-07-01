@@ -13,7 +13,7 @@ namespace KdyWeb.Test.HttpCapture
         {
             var input = new PostFileByUrlInput()
             {
-                ImgUrl = "https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1930234393.jpg"
+                ImgUrl = "https://tu3.shanzhuo.cc/s/2021/xp/vod/2021-04/6083a9ab637a2.jpg"
             };
 
             var result = await _service.PostFileByUrl(input);

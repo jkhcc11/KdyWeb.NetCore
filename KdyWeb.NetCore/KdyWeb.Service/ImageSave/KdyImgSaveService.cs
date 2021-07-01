@@ -418,6 +418,8 @@ namespace KdyWeb.Service.ImageSave
         private async Task<KdyResult<string>> UploadAsync(string fileName, object imgData)
         {
             var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
+            var errDeafultId = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadImgErrDefaultId, "1139766229985267712");
+
             var result = KdyResult.Error<string>(KdyResultCode.Error, "图片上传失败");
 
             MinIoFileInput minIoInput = null;
@@ -443,6 +445,12 @@ namespace KdyWeb.Service.ImageSave
             var minIoResult = await _minIoFileService.PostFile(minIoInput);
             if (minIoResult.IsSuccess == false)
             {
+                if (minIoResult.Code == KdyResultCode.HttpError)
+                {
+                    //http异常时 为默认图
+                    return KdyResult.Success($"{host}/kdyImg/path/{errDeafultId}", "获取缺省图");
+                }
+
                 return KdyResult.Error<string>(KdyResultCode.Error, $"上传主通道失败，请稍后 {minIoResult.Msg}");
             }
 

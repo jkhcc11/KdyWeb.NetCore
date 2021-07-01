@@ -111,22 +111,5 @@ namespace KdyWeb.Service.KdyFile
             result = KdyResult.Success(uploadResult);
             return result;
         }
-
-        public override async Task<KdyResult<KdyFileDto>> PostFileByUrl(NormalFileInput input)
-        {
-            try
-            {
-                input.FileBytes = await GetFileBytesByUrl(input.FileUrl);
-                input.FileUrl = string.Empty;
-                return await PostFileByBytes(input);
-            }
-            catch (Exception ex)
-            {
-                ex.ToExceptionless()
-                    .AddTags($"{this}")
-                    .Submit();
-                return KdyResult.Error<KdyFileDto>(KdyResultCode.Error, $"普通文件上传 Url上传异常【{ex.Message}】");
-            }
-        }
     }
 }

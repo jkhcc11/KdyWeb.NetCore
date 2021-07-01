@@ -84,23 +84,6 @@ namespace KdyWeb.Service.KdyFile
             return result;
         }
 
-        public override async Task<KdyResult<KdyFileDto>> PostFileByUrl(BaseKdyFileInput input)
-        {
-            try
-            {
-                input.FileBytes = await GetFileBytesByUrl(input.FileUrl);
-                input.FileUrl = string.Empty;
-                return await PostFileByBytes(input);
-            }
-            catch (Exception ex)
-            {
-                ex.ToExceptionless()
-                    .AddTags($"{this}")
-                    .Submit();
-                return KdyResult.Error<KdyFileDto>(KdyResultCode.Error, $"微博 Url上传异常【{ex.Message}】");
-            }
-        }
-
         public async Task<string> GetLoginCookie()
         {
             var wbCookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.WeiBoCookie);

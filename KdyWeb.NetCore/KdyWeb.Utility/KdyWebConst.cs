@@ -42,6 +42,11 @@
         public const string ImgHostKey = "SelfImgHost";
 
         /// <summary>
+        /// 图床由于http异常上传失败时默认图床Id
+        /// </summary>
+        public const string UploadImgErrDefaultId = "UploadImgErrDefaultId";
+
+        /// <summary>
         /// 图床默认图片
         /// </summary>
         public const string DefaultImgUrl = "/kdyimg/public/old/8d78d765c1bce92.jpg";

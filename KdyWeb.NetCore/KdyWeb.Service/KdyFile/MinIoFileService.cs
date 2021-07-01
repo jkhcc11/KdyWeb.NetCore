@@ -79,23 +79,6 @@ namespace KdyWeb.Service.KdyFile
             return result;
         }
 
-        public override async Task<KdyResult<KdyFileDto>> PostFileByUrl(MinIoFileInput input)
-        {
-            try
-            {
-                input.FileBytes = await GetFileBytesByUrl(input.FileUrl);
-                input.FileUrl = string.Empty;
-                return await PostFileByBytes(input);
-            }
-            catch (Exception ex)
-            {
-                ex.ToExceptionless()
-                    .AddTags(nameof(MinIoFileService), nameof(PostFileByUrl))
-                    .Submit();
-                return KdyResult.Error<KdyFileDto>(KdyResultCode.Error, $"Minio Url上传异常【{ex.Message}】");
-            }
-        }
-
         public MinioClient GetMinIoClient()
         {
             var config = _configuration

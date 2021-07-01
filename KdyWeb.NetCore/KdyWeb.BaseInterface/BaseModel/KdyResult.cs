@@ -122,6 +122,11 @@
     public enum KdyResultCode
     {
         /// <summary>
+        /// 通用http请求错误
+        /// </summary>
+        HttpError = 2000,
+
+        /// <summary>
         /// 成功
         /// </summary>
         Success = 1000,

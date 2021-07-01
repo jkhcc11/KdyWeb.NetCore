@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Exceptionless;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.KdyLog;
@@ -75,7 +76,29 @@ namespace KdyWeb.Service.KdyFile
         /// Url上传
         /// </summary>
         /// <returns></returns>
-        public abstract Task<KdyResult<KdyFileDto>> PostFileByUrl(T input);
+        protected async Task<KdyResult<KdyFileDto>> PostFileByUrl(T input)
+        {
+            try
+            {
+                input.FileBytes = await GetFileBytesByUrl(input.FileUrl);
+                input.FileUrl = string.Empty;
+                return await PostFileByBytes(input);
+            }
+            catch (HttpRequestException httpEx)
+            {
+                httpEx.ToExceptionless()
+                    .AddTags(nameof(BaseKdyFileService<T>), nameof(PostFileByUrl))
+                    .Submit();
+                return KdyResult.Error<KdyFileDto>(KdyResultCode.HttpError, $"Url上传失败源：【{httpEx.Message}】");
+            }
+            catch (Exception ex)
+            {
+                ex.ToExceptionless()
+                    .AddTags(nameof(BaseKdyFileService<T>), nameof(PostFileByUrl))
+                    .Submit();
+                return KdyResult.Error<KdyFileDto>(KdyResultCode.Error, $"Url上传异常【{ex.Message}】");
+            }
+        }
 
         /// <summary>
         /// Byte转Base64
