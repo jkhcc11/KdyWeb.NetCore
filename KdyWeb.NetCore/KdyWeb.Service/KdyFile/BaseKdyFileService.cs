@@ -7,11 +7,9 @@ using Exceptionless;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.KdyLog;
-using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.KdyFile;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -80,8 +78,8 @@ namespace KdyWeb.Service.KdyFile
         {
             try
             {
-                input.FileBytes = await GetFileBytesByUrl(input.FileUrl);
-                input.FileUrl = string.Empty;
+                var bytes = await GetFileBytesByUrl(input.FileUrl);
+                input.SetFileBytes(bytes);
                 return await PostFileByBytes(input);
             }
             catch (HttpRequestException httpEx)

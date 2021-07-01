@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.KdyFile
@@ -20,7 +15,7 @@ namespace KdyWeb.Service.KdyFile
     /// <summary>
     /// 微博上传 实现
     /// </summary>
-    public class WeiBoFileService : BaseKdyFileService<BaseKdyFileInput>, IWeiBoFileService
+    public class WeiBoFileService : BaseKdyFileService<WeiBoFileInput>, IWeiBoFileService
     {
         private readonly string _postHost = "https://picupload.weibo.com";
         private readonly string _publicHost = "https://tva2.sinaimg.cn";
@@ -35,7 +30,7 @@ namespace KdyWeb.Service.KdyFile
             _kdyRequestClientCommon = kdyRequestClientCommon;
         }
 
-        public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(BaseKdyFileInput input)
+        public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(WeiBoFileInput input)
         {
             var url =
                 $"{_postHost}/interface/pic_upload.php?cb=https%3A%2F%2Fweibo.com%2Faj%2Fstatic%2Fupimgback.html%3F_wv%3D5%26callback%3DSTK_ijax_157495212677343&mime=image%2Fjpeg&data=base64&url=weibo.com%2Fu%2F2483430532&markpos=1&logo=1&nick=&marks=0&app=miniblog&s=rdxt&pri=null&file_source=1";

@@ -8,16 +8,21 @@
         /// <summary>
         /// 文件名
         /// </summary>
-        string FileName { get; set; }
+        string FileName { get; }
 
         /// <summary>
         /// 文件Url
         /// </summary>
-        string FileUrl { get; set; }
+        string FileUrl { get; }
 
         /// <summary>
         /// 文件byte
         /// </summary>
-        byte[] FileBytes { get; set; }
+        byte[] FileBytes { get; }
+
+        /// <summary>
+        /// 设置上传文件byte数据
+        /// </summary>
+        void SetFileBytes(byte[] fileBytes);
     }
 }
