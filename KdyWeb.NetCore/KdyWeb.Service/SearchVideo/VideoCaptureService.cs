@@ -198,6 +198,7 @@ namespace KdyWeb.Service.SearchVideo
             var img = await _kdyImgSaveService.PostFileByUrl(postUrlInput);
             if (img.IsSuccess == false)
             {
+                KdyLog.Warn($"上传图片失败,源图片Url:{resultOut.ImgUrl},返回：{img.ToJsonStr()}");
                 throw new KdyCustomException($"上传图片失败，详情Url:{input.DetailUrl} 源图片Url:{resultOut.ImgUrl}");
             }
 

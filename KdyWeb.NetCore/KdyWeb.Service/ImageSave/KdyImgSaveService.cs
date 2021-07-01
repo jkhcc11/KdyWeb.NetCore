@@ -164,6 +164,7 @@ namespace KdyWeb.Service.ImageSave
                 return KdyResult.Error<string>(KdyResultCode.Error, "文件后缀不能为空，仅支持.jpg,.png,.gif");
             }
 
+            ext = ext.ToLower();
             if (FileSignature.ContainsKey(ext) == false)
             {
                 return KdyResult.Error<string>(KdyResultCode.Error, "仅支持.jpg,.png,.gif");
