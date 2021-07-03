@@ -84,7 +84,8 @@ namespace KdyWeb.Service.HttpCapture
                 Cookie = input.Cookie,
                 ExtData = new KdyRequestCommonExtInput()
                 {
-                    PostData = input.PostData
+                    PostData = input.PostData,
+                    ContentType = input.ContentType
                 }
             };
             var reqResult = await _kdyRequestClientCommon.SendAsync(reqInput);

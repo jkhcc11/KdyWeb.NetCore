@@ -44,5 +44,10 @@ namespace KdyWeb.Dto.Job
         /// 成功标记
         /// </summary>
         public string SuccessFlag { get; set; }
+
+        /// <summary>
+        /// post请求类型
+        /// </summary>
+        public string ContentType { get; set; }
     }
 }

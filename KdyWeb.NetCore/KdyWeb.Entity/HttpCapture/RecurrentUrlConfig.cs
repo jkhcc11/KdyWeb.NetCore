@@ -16,6 +16,10 @@ namespace KdyWeb.Entity.HttpCapture
         /// 成功标识长度
         /// </summary>
         public const int SuccessFlagLength = 20;
+        /// <summary>
+        /// post请求类型长度
+        /// </summary>
+        public const int ContentTypeLength = 50;
 
         /// <summary>
         /// 请求Url
@@ -67,5 +71,11 @@ namespace KdyWeb.Entity.HttpCapture
         /// 配置状态
         /// </summary>
         public SearchConfigStatus SearchConfigStatus { get; set; }
+
+        /// <summary>
+        /// post请求类型
+        /// </summary>
+        [StringLength(ContentTypeLength)]
+        public string ContentType { get; set; }
     }
 }
