@@ -16,6 +16,7 @@ using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -71,11 +72,7 @@ namespace KdyWeb.Service.SearchVideo
                 douBanWebResult.Data.Pic = $"{imgResult.Data}";
             }
 
-            KdyLog.Trace($"豆瓣Id:{subjectId}图片上传返回:{imgResult.Msg}", new Dictionary<string, object>()
-            {
-                {"subjectId",subjectId},
-                {"ImgResult",imgResult}
-            });
+            KdyLog.LogInformation("豆瓣Id:{subjectId}.图片上传返回:{imgResult}", subjectId, imgResult);
 
             //保存数据库
             dbDouBanInfo = douBanWebResult.Data.MapToExt<DouBanInfo>();
@@ -222,7 +219,7 @@ namespace KdyWeb.Service.SearchVideo
                     break;
                 }
 
-                KdyLog.Warn($"影片采集遇到歧义名称，已跳过。第三方名称：{oldKey} 豆瓣名称：{douBanName}");
+                KdyLog.LogWarning($"影片采集遇到歧义名称，已跳过。第三方名称：{oldKey} 豆瓣名称：{douBanName}");
             }
 
             if (result.IsSuccess == false)

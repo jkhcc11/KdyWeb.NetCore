@@ -162,13 +162,12 @@ namespace KdyWeb.Job
                 endpoints.MapControllers();
             });
 
-
             app.InitDashboard();
 
             //È«¾ÖDIÈÝÆ÷
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
             KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
-            app.InitExceptionLess(Configuration);
+            // app.InitExceptionLess(Configuration);
 
             if (env.IsDevelopment())
             {

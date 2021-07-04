@@ -15,6 +15,8 @@ using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -80,11 +82,7 @@ namespace KdyWeb.Service.SearchVideo
             });
             if (pageResult.IsSuccess == false)
             {
-                KdyLog.Warn($"影片采集失败，{pageResult.Msg}", new Dictionary<string, object>()
-                {
-                    {"JobInput",input},
-                    {"PageResult",pageResult}
-                }, input.DetailUrl);
+                KdyLog.LogWarning("影片采集失败.Input:{input} Result:{pageResult}", JsonConvert.SerializeObject(input), pageResult);
 
                 return KdyResult.Error(pageResult.Code, $"获取详情失败,{pageResult.Msg}");
             }
@@ -171,11 +169,7 @@ namespace KdyWeb.Service.SearchVideo
             });
             if (pageResult.IsSuccess == false)
             {
-                KdyLog.Warn($"影片采集失败，{pageResult.Msg}", new Dictionary<string, object>()
-                {
-                    {"JobInput",input},
-                    {"PageResult",pageResult}
-                }, input.DetailUrl);
+                KdyLog.LogWarning("影片采集失败.Input:{input} Result:{pageResult}", JsonConvert.SerializeObject(input), pageResult);
 
                 return KdyResult.Error(pageResult.Code, $"获取详情失败,{pageResult.Msg}");
             }
@@ -198,7 +192,7 @@ namespace KdyWeb.Service.SearchVideo
             var img = await _kdyImgSaveService.PostFileByUrl(postUrlInput);
             if (img.IsSuccess == false)
             {
-                KdyLog.Warn($"上传图片失败,源图片Url:{resultOut.ImgUrl},返回：{img.ToJsonStr()}");
+                KdyLog.LogWarning("上传图片失败.Input:{resultOut},Result:{img}", JsonConvert.SerializeObject(resultOut), img);
                 throw new KdyCustomException($"上传图片失败，详情Url:{input.DetailUrl} 源图片Url:{resultOut.ImgUrl}");
             }
 

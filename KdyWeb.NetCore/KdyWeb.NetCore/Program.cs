@@ -21,7 +21,7 @@ namespace KdyWeb.NetCore
                      //环境变量
                      var env = hostingContext.HostingEnvironment;
                      hostingContext.Configuration = config.Build();
-                     string consulUrl = hostingContext.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
+                     var consulUrl = hostingContext.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
 
                      config.InitConfigCenter(hostingContext, consulUrl,
                          $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
@@ -29,7 +29,7 @@ namespace KdyWeb.NetCore
                  .ConfigureWebHostDefaults(webBuilder =>
                  {
                      webBuilder.UseStartup<Startup>();
-                 });
+                 }).ConfigureExceptionLessLogging();
         }
 
     }

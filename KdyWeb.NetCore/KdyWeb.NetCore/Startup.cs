@@ -73,7 +73,7 @@ namespace KdyWeb.NetCore
             //È«¾ÖDIÈÝÆ÷
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
             KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
-            app.InitExceptionLess(Configuration);
+            // app.InitExceptionLess(Configuration);
         }
     }
 }

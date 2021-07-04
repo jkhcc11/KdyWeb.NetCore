@@ -1,4 +1,6 @@
-﻿namespace KdyWeb.BaseInterface.BaseModel
+﻿using Newtonsoft.Json;
+
+namespace KdyWeb.BaseInterface.BaseModel
 {
     /// <summary>
     /// Service 统一返回
@@ -113,6 +115,15 @@
                 Msg = msg
             };
             return result;
+        }
+
+        /// <summary>
+        /// 重写ToString 方便Logging日志记录
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 

@@ -7,7 +7,6 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
-using KdyWeb.Entity;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
@@ -23,13 +22,11 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
-        private readonly IKdyRepository<KdyUser, long> _kdyUserRepository;
         public UserSubscribeService(IUnitOfWork unitOfWork, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
-            IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<KdyUser, long> kdyUserRepository) : base(unitOfWork)
+            IKdyRepository<VideoMain, long> videoMainRepository) : base(unitOfWork)
         {
             _userSubscribeRepository = userSubscribeRepository;
             _videoMainRepository = videoMainRepository;
-            _kdyUserRepository = kdyUserRepository;
         }
 
         /// <summary>

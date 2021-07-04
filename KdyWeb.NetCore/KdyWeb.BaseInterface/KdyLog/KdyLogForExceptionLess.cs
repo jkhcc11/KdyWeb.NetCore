@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 namespace KdyWeb.BaseInterface.KdyLog
 {
     /// <summary>
-    /// 通过ExceptionLess记录日志
+    /// 通过ExceptionLess记录日志  todo:remove
     /// </summary>
     public class KdyLogForExceptionLess : IKdyLog
     {

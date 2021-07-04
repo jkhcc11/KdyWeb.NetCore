@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Hangfire;
-using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto.Job;
-using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.OldMigration;
 using KdyWeb.Service.Job;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +12,6 @@ namespace KdyWeb.Job.Controllers
     /// </summary>
     public class OldMigrationController : OldBaseApiController
     {
-        private readonly IOldSysMainService _oldSysMainService;
-        private readonly IKdyLog _kdyLog;
-
-        public OldMigrationController(IOldSysMainService oldSysMainService, IKdyLog kdyLog)
-        {
-            _oldSysMainService = oldSysMainService;
-            _kdyLog = kdyLog;
-        }
-
         /// <summary>
         /// 影片
         /// </summary>

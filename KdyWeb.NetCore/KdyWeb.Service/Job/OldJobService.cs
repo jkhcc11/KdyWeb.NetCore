@@ -1,10 +1,7 @@
 ﻿using System;
-using Hangfire;
 using Kdy.StandardJob.JobInput;
 using Kdy.StandardJob.JobService;
 using KdyWeb.BaseInterface;
-using KdyWeb.BaseInterface.KdyLog;
-using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto.KdyImg;
 using KdyWeb.Dto.Message;
 using KdyWeb.Dto.SearchVideo;
@@ -13,6 +10,7 @@ using KdyWeb.IService.ImageSave;
 using KdyWeb.IService.Message;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.Job
 {
@@ -21,20 +19,20 @@ namespace KdyWeb.Service.Job
     /// </summary>
     public class OldJobService : IOldJobService
     {
-        private readonly IKdyLog _kdyLog;
+        private readonly ILogger<OldJobService> _logger;
         private readonly ISendEmailService _sendEmailService;
         private readonly IKdyImgSaveService _kdyImgSaveService;
         private readonly IDouBanInfoService _douBanInfoService;
         private readonly IFeedBackInfoService _feedBackInfoService;
 
 
-        public OldJobService(IKdyLog kdyLog, ISendEmailService sendEmailService, IKdyImgSaveService kdyImgSaveService, IDouBanInfoService douBanInfoService, IFeedBackInfoService feedBackInfoService)
+        public OldJobService(ISendEmailService sendEmailService, IKdyImgSaveService kdyImgSaveService, IDouBanInfoService douBanInfoService, IFeedBackInfoService feedBackInfoService, ILogger<OldJobService> logger)
         {
-            _kdyLog = kdyLog;
             _sendEmailService = sendEmailService;
             _kdyImgSaveService = kdyImgSaveService;
             _douBanInfoService = douBanInfoService;
             _feedBackInfoService = feedBackInfoService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -50,7 +48,7 @@ namespace KdyWeb.Service.Job
                 ImgUrl = input.ImgUrl
             };
             var result = KdyAsyncHelper.Run(() => _kdyImgSaveService.PostFileByUrl(postUrlInput));
-            _kdyLog.Debug($"图片上传返回{result.ToJsonStr()}");
+            _logger.LogDebug("图片上传返回:{result}", result.ToJsonStr());
             if (result.IsSuccess == false)
             {
                 return string.Empty;
@@ -66,7 +64,7 @@ namespace KdyWeb.Service.Job
         {
             var sendInput = new SendEmailInput(input.Email, input.Subject, input.Content);
             var result = KdyAsyncHelper.Run(() => _sendEmailService.SendEmailAsync(sendInput));
-            _kdyLog.Debug($"发送邮件返回{result.ToJsonStr()}");
+            _logger.LogDebug("发送邮件返回:{result}", result.ToJsonStr());
             if (result.IsSuccess == false)
             {
                 throw new Exception(result.Msg);
@@ -100,10 +98,10 @@ namespace KdyWeb.Service.Job
                 };
 
                 var createResult = KdyAsyncHelper.Run(() => _feedBackInfoService.CreateFeedBackInfoAsync(feedBackInfo));
-                _kdyLog.Info($"反馈录入返回:{createResult.ToJsonStr()}");
+                _logger.LogInformation("反馈录入返回:{createResult}", createResult.ToJsonStr());
             }
 
-            _kdyLog.Info($"豆瓣信息录入返回:{result.ToJsonStr()}");
+            _logger.LogInformation("豆瓣信息录入返回:{result}", result.ToJsonStr());
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace KdyWeb.BaseInterface.KdyLog
 {
     /// <summary>
-    /// 日志接口
+    /// 日志接口 todo:remove 基于core loggger
     /// </summary>
     public interface IKdyLog
     {

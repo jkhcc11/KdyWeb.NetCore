@@ -1,10 +1,13 @@
-﻿using KdyWeb.BaseInterface;
+﻿using Exceptionless;
+using Exceptionless.Logging;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Test
 {
@@ -20,27 +23,33 @@ namespace KdyWeb.Test
         /// </summary>
         protected readonly TService _service;
 
+        /// <summary>
+        /// 日志
+        /// </summary>
+        protected readonly ILogger _logger;
+
         protected BaseTest()
         {
             _host = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                //环境变量
-                var env = hostingContext.HostingEnvironment;
                     hostingContext.Configuration = config.Build();
-                    string consulUrl = hostingContext.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
+                    var consulUrl = hostingContext.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
 
                     config.InitConfigCenter(hostingContext, consulUrl,
                         $"KdyWeb.NetCore/appsettings.Test.json");
                 }).ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<TestStartup>();
-                }).Build();
+                })
+                .ConfigureExceptionLessLogging()
+                .Build();
             //全局DI容器
             KdyBaseServiceProvider.ServiceProvide = _host.Services;
             KdyBaseServiceProvider.HttpContextAccessor = _host.Services.GetService<IHttpContextAccessor>();
 
             _service = _host.Services.GetService<TService>();
+            _logger = _host.Services.GetService<ILoggerFactory>().CreateLogger(GetType());
         }
     }
 }

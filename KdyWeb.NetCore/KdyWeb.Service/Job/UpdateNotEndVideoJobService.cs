@@ -7,13 +7,13 @@ using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.HangFire;
-using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.Job
 {
@@ -28,7 +28,7 @@ namespace KdyWeb.Service.Job
         private readonly IPageSearchConfigService _pageSearchConfigService;
         private readonly IKdyRedisCache _kdyRedisCache;
 
-        public UpdateNotEndVideoJobService(IKdyLog kdyLog, IVideoEpisodeService videoEpisodeService, IPageSearchConfigService pageSearchConfigService, IKdyRedisCache kdyRedisCache) : base(kdyLog)
+        public UpdateNotEndVideoJobService(IVideoEpisodeService videoEpisodeService, IPageSearchConfigService pageSearchConfigService, IKdyRedisCache kdyRedisCache)
         {
             _videoEpisodeService = videoEpisodeService;
             _pageSearchConfigService = pageSearchConfigService;
@@ -69,22 +69,21 @@ namespace KdyWeb.Service.Job
             }));
             if (pageResult.IsSuccess == false)
             {
-                KdyLog.Warn($"主键:{input.MainId} 抓取更新失败，{pageResult.Msg}", new Dictionary<string, object>()
-                {
-                    {"JobInput",input},
-                    {"PageResult",pageResult}
-                }, input.MainId.ToString());
+                KdyLog.LogWarning("主键:{input.MainId} 抓取更新失败，{pageResult.Msg},Input:{input},Result:{result}", input.MainId, pageResult.Msg, input, pageResult);
 
                 throw new Exception(pageResult.Msg);
             }
 
             if (pageResult.Data.PageMd5 == input.VideoContentFeature)
             {
-                KdyLog.Warn($"主键:{input.MainId} 抓取特征码相同，不用更新", new Dictionary<string, object>()
-                {
-                    {"JobInput",input},
-                    {"PageResult",pageResult}
-                }, input.MainId.ToString());
+                KdyLog.LogWarning("主键:{input.MainId} 抓取特征码相同，不用更新.{pageResult.Msg},Input:{input},Result:{result}", input.MainId, pageResult.Msg, input, pageResult);
+
+
+                //KdyLog.Warn($"主键:{input.MainId} 抓取特征码相同，不用更新", new Dictionary<string, object>()
+                //{
+                //    {"JobInput",input},
+                //    {"PageResult",pageResult}
+                //}, input.MainId.ToString());
                 return;
             }
             #endregion
@@ -100,12 +99,14 @@ namespace KdyWeb.Service.Job
                 new UpdateNotEndVideoInput(input.MainId, pageResult.Data.PageMd5, pageResult.Data.IsEnd, ep);
             var inputResult = KdyAsyncHelper.Run(() => _videoEpisodeService.UpdateNotEndVideoAsync(updateInput));
 
-            KdyLog.Warn($"主键:{input.MainId} 抓取更新完成，{pageResult.Msg}", new Dictionary<string, object>()
-            {
-                {"JobInput",input},
-                {"InputResult",inputResult},
-                {"PageResult",pageResult}
-            }, input.MainId.ToString());
+            KdyLog.LogTrace("主键:{input.MainId} 抓取更新完成.{pageResult.Msg},JobInput:{input},InputResult:{inputResult},PageResult:{pageResult}", input.MainId, pageResult.Msg, input, inputResult, pageResult);
+
+            //KdyLog.Warn($"主键:{input.MainId} 抓取更新完成，{pageResult.Msg}", new Dictionary<string, object>()
+            //{
+            //    {"JobInput",input},
+            //    {"InputResult",inputResult},
+            //    {"PageResult",pageResult}
+            //}, input.MainId.ToString());
             #endregion
         }
 

@@ -9,6 +9,7 @@ using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.KdyFile
 {
@@ -57,14 +58,14 @@ namespace KdyWeb.Service.KdyFile
             if (httpResult.IsSuccess == false && httpResult.HttpCode != HttpStatusCode.Found)
             {
                 result.Msg = httpResult.ErrMsg;
-                KdyLog.Warn("微博上传失败");
+                KdyLog.LogWarning("微博上传失败.input:{input},result:{result}", input, result);
                 return result;
             }
 
             var newStr = httpResult.LocationUrl.TrimEnd(';') + ';';
             if (newStr.Contains("pid") == false)
             {
-                KdyLog.Warn("微博上传失败,获取Pid失败");
+                KdyLog.LogWarning("微博上传失败,获取Pid失败.input:{input},result:{result}", input, result);
                 return result;
             }
 

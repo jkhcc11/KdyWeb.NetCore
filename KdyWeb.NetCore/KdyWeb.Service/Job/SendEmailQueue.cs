@@ -2,10 +2,10 @@
 using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.HangFire;
-using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto.Message;
 using KdyWeb.IService.Message;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.Job
 {
@@ -16,7 +16,7 @@ namespace KdyWeb.Service.Job
     public class SendEmailQueue : BaseKdyJob<SendEmailInput>
     {
         private readonly ISendEmailService _sendEmailService;
-        public SendEmailQueue(IKdyLog kdyLog, ISendEmailService sendEmailService) : base(kdyLog)
+        public SendEmailQueue(ISendEmailService sendEmailService)
         {
             _sendEmailService = sendEmailService;
         }
@@ -24,7 +24,7 @@ namespace KdyWeb.Service.Job
         public override void Execute(SendEmailInput input)
         {
             var result = KdyAsyncHelper.Run(() => _sendEmailService.SendEmailAsync(input));
-            KdyLog.Debug($"发送邮件返回{result.ToJsonStr()}");
+            KdyLog.LogDebug("发送邮件返回{result}", result.ToJsonStr());
             if (result.IsSuccess == false)
             {
                 throw new Exception(result.Msg);

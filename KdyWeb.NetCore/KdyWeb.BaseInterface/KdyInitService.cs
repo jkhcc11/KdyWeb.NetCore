@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using KdyWeb.BaseInterface.InterfaceFlag;
-using KdyWeb.BaseInterface.KdyLog;
-using KdyWeb.BaseInterface.Repository;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace KdyWeb.BaseInterface
 {
@@ -20,7 +16,7 @@ namespace KdyWeb.BaseInterface
         /// <summary>
         /// 注入所有Service和Repository
         /// </summary>
-        public static void KdyRegister(this IServiceCollection services)
+        public static IServiceCollection KdyRegister(this IServiceCollection services)
         {
             //加载当前项目程序集
             var assemblies = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "KdyWeb.*.dll").Select(Assembly.LoadFrom).ToArray();
@@ -90,9 +86,11 @@ namespace KdyWeb.BaseInterface
             #endregion
 
             //为了后面获取HttpContext
-            services.AddHttpContextAccessor()
-                .AddSingleton<IKdyLog, KdyLogForExceptionLess>();
+            services.AddHttpContextAccessor();
+            return services;
 
+            ////old
+            //services.AddSingleton<IKdyLog, KdyLogForExceptionLess>();
         }
     }
 }

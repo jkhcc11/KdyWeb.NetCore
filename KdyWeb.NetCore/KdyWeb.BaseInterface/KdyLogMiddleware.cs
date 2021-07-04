@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Exceptionless;
-using Exceptionless.AspNetCore;
-using Exceptionless.Plugins;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.KdyLog;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface
@@ -42,10 +37,12 @@ namespace KdyWeb.BaseInterface
         private readonly RequestDelegate _next;
         private readonly Stopwatch _stopwatch;
         private readonly IHostingEnvironment _environment;
-        public KdyLogMiddleware(RequestDelegate next, IHostingEnvironment environment)
+        private readonly ILogger<KdyLogMiddleware> _logger;
+        public KdyLogMiddleware(RequestDelegate next, IHostingEnvironment environment, ILogger<KdyLogMiddleware> logger)
         {
             _next = next;
             _environment = environment;
+            _logger = logger;
             _stopwatch = new Stopwatch();
 
         }
@@ -59,12 +56,12 @@ namespace KdyWeb.BaseInterface
                 return;
             }
 
-            var kdyLog = (IKdyLog)context.RequestServices.GetService(typeof(IKdyLog));
-            if (kdyLog == null)
-            {
-                await _next(context);
-                return;
-            }
+            //var kdyLog = (IKdyLog)context.RequestServices.GetService(typeof(IKdyLog));
+            //if (kdyLog == null)
+            //{
+            //    await _next(context);
+            //    return;
+            //}
 
             if (request.Path.Value.Contains("/api/") == false)
             {
@@ -129,24 +126,18 @@ namespace KdyWeb.BaseInterface
                 _stopwatch.Stop();
                 data.TryAdd("time", _stopwatch.ElapsedMilliseconds + "ms");
                 //记录日志
-                kdyLog.Info($"用户请求{request.Path.Value}结束,时间：{_stopwatch.ElapsedMilliseconds}ms", data.ToDictionary(a => a.Key, a => a.Value));
+                _logger.LogTrace("用户请求{url}结束.时间：{time}ms,扩展:{exData}", request.Path.Value, _stopwatch.ElapsedMilliseconds, JsonConvert.SerializeObject(data));
 
             }
             catch (Exception ex)
             {
-                ex.ToExceptionless().Submit();
-
                 var errResult = KdyResult.Error(KdyResultCode.SystemError, "系统错误，请稍后再试");
                 if (_environment.IsDevelopment())
                 {
                     errResult.Msg = ex.Message;
                 }
 
-                kdyLog.Error(ex, new Dictionary<string, object>()
-                {
-                    {"SystemErr","系统错误"},
-                    {"SystemErrInfo",ex.Message},
-                });
+                _logger.LogError(ex, "系统异常：{ex.Message}", ex.Message);
                 var str = JsonConvert.SerializeObject(errResult);
                 var bytes = Encoding.UTF8.GetBytes(str);
                 var newStream = new MemoryStream(bytes);

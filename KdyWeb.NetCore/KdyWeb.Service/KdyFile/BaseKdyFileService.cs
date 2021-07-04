@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.KdyFile;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.KdyFile
 {
@@ -25,7 +25,7 @@ namespace KdyWeb.Service.KdyFile
         /// <summary>
         /// 统一日志
         /// </summary>
-        protected readonly IKdyLog KdyLog;
+        protected readonly ILogger KdyLog;
         /// <summary>
         /// 统一配置
         /// </summary>
@@ -36,7 +36,7 @@ namespace KdyWeb.Service.KdyFile
         protected BaseKdyFileService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
-            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
+            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetService<ILoggerFactory>().CreateLogger(GetType());
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
         }
 

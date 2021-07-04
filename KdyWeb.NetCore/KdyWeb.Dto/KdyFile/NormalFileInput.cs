@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Exceptionless.Json;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.KdyFile
 {
@@ -47,7 +48,7 @@ namespace KdyWeb.Dto.KdyFile
         /// <summary>
         /// 网页编码 默认UTF8
         /// </summary>
-        [ExceptionlessIgnore]
+        [JsonIgnore]
         public Encoding Charset { get; set; } = Encoding.UTF8;
 
         /// <summary>
