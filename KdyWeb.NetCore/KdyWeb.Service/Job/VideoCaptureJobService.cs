@@ -4,10 +4,11 @@ using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.HangFire;
-using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto.Job;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
+using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.Job
 {
@@ -19,7 +20,7 @@ namespace KdyWeb.Service.Job
     public class VideoCaptureJobService : BaseKdyJob<VideoCaptureJobInput>
     {
         private readonly IVideoCaptureService _videoCaptureService;
-        public VideoCaptureJobService(IKdyLog kdyLog, IVideoCaptureService videoCaptureService) : base(kdyLog)
+        public VideoCaptureJobService(IVideoCaptureService videoCaptureService)
         {
             _videoCaptureService = videoCaptureService;
         }
@@ -49,11 +50,7 @@ namespace KdyWeb.Service.Job
                     }
             }
 
-            KdyLog.Trace($"影片采集 {result.IsSuccess},详情：{input.DetailUrl}", new Dictionary<string, object>()
-            {
-                {"Input",input},
-                {"Result",result}
-            });
+            KdyLog.LogInformation("影片采集返回：{result},入参：{input}", result.ToJsonStr(), input.ToJsonStr());
         }
     }
 }

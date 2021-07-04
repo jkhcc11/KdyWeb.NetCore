@@ -6,10 +6,11 @@ using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
 using KdyWeb.Entity;
+using KdyWeb.IService;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
-namespace KdyWeb.IService
+namespace KdyWeb.Service
 {
     /// <summary>
     /// 用户 服务实现

@@ -1,4 +1,4 @@
-﻿using Exceptionless.Json;
+﻿using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.KdyFile
 {
@@ -11,7 +11,7 @@ namespace KdyWeb.Dto.KdyFile
 
         public string FileUrl { get; private set; }
 
-        [ExceptionlessIgnore]
+        [JsonIgnore]
         public byte[] FileBytes { get; private set; }
 
         /// <summary>
@@ -38,6 +38,15 @@ namespace KdyWeb.Dto.KdyFile
             FileBytes = fileBytes;
             //二选一模式 有byte后文件url为空
             FileUrl = string.Empty;
+        }
+
+        /// <summary>
+        /// 重写ToString 方便Logging日志记录
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

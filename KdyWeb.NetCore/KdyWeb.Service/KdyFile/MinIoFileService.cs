@@ -9,6 +9,7 @@ using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.Utility;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.Exceptions;
 
@@ -28,11 +29,6 @@ namespace KdyWeb.Service.KdyFile
 
         public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(MinIoFileInput input)
         {
-            KdyLog.Trace("MinIo上传开始", new Dictionary<string, object>()
-            {
-                {"MinIoInput",input}
-            });
-
             if (input.FileName.StartsWith("/") == false)
             {
                 //没有带路径默认传到公用
@@ -70,10 +66,7 @@ namespace KdyWeb.Service.KdyFile
                     .Submit();
             }
 
-            KdyLog.Trace("MinIo上传结束", new Dictionary<string, object>()
-            {
-                {"MinIoResult",result}
-            });
+            KdyLog.LogTrace("MinIo上传结束.入参：{input} 结果：{result}", input, result);
             return result;
         }
 

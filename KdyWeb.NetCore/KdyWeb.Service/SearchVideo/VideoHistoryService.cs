@@ -6,7 +6,6 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
-using KdyWeb.Entity;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;

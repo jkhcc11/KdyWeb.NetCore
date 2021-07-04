@@ -8,6 +8,7 @@ using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -47,10 +48,7 @@ namespace KdyWeb.Service.KdyFile
                 httpResult.HttpCode == HttpStatusCode.BadRequest)
             {
                 result.Msg = httpResult.ErrMsg;
-                KdyLog.Warn("普通文件上传失败", new Dictionary<string, object>()
-                {
-                    {"PostInputPar",input }
-                }, $"{this}");
+                KdyLog.LogWarning("普通文件上传失败.Input:{input}", input);
                 return result;
             }
 

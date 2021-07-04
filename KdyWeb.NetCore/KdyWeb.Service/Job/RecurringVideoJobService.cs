@@ -8,12 +8,12 @@ using HtmlAgilityPack;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.HangFire;
-using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.Job;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.Job
 {
@@ -27,7 +27,7 @@ namespace KdyWeb.Service.Job
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
         private readonly IKdyRedisCache _kdyRedisCache;
 
-        public RecurringVideoJobService(IKdyLog kdyLog, IKdyRequestClientCommon kdyRequestClientCommon, IKdyRedisCache kdyRedisCache) : base(kdyLog)
+        public RecurringVideoJobService(IKdyRequestClientCommon kdyRequestClientCommon, IKdyRedisCache kdyRedisCache)
         {
             _kdyRequestClientCommon = kdyRequestClientCommon;
             _kdyRedisCache = kdyRedisCache;
@@ -46,10 +46,7 @@ namespace KdyWeb.Service.Job
             var hnc = detailResult.Data.GetNodeCollection(input.CaptureDetailXpath);
             if (hnc == null || hnc.Count <= 0)
             {
-                KdyLog.Warn($"影片定时录入失败，未解析到结果,{input.OriginUrl}", new Dictionary<string, object>()
-                {
-                    {"Input",input}
-                });
+                KdyLog.LogWarning("影片定时录入失败，未解析到结果,{input.OriginUrl},Input:{input}", input.OriginUrl, input.ToJsonStr());
                 return;
             }
 
@@ -66,10 +63,7 @@ namespace KdyWeb.Service.Job
             if (string.IsNullOrEmpty(cacheV) == false &&
                 cacheV == firstUrl)
             {
-                KdyLog.Warn($"影片定时录入失败，未发现更新剧集,{input.OriginUrl}", new Dictionary<string, object>()
-                {
-                    {"Input",input}
-                });
+                KdyLog.LogWarning("影片定时录入失败，未发现更新剧集,{input.OriginUrl},Input:{input}", input.OriginUrl, input.ToJsonStr());
                 return;
             }
 

@@ -37,7 +37,7 @@ namespace KdyWeb.Dto.KdyHttp
 
         public HttpMethod Method { get; set; }
 
-        [ExceptionlessIgnore]
+        [JsonIgnore]
         public Encoding EnCoding { get; set; }
 
         public bool IsAutoRedirect { get; set; }
@@ -84,7 +84,7 @@ namespace KdyWeb.Dto.KdyHttp
         /// <summary>
         /// Post文件数据
         /// </summary>
-        [ExceptionlessIgnore]
+        [JsonIgnore]
         public byte[] FileBytes { get; set; }
 
         /// <summary>
