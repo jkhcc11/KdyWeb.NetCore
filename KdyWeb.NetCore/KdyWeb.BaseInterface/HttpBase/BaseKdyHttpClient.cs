@@ -170,20 +170,22 @@ namespace KdyWeb.BaseInterface.HttpBase
             {
                 result.IsSuccess = false;
                 result.ErrMsg = $"Http网站异常：{ex.Message}";
-                ex.ToExceptionless().Submit();
+                //ex.ToExceptionless().Submit();
+                KdyLog.LogError(ex, "Http网站异常.信息:{msg}", ex.Message);
                 return result;
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
                 result.ErrMsg = $"Http程序异常：{ex.Message}";
-                ex.ToExceptionless().Submit();
+                // ex.ToExceptionless().Submit();
+                KdyLog.LogError(ex, "Http程序异常.信息:{msg}", ex.Message);
                 return result;
             }
             finally
             {
                 watch.Stop();
-                KdyLog.LogTrace("Http请求结束,耗时：{watch.ElapsedMilliseconds}ms.Input:{input},返回：{result}", watch.ElapsedMilliseconds, JsonConvert.SerializeObject(input), JsonConvert.SerializeObject(result));
+                KdyLog.LogTrace("Http请求结束.耗时:{time}ms\r\n入参:{input}\r\n返回:{result}", watch.ElapsedMilliseconds, JsonConvert.SerializeObject(input), JsonConvert.SerializeObject(result));
                 //KdyLog.Info($"Http请求结束,Url:{input.Url},耗时：{watch.ElapsedMilliseconds}ms", new Dictionary<string, object>()
                 //{
                 //    {"HttpResult",result},
