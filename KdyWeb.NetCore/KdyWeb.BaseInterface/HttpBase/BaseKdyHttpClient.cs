@@ -183,7 +183,7 @@ namespace KdyWeb.BaseInterface.HttpBase
             finally
             {
                 watch.Stop();
-                KdyLog.LogTrace("Http请求结束,耗时：{watch.ElapsedMilliseconds}ms.Input:{input},返回：{result}", JsonConvert.SerializeObject(input), JsonConvert.SerializeObject(result));
+                KdyLog.LogTrace("Http请求结束,耗时：{watch.ElapsedMilliseconds}ms.Input:{input},返回：{result}", watch.ElapsedMilliseconds, JsonConvert.SerializeObject(input), JsonConvert.SerializeObject(result));
                 //KdyLog.Info($"Http请求结束,Url:{input.Url},耗时：{watch.ElapsedMilliseconds}ms", new Dictionary<string, object>()
                 //{
                 //    {"HttpResult",result},
