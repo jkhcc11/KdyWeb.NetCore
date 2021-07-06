@@ -331,17 +331,11 @@ namespace KdyWeb.Service.SearchVideo
 
             input.MapToPartExt(main);
 
-            var downEpGroupId = main.EpisodeGroup
-                .Where(a => a.GroupName == "默认下载")
-                .Select(a => a.Id)
-                .FirstOrDefault();
+            var downEpGroup = main.EpisodeGroup
+                // .Select(a => a.Id)
+                .FirstOrDefault(a => a.EpisodeGroupType == EpisodeGroupType.VideoDown);
             if (string.IsNullOrEmpty(input.DownUrl) == false)
             {
-                if (downEpGroupId > 0)
-                {
-                    await _videoEpisodeRepository.Delete(a => a.EpisodeGroupId == downEpGroupId);
-                }
-
                 #region 下载处理
                 //格式
                 //名称$下载地址
@@ -358,17 +352,32 @@ namespace KdyWeb.Service.SearchVideo
 
                     var nameArray = tempItem.Split('$');
 
-                    downEp.Add(new VideoEpisode(nameArray[0], nameArray[1]));
+                    //剧集
+                    var tempEpisode = new VideoEpisode(nameArray[0], nameArray[1]);
+                    if (downEpGroup != null)
+                    {
+                        tempEpisode.SetEpisodeGroupId(downEpGroup.Id);
+                    }
+
+                    downEp.Add(tempEpisode);
                 }
 
-                var downGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoDown, "默认下载")
+                if (downEpGroup != null)
                 {
-                    Episodes = downEp,
-                    MainId = input.Id
-                };
-
-                await _videoEpisodeGroupRepository.CreateAsync(downGroup);
-                // main.EpisodeGroup.Add(downGroup);
+                    //删除旧的剧集 新增新的
+                    await _videoEpisodeRepository.Delete(a => a.EpisodeGroupId == downEpGroup.Id);
+                    await _videoEpisodeRepository.CreateAsync(downEp);
+                }
+                else
+                {
+                    //创建新的组
+                    var downGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoDown, "默认下载")
+                    {
+                        Episodes = downEp,
+                        MainId = input.Id
+                    };
+                    await _videoEpisodeGroupRepository.CreateAsync(downGroup);
+                }
 
                 #endregion
             }

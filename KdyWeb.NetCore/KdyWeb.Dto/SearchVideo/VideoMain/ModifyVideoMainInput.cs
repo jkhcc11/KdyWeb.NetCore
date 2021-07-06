@@ -133,6 +133,15 @@ namespace KdyWeb.Dto.SearchVideo
         /// 年份
         /// </summary>
         public int VideoYear { get; set; }
+
+        /// <summary>
+        /// 影片信息Url
+        /// </summary>
+        /// <remarks>
+        /// 豆瓣Url或其他影片介绍地址
+        /// </remarks>
+        [StringLength(VideoMain.UrlLength)]
+        public string VideoInfoUrl { get; set; }
     }
 
     public class ModifyVideoMainInputProfile : Profile

@@ -66,5 +66,12 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         public virtual VideoEpisodeGroup VideoEpisodeGroup { get; set; }
 
+        /// <summary>
+        /// 设置剧集组Id
+        /// </summary>
+        public void SetEpisodeGroupId(long episodeGroupId)
+        {
+            EpisodeGroupId = episodeGroupId;
+        }
     }
 }
