@@ -112,9 +112,6 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var result = main.MapToExt<GetVideoDetailDto>();
-
-
-
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
             VideoDetailHandler(result);
 
@@ -123,7 +120,8 @@ namespace KdyWeb.Service.SearchVideo
                 //登录用户就获取最新历史记录
                 var dbNewHistory = await _userHistoryRepository.GetAsNoTracking()
                     .Where(a => a.KeyId == keyId && a.CreatedUserId == LoginUserInfo.UserId)
-                    .OrderByDescending(a => a.CreatedTime)
+                    .OrderByDescending(a => a.ModifyTime)
+                    .ThenByDescending(a => a.CreatedTime)
                     .FirstOrDefaultAsync();
                 result.NewUserHistory = dbNewHistory?.MapToExt<QueryUserHistoryDto>();
 

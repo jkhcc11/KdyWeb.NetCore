@@ -70,5 +70,13 @@ namespace KdyWeb.Entity.SearchVideo
         public string UserName { get; set; }
 
         #endregion
+
+        /// <summary>
+        /// 设置最新剧集名
+        /// </summary>
+        public void SetNewEpName(string epName)
+        {
+            EpName = epName;
+        }
     }
 }

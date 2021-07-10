@@ -40,7 +40,7 @@ namespace KdyWeb.Service.SearchVideo
             //剧集信息
             var dbEpInfo = await _videoEpisodeRepository.GetQuery()
                 .Include(a => a.VideoEpisodeGroup)
-                .ThenInclude(a=>a.VideoMain)
+                .ThenInclude(a => a.VideoMain)
                 .FirstOrDefaultAsync(a => a.Id == input.EpId);
             if (dbEpInfo == null)
             {
@@ -53,15 +53,18 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "用户信息错误");
             }
 
-            //历史表
+            //历史表 存在时更新时间 要不然重复观看有问题
             var dbHistory = new UserHistory(dbEpInfo.VideoEpisodeGroup.MainId, input.EpId);
-            var exit = await _userHistoryRepository.GetAsNoTracking()
-                .AnyAsync(a => a.IsDelete == false &&
+            var exitUserHistory = await _userHistoryRepository
+                .FirstOrDefaultAsync(a => a.IsDelete == false &&
                                a.EpId == input.EpId &&
                                a.CreatedUserId == input.UserId);
-            if (exit)
+            if (exitUserHistory != null)
             {
-                return KdyResult.Error(KdyResultCode.Error, "已存在");
+                exitUserHistory.SetNewEpName(dbEpInfo.EpisodeName);
+                _userHistoryRepository.Update(exitUserHistory);
+                await UnitOfWork.SaveChangesAsync();
+                return KdyResult.Success("更新成功");
             }
 
             CreateUserHistoryHandler(dbHistory, input);
@@ -87,6 +90,11 @@ namespace KdyWeb.Service.SearchVideo
             {
                 input.OrderBy = new List<KdyEfOrderConditions>()
                 {
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(UserHistory.ModifyTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    },
                     new KdyEfOrderConditions()
                     {
                         Key = nameof(UserHistory.CreatedTime),
