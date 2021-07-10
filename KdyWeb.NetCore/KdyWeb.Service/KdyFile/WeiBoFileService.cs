@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.KdyFile;
@@ -24,13 +25,11 @@ namespace KdyWeb.Service.KdyFile
         private readonly string _postHost = "https://picupload.weibo.com";
         private readonly string _publicHost = "https://tva2.sinaimg.cn";
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
-        private readonly IDistributedCache _distributedCache;
-
-        public WeiBoFileService(IHttpClientFactory httpClientFactory, IKdyRequestClientCommon kdyRequestClientCommon,
-            IDistributedCache distributedCache) : base(httpClientFactory)
+        private readonly IKdyRedisCache _kdyRedisCache;
+        public WeiBoFileService(IHttpClientFactory httpClientFactory, IKdyRequestClientCommon kdyRequestClientCommon, IKdyRedisCache kdyRedisCache) : base(httpClientFactory)
         {
             _kdyRequestClientCommon = kdyRequestClientCommon;
-            _distributedCache = distributedCache;
+            _kdyRedisCache = kdyRedisCache;
         }
 
         public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(WeiBoFileInput input)
@@ -84,7 +83,8 @@ namespace KdyWeb.Service.KdyFile
 
         public async Task<string> GetLoginCookie()
         {
-            var cacheVal = await _distributedCache.GetStringAsync(KdyServiceCacheKey.WeiBoCookieKey);
+            //todo:缓存待修改 需要放在get里面直接设置
+            var cacheVal = await _kdyRedisCache.GetCache().GetStringAsync(KdyServiceCacheKey.WeiBoCookieKey);
             if (cacheVal.IsEmptyExt() == false)
             {
                 return cacheVal;
@@ -125,7 +125,7 @@ namespace KdyWeb.Service.KdyFile
 
             var jObject = JObject.Parse(httpResult.Data);
             cacheVal = jObject.GetValueExt("data");
-            await _distributedCache.SetStringAsync(KdyServiceCacheKey.WeiBoCookieKey, cacheVal, new DistributedCacheEntryOptions()
+            await _kdyRedisCache.GetCache().SetStringAsync(KdyServiceCacheKey.WeiBoCookieKey, cacheVal, new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2)
             });
