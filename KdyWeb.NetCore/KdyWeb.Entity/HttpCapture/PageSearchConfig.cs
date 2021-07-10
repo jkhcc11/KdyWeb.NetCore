@@ -33,7 +33,7 @@ namespace KdyWeb.Entity.HttpCapture
         /// <summary>
         /// Post数据长度
         /// </summary>
-        public const int SearchDataLength = 100;
+        public const int SearchDataLength = 2000;
         /// <summary>
         /// 通用Xpath长度
         /// </summary>

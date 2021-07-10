@@ -72,6 +72,11 @@
         public const string NgProxyKey = "NgProxy";
 
         /// <summary>
+        /// 内部http请求标识
+        /// </summary>
+        public const string DefaultUserAgent = "kdy/custom_client 1.0";
+
+        /// <summary>
         /// 解析配置节点
         /// </summary>
         public class KdyWebParseConfig
@@ -116,17 +121,37 @@
             /// <summary>
             /// 腾讯文档globalPadId
             /// </summary>
-            public const string UploadConfigTxDocId= "UploadConfig:tx_id";
+            public const string UploadConfigTxDocId = "UploadConfig:tx_id";
 
             /// <summary>
             /// 腾讯文档cookie
             /// </summary>
-            public const string UploadConfigTxDocCookie= "UploadConfig:tx_cookie";
+            public const string UploadConfigTxDocCookie = "UploadConfig:tx_cookie";
 
             /// <summary>
             /// 微博cookie
             /// </summary>
             public const string WeiBoCookie = "UploadConfig:wb_cookie";
+
+            /// <summary>
+            /// 保持cookie微博api地址
+            /// </summary>
+            public const string WeiBoCookieApi = "UploadConfig:wb_api_host";
+
+            /// <summary>
+            /// 微博api地址_loginUrl
+            /// </summary>
+            public const string WeiBoCookieApiLoginUrl = "UploadConfig:wb_api_loginUrl";
+
+            /// <summary>
+            /// 微博api地址_cookieKey
+            /// </summary>
+            public const string WeiBoCookieApiCookieKey = "UploadConfig:wb_api_cookieKey";
+
+            /// <summary>
+            /// 微博api地址_successFlag
+            /// </summary>
+            public const string WeiBoCookieApiSuccessFlag = "UploadConfig:wb_api_successFlag";
 
             /// <summary>
             /// 图片上传大小限制（MB）

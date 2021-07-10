@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Exceptionless;
@@ -8,8 +9,10 @@ using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace KdyWeb.Service.KdyFile
 {
@@ -20,15 +23,14 @@ namespace KdyWeb.Service.KdyFile
     {
         private readonly string _postHost = "https://picupload.weibo.com";
         private readonly string _publicHost = "https://tva2.sinaimg.cn";
-        //  private readonly IConfiguration _configuration;
-        //  private readonly IKdyRedisCache _kdyRedisCache;
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
+        private readonly IDistributedCache _distributedCache;
 
-        public WeiBoFileService(IHttpClientFactory httpClientFactory, IKdyRequestClientCommon kdyRequestClientCommon) : base(httpClientFactory)
+        public WeiBoFileService(IHttpClientFactory httpClientFactory, IKdyRequestClientCommon kdyRequestClientCommon,
+            IDistributedCache distributedCache) : base(httpClientFactory)
         {
-            // _configuration = configuration;
-            // _kdyRedisCache = kdyRedisCache;
             _kdyRequestClientCommon = kdyRequestClientCommon;
+            _distributedCache = distributedCache;
         }
 
         public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(WeiBoFileInput input)
@@ -82,61 +84,52 @@ namespace KdyWeb.Service.KdyFile
 
         public async Task<string> GetLoginCookie()
         {
-            var wbCookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.WeiBoCookie);
-            if (string.IsNullOrEmpty(wbCookie))
+            var cacheVal = await _distributedCache.GetStringAsync(KdyServiceCacheKey.WeiBoCookieKey);
+            if (cacheVal.IsEmptyExt() == false)
+            {
+                return cacheVal;
+            }
+
+            var getCookieApi = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.WeiBoCookieApi);
+            if (string.IsNullOrEmpty(getCookieApi))
             {
                 return string.Empty;
             }
 
-            await Task.Delay(10);
-            return wbCookie;
+            string loginUrl = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.WeiBoCookieApiLoginUrl, "https://weibo.com/login.php?url=https%3A%2F%2Fweibo.com%2Fat%2Fweibo"),
+                cookieKey = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.WeiBoCookieApiCookieKey, "SUB"),
+                successFlag = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.WeiBoCookieApiSuccessFlag, "https://weibo.com/at/weibo");
 
-            #region old
-            //string cacheVal = await _kdyRedisCache.GetCache().GetStringAsync(KdyServiceCacheKey.WeiBoCookieKey);
-            //if (cacheVal.IsEmptyExt() == false)
-            //{
-            //    return cacheVal;
-            //}
+            var url = $"{getCookieApi}/api/Login/weiBo";
+            var pd = new
+            {
+                loginUrl,
+                cookieKey,
+                successFlag
+            };
+            var httpInput = new KdyRequestCommonInput(url, HttpMethod.Post)
+            {
+                Referer = getCookieApi,
+                UserAgent = KdyWebServiceConst.DefaultUserAgent,
+                ExtData = new KdyRequestCommonExtInput()
+                {
+                    PostData = pd.ToJsonStr()
+                }
+            };
+            var httpResult = await _kdyRequestClientCommon.SendAsync(httpInput);
+            if (httpResult.IsSuccess == false)
+            {
+                KdyLog.LogWarning("微博获取Cookie失败,返回:{0}",httpResult);
+                return string.Empty;
+            }
 
-            //var config = _configuration
-            //    .GetSection(KdyWebServiceConst.WeiBoConfigKey)
-            //    .Get<WeiBoConfig>();
-
-            //var url = $"https://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.15)&_={StringExt.GetUnixExt()}";
-            //var httpInput = new KdyRequestCommonInput(url, HttpMethod.Post)
-            //{
-            //    Referer = "https://sina.com.cn",
-            //    UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36 Edg/85.0.564.44",
-            //    ExtData = new KdyRequestCommonExtInput()
-            //    {
-            //        PostData = $"entry=sso&gateway=1&from=null&savestate=30&useticket=0&pagerefer=&vsnf=1&su={config.UserName.ToBase64Ext(Encoding.UTF8)}&service=sso&sp={config.UserPwd}&sr=1536*864&encoding=UTF-8&cdult=3&domain=sina.com.cn&prelt=0&returntype=TEXT"
-            //    }
-            //};
-            //var httpResult = await _kdyRequestClientCommon.SendAsync(httpInput);
-            //if (httpResult.IsSuccess == false)
-            //{
-            //    KdyLog.Warn("微博登录失败");
-            //    return string.Empty;
-            //}
-
-            //if (httpResult.Data.Contains("nick") == false)
-            //{
-            //    return string.Empty;
-            //}
-
-            //if (httpResult.CookieDic.ContainsKey("SUB"))
-            //{
-            //    cacheVal = $"SUB={httpResult.CookieDic["SUB"]}";
-            //}
-
-            //KdyLog.Info("微博登录成功");
-            //await _kdyRedisCache.GetCache().SetStringAsync(KdyServiceCacheKey.WeiBoCookieKey, cacheVal, new DistributedCacheEntryOptions()
-            //{
-            //    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(20)
-            //});
-            //return cacheVal; 
-            #endregion
-
+            var jObject = JObject.Parse(httpResult.Data);
+            cacheVal = jObject.GetValueExt("data");
+            await _distributedCache.SetStringAsync(KdyServiceCacheKey.WeiBoCookieKey, cacheVal, new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2)
+            });
+            return cacheVal;
         }
     }
 }
