@@ -16,6 +16,7 @@ using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace KdyWeb.Service.HttpCapture
 {
@@ -100,7 +101,18 @@ namespace KdyWeb.Service.HttpCapture
                 return KdyResult.Error(KdyResultCode.Error, "循环Url请求失败，未知关键字");
             }
 
-            var info = reqResult.Data.GetHtmlNodeByXpath(input.MsgXpath)?.InnerText;
+            string info;
+            if (input.MsgXpath.StartsWith("//") == false)
+            {
+                //非xpath
+                var jObject = JObject.Parse(reqResult.Data);
+                info = jObject.GetValueExt("data");
+            }
+            else
+            {
+                 info = reqResult.Data.GetHtmlNodeByXpath(input.MsgXpath)?.InnerText;
+            }
+
             if (string.IsNullOrEmpty(info) ||
                 info.Contains(input.SuccessFlag) == false)
             {
