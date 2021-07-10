@@ -64,6 +64,10 @@ namespace KdyWeb.Dto.KdyHttp
         /// <summary>
         /// 请求内容类型 默认 application/x-www-form-urlencoded
         /// </summary>
+        /// <remarks>
+        ///  标准格式：application/x-www-form-urlencoded <br/>
+        /// application/json
+        /// </remarks>
         public string ContentType { get; set; } = "application/x-www-form-urlencoded";
 
         /// <summary>

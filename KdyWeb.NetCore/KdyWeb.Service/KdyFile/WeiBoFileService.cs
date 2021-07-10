@@ -113,13 +113,15 @@ namespace KdyWeb.Service.KdyFile
                 UserAgent = KdyWebServiceConst.DefaultUserAgent,
                 ExtData = new KdyRequestCommonExtInput()
                 {
-                    PostData = pd.ToJsonStr()
-                }
+                    PostData = pd.ToJsonStr(),
+                    ContentType = "application/json"
+                },
+                TimeOut = 50
             };
             var httpResult = await _kdyRequestClientCommon.SendAsync(httpInput);
             if (httpResult.IsSuccess == false)
             {
-                KdyLog.LogWarning("微博获取Cookie失败,返回:{0}",httpResult);
+                KdyLog.LogWarning("微博获取Cookie失败,返回:{0}", httpResult.ToJsonStr());
                 return string.Empty;
             }
 
