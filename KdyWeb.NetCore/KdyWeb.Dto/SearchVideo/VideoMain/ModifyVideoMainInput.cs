@@ -128,6 +128,20 @@ namespace KdyWeb.Dto.SearchVideo
         /// 下载地址 多个换行
         /// </summary>
         public string DownUrl { get; set; }
+
+        /// <summary>
+        /// 年份
+        /// </summary>
+        public int VideoYear { get; set; }
+
+        /// <summary>
+        /// 影片信息Url
+        /// </summary>
+        /// <remarks>
+        /// 豆瓣Url或其他影片介绍地址
+        /// </remarks>
+        [StringLength(VideoMain.UrlLength)]
+        public string VideoInfoUrl { get; set; }
     }
 
     public class ModifyVideoMainInputProfile : Profile
@@ -161,6 +175,11 @@ namespace KdyWeb.Dto.SearchVideo
                     opt.PreCondition(a => string.IsNullOrEmpty(a.VideoImg) == false);
                     opt.MapFrom(c => c.VideoImg);
                 })
+                  .ForMember(a => a.VideoYear, opt =>
+                  {
+                      opt.PreCondition(a => a.VideoYear > 1000);
+                      opt.MapFrom(c => c.VideoYear);
+                  })
                 .ForPath(a => a.VideoMainInfo.VideoGenres, opt =>
                 {
                     opt.Condition(a => string.IsNullOrEmpty(a.Source.VideoGenres) == false);
@@ -186,6 +205,11 @@ namespace KdyWeb.Dto.SearchVideo
                     opt.Condition(a => string.IsNullOrEmpty(a.Source.NarrateUrl) == false);
                     opt.MapFrom(c => c.NarrateUrl);
                 })
+                .ForPath(a => a.VideoMainInfo.VideoSummary, opt =>
+                  {
+                      opt.Condition(a => string.IsNullOrEmpty(a.Source.VideoSummary) == false);
+                      opt.MapFrom(c => c.VideoSummary);
+                  })
                 .ForPath(a => a.VideoMainInfo.BanVideoJumpUrl, opt =>
                 {
                     opt.Condition(a => string.IsNullOrEmpty(a.Source.BanVideoJumpUrl) == false);

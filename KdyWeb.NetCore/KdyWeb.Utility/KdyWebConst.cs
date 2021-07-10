@@ -42,6 +42,11 @@
         public const string ImgHostKey = "SelfImgHost";
 
         /// <summary>
+        /// 图床由于http异常上传失败时默认图床Id
+        /// </summary>
+        public const string UploadImgErrDefaultId = "UploadImgErrDefaultId";
+
+        /// <summary>
         /// 图床默认图片
         /// </summary>
         public const string DefaultImgUrl = "/kdyimg/public/old/8d78d765c1bce92.jpg";
@@ -60,6 +65,11 @@
         /// 云网盘解析域名
         /// </summary>
         public const string CloudDiskParseHost = "CloudDiskParseHost";
+
+        /// <summary>
+        /// nginx反代域名 用于解决403问题
+        /// </summary>
+        public const string NgProxyKey = "NgProxy";
 
         /// <summary>
         /// 解析配置节点
@@ -144,6 +154,12 @@
         /// 视频缓存Key
         /// </summary>
         public const string VideoMainKey = "VideoMainKey";
+
+        /// <summary>
+        /// 未完结更新缓存Key
+        /// </summary>
+
+        public const string NotEndKey = "NotEndKey";
     }
 
 }

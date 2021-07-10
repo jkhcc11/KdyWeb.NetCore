@@ -6,7 +6,6 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
-using KdyWeb.Entity;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
@@ -73,6 +72,12 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var query = _videoHistoryRepository.GetAsNoTracking();
+            if (input.IsShowBan == false)
+            {
+                query = query.Where(a => a.VideoMain.VideoDouBan > 0 &&
+                                         a.VideoMain.IsMatchInfo);
+            }
+
             if (input.Subtype != null)
             {
                 query = query.Where(a => a.VideoMain.Subtype == input.Subtype.Value);

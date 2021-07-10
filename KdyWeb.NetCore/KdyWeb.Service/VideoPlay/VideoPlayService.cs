@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -11,7 +10,6 @@ using KdyWeb.IService;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;
-using KdyWeb.WebParse;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

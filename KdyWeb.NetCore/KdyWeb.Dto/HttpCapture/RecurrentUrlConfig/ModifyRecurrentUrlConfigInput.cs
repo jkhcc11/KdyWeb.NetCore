@@ -73,6 +73,12 @@ namespace KdyWeb.Dto.HttpCapture
         /// </summary>
         [Required(ErrorMessage = "配置状态必填")]
         public SearchConfigStatus SearchConfigStatus { get; set; }
+
+        /// <summary>
+        /// post请求类型
+        /// </summary>
+        [StringLength(RecurrentUrlConfig.ContentTypeLength)]
+        public string ContentType { get; set; }
     }
 
     /// <summary>
@@ -83,37 +89,7 @@ namespace KdyWeb.Dto.HttpCapture
         public ModifyRecurrentUrlConfigInputProfile()
         {
             CreateMap<ModifyRecurrentUrlConfigInput, RecurrentUrlConfig>()
-                .ForMember(a => a.Id, b => b.Ignore())
-                .ForMember(a => a.RequestUrl, opt =>
-                {
-                    opt.PreCondition(a => string.IsNullOrEmpty(a.RequestUrl) == false);
-                    opt.MapFrom(c => c.RequestUrl);
-                })
-                .ForMember(a => a.Referer, opt =>
-                {
-                    opt.PreCondition(a => string.IsNullOrEmpty(a.Referer) == false);
-                    opt.MapFrom(c => c.Referer);
-                })
-                .ForMember(a => a.PostData, opt =>
-                {
-                    opt.PreCondition(a => string.IsNullOrEmpty(a.PostData) == false);
-                    opt.MapFrom(c => c.PostData);
-                })
-                .ForMember(a => a.Cookie, opt =>
-                {
-                    opt.PreCondition(a => string.IsNullOrEmpty(a.Cookie) == false);
-                    opt.MapFrom(c => c.Cookie);
-                })
-                .ForMember(a => a.MsgXpath, opt =>
-                {
-                    opt.PreCondition(a => string.IsNullOrEmpty(a.MsgXpath) == false);
-                    opt.MapFrom(c => c.MsgXpath);
-                })
-                .ForMember(a => a.UrlCron, opt =>
-                {
-                    opt.PreCondition(a => string.IsNullOrEmpty(a.UrlCron) == false);
-                    opt.MapFrom(c => c.UrlCron);
-                });
+                .ForMember(a => a.Id, b => b.Ignore());
         }
     }
 }

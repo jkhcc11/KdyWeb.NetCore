@@ -27,7 +27,7 @@ namespace KdyWeb.Job.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("create")]
-        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(KdyResult<CreateForDouBanInfoDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
         {
             var result = await _videoMainService.CreateForDouBanInfoAsync(input);
@@ -115,6 +115,30 @@ namespace KdyWeb.Job.Controllers
         public async Task<IActionResult> GetCountInfoBySubtypeAsync([FromQuery] GetCountInfoBySubtypeInput input)
         {
             var result = await _videoMainService.GetCountInfoBySubtypeAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 强制同步影片主表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("forceSync/{mainId}")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ForceSyncVideoMainAsync(long mainId)
+        {
+            var result = await _videoMainService.ForceSyncVideoMainAsync(mainId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 查询同演员影片列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("querySameVideoByActor")]
+        [ProducesResponseType(typeof(KdyResult<List<QuerySameVideoByActorDto>>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> QuerySameVideoByActorAsync([FromQuery] QuerySameVideoByActorInput input)
+        {
+            var result = await _videoMainService.QuerySameVideoByActorAsync(input);
             return Ok(result);
         }
     }

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.BaseInterface.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.BaseInterface.Service
 {
@@ -16,9 +16,9 @@ namespace KdyWeb.BaseInterface.Service
     public abstract class BaseKdyService : IKdyService
     {
         /// <summary>
-        /// 统一日志
+        /// 日志
         /// </summary>
-        protected readonly IKdyLog KdyLog;
+        protected readonly ILogger KdyLog;
         /// <summary>
         /// 统一配置
         /// </summary>
@@ -43,7 +43,7 @@ namespace KdyWeb.BaseInterface.Service
         protected BaseKdyService(IUnitOfWork unitOfWork)
         {
             //todo:UnitOfWork 用scope时 无法直接获取 先直接构造器注入 后面调整
-            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
+            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetService<ILoggerFactory>().CreateLogger(GetType());
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
             LoginUserInfo = KdyBaseServiceProvider.ServiceProvide.GetService<ILoginUserInfo>();
             KdyRedisCache = KdyBaseServiceProvider.ServiceProvide.GetService<IKdyRedisCache>();

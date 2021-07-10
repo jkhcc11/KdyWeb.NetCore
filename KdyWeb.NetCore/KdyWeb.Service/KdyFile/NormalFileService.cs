@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -49,10 +48,7 @@ namespace KdyWeb.Service.KdyFile
                 httpResult.HttpCode == HttpStatusCode.BadRequest)
             {
                 result.Msg = httpResult.ErrMsg;
-                KdyLog.Warn("普通文件上传失败", new Dictionary<string, object>()
-                {
-                    {"PostInputPar",input }
-                }, $"{this}");
+                KdyLog.LogWarning("普通文件上传失败.Input:{input}", input);
                 return result;
             }
 
@@ -110,23 +106,6 @@ namespace KdyWeb.Service.KdyFile
 
             result = KdyResult.Success(uploadResult);
             return result;
-        }
-
-        public override async Task<KdyResult<KdyFileDto>> PostFileByUrl(NormalFileInput input)
-        {
-            try
-            {
-                input.FileBytes = await GetFileBytesByUrl(input.FileUrl);
-                input.FileUrl = string.Empty;
-                return await PostFileByBytes(input);
-            }
-            catch (Exception ex)
-            {
-                ex.ToExceptionless()
-                    .AddTags($"{this}")
-                    .Submit();
-                return KdyResult.Error<KdyFileDto>(KdyResultCode.Error, $"普通文件上传 Url上传异常【{ex.Message}】");
-            }
         }
     }
 }

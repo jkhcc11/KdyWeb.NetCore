@@ -1,4 +1,6 @@
-﻿namespace KdyWeb.BaseInterface.BaseModel
+﻿using Newtonsoft.Json;
+
+namespace KdyWeb.BaseInterface.BaseModel
 {
     /// <summary>
     /// Service 统一返回
@@ -114,6 +116,15 @@
             };
             return result;
         }
+
+        /// <summary>
+        /// 重写ToString 方便Logging日志记录
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     /// <summary>
@@ -121,6 +132,11 @@
     /// </summary>
     public enum KdyResultCode
     {
+        /// <summary>
+        /// 通用http请求错误
+        /// </summary>
+        HttpError = 2000,
+
         /// <summary>
         /// 成功
         /// </summary>

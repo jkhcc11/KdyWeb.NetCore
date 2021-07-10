@@ -5,11 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="XmlUtility.cs" />
+    <Compile Remove="KdyAttribute\**" />
+    <EmbeddedResource Remove="KdyAttribute\**" />
+    <None Remove="KdyAttribute\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="KdyAttribute\" />
+    <Compile Remove="XmlUtility.cs" />
   </ItemGroup>
 
   <ItemGroup>

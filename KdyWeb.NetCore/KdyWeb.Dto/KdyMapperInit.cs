@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using KdyWeb.Dto.SearchVideo;
+using KdyWeb.Entity.SearchVideo;
 
 namespace KdyWeb.Dto
 {
@@ -18,6 +20,13 @@ namespace KdyWeb.Dto
         {
             // CreateMap<User, SearchUserDto>();
             // CreateMap<Log, LogDto>();
+
+            //todo:ProjectTo时关联表 要用ForMember  MapTo时关联表 要用ForPath
+            CreateMap<VideoMainInfo, QuerySameVideoByActorDto>()
+                .ForMember(a => a.KeyWord, a => a.MapFrom(b => b.VideoMain.KeyWord))
+                .ForMember(a => a.VideoImg, a => a.MapFrom(b => b.VideoMain.VideoImg))
+                .ForMember(a => a.VideoDouBan, a => a.MapFrom(b => b.VideoMain.VideoDouBan))
+                .ForMember(a => a.VideoYear, a => a.MapFrom(b => b.VideoMain.VideoYear));
         }
     }
 }

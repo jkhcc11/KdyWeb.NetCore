@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
@@ -12,6 +11,8 @@ using KdyWeb.Dto.Message;
 using KdyWeb.IService.Message;
 using KdyWeb.Utility;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Service.Message
 {
@@ -30,10 +31,7 @@ namespace KdyWeb.Service.Message
         /// <returns></returns>
         public async Task<KdyResult> SendEmailAsync(SendEmailInput input)
         {
-            KdyLog.Debug($"邮件发送{input.Email}", new Dictionary<string, object>()
-            {
-                {"SendInput",input}
-            }, nameof(SendEmailAsync));
+            KdyLog.LogInformation("开始邮件发送.{input}", JsonConvert.SerializeObject(input));
 
             var smtpConfig = KdyConfiguration.GetSection(KdyWebServiceConst.SmtpKey).Get<SmtpConfig>();
             if (smtpConfig == null)

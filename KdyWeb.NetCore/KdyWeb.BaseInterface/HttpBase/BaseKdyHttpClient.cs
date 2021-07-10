@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -9,11 +8,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.KdyLog;
-using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace KdyWeb.BaseInterface.HttpBase
@@ -30,7 +28,7 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <summary>
         /// 统一日志
         /// </summary>
-        protected readonly IKdyLog KdyLog;
+        protected readonly ILogger KdyLog;
         /// <summary>
         /// 统一配置
         /// </summary>
@@ -40,7 +38,7 @@ namespace KdyWeb.BaseInterface.HttpBase
         protected BaseKdyHttpClient(IHttpClientFactory httpClientFactory)
         {
             HttpClientFactory = httpClientFactory;
-            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IKdyLog>();
+            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetService<ILoggerFactory>().CreateLogger(GetType());
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
         }
 
@@ -172,24 +170,27 @@ namespace KdyWeb.BaseInterface.HttpBase
             {
                 result.IsSuccess = false;
                 result.ErrMsg = $"Http网站异常：{ex.Message}";
-                ex.ToExceptionless().Submit();
+                //ex.ToExceptionless().Submit();
+                KdyLog.LogError(ex, "Http网站异常.信息:{msg}", ex.Message);
                 return result;
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
                 result.ErrMsg = $"Http程序异常：{ex.Message}";
-                ex.ToExceptionless().Submit();
+                // ex.ToExceptionless().Submit();
+                KdyLog.LogError(ex, "Http程序异常.信息:{msg}", ex.Message);
                 return result;
             }
             finally
             {
                 watch.Stop();
-                KdyLog.Info($"Http请求结束,Url:{input.Url},耗时：{watch.ElapsedMilliseconds}ms", new Dictionary<string, object>()
-                {
-                    {"HttpResult",result},
-                    {"HttpInput",input}
-                });
+                KdyLog.LogTrace("Http请求结束.耗时:{time}ms\r\n入参:{input}\r\n返回:{result}", watch.ElapsedMilliseconds, JsonConvert.SerializeObject(input), JsonConvert.SerializeObject(result));
+                //KdyLog.Info($"Http请求结束,Url:{input.Url},耗时：{watch.ElapsedMilliseconds}ms", new Dictionary<string, object>()
+                //{
+                //    {"HttpResult",result},
+                //    {"HttpInput",input}
+                //});
             }
         }
 

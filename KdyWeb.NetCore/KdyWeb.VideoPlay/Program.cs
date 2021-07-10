@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Exceptionless;
 using KdyWeb.BaseInterface.Extensions;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.VideoPlay
 {
@@ -25,7 +18,7 @@ namespace KdyWeb.VideoPlay
                     //环境变量
                     var env = context.HostingEnvironment;
                     context.Configuration = config.Build();
-                    string consulUrl = context.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
+                    var consulUrl = context.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
                     config.InitConfigCenter(context, consulUrl,
                         $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
                 })
@@ -35,10 +28,6 @@ namespace KdyWeb.VideoPlay
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).
-                ConfigureLogging(config =>
-                {
-                    config.AddExceptionless();
-                });
+                }).ConfigureExceptionLessLogging();
     }
 }

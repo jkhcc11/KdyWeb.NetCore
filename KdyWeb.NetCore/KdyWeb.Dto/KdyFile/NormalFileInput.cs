@@ -8,7 +8,7 @@ namespace KdyWeb.Dto.KdyFile
     /// <summary>
     /// 普通文件上传
     /// </summary>
-    public class NormalFileInput : IBaseKdyFileInput
+    public class NormalFileInput : BaseKdyFileInput
     {
         /// <summary>
         /// 构造
@@ -17,31 +17,12 @@ namespace KdyWeb.Dto.KdyFile
         /// <param name="nameField">文件标签Name</param>
         /// <param name="jsonRule">提取规则</param>
         /// <param name="fileName">文件名</param>
-        /// <param name="fileUrl">文件Url</param>
-        public NormalFileInput(string baseUrl, string nameField, string jsonRule, string fileName, string fileUrl)
+        public NormalFileInput(string baseUrl, string nameField, string jsonRule, string fileName)
         {
             BaseUrl = baseUrl;
             NameField = nameField;
             JsonRule = jsonRule;
-            FileName = fileName;
-            FileUrl = fileUrl;
-        }
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        /// <param name="baseUrl">站点Url</param>
-        /// <param name="nameField">文件标签Name</param>
-        /// <param name="jsonRule">提取规则</param>
-        /// <param name="fileName">文件名</param>
-        /// <param name="fileBytes">文件数据</param>
-        public NormalFileInput(string baseUrl, string nameField, string jsonRule, string fileName, byte[] fileBytes)
-        {
-            BaseUrl = baseUrl;
-            NameField = nameField;
-            JsonRule = jsonRule;
-            FileName = fileName;
-            FileBytes = fileBytes;
+            SetFileName(fileName);
         }
 
         /// <summary>
@@ -67,7 +48,7 @@ namespace KdyWeb.Dto.KdyFile
         /// <summary>
         /// 网页编码 默认UTF8
         /// </summary>
-        [ExceptionlessIgnore]
+        [JsonIgnore]
         public Encoding Charset { get; set; } = Encoding.UTF8;
 
         /// <summary>
@@ -98,12 +79,5 @@ namespace KdyWeb.Dto.KdyFile
         /// 超时（秒）
         /// </summary>
         public int TimeOut { get; set; } = 3;
-
-        public string FileName { get; set; }
-
-        public string FileUrl { get; set; }
-
-        [ExceptionlessIgnore]
-        public byte[] FileBytes { get; set; }
     }
 }

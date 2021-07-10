@@ -63,5 +63,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </remarks>
         /// <returns></returns>
         Task<KdyResult> RetrySaveImgAsync(int douBanInfoId);
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DeleteAsync(BatchDeleteForIntKeyInput input);
     }
 }

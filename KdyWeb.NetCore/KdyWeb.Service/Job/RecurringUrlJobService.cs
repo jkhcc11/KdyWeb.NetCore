@@ -5,9 +5,10 @@ using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.HangFire;
-using KdyWeb.BaseInterface.KdyLog;
 using KdyWeb.Dto.Job;
 using KdyWeb.IService.HttpCapture;
+using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.Job
 {
@@ -18,7 +19,7 @@ namespace KdyWeb.Service.Job
     public class RecurringUrlJobService : BaseKdyJob<RecurrentUrlJobInput>
     {
         private readonly IRecurrentUrlConfigService _recurrentUrlConfigService;
-        public RecurringUrlJobService(IKdyLog kdyLog, IRecurrentUrlConfigService recurrentUrlConfigService) : base(kdyLog)
+        public RecurringUrlJobService(IRecurrentUrlConfigService recurrentUrlConfigService)
         {
             _recurrentUrlConfigService = recurrentUrlConfigService;
         }
@@ -26,12 +27,7 @@ namespace KdyWeb.Service.Job
         public override async Task ExecuteAsync(RecurrentUrlJobInput input)
         {
             var result = await _recurrentUrlConfigService.RecurrentUrlAsync(input);
-            KdyLog.Trace("定时循环请求Url完成", new Dictionary<string, object>()
-            {
-                {"Input",input},
-                {"Result",result}
-            });
-
+            KdyLog.LogTrace("定时循环请求Url完成.Input:{input},Result:{result}", input.ToJsonStr(), result.ToJsonStr());
             if (result.Code == KdyResultCode.SystemError)
             {
                 throw new Exception(result.Msg);

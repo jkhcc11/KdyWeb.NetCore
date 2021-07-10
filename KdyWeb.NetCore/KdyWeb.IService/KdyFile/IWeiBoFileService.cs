@@ -7,7 +7,7 @@ namespace KdyWeb.IService.KdyFile
     /// <summary>
     /// 微博上传 接口
     /// </summary>
-    public interface IWeiBoFileService : IKdyFileService<BaseKdyFileInput>, IKdyService
+    public interface IWeiBoFileService : IKdyFileService<WeiBoFileInput>, IKdyService
     {
         /// <summary>
         /// 获取登录Cookie

@@ -10,6 +10,7 @@ using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
+using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
@@ -21,7 +22,6 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
-
         public UserSubscribeService(IUnitOfWork unitOfWork, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
             IKdyRepository<VideoMain, long> videoMainRepository) : base(unitOfWork)
         {
@@ -82,8 +82,13 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult> CreateUserSubscribeAsync(CreateUserSubscribeInput input)
         {
+            if (LoginUserInfo.UserEmail.IsEmptyExt())
+            {
+                return KdyResult.Error(KdyResultCode.Error, "收藏失败，用户信息丢失");
+            }
+
             var exit = await _userSubscribeRepository.GetAsNoTracking()
-                .AnyAsync(a => a.CreatedUserId == input.UserId &&
+                .AnyAsync(a => a.CreatedUserId == LoginUserInfo.UserId &&
                                a.BusinessId == input.BusinessId &&
                                a.UserSubscribeType == input.SubscribeType);
             if (exit)
@@ -91,8 +96,8 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "已收藏，无需重复收藏");
             }
 
-            long businessId=0;
-            var feature = string.Empty;
+            long businessId = 0;
+            string feature = string.Empty;
             if (input.SubscribeType == UserSubscribeType.Vod)
             {
                 #region 影片处理
@@ -103,15 +108,35 @@ namespace KdyWeb.Service.SearchVideo
                 }
 
                 businessId = videoMain.Id;
-                feature = videoMain.VideoContentFeature; 
+                feature = videoMain.VideoContentFeature;
                 #endregion
             }
 
-            var dbSubscribe=new UserSubscribe(businessId, feature,input.SubscribeType)
+            var dbSubscribe = new UserSubscribe(businessId, feature, input.SubscribeType)
             {
-                CreatedUserId = input.UserId
+                CreatedUserId = LoginUserInfo.UserId,
+                UserEmail = LoginUserInfo.UserEmail
             };
             await _userSubscribeRepository.CreateAsync(dbSubscribe);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 取消用户收藏
+        /// </summary>
+        /// <param name="subId">收藏Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult> CancelUserSubscribeAsync(long subId)
+        {
+            var dbSubscribe = await _userSubscribeRepository
+                .FirstOrDefaultAsync(a => a.Id == subId);
+            if (dbSubscribe == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "参数错误");
+            }
+
+            _userSubscribeRepository.Delete(dbSubscribe);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }

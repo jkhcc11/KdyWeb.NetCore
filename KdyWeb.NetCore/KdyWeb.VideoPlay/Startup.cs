@@ -98,7 +98,7 @@ namespace KdyWeb.VideoPlay
             //全局DI容器
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
             KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
-            app.InitExceptionLess(Configuration);
+           // app.InitExceptionLess(Configuration);
         }
     }
 }

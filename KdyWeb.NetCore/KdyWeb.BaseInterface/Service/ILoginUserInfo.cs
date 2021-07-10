@@ -5,7 +5,7 @@ namespace KdyWeb.BaseInterface.Service
     /// <summary>
     /// 登录信息 接口
     /// </summary>
-    public interface ILoginUserInfo : IKdySingleton
+    public interface ILoginUserInfo : IKdyTransient
     {
         /// <summary>
         /// 浏览器Agent
@@ -23,8 +23,18 @@ namespace KdyWeb.BaseInterface.Service
         string UserName { get; set; }
 
         /// <summary>
+        /// 用户邮箱
+        /// </summary>
+        string UserEmail { get; set; }
+
+        /// <summary>
         /// 用户Id
         /// </summary>
         long? UserId { get; set; }
+
+        /// <summary>
+        /// 是否超管
+        /// </summary>
+        bool IsSuperAdmin { get; set; }
     }
 }

@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.KdyFile
 {
     /// <summary>
     /// 微博上传 实现
     /// </summary>
-    public class WeiBoFileService : BaseKdyFileService<BaseKdyFileInput>, IWeiBoFileService
+    public class WeiBoFileService : BaseKdyFileService<WeiBoFileInput>, IWeiBoFileService
     {
         private readonly string _postHost = "https://picupload.weibo.com";
         private readonly string _publicHost = "https://tva2.sinaimg.cn";
@@ -35,7 +31,7 @@ namespace KdyWeb.Service.KdyFile
             _kdyRequestClientCommon = kdyRequestClientCommon;
         }
 
-        public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(BaseKdyFileInput input)
+        public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(WeiBoFileInput input)
         {
             var url =
                 $"{_postHost}/interface/pic_upload.php?cb=https%3A%2F%2Fweibo.com%2Faj%2Fstatic%2Fupimgback.html%3F_wv%3D5%26callback%3DSTK_ijax_157495212677343&mime=image%2Fjpeg&data=base64&url=weibo.com%2Fu%2F2483430532&markpos=1&logo=1&nick=&marks=0&app=miniblog&s=rdxt&pri=null&file_source=1";
@@ -62,14 +58,14 @@ namespace KdyWeb.Service.KdyFile
             if (httpResult.IsSuccess == false && httpResult.HttpCode != HttpStatusCode.Found)
             {
                 result.Msg = httpResult.ErrMsg;
-                KdyLog.Warn("微博上传失败");
+                KdyLog.LogWarning("微博上传失败.input:{input},result:{result}", input, result);
                 return result;
             }
 
             var newStr = httpResult.LocationUrl.TrimEnd(';') + ';';
             if (newStr.Contains("pid") == false)
             {
-                KdyLog.Warn("微博上传失败,获取Pid失败");
+                KdyLog.LogWarning("微博上传失败,获取Pid失败.input:{input},result:{result}", input, result);
                 return result;
             }
 
@@ -82,23 +78,6 @@ namespace KdyWeb.Service.KdyFile
 
             result = KdyResult.Success(uploadResult);
             return result;
-        }
-
-        public override async Task<KdyResult<KdyFileDto>> PostFileByUrl(BaseKdyFileInput input)
-        {
-            try
-            {
-                input.FileBytes = await GetFileBytesByUrl(input.FileUrl);
-                input.FileUrl = string.Empty;
-                return await PostFileByBytes(input);
-            }
-            catch (Exception ex)
-            {
-                ex.ToExceptionless()
-                    .AddTags($"{this}")
-                    .Submit();
-                return KdyResult.Error<KdyFileDto>(KdyResultCode.Error, $"微博 Url上传异常【{ex.Message}】");
-            }
         }
 
         public async Task<string> GetLoginCookie()

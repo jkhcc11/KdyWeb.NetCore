@@ -12,6 +12,8 @@ using KdyWeb.IService.OldMigration;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Service.OldMigration
 {
@@ -87,10 +89,7 @@ namespace KdyWeb.Service.OldMigration
             {
                 if (string.IsNullOrEmpty(item.ResultImg))
                 {
-                    KdyLog.Warn($"主表图片为空跳过，{item.KeyWord} {item.Id}", new Dictionary<string, object>()
-                    {
-                        {"MainInfo",item}
-                    });
+                    KdyLog.LogWarning("主表图片为空跳过.OldInfo:{item}", JsonConvert.SerializeObject(item));
                     continue;
                 }
 
@@ -151,7 +150,7 @@ namespace KdyWeb.Service.OldMigration
             var oldKeyIds = newDb.Select(a => a.OldKeyId).ToList();
             if (oldKeyIds.Any() == false)
             {
-                KdyLog.Warn($"未发现迁移数据,Page:{page} PageSize:{pageSize}");
+                KdyLog.LogWarning($"未发现迁移数据,Page:{page} PageSize:{pageSize}");
                 return KdyResult.Error(KdyResultCode.Error, "未发现迁移数据");
             }
 

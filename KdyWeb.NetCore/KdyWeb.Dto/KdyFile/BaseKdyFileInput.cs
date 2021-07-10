@@ -1,39 +1,52 @@
-﻿using Exceptionless.Json;
+﻿using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.KdyFile
 {
     /// <summary>
-    /// 文件上传基础Input 
+    /// 抽象文件上传基础Input 
     /// </summary>
-    public class BaseKdyFileInput : IBaseKdyFileInput
+    public abstract class BaseKdyFileInput : IBaseKdyFileInput
     {
+        public string FileName { get; private set; }
+
+        public string FileUrl { get; private set; }
+
+        [JsonIgnore]
+        public byte[] FileBytes { get; private set; }
+
         /// <summary>
-        /// 构造
+        /// 设置上传文件名
         /// </summary>
-        /// <param name="url">图片Url</param>
-        /// <param name="fileName">文件名</param>
-        public BaseKdyFileInput(string url, string fileName = null)
+        public void SetFileName(string fileName)
         {
-            FileUrl = url;
             FileName = fileName;
         }
 
         /// <summary>
-        /// 构造
+        /// 设置上传文件Url
         /// </summary>
-        /// <param name="fileBytes">图片字节</param>
-        /// <param name="fileName">文件名</param>
-        public BaseKdyFileInput(byte[] fileBytes, string fileName = null)
+        public void SetFileUrl(string fileUrl)
+        {
+            FileUrl = fileUrl;
+        }
+
+        /// <summary>
+        /// 设置上传文件byte数据
+        /// </summary>
+        public void SetFileBytes(byte[] fileBytes)
         {
             FileBytes = fileBytes;
-            FileName = fileName;
+            //二选一模式 有byte后文件url为空
+            FileUrl = string.Empty;
         }
 
-        public string FileName { get; set; }
-
-        public string FileUrl { get; set; }
-
-        [ExceptionlessIgnore]
-        public byte[] FileBytes { get; set; }
+        /// <summary>
+        /// 重写ToString 方便Logging日志记录
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

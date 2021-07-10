@@ -6,6 +6,11 @@
     public class KdyBaseConst
     {
         /// <summary>
+        /// 旧版Api头部验证
+        /// </summary>
+        public const string OldApiAuthKey = "OldKdyAuth";
+
+        /// <summary>
         /// 登录Cookie Key
         /// </summary>
         public const string CookieKey = "Kdy666_Status";

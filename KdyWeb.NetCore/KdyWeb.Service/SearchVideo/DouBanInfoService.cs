@@ -6,6 +6,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.KdyImg;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
@@ -15,6 +16,7 @@ using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -70,11 +72,7 @@ namespace KdyWeb.Service.SearchVideo
                 douBanWebResult.Data.Pic = $"{imgResult.Data}";
             }
 
-            KdyLog.Trace($"豆瓣Id:{subjectId}图片上传返回:{imgResult.Msg}", new Dictionary<string, object>()
-            {
-                {"subjectId",subjectId},
-                {"ImgResult",imgResult}
-            });
+            KdyLog.LogInformation("豆瓣Id:{subjectId}.图片上传返回:{imgResult}", subjectId, imgResult);
 
             //保存数据库
             dbDouBanInfo = douBanWebResult.Data.MapToExt<DouBanInfo>();
@@ -221,7 +219,7 @@ namespace KdyWeb.Service.SearchVideo
                     break;
                 }
 
-                KdyLog.Warn($"影片采集遇到歧义名称，已跳过。第三方名称：{oldKey} 豆瓣名称：{douBanName}");
+                KdyLog.LogWarning($"影片采集遇到歧义名称，已跳过。第三方名称：{oldKey} 豆瓣名称：{douBanName}");
             }
 
             if (result.IsSuccess == false)
@@ -268,6 +266,26 @@ namespace KdyWeb.Service.SearchVideo
             _douBanInfoRepository.Update(dbDouBanInfo);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> DeleteAsync(BatchDeleteForIntKeyInput input)
+        {
+            if (input.Ids == null || input.Ids.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "Id不能为空");
+            }
+
+            var dbEp = await _douBanInfoRepository.GetQuery()
+                .Where(a => input.Ids.Contains(a.Id))
+                .ToListAsync();
+            _douBanInfoRepository.Delete(dbEp);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success("豆瓣信息删除成功");
         }
     }
 }

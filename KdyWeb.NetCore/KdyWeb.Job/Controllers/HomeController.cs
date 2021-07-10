@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,17 +13,27 @@ namespace KdyWeb.Job.Controllers
     public class HomeController : ControllerBase
     {
         private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IBackgroundJobClient backgroundJobClient)
+        public HomeController(IBackgroundJobClient backgroundJobClient, ILogger<HomeController> logger)
         {
             _backgroundJobClient = backgroundJobClient;
+            _logger = logger;
         }
 
         // GET: api/<HomeController>
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            _backgroundJobClient.Enqueue(() => Test());
+
+            var test = new
+            {
+                Name = "1",
+                Age = 10
+            };
+            _logger.LogInformation("User {test} ffff",test);
+
+            // _backgroundJobClient.Enqueue(() => Test());
             return new string[] { "value1", "value2" };
         }
 

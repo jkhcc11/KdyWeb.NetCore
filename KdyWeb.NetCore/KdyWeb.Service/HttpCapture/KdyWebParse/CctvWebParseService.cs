@@ -41,7 +41,7 @@ namespace KdyWeb.Service.HttpCapture
             var guid = reqResult.Data.Replace(" ", "")
                 .GetStrMathExt("guid=\"", "\";");
             var key = GetVc();
-            var apiUrl = $"{BaseConfig.ApiHost}/api/getIpadVideoInfo.do?pid={guid}&tai=ipad&from=html5&tsp={key.Item1}&vn={BaseConfig.Vn}&vc={key.Item2}&uid={GetOneKey()}&wlan=";
+            var apiUrl = $"{BaseConfig.ApiHost}/api/getHttpVideoInfo.do?pid={guid}&client=flash&tsp={key.Item1}&vn={BaseConfig.Vn}&vc={key.Item2}&uid={GetOneKey()}&wlan=";
             reqInput = new KdyRequestCommonInput(apiUrl, HttpMethod.Get)
             {
                 UserAgent = BaseConfig.UserAgent,
@@ -54,8 +54,7 @@ namespace KdyWeb.Service.HttpCapture
             }
 
             //获取m3u8地址
-            var tempJson = reqResult.Data.Replace(" ", "")
-                .GetStrMathExt("'", "'");
+            var tempJson = reqResult.Data;
             var jObject = JObject.Parse(tempJson);
             string url = jObject.GetValueExt("hls_url");
             if (string.IsNullOrEmpty(url))

@@ -47,5 +47,42 @@ namespace KdyWeb.Dto.SearchVideo
         [KdyQuery(nameof(VideoMain.Aka), KdyOperator.Like)]
         [KdyQuery(nameof(VideoMain.SourceUrl), KdyOperator.StartsWith)]
         public string KeyWord { get; set; }
+
+        /// <summary>
+        /// 演员
+        /// </summary>
+        [KdyQuery("VideoMainInfo.VideoCasts", KdyOperator.Like)]
+        public string VideoCasts { get; set; }
+
+        /// <summary>
+        /// 搜索类型
+        /// </summary>
+        public SearchType? SearchType { get; set; }
+    }
+
+    /// <summary>
+    /// 搜索类型
+    /// </summary>
+    public enum SearchType
+    {
+        /// <summary>
+        /// 未完结
+        /// </summary>
+        IsNoEnd,
+
+        /// <summary>
+        /// 当天更新
+        /// </summary>
+        IsToday,
+
+        /// <summary>
+        /// 未匹配豆瓣
+        /// </summary>
+        IsNoMatchDouBan,
+
+        /// <summary>
+        /// 已关联解说
+        /// </summary>
+        IsNarrateUrl
     }
 }

@@ -30,5 +30,29 @@ namespace KdyWeb.Job.Controllers
             var result = await _userSubscribeService.QueryUserSubscribeAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 创建用户收藏
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("create")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> CreateUserSubscribeAsync(CreateUserSubscribeInput input)
+        {
+            var result = await _userSubscribeService.CreateUserSubscribeAsync(input);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 取消用户收藏
+        /// </summary>
+        /// <returns></returns>
+        [HttpPatch("cancel/{subId}")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> CancelUserSubscribeAsync(long subId)
+        {
+            var result = await _userSubscribeService.CancelUserSubscribeAsync(subId);
+            return Ok(result);
+        }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Hangfire;
 using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
@@ -14,11 +13,9 @@ using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Repository;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -31,16 +28,25 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
         private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
         private readonly IKdyRepository<VideoEpisodeGroup, long> _videoEpisodeGroupRepository;
+        private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
+        private readonly IKdyRepository<VideoMainInfo, long> _videoMainInfoRepository;
+        private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
+        private readonly IKdyRepository<VideoSeriesList, long> _videoSeriesListRepository;
 
         public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
             IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
-            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository) :
+            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
+            IKdyRepository<VideoMainInfo, long> videoMainInfoRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<VideoSeriesList, long> videoSeriesListRepository) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
             _douBanInfoRepository = douBanInfoRepository;
             _videoEpisodeRepository = videoEpisodeRepository;
             _videoEpisodeGroupRepository = videoEpisodeGroupRepository;
+            _userSubscribeRepository = userSubscribeRepository;
+            _videoMainInfoRepository = videoMainInfoRepository;
+            _userHistoryRepository = userHistoryRepository;
+            _videoSeriesListRepository = videoSeriesListRepository;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -52,13 +58,13 @@ namespace KdyWeb.Service.SearchVideo
         /// 通过豆瓣信息创建影片信息
         /// </summary>
         /// <returns></returns>
-        public async Task<KdyResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
+        public async Task<KdyResult<CreateForDouBanInfoDto>> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
         {
             //获取豆瓣信息
             var douBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanInfoId);
             if (douBanInfo == null)
             {
-                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息Id错误");
+                return KdyResult.Error<CreateForDouBanInfoDto>(KdyResultCode.Error, "豆瓣信息Id错误");
             }
 
             var epName = input.EpisodeGroupType == EpisodeGroupType.VideoPlay ? "极速" : "点击下载";
@@ -83,7 +89,9 @@ namespace KdyWeb.Service.SearchVideo
             _douBanInfoRepository.Update(douBanInfo);
 
             await UnitOfWork.SaveChangesAsync();
-            return KdyResult.Success();
+
+            var result = dbVideoMain.MapToExt<CreateForDouBanInfoDto>();
+            return KdyResult.Success(result);
         }
 
         /// <summary>
@@ -106,18 +114,35 @@ namespace KdyWeb.Service.SearchVideo
             var result = main.MapToExt<GetVideoDetailDto>();
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
             VideoDetailHandler(result);
+
+            if (LoginUserInfo.UserId.HasValue)
+            {
+                //登录用户就获取最新历史记录
+                var dbNewHistory = await _userHistoryRepository.GetAsNoTracking()
+                    .Where(a => a.KeyId == keyId && a.CreatedUserId == LoginUserInfo.UserId)
+                    .OrderByDescending(a => a.ModifyTime)
+                    .ThenByDescending(a => a.CreatedTime)
+                    .FirstOrDefaultAsync();
+                result.NewUserHistory = dbNewHistory?.MapToExt<QueryUserHistoryDto>();
+
+                //是否订阅
+                result.IsSubscribe = await _userSubscribeRepository.GetAsNoTracking()
+                    .AnyAsync(a => a.BusinessId == main.Id &&
+                                   a.UserSubscribeType == UserSubscribeType.Vod &&
+                                   a.CreatedUserId == LoginUserInfo.UserId);
+            }
+
+            //影片所属系列
+            var dbVideoSeries = await _videoSeriesListRepository.GetAsNoTracking()
+                .Include(a => a.VideoSeries)
+                .Where(a => a.KeyId == keyId)
+                .Select(a => a.VideoSeries)
+                .FirstOrDefaultAsync();
+            result.VideoSeries = dbVideoSeries?.MapToExt<QueryVideoSeriesDto>();
+
             if (result.IsEnd)
             {
                 //已完结 不用更新
-                return KdyResult.Success(result);
-            }
-
-            //todo:后面改成cap
-            var cacheKey = $"NotEndKey:{main.Id}";
-            var redisDb = KdyRedisCache.GetDb(1);
-            var cacheV = await redisDb.GetValueAsync<string>(cacheKey);
-            if (cacheV != null)
-            {
                 return KdyResult.Success(result);
             }
 
@@ -125,9 +150,7 @@ namespace KdyWeb.Service.SearchVideo
             {
                 KeyWord = main.KeyWord
             };
-            BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.Execute(jobInput));
-            await redisDb.SetValueAsync(cacheKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), TimeSpan.FromHours(20));
-
+            BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.ExecuteAsync(jobInput));
             return KdyResult.Success(result);
         }
 
@@ -158,6 +181,31 @@ namespace KdyWeb.Service.SearchVideo
             var query = _videoMainRepository.GetQuery()
                 .Include(a => a.VideoMainInfo)
                 .CreateConditions(input);
+            switch (input.SearchType)
+            {
+                case SearchType.IsNoEnd:
+                    {
+                        query = query.Where(a => a.IsEnd == false);
+                        break;
+                    }
+                case SearchType.IsToday:
+                    {
+                        query = query.Where(a => a.ModifyTime != null &&
+                        a.ModifyTime.Value.Date == DateTime.Today);
+                        break;
+                    }
+                case SearchType.IsNoMatchDouBan:
+                    {
+                        query = query.Where(a => a.IsMatchInfo == false);
+                        break;
+                    }
+                case SearchType.IsNarrateUrl:
+                    {
+                        query = query.Where(a => string.IsNullOrEmpty(a.VideoMainInfo.NarrateUrl) == false);
+                        break;
+                    }
+            }
+
             var count = await query.CountAsync();
             if (string.IsNullOrEmpty(input.KeyWord) == false)
             {
@@ -281,17 +329,11 @@ namespace KdyWeb.Service.SearchVideo
 
             input.MapToPartExt(main);
 
-            var downEpGroupId = main.EpisodeGroup
-                .Where(a => a.GroupName == "默认下载")
-                .Select(a => a.Id)
-                .FirstOrDefault();
+            var downEpGroup = main.EpisodeGroup
+                // .Select(a => a.Id)
+                .FirstOrDefault(a => a.EpisodeGroupType == EpisodeGroupType.VideoDown);
             if (string.IsNullOrEmpty(input.DownUrl) == false)
             {
-                if (downEpGroupId > 0)
-                {
-                    await _videoEpisodeRepository.Delete(a => a.EpisodeGroupId == downEpGroupId);
-                }
-
                 #region 下载处理
                 //格式
                 //名称$下载地址
@@ -308,17 +350,32 @@ namespace KdyWeb.Service.SearchVideo
 
                     var nameArray = tempItem.Split('$');
 
-                    downEp.Add(new VideoEpisode(nameArray[0], nameArray[1]));
+                    //剧集
+                    var tempEpisode = new VideoEpisode(nameArray[0], nameArray[1]);
+                    if (downEpGroup != null)
+                    {
+                        tempEpisode.SetEpisodeGroupId(downEpGroup.Id);
+                    }
+
+                    downEp.Add(tempEpisode);
                 }
 
-                var downGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoDown, "默认下载")
+                if (downEpGroup != null)
                 {
-                    Episodes = downEp,
-                    MainId = input.Id
-                };
-
-                await _videoEpisodeGroupRepository.CreateAsync(downGroup);
-                // main.EpisodeGroup.Add(downGroup);
+                    //删除旧的剧集 新增新的
+                    await _videoEpisodeRepository.Delete(a => a.EpisodeGroupId == downEpGroup.Id);
+                    await _videoEpisodeRepository.CreateAsync(downEp);
+                }
+                else
+                {
+                    //创建新的组
+                    var downGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoDown, "默认下载")
+                    {
+                        Episodes = downEp,
+                        MainId = input.Id
+                    };
+                    await _videoEpisodeGroupRepository.CreateAsync(downGroup);
+                }
 
                 #endregion
             }
@@ -355,6 +412,79 @@ namespace KdyWeb.Service.SearchVideo
                 .ToListAsync();
 
             return KdyResult.Success(dbCount);
+        }
+
+        /// <summary>
+        /// 强制同步影片主表
+        /// </summary>
+        /// <param name="mainId">影片Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult> ForceSyncVideoMainAsync(long mainId)
+        {
+            var main = await _videoMainRepository.GetAsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == mainId);
+            if (main == null)
+            {
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "keyId错误");
+            }
+
+            if (main.IsEnd)
+            {
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "影片已完结，无需同步");
+            }
+
+            var db = KdyRedisCache.GetDb(1);
+            await db.KeyDeleteAsync($"{KdyServiceCacheKey.NotEndKey}:{mainId}");
+
+            var jobInput = new UpdateNotEndVideoMainJobInput(main.Id, main.SourceUrl, main.VideoContentFeature)
+            {
+                KeyWord = main.KeyWord
+            };
+            var jobId = BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.ExecuteAsync(jobInput));
+
+            return KdyResult.Success($"任务Id:{jobId} 已添加");
+
+        }
+
+        /// <summary>
+        /// 查询同演员影片列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<QuerySameVideoByActorDto>>> QuerySameVideoByActorAsync(QuerySameVideoByActorInput input)
+        {
+            //先获取数据库10条 然后程序处理 数据库用的是字符串 无法精确匹配 eg: input:张三  =>  db:张三1  也可以搜索
+            var query = _videoMainInfoRepository.GetAsNoTracking()
+                .Include(a => a.VideoMain)
+                .Where(a => a.VideoCasts.Contains(input.Actor) ||
+                          a.VideoDirectors.Contains(input.Actor));
+            var dbResult = await query.Take(10)
+                .OrderBy(a => Guid.NewGuid())
+                .ToListAsync();
+
+            var result = new List<QuerySameVideoByActorDto>();
+            foreach (var item in dbResult)
+            {
+                if (result.Count >= 6)
+                {
+                    //最多6条
+                    continue;
+                }
+
+                if (item.VideoCasts.IsEmptyExt() == false &&
+                    item.VideoCasts.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries).Any(a => a == input.Actor))
+                {
+                    result.Add(item.MapToExt<QuerySameVideoByActorDto>());
+                    continue;
+                }
+
+                if (item.VideoDirectors.IsEmptyExt() == false &&
+                    item.VideoDirectors.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries).Any(a => a == input.Actor))
+                {
+                    result.Add(item.MapToExt<QuerySameVideoByActorDto>());
+                }
+            }
+
+            return KdyResult.Success(result);
         }
 
         #region 私有

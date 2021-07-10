@@ -16,7 +16,7 @@ namespace KdyWeb.IService.SearchVideo
         /// 通过豆瓣信息创建影片信息
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input);
+        Task<KdyResult<CreateForDouBanInfoDto>> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input);
 
         /// <summary>
         /// 获取影片信息
@@ -59,5 +59,18 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<List<GetCountInfoBySubtypeDto>>> GetCountInfoBySubtypeAsync(GetCountInfoBySubtypeInput input);
+
+        /// <summary>
+        /// 强制同步影片主表
+        /// </summary>
+        /// <param name="mainId">影片Id</param>
+        /// <returns></returns>
+        Task<KdyResult> ForceSyncVideoMainAsync(long mainId);
+
+        /// <summary>
+        /// 查询同演员影片列表
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<List<QuerySameVideoByActorDto>>> QuerySameVideoByActorAsync(QuerySameVideoByActorInput input);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.KdyImg;
 
 namespace KdyWeb.IService.ImageSave
@@ -10,6 +11,24 @@ namespace KdyWeb.IService.ImageSave
     /// </summary>
     public interface IKdyImgSaveService : IKdyService
     {
+        /// <summary>
+        /// 分页查询图床
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<QueryKdyImgDto>>> QueryKdyImgAsync(QueryKdyImgInput input);
+
+        /// <summary>
+        /// 更新字段值
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> UpdateValueByFieldAsync(UpdateValueByFieldInput input);
+
+        /// <summary>
+        /// 批量删除图床
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DeleteAsync(BatchDeleteForLongKeyInput input);
+
         /// <summary>
         /// 通过Url上传
         /// </summary>

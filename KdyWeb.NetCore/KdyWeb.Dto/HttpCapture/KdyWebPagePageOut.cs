@@ -45,5 +45,16 @@ namespace KdyWeb.Dto.HttpCapture
         /// 年份
         /// </summary>
         public int VideoYear { get; set; }
+
+        /// <summary>
+        /// 特殊剧集名称处理 影片没有剧集为空
+        /// </summary>
+        public void SpecialResultName()
+        {
+            if (string.IsNullOrEmpty(ResultName))
+            {
+                ResultName = "备用";
+            }
+        }
     }
 }

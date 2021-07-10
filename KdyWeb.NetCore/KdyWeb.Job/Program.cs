@@ -1,9 +1,6 @@
 using System.Runtime.InteropServices;
-using Exceptionless;
 using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.Job.JobService;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace KdyWeb.Job
@@ -42,8 +39,8 @@ namespace KdyWeb.Job
                     //环境变量
                     var env = context.HostingEnvironment;
                     context.Configuration = config.Build();
-                    string consulUrl = context.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
-                    var clientName = context.Configuration[ConsulConfigCenterExt.ConfigClientName];
+                    string consulUrl = context.Configuration[ConsulConfigCenterExt.ConsulConfigUrl],
+                        clientName = context.Configuration[ConsulConfigCenterExt.ConfigClientName];
                     if (string.IsNullOrEmpty(clientName) == false)
                     {
                         clientName = "." + clientName;
@@ -52,16 +49,10 @@ namespace KdyWeb.Job
                     config.InitConfigCenter(context, consulUrl,
                         $"{env.ApplicationName}/appsettings.{env.EnvironmentName}{clientName}.json");
                 })
-                //.ConfigureServices((context, service) =>
-                //{
-                //})
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).
-                ConfigureLogging(config =>
-                {
-                    config.AddExceptionless();
-                });
+                })
+                .ConfigureExceptionLessLogging();
     }
 }

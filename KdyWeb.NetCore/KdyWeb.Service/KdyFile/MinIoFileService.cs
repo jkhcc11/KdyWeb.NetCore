@@ -4,13 +4,12 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Exceptionless;
-using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.KdyFile;
 using KdyWeb.IService.KdyFile;
 using KdyWeb.Utility;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.Exceptions;
 
@@ -30,15 +29,10 @@ namespace KdyWeb.Service.KdyFile
 
         public override async Task<KdyResult<KdyFileDto>> PostFileByBytes(MinIoFileInput input)
         {
-            KdyLog.Trace("MinIo上传开始", new Dictionary<string, object>()
-            {
-                {"MinIoInput",input}
-            });
-
             if (input.FileName.StartsWith("/") == false)
             {
                 //没有带路径默认传到公用
-                input.FileName = $"public/{DateTime.Now:yyyyMMdd}/{input.FileName}";
+                input.SetFileName($"public/{DateTime.Now:yyyyMMdd}/{input.FileName}");
             }
 
             var minIoClient = GetMinIoClient();
@@ -72,28 +66,8 @@ namespace KdyWeb.Service.KdyFile
                     .Submit();
             }
 
-            KdyLog.Trace("MinIo上传结束", new Dictionary<string, object>()
-            {
-                {"MinIoResult",result}
-            });
+            KdyLog.LogTrace("MinIo上传结束.入参：{input} 结果：{result}", input, result);
             return result;
-        }
-
-        public override async Task<KdyResult<KdyFileDto>> PostFileByUrl(MinIoFileInput input)
-        {
-            try
-            {
-                input.FileBytes = await GetFileBytesByUrl(input.FileUrl);
-                input.FileUrl = string.Empty;
-                return await PostFileByBytes(input);
-            }
-            catch (Exception ex)
-            {
-                ex.ToExceptionless()
-                    .AddTags(nameof(MinIoFileService), nameof(PostFileByUrl))
-                    .Submit();
-                return KdyResult.Error<KdyFileDto>(KdyResultCode.Error, $"Minio Url上传异常【{ex.Message}】");
-            }
         }
 
         public MinioClient GetMinIoClient()
@@ -101,7 +75,7 @@ namespace KdyWeb.Service.KdyFile
             var config = _configuration
                 .GetSection(KdyWebServiceConst.MinIoConfigKey)
                 .Get<MinioConfig>();
-            var client = new MinioClient(config.ServerUrl, config.AccessKey, config.SecretKey,"cn-249");
+            var client = new MinioClient(config.ServerUrl, config.AccessKey, config.SecretKey, "cn-249");
             if (config.IsSSL)
             {
                 return client.WithSSL();

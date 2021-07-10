@@ -69,5 +69,13 @@ namespace KdyWeb.Dto.SearchVideo
         /// 详情Id
         /// </summary>
         public string VideoDetailId { get; set; }
+
+        /// <summary>
+        /// 国家
+        /// </summary>
+        /// <remarks>
+        /// 多个以 ，隔开
+        /// </remarks>
+        public string VideoCountries { get; set; }
     }
 }

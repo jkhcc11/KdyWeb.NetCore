@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using KdyWeb.BaseInterface.KdyLog;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.BaseInterface.HangFire
@@ -10,11 +10,11 @@ namespace KdyWeb.BaseInterface.HangFire
     /// </summary>
     public abstract class BaseKdyJob<TInput>
     {
-        protected readonly IKdyLog KdyLog;
+        protected readonly ILogger KdyLog;
 
-        protected BaseKdyJob(IKdyLog kdyLog)
+        protected BaseKdyJob()
         {
-            KdyLog = kdyLog;
+            KdyLog = KdyBaseServiceProvider.ServiceProvide.GetService<ILoggerFactory>().CreateLogger(GetType());
         }
 
         /// <summary>

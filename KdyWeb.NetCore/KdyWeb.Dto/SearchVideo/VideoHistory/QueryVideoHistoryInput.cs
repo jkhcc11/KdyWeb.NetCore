@@ -27,5 +27,10 @@ namespace KdyWeb.Dto.SearchVideo
         /// 影片类型
         /// </summary>
         public Subtype? Subtype { get; set; }
+
+        /// <summary>
+        /// 是否显示禁用记录
+        /// </summary>
+        public bool IsShowBan { get; set; } = false;
     }
 }
