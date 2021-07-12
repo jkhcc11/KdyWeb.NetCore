@@ -18,4 +18,4 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Build Test
-      run: dotnet build KdyWeb.NetCore/KdyWeb.VideoPlay/KdyWeb.VideoPlay.csproj --no-restore
+      run: dotnet build KdyWeb.NetCore/KdyWeb.VideoPlay/KdyWeb.VideoPlay.csproj --restore
