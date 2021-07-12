@@ -18,4 +18,4 @@ jobs:
       with:
         dotnet-version: 3.0.x
     - name: Build Test
-      run: dotnet build KdyWeb.NetCore/KdyWeb.NetCore.sln --no-restore
+      run: dotnet build KdyWeb.NetCore/KdyWeb.VideoPlay --no-restore
