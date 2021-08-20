@@ -22,6 +22,7 @@ namespace KdyWeb.Service.ServiceExtension
             services.AddScoped<IPageParseService<NormalPageParseOut, NormalPageParseInput>, NormalPageParseService>();
             services.AddScoped<IPageParseService<NormalPageParseOut, NormalPageParseInput>, ZyPageParseService>();
             services.AddScoped<IPageParseService<NormalPageParseOut, NormalPageParseInput>, DownPageParseService>();
+            services.AddScoped<IPageParseService<NormalPageParseOut, NormalPageParseInput>, ZyPageParseForJsonService>();
             return services;
         }
     }

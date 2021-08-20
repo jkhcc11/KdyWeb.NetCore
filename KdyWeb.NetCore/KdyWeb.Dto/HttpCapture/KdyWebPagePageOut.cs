@@ -18,15 +18,15 @@ namespace KdyWeb.Dto.HttpCapture
         public KdyWebPagePageOut(string pageMd5, string resultUrl, string resultName)
         {
             PageMd5 = pageMd5;
-            var index = resultUrl.IndexOf("?vfm", StringComparison.OrdinalIgnoreCase);
+            var index = resultUrl.IndexOf("?", StringComparison.OrdinalIgnoreCase);
             if (index > 0)
             {
                 //360影视 无用参数
                 resultUrl = resultUrl.Substring(0, index);
             }
 
-            ResultUrl = resultUrl;
-            ResultName = resultName;
+            ResultUrl = resultUrl.Trim();
+            ResultName = resultName.Trim();
             //ResultName = resultName.RemoveStrExt("\r", "\n", " ").GetNumber();
         }
 

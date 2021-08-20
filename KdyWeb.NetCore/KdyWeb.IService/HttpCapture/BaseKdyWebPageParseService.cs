@@ -14,7 +14,10 @@ namespace KdyWeb.IService.HttpCapture
     /// <summary>
     /// 通用站点页面解析 抽象基类
     /// </summary>
-    public abstract class BaseKdyWebPageParseService : BaseKdyWebPageParseService<NormalPageParseConfig, KdyWebPageSearchInput, KdyWebPageSearchOut, KdyWebPageSearchOutItem, KdyWebPagePageInput, KdyWebPagePageOut, NormalPageParseOut, NormalPageParseInput, BaseSearchConfig, BasePageConfig>
+    public abstract class BaseKdyWebPageParseService : BaseKdyWebPageParseService<NormalPageParseConfig, KdyWebPageSearchInput, 
+        KdyWebPageSearchOut, KdyWebPageSearchOutItem, 
+        KdyWebPagePageInput, KdyWebPagePageOut, 
+        NormalPageParseOut, NormalPageParseInput, BaseSearchConfig, BasePageConfig>
     {
         protected BaseKdyWebPageParseService(IKdyRequestClientCommon kdyRequestClientCommon) :
             base(kdyRequestClientCommon)

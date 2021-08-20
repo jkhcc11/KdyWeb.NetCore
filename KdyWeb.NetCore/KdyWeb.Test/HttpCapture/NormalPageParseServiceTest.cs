@@ -114,5 +114,28 @@ namespace KdyWeb.Test.HttpCapture
 
 
         }
+
+        [TestMethod]
+        public async Task CmsJsonTest()
+        {
+            var zy = "KdyWeb.Service.HttpCapture.ZyPageParseForJsonService";
+            var pageParseService =
+                _host.Services.GetServices<IPageParseService<NormalPageParseOut, NormalPageParseInput>>();
+            var zyService = pageParseService.First(a => a.GetType().FullName == zy);
+            var result = await zyService.GetResultAsync(new NormalPageParseInput()
+            {
+                Detail = "http://hct.dbyunzy.com/index.php/vod/detail/id/80903.html",
+               // KeyWord = "城市的边缘",
+                ConfigId = 1341380793909514240
+            });
+            Assert.IsTrue(result.IsSuccess);
+
+            var result2 = await zyService.GetResultAsync(new NormalPageParseInput()
+            {
+                Detail = "http://www.kuaibozy.com/api.php/provide/vod/?ac=detail&ids=31782",
+                ConfigId = 2
+            });
+            Assert.IsTrue(result2.IsSuccess);
+        }
     }
 }
