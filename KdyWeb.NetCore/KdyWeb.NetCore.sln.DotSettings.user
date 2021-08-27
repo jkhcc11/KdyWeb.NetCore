@@ -26,6 +26,7 @@
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.SearchVideo.VideoMainTest.TestUpdateValueByFieldAsync&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.TestLog.TestBaseLog&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.HttpCapture.NormalPageParseServiceTest.CmsJsonTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::83C67C1B-89D6-4698-9EAA-465A1F099138::.NETCoreApp,Version=v3.1::KdyWeb.Test.AwsS3Test.GetUserInfoAsync&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>
