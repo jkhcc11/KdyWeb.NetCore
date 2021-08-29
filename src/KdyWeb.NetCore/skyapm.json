@@ -1,0 +1,29 @@
+{
+  "SkyWalking": {
+    "ServiceName": "KdyWeb.NetCore",
+    "Namespace": "KdyWeb",
+    "HeaderVersions": [
+      "sw6"
+    ],
+    "Sampling": {
+      "SamplePer3Secs": -1,
+      "Percentage": -1.0
+    },
+    "Logging": {
+      "Level": "Error",
+      "FilePath": "logs\\skyapm-{Date}.log"
+    },
+    "Transport": {
+      "Interval": 3000,
+      "ProtocolVersion": "v6",
+      "QueueSize": 30000,
+      "BatchSize": 3000,
+      "gRPC": {
+        "Servers": "121.89.211.254:8004",
+        "Timeout": 10000,
+        "ConnectTimeout": 10000,
+        "ReportTimeout": 600000
+      }
+    }
+  }
+}
