@@ -3,7 +3,8 @@
 ################################################################################
 
 .vs/
-*/*/obj
-*/*/bin
-*/*/Properties
-/KdyWeb.NetCore/KdyWeb.Job/.config/dotnet-tools.json
+obj/
+bin/
+Properties/
+.config/
+*/.user
