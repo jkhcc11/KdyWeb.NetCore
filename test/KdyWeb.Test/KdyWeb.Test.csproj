@@ -30,8 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KdyWeb.MiniProfiler\KdyWeb.MiniProfiler.csproj" />
-    <ProjectReference Include="..\KdyWeb.Service\KdyWeb.Service.csproj" />
+    <ProjectReference Include="..\..\src\KdyWeb.MiniProfiler\KdyWeb.MiniProfiler.csproj" />
+    <ProjectReference Include="..\..\src\KdyWeb.Service\KdyWeb.Service.csproj" />
   </ItemGroup>
 
 </Project>
