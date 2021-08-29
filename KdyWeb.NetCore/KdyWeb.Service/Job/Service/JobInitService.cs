@@ -60,7 +60,13 @@ namespace KdyWeb.Service.Job
                         ServiceFullName = item.ServiceFullName
                     };
                     var uri = new Uri(recurringJobInput.OriginUrl);
-                    var jobId = $"Capture.RecurringJob.{uri.Host}{uri.AbsolutePath}";
+                    var jobFlag = uri.AbsolutePath;
+                    if (string.IsNullOrEmpty(uri.Query) == false)
+                    {
+                        jobFlag = uri.Query.Md5Ext();
+                    }
+
+                    var jobId = $"Capture.RecurringJob.{uri.Host}{jobFlag}";
 
                     RecurringJob.AddOrUpdate<RecurringVideoJobService>(jobId, a => a.ExecuteAsync(recurringJobInput), jobCron);
                 }

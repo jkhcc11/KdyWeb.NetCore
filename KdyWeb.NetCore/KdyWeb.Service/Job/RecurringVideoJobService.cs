@@ -122,6 +122,12 @@ namespace KdyWeb.Service.Job
                 return string.Empty;
             }
 
+            if (aNode.Name == "id")
+            {
+                //cms xml特殊
+                return $"{input.BaseHost}/detailId/{aNode.InnerText.Trim()}";
+            }
+
             var detailUrl = aNode.GetAttributeValue("href", "");
             if (string.IsNullOrEmpty(detailUrl))
             {
