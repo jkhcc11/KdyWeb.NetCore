@@ -36,5 +36,11 @@ namespace KdyWeb.BaseInterface.Service
         /// 是否超管
         /// </summary>
         bool IsSuperAdmin { get; set; }
+
+        /// <summary>
+        /// 获取用户Id
+        /// </summary>
+        /// <returns></returns>
+        long GetUserId();
     }
 }

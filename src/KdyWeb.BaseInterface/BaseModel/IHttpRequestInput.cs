@@ -9,6 +9,14 @@ namespace KdyWeb.BaseInterface.BaseModel
     public interface IHttpRequestInput<TExt>
     {
         /// <summary>
+        /// Api基地址
+        /// </summary>
+        /// <remarks>
+        ///  eg:https://api.baidu.com
+        /// </remarks>
+        string BaseHost { get; set; }
+
+        /// <summary>
         /// 超时时间 默认10s
         /// </summary>
         /// <remarks>
@@ -19,6 +27,9 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 请求Url
         /// </summary>
+        /// <remarks>
+        ///  请求相对路径,若<see cref="BaseHost"/>无值时，此地址为包含域名得路径地址
+        /// </remarks>
         string Url { get; set; }
 
         /// <summary>

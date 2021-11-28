@@ -34,6 +34,16 @@ namespace KdyWeb.BaseInterface.Service
 
         public bool IsSuperAdmin { get; set; }
 
+        public long GetUserId()
+        {
+            if (UserId.HasValue == false)
+            {
+                throw new KdyCustomException("用户信息丢失");
+            }
+
+            return UserId.Value;
+        }
+
         /// <summary>
         /// 从当前请求初始化登录信息
         /// </summary>

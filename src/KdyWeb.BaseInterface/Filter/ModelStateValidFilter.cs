@@ -3,7 +3,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace KdyWeb.Job.JobService
+namespace KdyWeb.BaseInterface.Filter
 {
     /// <summary>
     /// ModelState 入参校验

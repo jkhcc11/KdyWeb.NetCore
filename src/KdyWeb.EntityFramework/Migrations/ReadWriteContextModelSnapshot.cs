@@ -19,6 +19,107 @@ namespace KdyWeb.EntityFramework.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("KdyWeb.Entity.CloudParse.CloudParseUser", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("HoldLinkHost")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsHoldLink")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("SelfApiUrl")
+                        .HasColumnType("nvarchar(150)")
+                        .HasMaxLength(150);
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("UserNick")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UserPwd")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UserQq")
+                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(15);
+
+                    b.Property<int>("UserStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CloudParse_User");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.CloudParse.CloudParseUserChildren", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CookieInfo")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<int>("CookieType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CloudParse_UserChildren");
+                });
+
             modelBuilder.Entity("KdyWeb.Entity.HttpCapture.PageSearchConfig", b =>
                 {
                     b.Property<long>("Id")
@@ -110,8 +211,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnType("tinyint");
 
                     b.Property<string>("SearchData")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
+                        .HasColumnType("nvarchar(2000)")
+                        .HasMaxLength(2000);
 
                     b.Property<string>("SearchPath")
                         .HasColumnType("nvarchar(100)")
@@ -144,6 +245,10 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
                     b.Property<string>("Cookie")
                         .HasColumnType("nvarchar(max)");
 
@@ -172,8 +277,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasMaxLength(100);
 
                     b.Property<string>("PostData")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
+                        .HasColumnType("nvarchar(2000)")
+                        .HasMaxLength(2000);
 
                     b.Property<string>("Referer")
                         .HasColumnType("nvarchar(200)")
@@ -1634,6 +1739,15 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasIndex("SeriesId");
 
                     b.ToTable("VideoSeriesList");
+                });
+
+            modelBuilder.Entity("KdyWeb.Entity.CloudParse.CloudParseUserChildren", b =>
+                {
+                    b.HasOne("KdyWeb.Entity.CloudParse.CloudParseUser", "CloudParseUser")
+                        .WithMany("CloudParseUserChildrens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.KdyRoleMenu", b =>

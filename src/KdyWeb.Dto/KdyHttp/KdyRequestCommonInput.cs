@@ -15,7 +15,7 @@ namespace KdyWeb.Dto.KdyHttp
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="url">请求Url</param>
+        /// <param name="url">请求Url（包含域名的网址路径）</param>
         /// <param name="method">请求方式</param>
         public KdyRequestCommonInput(string url, HttpMethod method)
         {
@@ -24,6 +24,18 @@ namespace KdyWeb.Dto.KdyHttp
             EnCoding = Encoding.UTF8;
             UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0";
         }
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public KdyRequestCommonInput(string baseHost)
+        {
+            BaseHost = baseHost;
+            EnCoding = Encoding.UTF8;
+            UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0";
+        }
+
+        public string BaseHost { get; set; }
 
         public int TimeOut { get; set; } = 10;
 
@@ -53,6 +65,41 @@ namespace KdyWeb.Dto.KdyHttp
             }
 
             return str;
+        }
+
+        /// <summary>
+        /// 设置Post请求数据
+        /// </summary>
+        /// <param name="url">PostUrl</param>
+        /// <param name="postData">post数据</param>
+        /// <param name="contentType">请求ContentType</param>
+        /// <param name="isAjax">是否Ajax请求</param>
+        public void SetPostData(string url, string postData, string contentType = "application/json", bool isAjax = false)
+        {
+            Url = url;
+            if (ExtData == null)
+            {
+                ExtData = new KdyRequestCommonExtInput();
+            }
+
+            ExtData.IsAjax = isAjax;
+            ExtData.PostData = postData;
+            ExtData.ContentType = contentType;
+            Method = HttpMethod.Post;
+        }
+
+        /// <summary>
+        /// 设置Post请求数据
+        /// </summary>
+        /// <param name="url">PostUrl</param>
+        public void SetGetRequest(string url)
+        {
+            Url = url;
+            Method = HttpMethod.Get;
+
+            ExtData.IsAjax = false;
+            ExtData.PostData = string.Empty;
+            ExtData.ContentType = string.Empty;
         }
     }
 
@@ -100,5 +147,10 @@ namespace KdyWeb.Dto.KdyHttp
         /// 表单其他字段
         /// </summary>
         public Dictionary<string, string> PostParDic { get; set; }
+
+        /// <summary>
+        /// Http头部请求字典
+        /// </summary>
+        public Dictionary<string, string> HeardDic { get; set; }
     }
 }

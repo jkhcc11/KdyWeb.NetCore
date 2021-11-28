@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.HttpBase;
 using KdyWeb.Dto.KdyHttp;
@@ -63,7 +65,49 @@ namespace KdyWeb.Service.KdyHttp
                 req.Headers.Add("X-Requested-With", "XMLHttpRequest");
             }
 
+            if (input.ExtData.HeardDic != null &&
+                input.ExtData.HeardDic.Any())
+            {
+                foreach (var headItem in input.ExtData.HeardDic)
+                {
+                    req.Headers.Add(headItem.Key, headItem.Value);
+                    SpecialReqHeadHandler(headItem, req);
+                }
+            }
+
             return req;
+        }
+
+        /// <summary>
+        /// 有些站点强制校验 不能有空格
+        /// https://stackoverflow.com/questions/45194549/httpclient-httprequestmessage-accept-header-parameters-cannot-have-spaces
+        /// https://github.com/dotnet/runtime/issues/21131
+        /// </summary>
+        internal void SpecialReqHeadHandler(KeyValuePair<string, string> inputKey, HttpRequestMessage req)
+        {
+            if (inputKey.Key.ToLower() != "accept")
+            {
+                return;
+            }
+
+            var tempMedia = MediaTypeWithQualityHeaderValue.Parse(inputKey.Value);
+            foreach (var v in req.Headers.Accept)
+            {
+                if (v.MediaType.Contains(tempMedia.MediaType) == false)
+                {
+                    return;
+                }
+
+                //反射更改
+                var field = v.GetType().GetTypeInfo()?.BaseType?.GetField("_mediaType", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (field == null)
+                {
+                    return;
+                }
+
+                field.SetValue(v, inputKey.Value);
+                v.Parameters.Clear();
+            }
         }
     }
 }
