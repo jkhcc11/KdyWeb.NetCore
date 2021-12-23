@@ -7,6 +7,7 @@ using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.BaseInterface.KdyOptions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
@@ -16,6 +17,7 @@ using KdyWeb.IService.SearchVideo;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -32,11 +34,13 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<VideoMainInfo, long> _videoMainInfoRepository;
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
         private readonly IKdyRepository<VideoSeriesList, long> _videoSeriesListRepository;
+        private readonly KdySelfHostOption _kdySelfHostOption;
 
         public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
             IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
             IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
-            IKdyRepository<VideoMainInfo, long> videoMainInfoRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<VideoSeriesList, long> videoSeriesListRepository) :
+            IKdyRepository<VideoMainInfo, long> videoMainInfoRepository, IKdyRepository<UserHistory, long> userHistoryRepository,
+            IKdyRepository<VideoSeriesList, long> videoSeriesListRepository, IOptions<KdySelfHostOption> options) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
@@ -47,6 +51,7 @@ namespace KdyWeb.Service.SearchVideo
             _videoMainInfoRepository = videoMainInfoRepository;
             _userHistoryRepository = userHistoryRepository;
             _videoSeriesListRepository = videoSeriesListRepository;
+            _kdySelfHostOption = options.Value;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -487,23 +492,70 @@ namespace KdyWeb.Service.SearchVideo
             return KdyResult.Success(result);
         }
 
+        /// <summary>
+        /// 分页查询影视库(普通查询)
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryVideoMainDto>>> QueryVideoByNormalAsync(QueryVideoByNormalInput input)
+        {
+            if (input.OrderBy == null || input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(VideoMain.OrderBy),
+                        OrderBy = KdyEfOrderBy.Desc
+                    },
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(VideoMain.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
+            //生成条件和排序规则
+            var query = _videoMainRepository.GetQuery()
+                .Include(a => a.VideoMainInfo)
+                .CreateConditions(input);
+
+            var count = await query.CountAsync();
+            if (string.IsNullOrEmpty(input.KeyWord) == false)
+            {
+                //关键字不为空时 按照长度排序
+                query = query
+                   .OrderBy(a => a.KeyWord.Length)
+                   .KdyThenOrderBy(input)
+                   .KdyPageList(input);
+            }
+            else
+            {
+                query = query.KdyOrderBy(input).KdyPageList(input);
+            }
+
+            var data = await query.ToListAsync();
+            var result = new PageList<QueryVideoMainDto>(input.Page, input.PageSize)
+            {
+                DataCount = count,
+                Data = data.MapToListExt<QueryVideoMainDto>()
+            };
+
+            foreach (var item in result.Data)
+            {
+                item.SourceUrl = string.Empty;
+                VideoDetailHandler(item);
+            }
+            return KdyResult.Success(result);
+        }
+
         #region 私有
         /// <summary>
         /// 详情处理
         /// </summary>
         private void VideoDetailHandler(GetVideoDetailDto detail)
         {
-            //var douBanProxy = KdyConfiguration.GetValue<string>(KdyWebServiceConst.DouBanProxyUrl);
-            //if (string.IsNullOrEmpty(douBanProxy) ||
-            //    string.IsNullOrEmpty(detail.VideoImg) ||
-            //    detail.VideoImg.Contains("view/movie_poster_cover") == false)
-            //{
-            //    return;
-            //}
-
-            //https://img9.doubanio.com        /view/photo/s_ratio_poster/public/p2625825416.jpg
-            //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
-            detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
+            detail.VideoImg = detail.VideoImg.GetDouImgName(_kdySelfHostOption.ProxyHost);
         }
 
         /// <summary>
@@ -511,9 +563,7 @@ namespace KdyWeb.Service.SearchVideo
         /// </summary>
         private void VideoDetailHandler(QueryVideoMainDto detail)
         {
-            //https://img9.doubanio.com        /view/photo/s_ratio_poster/public/p2625825416.jpg
-            //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
-            detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
+            detail.VideoImg = detail.VideoImg.GetDouImgName(_kdySelfHostOption.ProxyHost);
         }
         #endregion
     }

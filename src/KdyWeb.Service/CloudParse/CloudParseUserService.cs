@@ -7,12 +7,10 @@ using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
-using KdyWeb.Entity;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace KdyWeb.Service.CloudParse
 {
@@ -23,51 +21,12 @@ namespace KdyWeb.Service.CloudParse
     {
         private readonly IKdyRepository<CloudParseUser, long> _cloudParseUserRepository;
         private readonly IKdyRepository<CloudParseUserChildren> _cloudParseUserChildrenRepository;
-        private readonly IKdyRedisCache _kdyRedisCache;
 
         public CloudParseUserService(IUnitOfWork unitOfWork, IKdyRepository<CloudParseUser, long> cloudParseUserRepository,
-            IKdyRepository<CloudParseUserChildren> cloudParseUserChildrenRepository, IKdyRedisCache kdyRedisCache) : base(unitOfWork)
+            IKdyRepository<CloudParseUserChildren> cloudParseUserChildrenRepository) : base(unitOfWork)
         {
             _cloudParseUserRepository = cloudParseUserRepository;
             _cloudParseUserChildrenRepository = cloudParseUserChildrenRepository;
-            _kdyRedisCache = kdyRedisCache;
-        }
-
-        public async Task<KdyResult<GetParseUserInfoDto>> LoginWithParseUserAsync(LoginWithParseUserInput input)
-        {
-            var dbUserInfo = await _cloudParseUserRepository.GetQuery()
-                .FirstOrDefaultAsync(a => a.UserName == input.UserName ||
-                                          a.UserEmail == input.UserName);
-            if (dbUserInfo == null)
-            {
-                throw new KdyCustomException("用户不存在,获取用户失败");
-            }
-
-            if (dbUserInfo.UserStatus != KdyUserStatus.Normal)
-            {
-                throw new KdyCustomException("用户状态非正常,登录失败");
-            }
-
-            if (dbUserInfo.CheckPwd(input.Pwd) == false)
-            {
-                throw new KdyCustomException("用户名或密码错误");
-            }
-
-            //todo：改为ids4
-            var loginCacheInfo = new
-            {
-                UserId = dbUserInfo.Id,
-                UserName = dbUserInfo.UserName,
-                UserEmail = dbUserInfo.UserEmail,
-                UserNick = dbUserInfo.UserNick,
-                IsSuperAdmin = dbUserInfo.UserName == "admin"
-            };
-            var cacheKey = $"parse:{dbUserInfo.Id}";
-            var loginJsonStr = JsonConvert.SerializeObject(loginCacheInfo);
-            await _kdyRedisCache.GetDb(1).StringSetAsync(cacheKey, loginJsonStr);
-            var result = dbUserInfo.MapToExt<GetParseUserInfoDto>();
-            result.AuthKey = cacheKey;
-            return KdyResult.Success(result);
         }
 
         public async Task<KdyResult<GetParseUserInfoDto>> GetParseUserInfoAsync()
@@ -136,5 +95,45 @@ namespace KdyWeb.Service.CloudParse
             return dbUserInfo;
 
         }
+
+
+        #region remove
+        //public async Task<KdyResult<GetParseUserInfoDto>> LoginWithParseUserAsync(LoginWithParseUserInput input)
+        //{
+        //    var dbUserInfo = await _cloudParseUserRepository.GetQuery()
+        //        .FirstOrDefaultAsync(a => a.UserName == input.UserName ||
+        //                                  a.UserEmail == input.UserName);
+        //    if (dbUserInfo == null)
+        //    {
+        //        throw new KdyCustomException("用户不存在,获取用户失败");
+        //    }
+
+        //    if (dbUserInfo.UserStatus != KdyUserStatus.Normal)
+        //    {
+        //        throw new KdyCustomException("用户状态非正常,登录失败");
+        //    }
+
+        //    if (dbUserInfo.CheckPwd(input.Pwd) == false)
+        //    {
+        //        throw new KdyCustomException("用户名或密码错误");
+        //    }
+
+        //    //todo：改为ids4
+        //    var loginCacheInfo = new
+        //    {
+        //        UserId = dbUserInfo.Id,
+        //        UserName = dbUserInfo.UserName,
+        //        UserEmail = dbUserInfo.UserEmail,
+        //        UserNick = dbUserInfo.UserNick,
+        //        IsSuperAdmin = dbUserInfo.UserName == "admin"
+        //    };
+        //    var cacheKey = $"parse:{dbUserInfo.Id}";
+        //    var loginJsonStr = JsonConvert.SerializeObject(loginCacheInfo);
+        //    await _kdyRedisCache.GetDb(1).StringSetAsync(cacheKey, loginJsonStr);
+        //    var result = dbUserInfo.MapToExt<GetParseUserInfoDto>();
+        //    result.AuthKey = cacheKey;
+        //    return KdyResult.Success(result);
+        //} 
+        #endregion
     }
 }

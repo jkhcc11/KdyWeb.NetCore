@@ -161,7 +161,13 @@ InitVideoPlay.prototype = {
                 pd.DMode = e.detail.mode;
                 pd.EpId = epId;
 
-                that.sendPost(that._sendDanmuApi, pd, that.postType.json);
+                kdyCommon.kdySendHttp('post',
+                    that._sendDanmuApi,
+                    pd,
+                    function (result) {
+                        console.log(result);
+                    });
+                //that.sendPost(that._sendDanmuApi, pd, that.postType.json);
             });
         abpinst.txtText.style.textAlign = 'center';
         //abpinst.btnDm.addEventListener('click', recordTid);
@@ -181,10 +187,10 @@ InitVideoPlay.prototype = {
      * @param { 剧集Id} epId
      */
     getApiUrl: function (reqUrl, enUrl, epId) {
-        var that = this, pd = {};
+        var that = this, pd = {}, parseApi = reqUrl + '/KdyApiDown/Parse';
         pd.url = enUrl;
         $.ajax({
-            url: reqUrl + '/KdyApiDown/Parse',
+            url: parseApi,
             data: pd,
             type: 'POST',
             dataType: 'jsonp',
@@ -318,30 +324,6 @@ InitVideoPlay.prototype = {
      */
     setData: function (dataJson) {
         this._dataJson = dataJson;
-    },
-    /**
-     * 发送post请求 待防伪标记
-     * @param { Api地址 } url
-     * @param { 请求对象 } pd
-     * @param { 请求类型 eg:json } dataType
-     * @param { 成功回调 } successCallBack
-     */
-    sendPost: function (url, pd, dataType, successCallBack) {
-        var vToken = $("#vToken").val(),
-            contentType = "application/x-www-form-urlencoded";
-        if (dataType === 0) {
-            contentType = "application/json; charset=utf-8";
-            pd = JSON.stringify(pd);
-        }
-        $.ajax({
-            type: "post",
-            url: url,
-            headers: { "_antiforgery": vToken },
-            contentType: contentType,
-            data: pd,
-            // dataType: "json",
-            success: successCallBack
-        });
     }
 }
 
@@ -350,9 +332,8 @@ $(function () {
     var pd = {};
     pd.epId = epId;
     var initVideo = new InitVideoPlay();
-    initVideo.sendPost(initVideo._playResultApi,
+    kdyCommon.kdySendHttp('POST', initVideo._playResultApi,
         pd,
-        initVideo.postType.form,
         function (json) {
             initVideo.setData(json);
             if (json.isSuccess === false) {

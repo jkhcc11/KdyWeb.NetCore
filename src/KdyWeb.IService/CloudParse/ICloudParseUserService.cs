@@ -10,11 +10,11 @@ namespace KdyWeb.IService.CloudParse
     /// </summary>
     public interface ICloudParseUserService : IKdyService
     {
-        /// <summary>
-        /// 解析用户登录
-        /// </summary>
-        /// <returns></returns>
-        Task<KdyResult<GetParseUserInfoDto>> LoginWithParseUserAsync(LoginWithParseUserInput input);
+        ///// <summary>
+        ///// 解析用户登录
+        ///// </summary>
+        ///// <returns></returns>
+        //Task<KdyResult<GetParseUserInfoDto>> LoginWithParseUserAsync(LoginWithParseUserInput input);
 
         /// <summary>
         /// 获取解析用户信息

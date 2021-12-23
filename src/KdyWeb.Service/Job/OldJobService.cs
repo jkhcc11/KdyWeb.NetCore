@@ -93,7 +93,7 @@ namespace KdyWeb.Service.Job
                     VideoName = result.Data.VideoTitle,
                     OriginalUrl = url,
                     DemandType = UserDemandType.Input,
-                    UserEmail = input.UserEmail,
+                    //UserEmail = input.UserEmail, todo:旧项目job
                     Remark = input.Remark
                 };
 
@@ -114,7 +114,7 @@ namespace KdyWeb.Service.Job
                 VideoName = input.VideoName,
                 OriginalUrl = input.Url,
                 DemandType = UserDemandType.Feedback,
-                UserEmail = input.UserEmail
+                //UserEmail = input.UserEmail, todo:旧项目job
             };
             _feedBackInfoService.CreateFeedBackInfoAsync(feedBackInfo).GetAwaiter();
         }

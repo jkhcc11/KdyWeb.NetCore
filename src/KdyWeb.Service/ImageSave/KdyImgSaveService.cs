@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.KdyOptions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
@@ -19,6 +20,7 @@ using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace KdyWeb.Service.ImageSave
 {
@@ -34,6 +36,7 @@ namespace KdyWeb.Service.ImageSave
         private readonly IMinIoFileService _minIoFileService;
         private readonly IWeiBoFileService _weiBoFileService;
         private readonly INormalFileService _normalFileService;
+        private readonly KdySelfHostOption _kdySelfHostOption;
         /// <summary>
         /// MinIO存储桶
         /// </summary>
@@ -68,13 +71,14 @@ namespace KdyWeb.Service.ImageSave
             };
 
         public KdyImgSaveService(IKdyImgSaveRepository kdyImgSaveRepository, IMemoryCache memoryCache, IMinIoFileService minIoFileService,
-            IWeiBoFileService weiBoFileService, INormalFileService normalFileService, IUnitOfWork unitOfWork) : base(unitOfWork)
+            IWeiBoFileService weiBoFileService, INormalFileService normalFileService, IUnitOfWork unitOfWork, IOptions<KdySelfHostOption> options) : base(unitOfWork)
         {
             _kdyImgSaveRepository = kdyImgSaveRepository;
             _memoryCache = memoryCache;
             _minIoFileService = minIoFileService;
             _weiBoFileService = weiBoFileService;
             _normalFileService = normalFileService;
+            _kdySelfHostOption = options.Value;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -92,7 +96,6 @@ namespace KdyWeb.Service.ImageSave
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryKdyImgDto>>> QueryKdyImgAsync(QueryKdyImgInput input)
         {
-            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
             if (input.OrderBy == null || input.OrderBy.Any() == false)
             {
                 input.OrderBy = new List<KdyEfOrderConditions>()
@@ -109,7 +112,7 @@ namespace KdyWeb.Service.ImageSave
                 .GetDtoPageListAsync<KdyImgSave, QueryKdyImgDto>(input);
             foreach (var item in result.Data)
             {
-                item.FullImgUrl = $"{host}/kdyImg/path/{item.Id}";
+                item.FullImgUrl = $"{_kdySelfHostOption.ImgHost}/kdyImg/path/{item.Id}";
             }
 
             return KdyResult.Success(result);
@@ -251,8 +254,7 @@ namespace KdyWeb.Service.ImageSave
         /// <returns></returns>
         private string GetImageForImgHandler(KdyImgSave dbImg)
         {
-            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
-            var defaultUrl = $"{host}{KdyWebServiceConst.DefaultImgUrl}";
+            var defaultUrl = $"{_kdySelfHostOption.ImgHost}{KdyWebServiceConst.DefaultImgUrl}";
 
             if (dbImg == null)
             {
@@ -285,7 +287,7 @@ namespace KdyWeb.Service.ImageSave
 
             if (dbImg.Urls.Any())
             {
-                return $"{host}/{dbImg.Urls.First().TrimStart('/')}";
+                return $"{_kdySelfHostOption.ImgHost}/{dbImg.Urls.First().TrimStart('/')}";
             }
 
             return defaultUrl;
@@ -297,12 +299,11 @@ namespace KdyWeb.Service.ImageSave
         /// <returns></returns>
         private string ResultUrlHandler(string originalUrl)
         {
-            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
-            var proxyHost = KdyConfiguration.GetValue<string>(KdyWebServiceConst.NgProxyKey);
+            var proxyHost = _kdySelfHostOption.ProxyHost;
 
             if (originalUrl.StartsWith($"/{bucketName}"))
             {
-                return $"{host}{originalUrl}";
+                return $"{_kdySelfHostOption.ImgHost}{originalUrl}";
             }
 
             //http://pan-yz.chaoxing.com/thumbnail/origin/a37bb135f9192799960ca97c488747f7?type=img
@@ -444,7 +445,6 @@ namespace KdyWeb.Service.ImageSave
 
         internal async Task<KdyResult<string>> UploadAsync(MinIoFileInput minIoInput, WeiBoFileInput weiBoInput)
         {
-            var host = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ImgHostKey);
             var errDeafultId = KdyConfiguration.GetValue(KdyWebServiceConst.UploadImgErrDefaultId, "1139766229985267712");
             var result = KdyResult.Error<string>(KdyResultCode.Error, "图片上传失败");
 
@@ -455,7 +455,7 @@ namespace KdyWeb.Service.ImageSave
                 if (minIoResult.Code == KdyResultCode.HttpError)
                 {
                     //http异常时 为默认图
-                    return KdyResult.Success($"{host}/kdyImg/path/{errDeafultId}", "获取缺省图");
+                    return KdyResult.Success($"{_kdySelfHostOption.ImgHost}/kdyImg/path/{errDeafultId}", "获取缺省图");
                 }
 
                 return KdyResult.Error<string>(KdyResultCode.Error, $"上传主通道失败，请稍后 {minIoResult.Msg}");
@@ -465,7 +465,7 @@ namespace KdyWeb.Service.ImageSave
             var dbImg = await _kdyImgSaveRepository.FirstOrDefaultAsync(a => a.FileMd5 == minIoResult.Data.FileMd5);
             if (dbImg != null)
             {
-                return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
+                return KdyResult.Success($"{_kdySelfHostOption.ImgHost}/kdyImg/path/{dbImg.Id}", "获取成功");
             }
 
             //3、微博上传
@@ -492,7 +492,7 @@ namespace KdyWeb.Service.ImageSave
 
             await _kdyImgSaveRepository.CreateAsync(dbImg);
             await UnitOfWork.SaveChangesAsync();
-            return KdyResult.Success($"{host}/kdyImg/path/{dbImg.Id}", "获取成功");
+            return KdyResult.Success($"{_kdySelfHostOption.ImgHost}/kdyImg/path/{dbImg.Id}", "获取成功");
         }
         #endregion
     }

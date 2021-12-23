@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.Entity;
 
 namespace KdyWeb.Dto
 {
     /// <summary>
     /// 用户信息查询 Dto
     /// </summary>
-    [AutoMap(typeof(KdyUser))]
+    [AutoMap(typeof(Entity.KdyUser))]
     public class GetUserInfoDto : BaseEntityDto<long>
     {
         /// <summary>
@@ -26,24 +25,14 @@ namespace KdyWeb.Dto
         public string UserEmail { get; set; }
 
         /// <summary>
-        ///  密码
-        /// </summary>
-        public string UserPwd { get; set; }
-
-        /// <summary>
         /// 手机号
         /// </summary>
         public string PhoneNumber { get; set; }
 
         /// <summary>
-        /// 角色Id
+        /// 角色名
         /// </summary>
-        public int KdyRoleId { get; set; }
-
-        /// <summary>
-        /// 用户角色
-        /// </summary>
-        public KdyRoleDto KdyRole { get; set; }
+        public string RoleName  { get; set; }
     }
 
 }

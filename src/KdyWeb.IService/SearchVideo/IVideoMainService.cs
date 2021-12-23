@@ -72,5 +72,12 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<List<QuerySameVideoByActorDto>>> QuerySameVideoByActorAsync(QuerySameVideoByActorInput input);
+
+        /// <summary>
+        /// 分页查询影视库(普通查询)
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<QueryVideoMainDto>>> QueryVideoByNormalAsync(QueryVideoByNormalInput input);
+
     }
 }

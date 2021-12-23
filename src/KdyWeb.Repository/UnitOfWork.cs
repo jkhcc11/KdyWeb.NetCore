@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.EntityFramework;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,16 +18,13 @@ namespace KdyWeb.Repository
     {
         private readonly DbContext _dbContext;
         private readonly DbContext _readDbContext;
-        /// <summary>
-        /// 用户登录信息
-        /// </summary>
-        protected ILoginUserInfo LoginUserInfo;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UnitOfWork(IRwContextFactory contextFactory)
+        public UnitOfWork(IRwContextFactory contextFactory, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
             _dbContext = new ReadWriteContext(contextFactory.GetDbContext(ReadWrite.Write));
             _readDbContext = new ReadWriteContext(contextFactory.GetDbContext(ReadWrite.Read));
-            LoginUserInfo = KdyBaseServiceProvider.ServiceProvide.GetService<ILoginUserInfo>();
         }
 
         public int SaveChanges()
@@ -77,6 +74,9 @@ namespace KdyWeb.Repository
         /// </summary>
         private void InitEntityDefaultValue()
         {
+            //scope调用trance时 不能用直接用构造器注入得到当前http请求上下文 会读取不到值
+            var loginUserInfo = _httpContextAccessor.HttpContext?.RequestServices.GetRequiredService<ILoginUserInfo>() ??
+                                new LoginUserInfo(_httpContextAccessor);
             var entries = _dbContext.ChangeTracker.Entries()
                 .Where(a => (a.Entity is IBaseTimeKey))
                 .ToList();
@@ -93,8 +93,12 @@ namespace KdyWeb.Repository
                 {
                     case EntityState.Added:
                         {
-                            entity.CreatedUserId ??= LoginUserInfo.UserId;
-                            if (entity.CreatedTime.Year == 1)
+                            if (loginUserInfo.UserId.HasValue)
+                            {
+                                entity.CreatedUserId = loginUserInfo.GetUserId();
+                            }
+
+                            if (entity.CreatedTime == default)
                             {
                                 //无默认值时
                                 entity.CreatedTime = DateTime.Now;
@@ -103,7 +107,7 @@ namespace KdyWeb.Repository
                         }
                     case EntityState.Modified:
                         {
-                            entity.ModifyUserId = LoginUserInfo.UserId;
+                            entity.ModifyUserId = loginUserInfo.UserId;
                             entity.ModifyTime = DateTime.Now;
                             break;
                         }

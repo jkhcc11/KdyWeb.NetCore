@@ -1,30 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using AutoMapper;
-using Kdy.StandardJob;
-using KdyWeb.BaseInterface;
-using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.BaseInterface.Filter;
-using KdyWeb.BaseInterface.Repository;
-using KdyWeb.Dto;
-using KdyWeb.MiniProfiler;
-using KdyWeb.Repository;
+using KdyWeb.HttpApi;
+using KdyWeb.Job.Extensions;
 using KdyWeb.Service.ServiceExtension;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace KdyWeb.Job
 {
@@ -40,79 +27,9 @@ namespace KdyWeb.Job
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //关闭ModelState自动校验
-            services.Configure<ApiBehaviorOptions>(option =>
-            {
-                option.SuppressModelStateInvalidFilter = true;
-            });
-            services.KdyRegister();
-
-            //注入通用泛型仓储
-            services.TryAdd(ServiceDescriptor.Transient(typeof(IKdyRepository<>), typeof(CommonRepository<>)));
-            services.TryAdd(ServiceDescriptor.Transient(typeof(IKdyRepository<,>), typeof(CommonRepository<,>)));
-
-            #region 自动注入旧版Job
-
-            //加载当前项目程序集
-            var assemblies = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Kdy*.dll").Select(Assembly.LoadFrom).ToArray();
-            //所有程序集类型声明
-            var allTypes = new List<System.Type>();
-            foreach (var itemAssemblies in assemblies)
-            {
-                allTypes.AddRange(itemAssemblies.GetTypes());
-            }
-
-            //公用的接口
-            var baseType = typeof(IKdyJobFlag);
-            //过滤需要用到的服务声明接口
-            var useType = allTypes.Where(a => baseType.IsAssignableFrom(a) && a.IsAbstract == false).ToList();
-            foreach (var item in useType)
-            {
-                //该服务所属接口
-                var currentInterface = item.GetInterfaces().FirstOrDefault(a => a.Name.EndsWith(item.Name));
-                if (currentInterface == null)
-                {
-                    continue;
-                }
-
-                //每次请求，都获取一个新的实例。同一个请求获取多次会得到相同的实例
-                services.AddScoped(currentInterface, item);
-            }
-            #endregion
-
-            //AutoMapper注入
-            //https://www.codementor.io/zedotech/how-to-using-automapper-on-asp-net-core-3-0-via-dependencyinjection-zq497lzsq
-            //services.AddAutoMapper(typeof(KdyMapperInit));
-            var dtoAssembly = typeof(KdyMapperInit).Assembly;
-            var entityAssembly = typeof(BaseEntity<>).Assembly;
-            services.AddAutoMapper(dtoAssembly, entityAssembly);
-
-            services.AddControllers(opt =>
-                {
-                    opt.Filters.Add<ModelStateValidFilter>();
-                })
-                .AddNewtonsoftJson(option =>
-                {
-                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-                });
-
-            //注入Hangfire
-            services.InitHangFireServer(Configuration);
-
-            //注入HttpClient
-            services.AddHttpClient(KdyBaseConst.HttpClientName)
-                .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
-                {
-                    //取消自动跳转
-                    AllowAutoRedirect = false,
-                });
-
-            //初始化第三方组件
-            services.InitIdGenerate(Configuration)
-                .UseRedisCache(Configuration)
-                .AddMemoryCache();
-
-            services.AddMiniProfile();
+            services.AddKdyDefaultExt()
+                .AddOldJob()
+                .InitHangFireServer(Configuration);
 
             //注入自用站点解析
             services.AddKdyWebParse(Configuration);
@@ -121,17 +38,26 @@ namespace KdyWeb.Job
             //Swagger
             services.AddSwaggerGen(option =>
             {
-                option.SwaggerDoc("v1", new OpenApiInfo
+                option.SwaggerDoc("normal", new OpenApiInfo
                 {
-                    Title = "看电影旧版迁移Api",
-                    Version = "v1"
+                    Title = "公用Api",
+                    Version = "v2"
                 });
 
-                //option.SwaggerDoc("v2", new OpenApiInfo
-                //{
-                //    Title = "看电影Api",
-                //    Version = "v2"
-                //});
+                option.SwaggerDoc("login", new OpenApiInfo
+                {
+                    Title = "登录Api",
+                    Version = "v2"
+                });
+
+                option.SwaggerDoc("manager", new OpenApiInfo
+                {
+                    Title = "管理Api",
+                    Version = "v2"
+                });
+
+                //  option.ExampleFilters();
+                option.OperationFilter<AddResponseHeadersFilter>();
 
                 var xmlPath = AppDomain.CurrentDomain.BaseDirectory;
                 var filePath = Directory.GetFiles(xmlPath, "KdyWeb.*.xml");
@@ -140,34 +66,28 @@ namespace KdyWeb.Job
                     option.IncludeXmlComments(item, true);
                 }
 
+                option.OperationFilter<AddResponseHeadersFilter>();
+
+                //授权
+                option.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Description = "Authorization format : Bearer {token}",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT"
+                });
+
+                //在Header中添加Token
+                option.OperationFilter<SecurityRequirementsOperationFilter>();
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseMiniProfile();
-            }
-
-            app.UseRouting();
-            app.UseAuthorization();
-
-            //todo:!!!! 这个得注意顺序 得放到Routing后
-            app.UseKdyLog();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
+            app.AddKdyDefaultExt();
             app.InitDashboard();
-
-            //全局DI容器
-            KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
-            KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
-            // app.InitExceptionLess(Configuration);
 
             if (env.IsDevelopment())
             {
@@ -175,7 +95,9 @@ namespace KdyWeb.Job
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                    c.SwaggerEndpoint("/swagger/normal/swagger.json", "normal");
+                    c.SwaggerEndpoint("/swagger/login/swagger.json", "login");
+                    c.SwaggerEndpoint("/swagger/manager/swagger.json", "manager");
                     // c.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
                 });
             }

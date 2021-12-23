@@ -1,20 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.MiniProfiler;
-using Microsoft.AspNetCore.Authorization;
+using KdyWeb.BaseInterface.Filter;
+using KdyWeb.HttpApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace KdyWeb.NetCore
 {
@@ -30,50 +20,39 @@ namespace KdyWeb.NetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //添加自动防伪标记
-            services.AddControllersWithViews(options =>
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()))
-                .AddNewtonsoftJson(option =>
-                {
-                    option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-                });
+            //自定义模型校验
+            services.AddControllersWithViews(options => { options.Filters.Add<ModelStateValidFilter>(); });
 
-            services.KdyRegisterInit(Configuration);
+            services.AddKdyDefaultExt();
+
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    options.HttpOnly = HttpOnlyPolicy.Always;
+            //    options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            //});
+
+            //初始化第三方组件
+            services.InitHangFire(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseMiniProfile();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseRouting();
-            app.UseKdyAuth(new KdyAuthMiddlewareOption()
-            {
-                LoginUrl = "/User/Login"
-            }).UseKdyLog();
+            app.AddKdyDefaultExt();
+            //app.UseKdyAuth(new KdyAuthMiddlewareOption()
+            //{
+            //    LoginUrl = "/User/Login"
+            //}).UseKdyLog();
 
-            // app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            //全局DI容器
-            KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
-            KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
-            // app.InitExceptionLess(Configuration);
         }
     }
 }

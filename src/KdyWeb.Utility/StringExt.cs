@@ -279,6 +279,32 @@ namespace KdyWeb.Utility
             return "application/octet-stream";
         }
 
+        /// <summary>
+        /// 获取豆瓣图片名
+        /// 若不是豆瓣则源url返回
+        /// </summary>
+        /// <remarks>
+        ///  https://img1.doubanio.com/view/photo/m/public/p2784394947.webp  => p2784394947.webp
+        /// </remarks>
+        /// <param name="imgUrl">图片Url</param>
+        /// <param name="proxyHost">代理host</param>
+        /// <returns></returns>
+        public static string GetDouImgName(this string imgUrl,string proxyHost)
+        {
+            if (string.IsNullOrEmpty(imgUrl))
+            {
+                return string.Empty;
+            }
+
+            if (imgUrl.Contains("doubanio.com") == false)
+            {
+                return imgUrl;
+            }
+
+            var tempArray = imgUrl.Split('/');
+            return $"{proxyHost}/dbimg/{tempArray.Last()}";
+        }
+
         #region 加密相关
         /// <summary>
         /// Md5扩展

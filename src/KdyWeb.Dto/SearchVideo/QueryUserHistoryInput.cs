@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using KdyWeb.BaseInterface;
-using KdyWeb.BaseInterface.BaseModel;
+﻿using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SearchVideo;
 
 namespace KdyWeb.Dto.SearchVideo
@@ -14,11 +12,5 @@ namespace KdyWeb.Dto.SearchVideo
         /// 用户订阅类型
         /// </summary>
         public UserSubscribeType? UserSubscribeType { get; set; }
-
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        [KdyQuery(nameof(UserHistory.UserName), KdyOperator.Equal)]
-        public string UserName { get; set; }
     }
 }

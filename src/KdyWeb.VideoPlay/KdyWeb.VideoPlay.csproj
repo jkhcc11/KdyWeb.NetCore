@@ -21,12 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KdyWeb.MiniProfiler\KdyWeb.MiniProfiler.csproj" />
-    <ProjectReference Include="..\KdyWeb.Service\KdyWeb.Service.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
   </ItemGroup>
 
 </Project>

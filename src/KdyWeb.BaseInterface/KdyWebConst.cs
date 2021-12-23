@@ -21,7 +21,6 @@
         public const string HttpClientName = "KdyWeb";
     }
 
-
     /// <summary>
     /// Hangfire队列
     /// </summary>

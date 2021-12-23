@@ -39,12 +39,5 @@ namespace KdyWeb.Dto.SearchVideo
         [StringLength(FeedBackInfo.VideoNameLength)]
         [Required(ErrorMessage = "视频名称必填")]
         public string VideoName { get; set; }
-
-        /// <summary>
-        /// 用户Email
-        /// </summary>
-        [StringLength(FeedBackInfo.UserEmailLength)]
-        [Required(ErrorMessage = "Email必填")]
-        public string UserEmail { get; set; }
     }
 }

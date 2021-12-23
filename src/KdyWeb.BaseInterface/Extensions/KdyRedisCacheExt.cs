@@ -40,6 +40,12 @@ namespace KdyWeb.BaseInterface.Extensions
                 Configuration = redisConnStr,
                 InstanceName = pre
             };
+
+            services.AddDistributedRedisCache(opt =>
+            {
+                opt.Configuration = redisConnStr;
+                opt.InstanceName = pre;
+            });
             return services.UseKdyRedisCache(opt =>
              {
                  opt.ConnectionMultiplexer = ConnectionMultiplexer.Connect(redisConnStr);
