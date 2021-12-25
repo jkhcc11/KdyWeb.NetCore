@@ -1,8 +1,9 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AspNetCoreRateLimit;
+using AspNetCoreRateLimit.Redis;
 using IdentityModel;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
@@ -15,7 +16,6 @@ using KdyWeb.Repository;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -140,14 +140,16 @@ namespace KdyWeb.HttpApi
                 allowHost = "https://*.wxkdy666.top,https://*.wxkdy666.com";
             }
 
-            var hostArray = allowHost.Split(',').Select(a=>a.TrimEnd('/')).ToArray();
+            var hostArray = allowHost.Split(',').Select(a => a.TrimEnd('/')).ToArray();
 
             //跨域
-            services.AddCors(option => 
-                option.AddPolicy("kdyCors", policy => 
+            services.AddCors(option =>
+                option.AddPolicy("kdyCors", policy =>
                     policy.AllowAnyHeader()
                         .AllowAnyMethod()
                         .WithOrigins(hostArray)));
+
+            AddRateLimit(services);
             return services;
         }
 
@@ -167,6 +169,8 @@ namespace KdyWeb.HttpApi
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseIpRateLimiting();
 
             app.UseRouting();
             app.UseCors("kdyCors");
@@ -223,6 +227,39 @@ namespace KdyWeb.HttpApi
                 //    tokenValidatedContext.Fail($"User login another place");
                 //}
             }
+        }
+
+        /// <summary>
+        /// 添加限流
+        /// </summary>
+        private static void AddRateLimit(this IServiceCollection services)
+        {
+            var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+
+            //todo:https://github.com/stefanprodan/AspNetCoreRateLimit/wiki/IpRateLimitMiddleware#setup
+            // needed to load configuration from appsettings.json
+            //services.AddOptions();
+            // needed to store rate limit counters and ip rules
+            // services.AddMemoryCache();
+
+            //load general configuration from appsettings.json
+            //EnableEndpointRateLimiting 为false时 全局过滤  为true时单个Api过滤
+            services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
+
+            //load ip rules from appsettings.json
+            // services.Configure<IpRateLimitPolicies>(configuration.GetSection("IpRateLimitPolicies"));
+
+            // services.AddRedisRateLimiting();
+            services.AddDistributedRateLimiting<KdyCustomRedisProcessingStrategy>();
+
+            //// Add framework services.
+            //services.AddMvc();
+            // configuration (resolvers, counter key builders)
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+            // inject counter and rules distributed cache stores
+            // services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
         }
     }
 }
