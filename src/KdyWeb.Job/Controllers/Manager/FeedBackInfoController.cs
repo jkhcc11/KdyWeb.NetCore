@@ -12,7 +12,7 @@ namespace KdyWeb.Job.Controllers.Manager
     /// <summary>
     /// 反馈信息
     /// </summary>
-    public class FeedBackInfoController : BaseLoginController
+    public class FeedBackInfoController : BaseManagerController
     {
         private readonly IFeedBackInfoService _feedBackInfoService;
 

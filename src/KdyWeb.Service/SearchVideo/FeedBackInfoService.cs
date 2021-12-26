@@ -46,7 +46,16 @@ namespace KdyWeb.Service.SearchVideo
                     OrderBy = KdyEfOrderBy.Desc
                 }
             };
-            var dbPage = await _kdyRepository.GetQuery()
+
+            var query = _kdyRepository.GetQuery();
+            if (LoginUserInfo.IsLogin &&
+                LoginUserInfo.IsSuperAdmin == false)
+            {
+                //非管理员登录后只能看自己
+                query = query.Where(a => a.CreatedUserId == LoginUserInfo.GetUserId());
+            }
+
+            var dbPage = await query
                 .GetDtoPageListAsync<FeedBackInfo, GetFeedBackInfoDto>(input);
 
             return KdyResult.Success(dbPage);
@@ -61,13 +70,14 @@ namespace KdyWeb.Service.SearchVideo
             var exit = await _kdyRepository.GetQuery()
                 .CountAsync(a => a.OriginalUrl == input.OriginalUrl &&
                                  a.FeedBackInfoStatus == FeedBackInfoStatus.Pending &&
-                                 a.UserEmail == LoginUserInfo.UserEmail);
+                                 a.CreatedUserId == LoginUserInfo.GetUserId());
             if (exit > 0)
             {
                 return KdyResult.Error(KdyResultCode.Error, "数据已提交，请等待处理结果");
             }
 
             var dbFeedBack = input.MapToExt<FeedBackInfo>();
+            dbFeedBack.UserEmail = LoginUserInfo.UserEmail;
             await _kdyRepository.CreateAsync(dbFeedBack);
             await UnitOfWork.SaveChangesAsync();
 
@@ -188,10 +198,11 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "该链接已反馈,请勿重复反馈");
             }
 
-            var dbFeedBack = new FeedBackInfo(UserDemandType.Input, url, LoginUserInfo.UserEmail)
+            var dbFeedBack = new FeedBackInfo(UserDemandType.Input, url)
             {
                 VideoName = result.Data.VideoTitle,
-                Remark = input.Remark
+                Remark = input.Remark,
+                UserEmail = LoginUserInfo.UserEmail
             };
             await _kdyRepository.CreateAsync(dbFeedBack);
             await UnitOfWork.SaveChangesAsync();

@@ -33,14 +33,14 @@ namespace KdyWeb.Job.Controllers.Login
         }
 
         /// <summary>
-        /// 创建反馈信息
+        /// 创建求片反馈
         /// </summary>
         /// <returns></returns>
-        [HttpPost("createByDouBan")]
+        [HttpPost("createWithHelp")]
         [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CreateFeedBackInfoByDouBanAsync(CreateFeedBackInfoInput input)
+        public async Task<IActionResult> CreateFeedBackInfoWithHelpAsync(CreateFeedBackInfoWithHelpInput input)
         {
-            var result = await _feedBackInfoService.CreateFeedBackInfoAsync(input);
+            var result = await _feedBackInfoService.CreateFeedBackInfoWithHelpAsync(input);
             return Ok(result);
         }
     }

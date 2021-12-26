@@ -4,7 +4,7 @@ using KdyWeb.Entity.SearchVideo;
 namespace KdyWeb.Dto.SearchVideo
 {
     /// <summary>
-    /// 创建反馈信息 入参
+    /// 创建求片反馈 入参
     /// </summary>
     public class CreateFeedBackInfoWithHelpInput
     {

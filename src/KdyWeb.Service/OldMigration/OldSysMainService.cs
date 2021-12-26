@@ -461,7 +461,7 @@ namespace KdyWeb.Service.OldMigration
                     continue;
                 }
 
-                var newItem = new FeedBackInfo(UserDemandType.Input, item.Name, userItem.UserEmail)
+                var newItem = new FeedBackInfo(UserDemandType.Input, item.Name)
                 {
                     CreatedTime = item.CreatedTime,
                     CreatedUserId = userItem.Id,
