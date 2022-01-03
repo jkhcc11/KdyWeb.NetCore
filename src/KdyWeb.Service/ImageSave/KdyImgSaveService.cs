@@ -315,7 +315,7 @@ namespace KdyWeb.Service.ImageSave
                     .Replace("?type=img", ".png");
             }
 
-            if (originalUrl.Contains("pan-yz.chaoxing.com"))
+            if (originalUrl.Contains("doubanio.com"))
             {
                 //豆瓣替换 否则403
                 //https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2665925017.jpg

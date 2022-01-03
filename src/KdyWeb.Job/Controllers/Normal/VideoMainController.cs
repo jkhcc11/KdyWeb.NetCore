@@ -29,10 +29,6 @@ namespace KdyWeb.Job.Controllers.Normal
         public async Task<IActionResult> GetVideoDetailAsync(long keyId)
         {
             var result = await _videoMainService.GetVideoDetailAsync(keyId);
-            if (result.IsSuccess)
-            {
-                result.Data.SourceUrl = string.Empty;
-            }
             return Ok(result);
         }
 

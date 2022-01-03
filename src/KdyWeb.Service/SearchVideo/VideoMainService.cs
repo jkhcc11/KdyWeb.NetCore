@@ -120,7 +120,7 @@ namespace KdyWeb.Service.SearchVideo
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
             VideoDetailHandler(result);
 
-            if (LoginUserInfo.UserId.HasValue)
+            if (LoginUserInfo.IsLogin)
             {
                 //登录用户就获取最新历史记录
                 var dbNewHistory = await _userHistoryRepository.GetAsNoTracking()
@@ -144,6 +144,12 @@ namespace KdyWeb.Service.SearchVideo
                 .Select(a => a.VideoSeries)
                 .FirstOrDefaultAsync();
             result.VideoSeries = dbVideoSeries?.MapToExt<QueryVideoSeriesDto>();
+
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                //非超管隐藏来源
+                result.SourceUrl = string.Empty;
+            }
 
             if (result.IsEnd)
             {
