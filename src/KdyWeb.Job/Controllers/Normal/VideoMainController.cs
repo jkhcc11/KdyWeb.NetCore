@@ -55,5 +55,17 @@ namespace KdyWeb.Job.Controllers.Normal
             var result = await _videoMainService.QueryVideoByNormalAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 随机影片(普通查询)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("queryRand/{count}")]
+        [ProducesResponseType(typeof(KdyResult<IList<QueryVideoMainDto>>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> QueryVideoByNormalAsync(int count)
+        {
+            var result = await _videoMainService.RandVideoByNormalAsync(count);
+            return Ok(result);
+        }
     }
 }

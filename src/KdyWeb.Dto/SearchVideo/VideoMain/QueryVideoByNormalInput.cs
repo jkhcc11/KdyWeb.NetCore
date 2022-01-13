@@ -1,5 +1,4 @@
-﻿using System;
-using KdyWeb.BaseInterface;
+﻿using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SearchVideo;
 

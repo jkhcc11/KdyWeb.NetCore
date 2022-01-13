@@ -79,5 +79,10 @@ namespace KdyWeb.IService.SearchVideo
         /// <returns></returns>
         Task<KdyResult<PageList<QueryVideoMainDto>>> QueryVideoByNormalAsync(QueryVideoByNormalInput input);
 
+        /// <summary>
+        /// 随机影片(普通查询)
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<IList<QueryVideoMainDto>>> RandVideoByNormalAsync(int count);
     }
 }

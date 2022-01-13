@@ -555,6 +555,36 @@ namespace KdyWeb.Service.SearchVideo
             return KdyResult.Success(result);
         }
 
+        /// <summary>
+        /// 随机影片(普通查询)
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<IList<QueryVideoMainDto>>> RandVideoByNormalAsync(int count)
+        {
+            if (count > 50 ||
+                count <= 0)
+            {
+                count = 12;
+            }
+
+            //生成条件和排序规则
+            var dbData = await _videoMainRepository.GetQuery()
+                .Include(a => a.VideoMainInfo)
+                .Where(a => a.VideoDouBan > 0 &&
+                          a.VideoContentFeature == VideoMain.SystemInput)
+                .OrderBy(a => Guid.NewGuid())
+                .Take(count)
+                .ToListAsync();
+
+            var result = dbData.MapToListExt<QueryVideoMainDto>();
+            foreach (var item in result)
+            {
+                item.SourceUrl = string.Empty;
+                VideoDetailHandler(item);
+            }
+            return KdyResult.Success(result);
+        }
+
         #region 私有
         /// <summary>
         /// 详情处理
