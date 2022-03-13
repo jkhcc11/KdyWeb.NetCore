@@ -29,10 +29,17 @@ InitVideoPlay.prototype = {
             system = that.checkSys(),
             sourceType = 'video/mp4';
         //var tempV = vurl.split('$');//腾讯的
-        if (vurl.indexOf(".m3u8") > 0 || (vurl.indexOf("g3proxy.lecloud.com") > 0 && vurl.indexOf("tss=mp4") === -1)) {
+        if (vurl.indexOf(".m3u8") > 0) {
+            vtype = "m3u8";
+            sourceType = "application/x-mpegURL";
+        } else if (vurl.indexOf("g3proxy.lecloud.com") > 0 && vurl.indexOf("tss=mp4") === -1) {
             vtype = "m3u8"; //乐视的 不是所有都是m3u8
             sourceType = "application/x-mpegURL";
+        } else if (vurl.indexOf("/m3u8/") > 0) {
+            vtype = "m3u8"; //mediatrack
+            sourceType = "application/x-mpegURL";
         }
+
         if (system.ios || system.android || system.ipad) { //手机版h5
             document.getElementById(playId)
                 .innerHTML =
@@ -46,7 +53,7 @@ InitVideoPlay.prototype = {
             return;
         }
         if (epId != null && epId > 0 && (vtype === "mp4" || vtype === "m3u8")) {
-            that.intDanMu(playId, vurl, epId);
+            that.intDanMu(playId, vurl, epId, vtype);
             return;
         }
 
@@ -79,14 +86,15 @@ InitVideoPlay.prototype = {
      * playId：承载id
      * vurl:播放地址
      * epId：弹幕标识
+     * vtype：视频类型  m3u8|mp4
      */
-    intDanMu: function (playId, vurl, epId) {
+    intDanMu: function (playId, vurl, epId, vtype) {
         var that = this;
         //document.write('');
         $("#" + playId).html('');
         $("body")
             .append('<div class="video"><video id="kdy_video" poster="" preload="auto" autobuffer="true" data-setup="{}" webkit-playsinline autoplay="autoplay"><source src="' + vurl + '"><div><b>您使用的浏览器不支持HTML5视频...</b></div></video></div>');
-        if (vurl.indexOf('.m3u8') > 0) {
+        if (vtype === "m3u8") {
             //m3u8强制https
             vurl = vurl.replace('http://', 'https://');
             //m3u8地址

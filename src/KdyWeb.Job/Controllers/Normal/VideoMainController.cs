@@ -62,7 +62,7 @@ namespace KdyWeb.Job.Controllers.Normal
         /// <returns></returns>
         [HttpGet("queryRand/{count}")]
         [ProducesResponseType(typeof(KdyResult<IList<QueryVideoMainDto>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> QueryVideoByNormalAsync(int count)
+        public async Task<IActionResult> RandVideoByNormalAsync(int count)
         {
             var result = await _videoMainService.RandVideoByNormalAsync(count);
             return Ok(result);
