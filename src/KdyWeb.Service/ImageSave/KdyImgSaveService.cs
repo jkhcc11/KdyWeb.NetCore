@@ -307,14 +307,12 @@ namespace KdyWeb.Service.ImageSave
             }
 
             //http://pan-yz.chaoxing.com/thumbnail/origin/a37bb135f9192799960ca97c488747f7?type=img
+            //https://p.ananas.chaoxing.com/star3/origin/9e1b68d12703ea78ff429fe94c31aeec.jpg
             //=>//xxx.com/cximg/60c70132a7b45d8c902cb099add0ba7f.png
-            if (originalUrl.Contains("pan-yz.chaoxing.com"))
+            if (originalUrl.Contains("chaoxing.com"))
             {
-                //超星替换 否则403
-                originalUrl = originalUrl.Replace("http://pan-yz.chaoxing.com/thumbnail/origin/", $"{proxyHost}/cximg/")
-                    .Replace("?type=img", ".png")
-                    .Replace("https://p.ananas.chaoxing.com/star3/origin/", "")
-                    .Replace("http://p.ananas.chaoxing.com/star3/origin/", "");
+                var lastFlagIndex = originalUrl.LastIndexOf("/", StringComparison.CurrentCultureIgnoreCase);
+                originalUrl = $"{proxyHost}/cximg{originalUrl.Substring(lastFlagIndex)}";
             }
 
             if (originalUrl.Contains("doubanio.com"))
@@ -322,7 +320,8 @@ namespace KdyWeb.Service.ImageSave
                 //豆瓣替换 否则403
                 //https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2665925017.jpg
                 //=>//xxx.com/dbimg/p2665925017.jpg
-                originalUrl = originalUrl.Replace("https://img1.doubanio.com/view/photo/s_ratio_poster/public/", $"{proxyHost}/dbimg/");
+                var lastFlagIndex = originalUrl.LastIndexOf("/", StringComparison.CurrentCultureIgnoreCase);
+                originalUrl = $"{proxyHost}/dbimg{originalUrl.Substring(lastFlagIndex)}";
             }
             return originalUrl;
         }
