@@ -118,7 +118,7 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = main.MapToExt<GetVideoDetailDto>();
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
-            VideoDetailHandler(result);
+            result.ImgHandler();
 
             if (LoginUserInfo.IsLogin)
             {
@@ -240,7 +240,7 @@ namespace KdyWeb.Service.SearchVideo
 
             foreach (var item in result.Data)
             {
-                VideoDetailHandler(item);
+                item.ImgHandler();
             }
             return KdyResult.Success(result);
         }
@@ -484,14 +484,18 @@ namespace KdyWeb.Service.SearchVideo
                 if (item.VideoCasts.IsEmptyExt() == false &&
                     item.VideoCasts.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries).Any(a => a == input.Actor))
                 {
-                    result.Add(item.MapToExt<QuerySameVideoByActorDto>());
+                    var temp = item.MapToExt<QuerySameVideoByActorDto>();
+                    temp.ImgHandler();
+                    result.Add(temp);
                     continue;
                 }
 
                 if (item.VideoDirectors.IsEmptyExt() == false &&
                     item.VideoDirectors.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries).Any(a => a == input.Actor))
                 {
-                    result.Add(item.MapToExt<QuerySameVideoByActorDto>());
+                    var temp = item.MapToExt<QuerySameVideoByActorDto>();
+                    temp.ImgHandler();
+                    result.Add(temp);
                 }
             }
 
@@ -550,7 +554,7 @@ namespace KdyWeb.Service.SearchVideo
             foreach (var item in result.Data)
             {
                 item.SourceUrl = string.Empty;
-                VideoDetailHandler(item);
+                item.ImgHandler();
             }
             return KdyResult.Success(result);
         }
@@ -580,27 +584,9 @@ namespace KdyWeb.Service.SearchVideo
             foreach (var item in result)
             {
                 item.SourceUrl = string.Empty;
-                VideoDetailHandler(item);
+                item.ImgHandler();
             }
             return KdyResult.Success(result);
         }
-
-        #region 私有
-        /// <summary>
-        /// 详情处理
-        /// </summary>
-        private void VideoDetailHandler(GetVideoDetailDto detail)
-        {
-            detail.VideoImg = detail.VideoImg.GetDouImgName(_kdySelfHostOption.ProxyHost);
-        }
-
-        /// <summary>
-        /// 详情处理
-        /// </summary>
-        private void VideoDetailHandler(QueryVideoMainDto detail)
-        {
-            detail.VideoImg = detail.VideoImg.GetDouImgName(_kdySelfHostOption.ProxyHost);
-        }
-        #endregion
     }
 }

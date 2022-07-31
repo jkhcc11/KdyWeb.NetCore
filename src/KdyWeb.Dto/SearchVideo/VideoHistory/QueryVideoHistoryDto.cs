@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Configuration.Annotations;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SearchVideo;
 
@@ -9,7 +10,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 查询视频播放记录 Dto
     /// </summary>
     [AutoMap(typeof(VideoHistory))]
-    public class QueryVideoHistoryDto : CreatedUserDto<long>
+    public class QueryVideoHistoryDto : CreatedUserDto<long>, IBaseImgUrl
     {
         /// <summary>
         /// 主表主键Key
@@ -32,8 +33,11 @@ namespace KdyWeb.Dto.SearchVideo
         public string VodName { get; set; }
 
         /// <summary>
-        /// 海报
+        /// show海报
         /// </summary>
-        public string VodImgUrl { get; set; }
+        public string VodImgUrl => VideoImg;
+
+        [SourceMember(nameof(VideoHistory.VodImgUrl))]
+        public string VideoImg { get; set; }
     }
 }
