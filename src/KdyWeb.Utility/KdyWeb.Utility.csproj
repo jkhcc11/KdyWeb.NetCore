@@ -1,23 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\common.props" />
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="KdyAttribute\**" />
+		<EmbeddedResource Remove="KdyAttribute\**" />
+		<None Remove="KdyAttribute\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="KdyAttribute\**" />
-    <EmbeddedResource Remove="KdyAttribute\**" />
-    <None Remove="KdyAttribute\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="XmlUtility.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="XmlUtility.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+	</ItemGroup>
 
 </Project>

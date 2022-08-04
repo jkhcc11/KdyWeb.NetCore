@@ -1,36 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<Import Project="..\common.props" />
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<UserSecretsId>bbd001bb-65f8-48dd-a7c2-594c898c271c</UserSecretsId>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>bbd001bb-65f8-48dd-a7c2-594c898c271c</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>bin\Debug\netcoreapp3.1\KdyWeb.Job.xml</DocumentationFile>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1591</NoWarn>
-    <DocumentationFile>bin\Debug\netcoreapp3.1\KdyWeb.Job.xml</DocumentationFile>
-  </PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="Controllers\HomeController.cs" />
+		<Compile Remove="Controllers\OldBaseApiController.cs" />
+		<Compile Remove="Controllers\OldMigrationController.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Controllers\HomeController.cs" />
-    <Compile Remove="Controllers\OldBaseApiController.cs" />
-    <Compile Remove="Controllers\OldMigrationController.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Remove="hosting.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="hosting.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="3.1.9" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.9" />
+		<PackageReference Include="SkyAPM.Agent.AspNetCore" Version="0.9.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.9" />
-    <PackageReference Include="SkyAPM.Agent.AspNetCore" Version="0.9.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
-    <ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
+		<ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
+	</ItemGroup>
 
 
 </Project>
