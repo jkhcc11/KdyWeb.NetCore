@@ -58,9 +58,19 @@ namespace KdyWeb.BaseInterface.BaseModel
         long? CreatedUserId { get; set; }
 
         /// <summary>
+        /// 创建用户名
+        /// </summary>
+        string CreatedUserName { get; set; }
+
+        /// <summary>
         /// 修改用户Id
         /// </summary>
         long? ModifyUserId { get; set; }
+
+        /// <summary>
+        /// 创建用户名
+        /// </summary>
+        string ModifyUserName { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -94,10 +104,14 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// </summary>
         public long? CreatedUserId { get; set; }
 
+        public string CreatedUserName { get; set; }
+
         /// <summary>
         /// 修改用户
         /// </summary>
         public long? ModifyUserId { get; set; }
+
+        public string ModifyUserName { get; set; }
 
         /// <summary>
         /// 创建时间

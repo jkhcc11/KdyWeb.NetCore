@@ -153,6 +153,11 @@ namespace KdyWeb.BaseInterface.BaseModel
         ParError = 800,
 
         /// <summary>
+        /// 重复插入
+        /// </summary>
+        Duplicate = 700,
+
+        /// <summary>
         ///  系统错误
         /// </summary>
         SystemError = 500,

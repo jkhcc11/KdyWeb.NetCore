@@ -11,7 +11,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 获取影片信息 Dto
     /// </summary>
     [AutoMap(typeof(VideoMain))]
-    public class GetVideoDetailDto : CreatedUserDto<long>
+    public class GetVideoDetailDto : CreatedUserDto<long>, IBaseImgUrl
     {
         /// <summary>
         /// 影片类型

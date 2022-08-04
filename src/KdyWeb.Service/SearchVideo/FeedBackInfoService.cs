@@ -11,6 +11,7 @@ using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
+using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
@@ -21,10 +22,14 @@ namespace KdyWeb.Service.SearchVideo
     public class FeedBackInfoService : BaseKdyService, IFeedBackInfoService
     {
         private readonly IKdyRepository<FeedBackInfo, int> _kdyRepository;
+        private readonly IDouBanInfoService _douBanInfoService;
 
-        public FeedBackInfoService(IKdyRepository<FeedBackInfo, int> kdyRepository, IUnitOfWork unitOfWork) : base(unitOfWork)
+        public FeedBackInfoService(IKdyRepository<FeedBackInfo, int> kdyRepository, IUnitOfWork unitOfWork,
+            IDouBanInfoService douBanInfoService) :
+            base(unitOfWork)
         {
             _kdyRepository = kdyRepository;
+            _douBanInfoService = douBanInfoService;
         }
 
         /// <summary>
@@ -41,7 +46,16 @@ namespace KdyWeb.Service.SearchVideo
                     OrderBy = KdyEfOrderBy.Desc
                 }
             };
-            var dbPage = await _kdyRepository.GetQuery()
+
+            var query = _kdyRepository.GetQuery();
+            if (LoginUserInfo.IsLogin &&
+                LoginUserInfo.IsSuperAdmin == false)
+            {
+                //非管理员登录后只能看自己
+                query = query.Where(a => a.CreatedUserId == LoginUserInfo.GetUserId());
+            }
+
+            var dbPage = await query
                 .GetDtoPageListAsync<FeedBackInfo, GetFeedBackInfoDto>(input);
 
             return KdyResult.Success(dbPage);
@@ -56,13 +70,14 @@ namespace KdyWeb.Service.SearchVideo
             var exit = await _kdyRepository.GetQuery()
                 .CountAsync(a => a.OriginalUrl == input.OriginalUrl &&
                                  a.FeedBackInfoStatus == FeedBackInfoStatus.Pending &&
-                                 a.UserEmail == input.UserEmail);
+                                 a.CreatedUserId == LoginUserInfo.GetUserId());
             if (exit > 0)
             {
                 return KdyResult.Error(KdyResultCode.Error, "数据已提交，请等待处理结果");
             }
 
             var dbFeedBack = input.MapToExt<FeedBackInfo>();
+            dbFeedBack.UserEmail = LoginUserInfo.UserEmail;
             await _kdyRepository.CreateAsync(dbFeedBack);
             await UnitOfWork.SaveChangesAsync();
 
@@ -154,6 +169,44 @@ namespace KdyWeb.Service.SearchVideo
                 .ToListAsync();
 
             return KdyResult.Success(dbCount);
+        }
+
+        /// <summary>
+        /// 创建求片反馈
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> CreateFeedBackInfoWithHelpAsync(CreateFeedBackInfoWithHelpInput input)
+        {
+            if (input.OriginalUrl.Contains("douban") == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "仅支持豆瓣链接");
+            }
+
+            //获取豆瓣信息
+            var subjectId = input.OriginalUrl.GetNumber();
+            var result = await _douBanInfoService.CreateForSubjectIdAsync(subjectId);
+            if (result.IsSuccess == false)
+            {
+                return KdyResult.Error(result.Code, result.Msg);
+            }
+
+            var url = $"//movie.douban.com/subject/{subjectId}/";
+            //是否已存在
+            var exit = await _kdyRepository.GetQuery().CountAsync(a => a.OriginalUrl.Contains(subjectId));
+            if (exit > 0)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "该链接已反馈,请勿重复反馈");
+            }
+
+            var dbFeedBack = new FeedBackInfo(UserDemandType.Input, url)
+            {
+                VideoName = result.Data.VideoTitle,
+                Remark = input.Remark,
+                UserEmail = LoginUserInfo.UserEmail
+            };
+            await _kdyRepository.CreateAsync(dbFeedBack);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
         }
     }
 }

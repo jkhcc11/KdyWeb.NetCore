@@ -54,14 +54,18 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         public virtual async Task<TResult> SendAsync(TInput input)
         {
-            //KdyLog.Info("Http请求开始", new Dictionary<string, object>()
-            //{
-            //    {"HttpInput",input}
-            //});
-
-            //todo:待验证cookie问题 需要改造
             //这里的name必须和注入时保持一致时 注入的配置才生效
             var httpClient = HttpClientFactory.CreateClient(KdyBaseConst.HttpClientName);
+            if (string.IsNullOrEmpty(input.BaseHost) == false)
+            {
+                if (input.Url.StartsWith(input.BaseHost))
+                {
+                    throw new KdyCustomException($"{nameof(input.BaseHost)}有值时，{nameof(input.Url)}不能是觉得路径");
+                }
+
+                httpClient.BaseAddress = new Uri(input.BaseHost);
+            }
+
             httpClient.Timeout = TimeSpan.FromSeconds(input.TimeOut);
 
             var request = RequestPar(input);

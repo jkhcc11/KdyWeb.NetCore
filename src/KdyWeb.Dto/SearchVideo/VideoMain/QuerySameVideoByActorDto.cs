@@ -7,7 +7,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// <summary>
     /// 查询同演员影片列表Dto
     /// </summary>
-    public class QuerySameVideoByActorDto : BaseEntityDto<long>
+    public class QuerySameVideoByActorDto : BaseEntityDto<long>, IBaseImgUrl
     {
         /// <summary>
         /// 影片Id
@@ -20,9 +20,6 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         public string KeyWord { get; set; }
 
-        /// <summary>
-        /// 影片海报
-        /// </summary>
         public string VideoImg { get; set; }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using KdyWeb.BaseInterface;
+﻿using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SearchVideo;
 
@@ -30,11 +29,5 @@ namespace KdyWeb.Dto.SearchVideo
         [KdyQuery(nameof(FeedBackInfo.VideoName), KdyOperator.Like)]
         [KdyQuery(nameof(FeedBackInfo.OriginalUrl), KdyOperator.Like)]
         public string Key { get; set; }
-
-        /// <summary>
-        /// 用户邮箱
-        /// </summary>
-        [KdyQuery(nameof(FeedBackInfo.UserEmail), KdyOperator.Equal)]
-        public string UserEmail { get; set; }
     }
 }

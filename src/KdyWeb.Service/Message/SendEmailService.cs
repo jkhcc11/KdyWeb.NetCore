@@ -8,8 +8,11 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.Message;
+using KdyWeb.Dto.VerificationCode;
 using KdyWeb.IService.Message;
+using KdyWeb.IService.VerificationCode;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -21,8 +24,13 @@ namespace KdyWeb.Service.Message
     /// </summary>
     public class SendEmailService : BaseKdyService, ISendEmailService
     {
-        public SendEmailService(IUnitOfWork unitOfWork) : base(unitOfWork)
+        private readonly IVerificationCodeService _verificationCodeService;
+        private readonly IDistributedCache _distributedCache;
+        public SendEmailService(IUnitOfWork unitOfWork, IVerificationCodeService verificationCodeService,
+             IDistributedCache distributedCache) : base(unitOfWork)
         {
+            _verificationCodeService = verificationCodeService;
+            _distributedCache = distributedCache;
         }
 
         /// <summary>
@@ -73,5 +81,35 @@ namespace KdyWeb.Service.Message
             }
         }
 
+        /// <summary>
+        /// 发送验证码
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> SendEmailCodeAsync(SendEmailCodeInput input)
+        {
+            if (input.CodeType == VerificationCodeType.ModifyPwd)
+            {
+                input.Email = LoginUserInfo.UserEmail;
+            }
+
+            if (string.IsNullOrWhiteSpace(input.Email))
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "邮箱必填");
+            }
+
+            var code = await _verificationCodeService.GeneralCodeAsync();
+            var emailInput = new SendEmailInput(input.Email, input.CodeType.GetVerificationCodeEmailSubject(), input.CodeType.GetVerificationCodeEmailContent(code));
+            var result = await SendEmailAsync(emailInput);
+            if (result.IsSuccess == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "验证码发送失败,请重试或联系管理员");
+            }
+
+            await _distributedCache.SetStringAsync(input.CodeType.GetVerificationCodeCacheKey(input.Email), code, new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
+            return KdyResult.Success(msg: "验证码已发送成功，请前往您的邮箱查看");
+        }
     }
 }

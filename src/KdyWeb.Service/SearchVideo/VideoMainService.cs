@@ -7,6 +7,7 @@ using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.BaseInterface.KdyOptions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
@@ -16,6 +17,7 @@ using KdyWeb.IService.SearchVideo;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -32,11 +34,13 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<VideoMainInfo, long> _videoMainInfoRepository;
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
         private readonly IKdyRepository<VideoSeriesList, long> _videoSeriesListRepository;
+        private readonly KdySelfHostOption _kdySelfHostOption;
 
         public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
             IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
             IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
-            IKdyRepository<VideoMainInfo, long> videoMainInfoRepository, IKdyRepository<UserHistory, long> userHistoryRepository, IKdyRepository<VideoSeriesList, long> videoSeriesListRepository) :
+            IKdyRepository<VideoMainInfo, long> videoMainInfoRepository, IKdyRepository<UserHistory, long> userHistoryRepository,
+            IKdyRepository<VideoSeriesList, long> videoSeriesListRepository, IOptions<KdySelfHostOption> options) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
@@ -47,6 +51,7 @@ namespace KdyWeb.Service.SearchVideo
             _videoMainInfoRepository = videoMainInfoRepository;
             _userHistoryRepository = userHistoryRepository;
             _videoSeriesListRepository = videoSeriesListRepository;
+            _kdySelfHostOption = options.Value;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -113,9 +118,9 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = main.MapToExt<GetVideoDetailDto>();
             result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
-            VideoDetailHandler(result);
+            result.ImgHandler();
 
-            if (LoginUserInfo.UserId.HasValue)
+            if (LoginUserInfo.IsLogin)
             {
                 //登录用户就获取最新历史记录
                 var dbNewHistory = await _userHistoryRepository.GetAsNoTracking()
@@ -139,6 +144,12 @@ namespace KdyWeb.Service.SearchVideo
                 .Select(a => a.VideoSeries)
                 .FirstOrDefaultAsync();
             result.VideoSeries = dbVideoSeries?.MapToExt<QueryVideoSeriesDto>();
+
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                //非超管隐藏来源
+                result.SourceUrl = string.Empty;
+            }
 
             if (result.IsEnd)
             {
@@ -229,7 +240,7 @@ namespace KdyWeb.Service.SearchVideo
 
             foreach (var item in result.Data)
             {
-                VideoDetailHandler(item);
+                item.ImgHandler();
             }
             return KdyResult.Success(result);
         }
@@ -473,48 +484,109 @@ namespace KdyWeb.Service.SearchVideo
                 if (item.VideoCasts.IsEmptyExt() == false &&
                     item.VideoCasts.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries).Any(a => a == input.Actor))
                 {
-                    result.Add(item.MapToExt<QuerySameVideoByActorDto>());
+                    var temp = item.MapToExt<QuerySameVideoByActorDto>();
+                    temp.ImgHandler();
+                    result.Add(temp);
                     continue;
                 }
 
                 if (item.VideoDirectors.IsEmptyExt() == false &&
                     item.VideoDirectors.Split(new[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries).Any(a => a == input.Actor))
                 {
-                    result.Add(item.MapToExt<QuerySameVideoByActorDto>());
+                    var temp = item.MapToExt<QuerySameVideoByActorDto>();
+                    temp.ImgHandler();
+                    result.Add(temp);
                 }
             }
 
             return KdyResult.Success(result);
         }
 
-        #region 私有
         /// <summary>
-        /// 详情处理
+        /// 分页查询影视库(普通查询)
         /// </summary>
-        private void VideoDetailHandler(GetVideoDetailDto detail)
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryVideoMainDto>>> QueryVideoByNormalAsync(QueryVideoByNormalInput input)
         {
-            //var douBanProxy = KdyConfiguration.GetValue<string>(KdyWebServiceConst.DouBanProxyUrl);
-            //if (string.IsNullOrEmpty(douBanProxy) ||
-            //    string.IsNullOrEmpty(detail.VideoImg) ||
-            //    detail.VideoImg.Contains("view/movie_poster_cover") == false)
-            //{
-            //    return;
-            //}
+            if (input.OrderBy == null || input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(VideoMain.OrderBy),
+                        OrderBy = KdyEfOrderBy.Desc
+                    },
+                    new KdyEfOrderConditions()
+                    {
+                        Key = nameof(VideoMain.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
 
-            //https://img9.doubanio.com        /view/photo/s_ratio_poster/public/p2625825416.jpg
-            //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
-            detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
+            //生成条件和排序规则
+            var query = _videoMainRepository.GetQuery()
+                .Include(a => a.VideoMainInfo)
+                .CreateConditions(input);
+
+            var count = await query.CountAsync();
+            if (string.IsNullOrEmpty(input.KeyWord) == false)
+            {
+                //关键字不为空时 按照长度排序
+                query = query
+                   .OrderBy(a => a.KeyWord.Length)
+                   .KdyThenOrderBy(input)
+                   .KdyPageList(input);
+            }
+            else
+            {
+                query = query.KdyOrderBy(input).KdyPageList(input);
+            }
+
+            var data = await query.ToListAsync();
+            var result = new PageList<QueryVideoMainDto>(input.Page, input.PageSize)
+            {
+                DataCount = count,
+                Data = data.MapToListExt<QueryVideoMainDto>()
+            };
+
+            foreach (var item in result.Data)
+            {
+                item.SourceUrl = string.Empty;
+                item.ImgHandler();
+            }
+            return KdyResult.Success(result);
         }
 
         /// <summary>
-        /// 详情处理
+        /// 随机影片(普通查询)
         /// </summary>
-        private void VideoDetailHandler(QueryVideoMainDto detail)
+        /// <returns></returns>
+        public async Task<KdyResult<IList<QueryVideoMainDto>>> RandVideoByNormalAsync(int count)
         {
-            //https://img9.doubanio.com        /view/photo/s_ratio_poster/public/p2625825416.jpg
-            //替换 https://img9.doubanio.com  /view/movie_poster_cover/lpst/public/p2625825416.jpg
-            detail.VideoImg = detail.VideoImg.Replace("/view/photo/s_ratio_poster", "/view/movie_poster_cover/lpst");
+            if (count > 50 ||
+                count <= 0)
+            {
+                count = 12;
+            }
+
+            //生成条件和排序规则
+            var dbData = await _videoMainRepository.GetQuery()
+                .Include(a => a.VideoMainInfo)
+                .Where(a => a.VideoDouBan > 0 &&
+                          a.VideoContentFeature == VideoMain.SystemInput)
+                .OrderBy(a => Guid.NewGuid())
+                .Take(count)
+                .ToListAsync();
+
+            var result = dbData.MapToListExt<QueryVideoMainDto>();
+            foreach (var item in result)
+            {
+                item.SourceUrl = string.Empty;
+                item.ImgHandler();
+            }
+            return KdyResult.Success(result);
         }
-        #endregion
     }
 }

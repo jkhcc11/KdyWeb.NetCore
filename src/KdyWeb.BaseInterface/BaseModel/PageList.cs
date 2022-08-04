@@ -5,8 +5,8 @@ namespace KdyWeb.BaseInterface.BaseModel
     /// <summary>
     /// 分页数据返回
     /// </summary>
-    /// <typeparam name="TEntity">实体类</typeparam>
-    public class PageList<TEntity>
+    /// <typeparam name="TDto">Dto</typeparam>
+    public class PageList<TDto>
     {
         /// <summary>
         /// 构造
@@ -37,6 +37,6 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 集合
         /// </summary>
-        public ICollection<TEntity> Data { get; set; }
+        public ICollection<TDto> Data { get; set; }
     }
 }

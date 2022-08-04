@@ -47,5 +47,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<List<GetCountInfoDto>>> GetCountInfoAsync(GetCountInfoInput input);
+
+        /// <summary>
+        /// 创建求片反馈
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CreateFeedBackInfoWithHelpAsync(CreateFeedBackInfoWithHelpInput input);
     }
 }

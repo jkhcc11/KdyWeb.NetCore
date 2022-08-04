@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.Entity.OldVideo;
 
 namespace KdyWeb.Entity.SearchVideo
 {
@@ -10,6 +9,11 @@ namespace KdyWeb.Entity.SearchVideo
     /// </summary>
     public class VideoMain : BaseEntity<long>
     {
+        /// <summary>
+        /// 手动修复标识
+        /// </summary>
+        public const string SystemInput = "systeminput";
+
         /// <summary>
         /// Url统一长度
         /// </summary>

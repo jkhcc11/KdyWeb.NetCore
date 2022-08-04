@@ -49,7 +49,7 @@ namespace KdyWeb.Test
 
             var url = "http://www.baidu.com";
             var email = "admin@admin.com";
-            var feedBackInfo = new FeedBackInfo(UserDemandType.Input, url, email);
+            var feedBackInfo = new FeedBackInfo(UserDemandType.Input, url);
 
             await _feedBackRepository.CreateAsync(feedBackInfo);
 
@@ -73,7 +73,7 @@ namespace KdyWeb.Test
             var url = "http://www.baidu.com";
             var email = "admin@admin.com";
             //第二部正常
-            var feedBackInfo = new FeedBackInfo(UserDemandType.Input, url, email);
+            var feedBackInfo = new FeedBackInfo(UserDemandType.Input, url);
 
             await _feedBackRepository.CreateAsync(feedBackInfo);
 

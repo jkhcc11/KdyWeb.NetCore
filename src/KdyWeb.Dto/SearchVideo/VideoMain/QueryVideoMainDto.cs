@@ -9,7 +9,7 @@ namespace KdyWeb.Dto.SearchVideo
     /// 分页查询影视库 Dto
     /// </summary>
     [AutoMap(typeof(VideoMain))]
-    public class QueryVideoMainDto : CreatedUserDto<long>
+    public class QueryVideoMainDto : CreatedUserDto<long>, IBaseImgUrl
     {
         /// <summary>
         /// 影片类型
@@ -41,9 +41,6 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         public string KeyWord { get; set; }
 
-        /// <summary>
-        /// 海报
-        /// </summary>
         public string VideoImg { get; set; }
 
         /// <summary>

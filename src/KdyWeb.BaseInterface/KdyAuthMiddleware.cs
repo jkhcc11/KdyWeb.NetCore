@@ -29,6 +29,7 @@ namespace KdyWeb.BaseInterface
         /// 使用Kdy授权中间件 使用Cookie验证
         /// </summary>
         /// <returns></returns>
+        [Obsolete("启用使用IDS统一校验")]
         public static IApplicationBuilder UseKdyAuth(this IApplicationBuilder builder, KdyAuthMiddlewareOption option)
         {
             //todo:迁移完改成JWT统一

@@ -2,6 +2,7 @@
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
+using KdyWeb.Dto.KdyUser;
 
 namespace KdyWeb.IService
 {
@@ -11,13 +12,7 @@ namespace KdyWeb.IService
     public interface IKdyUserService : IKdyService
     {
         /// <summary>
-        /// 获取用户信息
-        /// </summary>
-        /// <returns></returns>
-        Task<KdyResult<GetUserInfoDto>> GetUserInfoAsync(GetUserInfoInput input);
-
-        /// <summary>
-        /// 创建用户
+        /// 用户注册
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> CreateUserAsync(CreateUserInput input);
@@ -26,7 +21,7 @@ namespace KdyWeb.IService
         /// 用户名或邮箱是否存在
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> CheckUserExitAsync(CheckUserExitInput input);
+        Task<KdyResult<bool>> CheckUserExitAsync(CheckUserExitInput input);
 
         /// <summary>
         /// 找回密码
@@ -45,5 +40,17 @@ namespace KdyWeb.IService
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> ModifyUserInfoAsync(ModifyUserInfoInput input);
+
+        /// <summary>
+        /// 获取用户登录Token
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> GetLoginTokenAsync(GetLoginTokenInput input);
+
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> LogoutAsync();
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
@@ -85,6 +86,10 @@ namespace KdyWeb.BaseInterface
             data.TryAdd("request.url", request.Path.ToString());
             data.TryAdd("request.method", request.Method);
             data.TryAdd("request.executeStartTime", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            if (request.Headers.ContainsKey("Authorization"))
+            {
+                data.TryAdd("request.token", request.Headers["Authorization"]);
+            }
 
             if (request.Method.ToLower() == "get")
             {
@@ -129,6 +134,18 @@ namespace KdyWeb.BaseInterface
                 _logger.LogTrace("用户请求{url}结束.时间：{time}ms,扩展:{exData}", request.Path.Value, _stopwatch.ElapsedMilliseconds, JsonConvert.SerializeObject(data));
 
             }
+            catch (Exception ex) when (ex is KdyCustomException customException)
+            {
+                var errResult = KdyResult.Error(KdyResultCode.Error, customException.Message);
+                var str = JsonConvert.SerializeObject(errResult);
+                var bytes = Encoding.UTF8.GetBytes(str);
+                var newStream = new MemoryStream(bytes);
+
+                context.Response.Clear();
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                context.Response.ContentType = "text/json;charset=utf-8;";
+                await newStream.CopyToAsync(originalBodyStream);
+            }
             catch (Exception ex)
             {
                 var errResult = KdyResult.Error(KdyResultCode.SystemError, "系统错误，请稍后再试");
@@ -143,7 +160,7 @@ namespace KdyWeb.BaseInterface
                 var newStream = new MemoryStream(bytes);
 
                 context.Response.Clear();
-                context.Response.StatusCode = (int)KdyResultCode.SystemError;
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
                 context.Response.ContentType = "text/json;charset=utf-8;";
                 await newStream.CopyToAsync(originalBodyStream);
             }
