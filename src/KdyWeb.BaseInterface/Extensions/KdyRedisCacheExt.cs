@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.KdyRedis;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Redis;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -40,9 +40,23 @@ namespace KdyWeb.BaseInterface.Extensions
                 Configuration = redisConnStr,
                 InstanceName = pre
             };
+
+            services.AddStackExchangeRedisCache(opt =>
+            {
+                //opt.ConfigurationOptions = new ConfigurationOptions
+                //{
+                //    //链接异常 后台重试
+                //    AbortOnConnectFail = false
+                //};
+                opt.Configuration = redisConnStr;
+                opt.InstanceName = pre;
+            });
+            var redisConnect = ConnectionMultiplexer.Connect(redisConnStr);
+            services.AddSingleton<IConnectionMultiplexer>(redisConnect);
+
             return services.UseKdyRedisCache(opt =>
              {
-                 opt.ConnectionMultiplexer = ConnectionMultiplexer.Connect(redisConnStr);
+                 // opt.ConnectionMultiplexer = ConnectionMultiplexer.Connect(redisConnStr);
                  opt.DistributedCache = new RedisCache(option);
              });
         }

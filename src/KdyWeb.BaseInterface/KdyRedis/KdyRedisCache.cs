@@ -13,10 +13,10 @@ namespace KdyWeb.BaseInterface.KdyRedis
         private readonly KdyRedisCacheOption _option;
         private readonly IConnectionMultiplexer _connectionMultiplexer;
 
-        public KdyRedisCache(IOptions<KdyRedisCacheOption> option)
+        public KdyRedisCache(IOptions<KdyRedisCacheOption> option, IConnectionMultiplexer connectionMultiplexer)
         {
             _option = option.Value;
-            _connectionMultiplexer = _option.ConnectionMultiplexer;
+            _connectionMultiplexer = connectionMultiplexer;
         }
 
         public IDatabase GetDb(int i = 0)

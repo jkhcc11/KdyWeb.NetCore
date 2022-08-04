@@ -21,47 +21,6 @@ namespace KdyWeb.Job.Controllers
             _logger = logger;
         }
 
-        // GET: api/<HomeController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-
-            var test = new
-            {
-                Name = "1",
-                Age = 10
-            };
-            _logger.LogInformation("User {test} ffff",test);
-
-            // _backgroundJobClient.Enqueue(() => Test());
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<HomeController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<HomeController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<HomeController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<HomeController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-
         public string Test()
         {
             return "测试";

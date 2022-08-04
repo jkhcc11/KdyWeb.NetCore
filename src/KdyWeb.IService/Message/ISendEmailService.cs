@@ -15,5 +15,11 @@ namespace KdyWeb.IService.Message
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> SendEmailAsync(SendEmailInput input);
+
+        /// <summary>
+        /// 发送验证码
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> SendEmailCodeAsync(SendEmailCodeInput input);
     }
 }

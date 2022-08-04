@@ -1,23 +1,18 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Net.Http;
-using AutoMapper;
+using IdentityModel;
 using KdyWeb.BaseInterface;
-using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.BaseInterface.Filter;
-using KdyWeb.BaseInterface.Repository;
-using KdyWeb.Dto;
-using KdyWeb.Repository;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using KdyWeb.BaseInterface.KdyOptions;
+using KdyWeb.HttpApi;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace KdyWeb.CloudParseApi
 {
@@ -33,44 +28,7 @@ namespace KdyWeb.CloudParseApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //关闭ModelState自动校验
-            services.Configure<ApiBehaviorOptions>(option =>
-            {
-                option.SuppressModelStateInvalidFilter = true;
-            });
-            services.KdyRegister();
-
-            //注入通用泛型仓储
-            services.TryAdd(ServiceDescriptor.Transient(typeof(IKdyRepository<>), typeof(CommonRepository<>)));
-            services.TryAdd(ServiceDescriptor.Transient(typeof(IKdyRepository<,>), typeof(CommonRepository<,>)));
-
-            //AutoMapper注入
-            //https://www.codementor.io/zedotech/how-to-using-automapper-on-asp-net-core-3-0-via-dependencyinjection-zq497lzsq
-            //services.AddAutoMapper(typeof(KdyMapperInit));
-            var dtoAssembly = typeof(KdyMapperInit).Assembly;
-            var entityAssembly = typeof(BaseEntity<>).Assembly;
-            services.AddAutoMapper(dtoAssembly, entityAssembly);
-
-            services.AddControllers(opt =>
-            {
-                opt.Filters.Add<ModelStateValidFilter>();
-            }).AddNewtonsoftJson(option =>
-            {
-                option.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-            });
-
-            //注入HttpClient
-            services.AddHttpClient(KdyBaseConst.HttpClientName)
-                .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
-                {
-                    //取消自动跳转
-                    AllowAutoRedirect = false,
-                });
-
-            //初始化第三方组件
-            services.InitIdGenerate(Configuration)
-                .UseRedisCache(Configuration)
-                .AddMemoryCache();
+            services.AddKdyDefaultExt();
 
             //Swagger
             services.AddSwaggerGen(option =>
@@ -88,30 +46,27 @@ namespace KdyWeb.CloudParseApi
                     option.IncludeXmlComments(item, true);
                 }
 
+                option.OperationFilter<AddResponseHeadersFilter>();
+
+                //授权
+                option.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Description = "Authorization format : Bearer {token}",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT"
+                });
+
+                //在Header中添加Token
+                option.OperationFilter<SecurityRequirementsOperationFilter>();
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-            app.UseAuthorization();
-
-            app.UseKdyLog();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
-            //全局DI容器
-            KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
-            KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
+            app.AddKdyDefaultExt();
 
             if (env.IsDevelopment())
             {

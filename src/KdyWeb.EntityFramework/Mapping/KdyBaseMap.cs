@@ -1,5 +1,6 @@
 ﻿using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -54,6 +55,15 @@ namespace KdyWeb.EntityFramework.Mapping
                     .IsRequired()
                     .HasValueGenerator<GenerateForLong>()
                     .ValueGeneratedNever();
+            }
+
+            //创建人和修改人冗余
+            if (typeof(IBaseTimeKey).IsAssignableFrom(typeof(TEntity)))
+            {
+                builder.Property(nameof(IBaseTimeKey.CreatedUserName))
+                    .HasMaxLength(KdyUser.UserNameLength);
+                builder.Property(nameof(IBaseTimeKey.ModifyUserName))
+                    .HasMaxLength(KdyUser.UserNameLength);
             }
 
             builder.Property(a => a.IsDelete).HasDefaultValue(false);

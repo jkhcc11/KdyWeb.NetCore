@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.BaseInterface.KdyOptions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
@@ -12,6 +13,7 @@ using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -22,11 +24,14 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
+        private readonly KdySelfHostOption _kdySelfHostOption;
+
         public UserSubscribeService(IUnitOfWork unitOfWork, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
-            IKdyRepository<VideoMain, long> videoMainRepository) : base(unitOfWork)
+            IKdyRepository<VideoMain, long> videoMainRepository, IOptions<KdySelfHostOption> options) : base(unitOfWork)
         {
             _userSubscribeRepository = userSubscribeRepository;
             _videoMainRepository = videoMainRepository;
+            _kdySelfHostOption = options.Value;
         }
 
         /// <summary>
@@ -48,7 +53,9 @@ namespace KdyWeb.Service.SearchVideo
                 };
             }
 
+            var userId = LoginUserInfo.GetUserId();
             var result = await _userSubscribeRepository.GetQuery()
+                .Where(a => a.CreatedUserId == userId)
                 .GetDtoPageListAsync<UserSubscribe, QueryUserSubscribeDto>(input);
             if (result.Data.Any() == false)
             {
@@ -70,6 +77,7 @@ namespace KdyWeb.Service.SearchVideo
                     continue;
                 }
 
+                videoItem.VideoImg = videoItem.VideoImg.GetDouImgName(_kdySelfHostOption.ProxyHost);
                 item.BusinessItems = videoItem;
             }
 
@@ -82,13 +90,9 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult> CreateUserSubscribeAsync(CreateUserSubscribeInput input)
         {
-            if (LoginUserInfo.UserEmail.IsEmptyExt())
-            {
-                return KdyResult.Error(KdyResultCode.Error, "收藏失败，用户信息丢失");
-            }
-
+            var userId = LoginUserInfo.GetUserId();
             var exit = await _userSubscribeRepository.GetAsNoTracking()
-                .AnyAsync(a => a.CreatedUserId == LoginUserInfo.UserId &&
+                .AnyAsync(a => a.CreatedUserId == userId &&
                                a.BusinessId == input.BusinessId &&
                                a.UserSubscribeType == input.SubscribeType);
             if (exit)
@@ -114,7 +118,6 @@ namespace KdyWeb.Service.SearchVideo
 
             var dbSubscribe = new UserSubscribe(businessId, feature, input.SubscribeType)
             {
-                CreatedUserId = LoginUserInfo.UserId,
                 UserEmail = LoginUserInfo.UserEmail
             };
             await _userSubscribeRepository.CreateAsync(dbSubscribe);
@@ -129,8 +132,10 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult> CancelUserSubscribeAsync(long subId)
         {
+            var userId = LoginUserInfo.GetUserId();
             var dbSubscribe = await _userSubscribeRepository
-                .FirstOrDefaultAsync(a => a.Id == subId);
+                .FirstOrDefaultAsync(a => a.Id == subId &&
+                                          a.CreatedUserId == userId);
             if (dbSubscribe == null)
             {
                 return KdyResult.Error(KdyResultCode.Error, "参数错误");

@@ -5,6 +5,7 @@ using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
@@ -85,6 +86,12 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = await query
                 .GetDtoPageListAsync<VideoHistory, QueryVideoHistoryDto>(input);
+
+            foreach (var item in result.Data)
+            {
+                item.ImgHandler();
+            }
+
             return KdyResult.Success(result);
         }
     }

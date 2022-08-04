@@ -26,7 +26,7 @@ namespace KdyWeb.Test.SearchVideo
                 DemandType = UserDemandType.Feedback,
                 OriginalUrl = "http://test.test.com",
                 Remark = "备注",
-                UserEmail = "admin@admin.com",
+                //UserEmail = "admin@admin.com",
                 VideoName = "名称"
             });
             Assert.IsTrue(result.IsSuccess);
@@ -67,6 +67,17 @@ namespace KdyWeb.Test.SearchVideo
         public async Task GetCountInfoAsync()
         {
             var result = await _service.GetCountInfoAsync(new GetCountInfoInput());
+            Assert.IsTrue(result.IsSuccess);
+        }
+
+        [TestMethod]
+        public async Task CreateFeedBackInfoWithHelpAsync()
+        {
+            var result = await _service.CreateFeedBackInfoWithHelpAsync(new CreateFeedBackInfoWithHelpInput()
+            {
+                OriginalUrl = "https://movie.douban.com/subject/35068653/",
+                Remark = "中文"
+            });
             Assert.IsTrue(result.IsSuccess);
         }
     }

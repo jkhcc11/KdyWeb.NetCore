@@ -119,6 +119,7 @@ namespace KdyWeb.Repository
         /// <returns></returns>
         public virtual void Delete(TEntity entity)
         {
+            entity.ModifyUserName = LoginUserInfo.UserName;
             entity.ModifyUserId = LoginUserInfo.UserId;
             entity.ModifyTime = DateTime.Now;
             entity.IsDelete = true;
@@ -133,6 +134,7 @@ namespace KdyWeb.Repository
         {
             foreach (var item in entity)
             {
+                item.ModifyUserName = LoginUserInfo.UserName;
                 item.ModifyUserId = LoginUserInfo.UserId;
                 item.ModifyTime = DateTime.Now;
                 item.IsDelete = true;

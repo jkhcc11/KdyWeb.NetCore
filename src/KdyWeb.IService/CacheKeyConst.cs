@@ -84,5 +84,42 @@
             /// </summary>
             public const string UserCropFileInfoCache = Prefix + "UserCropFileInfoCache";
         }
+
+        /// <summary>
+        /// 自定义声明类型
+        /// </summary>
+        public class KdyCustomClaimType
+        {
+            /// <summary>
+            /// 昵称
+            /// </summary>
+            public const string UserNickClaimType = "nickname";
+
+            /// <summary>
+            /// 更新时间
+            /// </summary>
+            public const string UpAtTme = "updated_at";
+
+            /// <summary>
+            /// 注册时间
+            /// </summary>
+            public const string RegTme = "reg_time";
+        }
+
+        /// <summary>
+        /// 缓存名
+        /// </summary>
+        public class KdyCacheName
+        {
+            /// <summary>
+            /// 验证码缓存
+            /// </summary>
+            public const string VerificationCodeCache = "EmailCodeCache";
+
+            /// <summary>
+            /// 用户注销缓存Key
+            /// </summary>
+            public const string UserLogoutKey = "UserLogoutKeyCache";
+        }
     }
 }

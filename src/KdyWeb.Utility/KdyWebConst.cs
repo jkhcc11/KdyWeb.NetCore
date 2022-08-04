@@ -37,11 +37,6 @@
         public const string WeiBoConfigKey = "WeiBoConfig";
 
         /// <summary>
-        /// 自有图床配置Key
-        /// </summary>
-        public const string ImgHostKey = "SelfImgHost";
-
-        /// <summary>
         /// 图床由于http异常上传失败时默认图床Id
         /// </summary>
         public const string UploadImgErrDefaultId = "UploadImgErrDefaultId";
@@ -67,14 +62,17 @@
         public const string CloudDiskParseHost = "CloudDiskParseHost";
 
         /// <summary>
-        /// nginx反代域名 用于解决403问题
-        /// </summary>
-        public const string NgProxyKey = "NgProxy";
-
-        /// <summary>
         /// 内部http请求标识
         /// </summary>
         public const string DefaultUserAgent = "kdy/custom_client 1.0";
+
+        /// <summary>
+        /// 自有HostKey
+        /// </summary>
+        /// <remarks>
+        /// 图床或防盗代理
+        /// </remarks>
+        public const string SelfHostKey = "SelfHostKey";
 
         /// <summary>
         /// 解析配置节点

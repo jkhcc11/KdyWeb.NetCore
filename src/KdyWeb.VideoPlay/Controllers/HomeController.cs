@@ -1,15 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.VideoPlay.Controllers
 {
+
     public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILoginUserInfo _loginUserInfo;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILoginUserInfo loginUserInfo)
         {
-            _logger = logger;
+            _loginUserInfo = loginUserInfo;
         }
 
         public IActionResult Index()
@@ -21,6 +25,24 @@ namespace KdyWeb.VideoPlay.Controllers
         public IActionResult Error()
         {
             return View();
+        }
+
+        [Authorize]
+        public IActionResult UserInfo()
+        {
+            return Json(_loginUserInfo);
+        }
+
+        [Authorize(AuthorizationConst.NormalPolicyName.NormalPolicy)]
+        public IActionResult NormalInfo()
+        {
+            return Json(_loginUserInfo);
+        }
+
+        [Authorize(AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public IActionResult SupperInfo()
+        {
+            return Json(_loginUserInfo);
         }
     }
 }

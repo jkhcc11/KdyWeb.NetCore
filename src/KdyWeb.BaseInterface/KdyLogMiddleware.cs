@@ -86,6 +86,10 @@ namespace KdyWeb.BaseInterface
             data.TryAdd("request.url", request.Path.ToString());
             data.TryAdd("request.method", request.Method);
             data.TryAdd("request.executeStartTime", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            if (request.Headers.ContainsKey("Authorization"))
+            {
+                data.TryAdd("request.token", request.Headers["Authorization"]);
+            }
 
             if (request.Method.ToLower() == "get")
             {

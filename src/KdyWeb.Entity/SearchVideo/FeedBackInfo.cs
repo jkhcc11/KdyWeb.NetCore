@@ -35,12 +35,10 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         /// <param name="demandType">反馈类型</param>
         /// <param name="originalUrl">源Url</param>
-        /// <param name="userEmail">用户Email</param>
-        public FeedBackInfo(UserDemandType demandType, string originalUrl, string userEmail)
+        public FeedBackInfo(UserDemandType demandType, string originalUrl)
         {
             OriginalUrl = originalUrl;
             DemandType = demandType;
-            UserEmail = userEmail;
             FeedBackInfoStatus = FeedBackInfoStatus.Pending;
         }
 

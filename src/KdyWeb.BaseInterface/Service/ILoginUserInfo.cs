@@ -8,6 +8,11 @@ namespace KdyWeb.BaseInterface.Service
     public interface ILoginUserInfo : IKdyTransient
     {
         /// <summary>
+        /// 是否登录
+        /// </summary>
+        bool IsLogin { set; get; }
+
+        /// <summary>
         /// 浏览器Agent
         /// </summary>
         string UserAgent { get; set; }
@@ -42,5 +47,15 @@ namespace KdyWeb.BaseInterface.Service
         /// </summary>
         /// <returns></returns>
         long GetUserId();
+
+        /// <summary>
+        /// 登录Token
+        /// </summary>
+        string LoginToken { get; set; }
+
+        /// <summary>
+        /// 角色名
+        /// </summary>
+        string RoleName { get; set; }
     }
 }

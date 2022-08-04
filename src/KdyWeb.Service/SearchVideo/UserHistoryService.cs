@@ -6,7 +6,6 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
-using KdyWeb.Entity;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
@@ -21,14 +20,12 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
         private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
-        private readonly IKdyRepository<KdyUser, long> _kdyUserRepository;
 
         public UserHistoryService(IKdyRepository<UserHistory, long> userHistoryRepository, IUnitOfWork unitOfWork,
-            IKdyRepository<VideoEpisode, long> videoEpisodeRepository, IKdyRepository<KdyUser, long> kdyUserRepository) : base(unitOfWork)
+            IKdyRepository<VideoEpisode, long> videoEpisodeRepository) : base(unitOfWork)
         {
             _userHistoryRepository = userHistoryRepository;
             _videoEpisodeRepository = videoEpisodeRepository;
-            _kdyUserRepository = kdyUserRepository;
         }
 
         /// <summary>
@@ -47,18 +44,13 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "影片信息错误");
             }
 
-            var userInfo = await _kdyUserRepository.FirstOrDefaultAsync(a => a.Id == input.UserId);
-            if (userInfo == null)
-            {
-                return KdyResult.Error(KdyResultCode.Error, "用户信息错误");
-            }
-
+            var userId = LoginUserInfo.GetUserId();
             //历史表 存在时更新时间 要不然重复观看有问题
             var dbHistory = new UserHistory(dbEpInfo.VideoEpisodeGroup.MainId, input.EpId);
             var exitUserHistory = await _userHistoryRepository
                 .FirstOrDefaultAsync(a => a.IsDelete == false &&
                                a.EpId == input.EpId &&
-                               a.CreatedUserId == input.UserId);
+                               a.CreatedUserId == userId);
             if (exitUserHistory != null)
             {
                 exitUserHistory.SetNewEpName(dbEpInfo.EpisodeName);
@@ -71,7 +63,7 @@ namespace KdyWeb.Service.SearchVideo
             dbHistory.KeyId = dbEpInfo.VideoEpisodeGroup.MainId;
             dbHistory.VodName = dbEpInfo.VideoEpisodeGroup.VideoMain.KeyWord;
             dbHistory.EpName = dbEpInfo.EpisodeName;
-            dbHistory.UserName = userInfo.UserName;
+            dbHistory.UserName = LoginUserInfo.UserName;
 
             await _userHistoryRepository.CreateAsync(dbHistory);
             await UnitOfWork.SaveChangesAsync();
@@ -85,6 +77,7 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryUserHistoryDto>>> QueryUserHistoryAsync(QueryUserHistoryInput input)
         {
+            var userId = LoginUserInfo.GetUserId();
             if (input.OrderBy == null ||
                 input.OrderBy.Any() == false)
             {
@@ -103,7 +96,7 @@ namespace KdyWeb.Service.SearchVideo
                 };
             }
 
-            var result = await _userHistoryRepository.GetQuery()
+            var result = await _userHistoryRepository.GetQuery().Where(a => a.CreatedUserId == userId)
                 .GetDtoPageListAsync<UserHistory, QueryUserHistoryDto>(input);
             return KdyResult.Success(result);
         }
@@ -112,7 +105,6 @@ namespace KdyWeb.Service.SearchVideo
         {
             dbUserHistory.EpId = input.EpId;
             dbUserHistory.VodUrl = input.VodUrl;
-            dbUserHistory.CreatedUserId = input.UserId;
         }
     }
 }
