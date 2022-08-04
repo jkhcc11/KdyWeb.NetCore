@@ -1,0 +1,5 @@
+2022-08-04 19:33:24.242 +08:00 [KdyWeb.NetCore] [Error] SkyApm.Transport.Grpc.V6.ServiceRegister : Register service fail.
+Grpc.Core.RpcException: Status(StatusCode=Unimplemented, Detail="Method not found: Register/doServiceRegister")
+   at SkyApm.Transport.Grpc.V6.ServiceRegister.<>c__DisplayClass9_0.<<RegisterServiceAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at SkyApm.Transport.Grpc.Common.Call.Execute[T](Func`1 task, Func`1 errCallback, Func`1 errMessage)

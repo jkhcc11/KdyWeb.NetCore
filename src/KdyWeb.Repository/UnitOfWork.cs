@@ -96,6 +96,7 @@ namespace KdyWeb.Repository
                             if (loginUserInfo.UserId.HasValue)
                             {
                                 entity.CreatedUserId = loginUserInfo.GetUserId();
+                                entity.CreatedUserName = loginUserInfo.UserName;
                             }
 
                             if (entity.CreatedTime == default)
@@ -108,6 +109,7 @@ namespace KdyWeb.Repository
                     case EntityState.Modified:
                         {
                             entity.ModifyUserId = loginUserInfo.UserId;
+                            entity.ModifyUserName = loginUserInfo.UserName;
                             entity.ModifyTime = DateTime.Now;
                             break;
                         }

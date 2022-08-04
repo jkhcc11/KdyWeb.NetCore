@@ -1,10 +1,12 @@
 using System;
 using System.IO;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Filter;
 using KdyWeb.HttpApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -97,6 +99,7 @@ namespace KdyWeb.NetCore
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
         }
     }
 }

@@ -4,14 +4,16 @@ using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    partial class ReadWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20220731120430_videoConvertTask")]
+    partial class videoConvertTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,10 +32,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("HoldLinkHost")
                         .HasColumnType("nvarchar(max)");
 
@@ -50,10 +48,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("SelfApiUrl")
                         .HasColumnType("nvarchar(150)")
@@ -107,10 +101,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -121,10 +111,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -164,10 +150,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("DetailEndXpath")
                         .HasColumnType("nvarchar(100)")
@@ -212,10 +194,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("NameAttr")
                         .HasColumnType("nvarchar(max)");
@@ -282,10 +260,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<byte>("HttpMethod")
                         .HasColumnType("tinyint");
 
@@ -299,10 +273,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("MsgXpath")
                         .HasColumnType("nvarchar(100)")
@@ -347,10 +317,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("FileMd5")
                         .HasColumnType("nvarchar(32)")
                         .HasMaxLength(32);
@@ -369,10 +335,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("OneUrl")
                         .HasColumnType("nvarchar(200)")
@@ -421,10 +383,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsActivate")
                         .HasColumnType("bit");
 
@@ -445,10 +403,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("NavIcon")
                         .HasColumnType("nvarchar(50)")
@@ -478,10 +432,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsActivate")
                         .HasColumnType("bit");
 
@@ -500,10 +450,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.HasKey("Id");
 
@@ -557,10 +503,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsActivate")
                         .HasColumnType("bit");
 
@@ -577,10 +519,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -605,10 +543,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -624,10 +558,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("OldUserId")
                         .HasColumnType("int");
@@ -696,10 +626,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("DouBanId")
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
@@ -711,10 +637,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(1000)")
@@ -748,10 +670,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("DColor")
                         .HasColumnType("nvarchar(max)");
 
@@ -781,10 +699,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.HasKey("Id");
 
                     b.ToTable("Old.SearchSys.DanMu");
@@ -802,10 +716,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("EpisodeName")
                         .HasColumnType("nvarchar(max)");
 
@@ -817,10 +727,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.HasKey("Id");
 
@@ -844,10 +750,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("IsEnd")
                         .HasColumnType("nvarchar(max)");
 
@@ -859,10 +761,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("MovieType")
                         .HasColumnType("nvarchar(max)");
@@ -922,10 +820,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -936,10 +830,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("OrderBy")
                         .HasColumnType("int");
@@ -972,10 +862,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -986,10 +872,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("SeriesId")
                         .HasColumnType("int");
@@ -1010,10 +892,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1021,10 +899,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("UserEmail")
                         .HasColumnType("nvarchar(max)");
@@ -1057,10 +931,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<int>("EpId")
                         .HasColumnType("int");
 
@@ -1077,10 +947,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -1110,10 +976,6 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnName("CreateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
@@ -1124,10 +986,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<DateTime?>("ModifyTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("ObjId")
                         .HasColumnType("int");
@@ -1151,10 +1009,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("FileMd5")
                         .HasColumnType("nvarchar(32)")
                         .HasMaxLength(32);
@@ -1172,10 +1026,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<long?>("UserId")
                         .HasColumnType("bigint");
@@ -1205,10 +1055,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<byte>("DouBanInfoStatus")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint")
@@ -1228,10 +1074,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("OldStatus")
                         .HasColumnType("nvarchar(max)");
@@ -1308,10 +1150,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<int>("DemandType")
                         .HasColumnType("int");
 
@@ -1328,10 +1166,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("OriginalUrl")
                         .HasColumnType("nvarchar(200)")
@@ -1365,10 +1199,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<long>("EpId")
                         .HasColumnType("bigint");
 
@@ -1388,10 +1218,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
@@ -1424,10 +1250,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1438,10 +1260,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("UserEmail")
                         .HasColumnType("nvarchar(max)");
@@ -1464,10 +1282,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("DColor")
                         .HasColumnType("nvarchar(10)")
@@ -1496,10 +1310,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("Msg")
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
@@ -1520,10 +1330,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("DownJson")
                         .HasColumnType("nvarchar(max)");
 
@@ -1537,10 +1343,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("SourceUrl")
                         .HasColumnType("nvarchar(280)")
@@ -1581,10 +1383,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<long>("EpisodeGroupId")
                         .HasColumnType("bigint");
 
@@ -1608,10 +1406,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("OldEpId")
                         .HasColumnType("int");
@@ -1640,10 +1434,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<byte>("EpisodeGroupStatus")
                         .HasColumnType("tinyint");
 
@@ -1669,10 +1459,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<int>("OrderBy")
                         .HasColumnType("int");
 
@@ -1694,10 +1480,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<long>("EpId")
                         .HasColumnType("bigint");
 
@@ -1717,10 +1499,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("VodImgUrl")
                         .HasColumnType("nvarchar(200)")
@@ -1751,10 +1529,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1776,10 +1550,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("OldKeyId")
                         .HasColumnType("int");
@@ -1836,10 +1606,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1853,10 +1619,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("NarrateUrl")
                         .HasColumnType("nvarchar(280)")
@@ -1900,10 +1662,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1918,10 +1676,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("OrderBy")
                         .HasColumnType("int");
@@ -1959,10 +1713,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1976,10 +1726,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<int>("OldKeyId")
                         .HasColumnType("int");
@@ -2017,10 +1763,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -2031,10 +1773,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<string>("OrderContent")
                         .HasColumnType("nvarchar(500)")
@@ -2060,10 +1798,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -2074,10 +1808,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
@@ -2107,10 +1837,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long?>("CreatedUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<decimal>("GiftPoints")
                         .HasColumnType("decimal(18,2)");
 
@@ -2124,10 +1850,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long?>("ModifyUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -2145,15 +1867,8 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<byte>("SourceLinkType")
                         .HasColumnType("tinyint");
 
-                    b.Property<DateTime?>("TakeTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<long?>("TakeUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("TakeUserName")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
 
                     b.Property<string>("TaskName")
                         .HasColumnType("nvarchar(50)")
