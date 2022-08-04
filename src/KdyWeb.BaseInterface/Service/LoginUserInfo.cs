@@ -68,7 +68,14 @@ namespace KdyWeb.BaseInterface.Service
                 return;
             }
 
-            var roleName = user.Claims.FirstOrDefault(a => a.Type == JwtClaimTypes.Role)?.Value;
+            var roleName = string.Empty;
+            var roleList = user.Claims
+                .Where(a => a.Type == JwtClaimTypes.Role)
+                .ToList();
+            if (roleList.Any())
+            {
+                roleName = string.Join(",", roleList.Select(a => a.Value));
+            }
 
             IsLogin = true;
             UserId = long.Parse(subStr);
