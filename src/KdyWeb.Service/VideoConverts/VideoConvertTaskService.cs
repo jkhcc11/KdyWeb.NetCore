@@ -223,7 +223,7 @@ namespace KdyWeb.Service.VideoConverts
 
             if (LoginUserInfo.IsSuperAdmin == false)
             {
-                if (taskInfo.All(a => a.TakeUserId == userId))
+                if (taskInfo.All(a => a.TakeUserId == userId) == false)
                 {
                     return KdyResult.Error(KdyResultCode.Error, "提交失败,非自己订单");
                 }
