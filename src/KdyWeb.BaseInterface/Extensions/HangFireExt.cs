@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using Hangfire;
 using Hangfire.Dashboard.BasicAuthorization;
+using Hangfire.RecurringJobExtensions;
 using Hangfire.SqlServer;
 using KdyWeb.BaseInterface.HangFire;
 using Microsoft.AspNetCore.Builder;
@@ -26,7 +28,14 @@ namespace KdyWeb.BaseInterface.Extensions
 
             services.AddHangfireServer(config =>
             {
-                config.Queues = new[] { "default", HangFireQueue.Email, HangFireQueue.Capture, HangFireQueue.DouBan };
+                config.Queues = new[]
+                {
+                    "default",
+                    HangFireQueue.Email,
+                    HangFireQueue.Capture,
+                    HangFireQueue.DouBan,
+                    HangFireQueue.GameCheck
+                };
             });
             services.InitHangFire(configuration);
             return services;
@@ -48,18 +57,27 @@ namespace KdyWeb.BaseInterface.Extensions
                 throw new Exception("启动Hangfire异常，找不到连接字符串");
             }
 
-            return services.AddHangfire(hgConfig => hgConfig
-                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                 .UseSimpleAssemblyNameTypeSerializer()
-                 .UseRecommendedSerializerSettings()
-                 .UseSqlServerStorage(connectionStr, new SqlServerStorageOptions
-                 {
-                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-                     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-                     QueuePollInterval = TimeSpan.Zero,
-                     UseRecommendedIsolationLevel = true,
-                     DisableGlobalLocks = true
-                 }));
+            var recurringJobFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "recurringjob.json");
+            return services.AddHangfire(hgConfig =>
+            {
+                hgConfig
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseSqlServerStorage(connectionStr, new SqlServerStorageOptions
+                    {
+                        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                        QueuePollInterval = TimeSpan.Zero,
+                        UseRecommendedIsolationLevel = true,
+                        DisableGlobalLocks = true
+                    });
+
+                if (File.Exists(recurringJobFile))
+                {
+                    hgConfig.UseRecurringJob(recurringJobFile);
+                }
+            });
 
         }
 

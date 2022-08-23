@@ -8,8 +8,9 @@
 		<ProjectReference Include="..\KdyWeb.Dto\KdyWeb.Dto.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Minio" Version="3.1.13" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Minio" Version="3.1.13" />
+    <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="106.10.1" />
+  </ItemGroup>
 
 </Project>

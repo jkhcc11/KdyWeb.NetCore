@@ -32,5 +32,11 @@
 		<ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
 	</ItemGroup>
 
+  <ItemGroup>
+    <Content Update="recurringjob.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 
 </Project>
