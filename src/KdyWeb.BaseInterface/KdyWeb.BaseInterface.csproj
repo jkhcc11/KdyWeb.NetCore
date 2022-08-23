@@ -20,6 +20,7 @@
     <PackageReference Include="Exceptionless.Extensions.Logging" Version="4.4.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.11" />
     <PackageReference Include="Hangfire.Dashboard.BasicAuthorization" Version="1.0.2" />
+    <PackageReference Include="Hangfire.RecurringJobExtensions" Version="1.1.6" />
     <PackageReference Include="HangFire.SqlServer" Version="1.7.11" />
     <PackageReference Include="IdentityModel" Version="4.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />

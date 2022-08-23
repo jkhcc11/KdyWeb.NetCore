@@ -1,9 +1,12 @@
 using System;
 using System.IO;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.Dto.HttpApi.GameCheck;
+using KdyWeb.Dto.HttpCapture;
 using KdyWeb.HttpApi;
 using KdyWeb.Job.Extensions;
 using KdyWeb.Service.ServiceExtension;
+using KdyWeb.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -81,6 +84,13 @@ namespace KdyWeb.Job
                 //ÔÚHeaderÖÐÌí¼ÓToken
                 option.OperationFilter<SecurityRequirementsOperationFilter>();
             });
+
+            //gamecheck
+            var check = Configuration.GetSection(KdyWebServiceConst.KdyWebParseConfig.GameCheckConfig);
+            if (check != null)
+            {
+                services.Configure<GameCheckConfig>(check);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

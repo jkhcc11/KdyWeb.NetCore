@@ -40,5 +40,10 @@
         /// 资源获取队列
         /// </summary>
         public const string Capture = "capture";
+
+        /// <summary>
+        /// 游戏检查队列
+        /// </summary>
+        public const string GameCheck = "gamecheck";
     }
 }

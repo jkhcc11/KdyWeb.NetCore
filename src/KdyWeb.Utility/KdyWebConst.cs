@@ -88,6 +88,11 @@
             /// 通用解析配置节点
             /// </summary>
             public const string NormalConfig = "KdyWebParse:NormalConfig";
+
+            /// <summary>
+            /// 游戏检查
+            /// </summary>
+            public const string GameCheckConfig = "KdyGameCheck";
         }
 
         /// <summary>
