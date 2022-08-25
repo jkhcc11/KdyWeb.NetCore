@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto.HttpApi;
 using KdyWeb.Dto.HttpApi.GameCheck.GenShin;
 
 namespace KdyWeb.IService.HttpApi
@@ -12,12 +14,25 @@ namespace KdyWeb.IService.HttpApi
         /// <summary>
         /// 查询实时便签
         /// </summary>
-        /// <param name="uid">用户Id</param>
-        /// <param name="cookie">Cookie</param>
-        /// <param name="server">
-        /// 服务器  cn_gf01 国服天空岛
-        /// </param>
         /// <returns></returns>
-        Task<GenShinResult<DailyNoteResult>> QueryDailyNote(string uid, string cookie, string server = "cn_gf01");
+        Task<GenShinResult<DailyNoteResult>> QueryDailyNoteAsync(QueryDailyNoteInput input);
+
+        /// <summary>
+        /// bbs签到
+        /// </summary>
+        /// <returns></returns>
+        Task<GenShinResult<SignRewardResult>> BBsSignRewardAsync(BBsSignRewardInput input);
+
+        /// <summary>
+        /// 获取签到信息
+        /// </summary>
+        /// <returns></returns>
+        Task<GenShinResult<QuerySignInfoResult>> QuerySignInfoAsync(QuerySignInfoInput input);
+
+        /// <summary>
+        /// 获取用户绑定角色信息
+        /// </summary>
+        /// <returns></returns>
+        Task<GenShinResult<QueryUserBindInfoByCookieResult>> QueryUserBindInfoByCookieAsync(QueryUserBindInfoByCookieInput input);
     }
 }

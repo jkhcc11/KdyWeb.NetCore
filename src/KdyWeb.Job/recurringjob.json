@@ -2,7 +2,7 @@
   {
     "job-name": "Check job genshin",
     "job-type": "KdyWeb.Service.Job.Recurring.GameCheckRecurringJobService, KdyWeb.Service",
-    "cron-expression": "0 10,14,23 * * *",
+    "cron-expression": "0 8 * * *",
     "timezone": "China Standard Time",
     "queue": "gamecheck"
   }

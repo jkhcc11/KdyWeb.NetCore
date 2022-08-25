@@ -8,18 +8,23 @@ namespace KdyWeb.Dto.HttpApi.GameCheck
     public class GameCheckConfig
     {
         /// <summary>
-        /// sign salt
+        /// 实时便签version
         /// </summary>
-        public string GenshinSalt { get; set; }
+        public string DailyNoteVersion { get; set; }
 
         /// <summary>
-        /// 用户Id
+        /// 实时便签salt
         /// </summary>
-        public List<string> Uid { get; set; } = new List<string>();
+        public string DailyNoteSalt { get; set; }
 
         /// <summary>
-        /// cookie
+        /// BBS version
         /// </summary>
-        public List<string> Cookie { get; set; } = new List<string>();
+        public string BbsVersion { get; set; }
+
+        /// <summary>
+        /// BBS salt
+        /// </summary>
+        public string BbsSalt { get; set; }
     }
 }

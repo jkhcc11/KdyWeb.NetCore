@@ -188,6 +188,11 @@
         /// </summary>
 
         public const string NotEndKey = "NotEndKey";
+
+        /// <summary>
+        /// 游戏检查key
+        /// </summary>
+        public const string GameCheckKey = "GameCheckCookie";
     }
 
 }
