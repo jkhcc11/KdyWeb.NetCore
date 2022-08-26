@@ -55,7 +55,8 @@ namespace KdyWeb.Service.SearchVideo
 
             CanUpdateFieldList.AddRange(new[]
             {
-                "VideoContentFeature","Subtype","IsEnd","VideoMainStatus","IsMatchInfo","SourceUrl"
+                "VideoContentFeature","Subtype",
+                "IsEnd","VideoMainStatus","IsMatchInfo","SourceUrl"
             });
         }
 
@@ -192,6 +193,12 @@ namespace KdyWeb.Service.SearchVideo
             var query = _videoMainRepository.GetQuery()
                 .Include(a => a.VideoMainInfo)
                 .CreateConditions(input);
+            if (input.VideoCountries.HasValue)
+            {
+                var str = input.VideoCountries.Value.GetDisplayName();
+                query = query.Where(a => a.VideoMainInfo.VideoCountries.Contains(str));
+            }
+
             switch (input.SearchType)
             {
                 case SearchType.IsNoEnd:
@@ -529,6 +536,11 @@ namespace KdyWeb.Service.SearchVideo
             var query = _videoMainRepository.GetQuery()
                 .Include(a => a.VideoMainInfo)
                 .CreateConditions(input);
+            if (input.VideoCountries.HasValue)
+            {
+                var str = input.VideoCountries.Value.GetDisplayName();
+                query = query.Where(a => a.VideoMainInfo.VideoCountries.Contains(str));
+            }
 
             var count = await query.CountAsync();
             if (string.IsNullOrEmpty(input.KeyWord) == false)

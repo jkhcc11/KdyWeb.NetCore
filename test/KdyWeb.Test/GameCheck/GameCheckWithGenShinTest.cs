@@ -8,7 +8,7 @@ namespace KdyWeb.Test.GameCheck
     [TestClass]
     public class GameCheckWithGenShinTest : BaseTest<IGameCheckWithGenShinHttpApi>
     {
-        private static string cookie = "ltoken=DUjpFKL206XhJ5KZG9CUmI5xXeYebzMawFrYSO4F;ltuid=252040930;cookie_token=MFb8nFOtVrjPrqJauOrWPfc2Rzkx9BbOp18sIFq1;account_id=252040930;";
+        private static string cookie = "debug";
         [TestMethod]
         public async Task QueryDailyNote()
         {

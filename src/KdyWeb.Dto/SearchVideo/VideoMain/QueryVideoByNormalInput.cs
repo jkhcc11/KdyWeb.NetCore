@@ -40,5 +40,10 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         [KdyQuery("VideoMainInfo.VideoCasts", KdyOperator.Like)]
         public string VideoCasts { get; set; }
+
+        /// <summary>
+        /// 国家
+        /// </summary>
+        public VideoCountries? VideoCountries { get; set; }
     }
 }
