@@ -5,10 +5,12 @@ using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpApi;
+using KdyWeb.Dto.HttpApi.GameCheck;
 using KdyWeb.Dto.HttpApi.GameCheck.GenShin;
 using KdyWeb.IService.HttpApi;
 using KdyWeb.Utility;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 
@@ -27,9 +29,11 @@ namespace KdyWeb.Service.HttpApi
         /// 便签Api
         /// </summary>
         private const string DailyNoteApi = "https://api-takumi-record.mihoyo.com/game_record/app/genshin";
-        public GameCheckWithGenShinHttpApi(IUnitOfWork unitOfWork)
+        private readonly GameCheckConfig _gameCheckConfig;
+        public GameCheckWithGenShinHttpApi(IUnitOfWork unitOfWork, IOptions<GameCheckConfig> options)
             : base(unitOfWork)
         {
+            _gameCheckConfig = options.Value;
         }
 
         public async Task<GenShinResult<DailyNoteResult>> QueryDailyNoteAsync(QueryDailyNoteInput input)
@@ -148,7 +152,7 @@ namespace KdyWeb.Service.HttpApi
             var restClient = new RestClient
             {
                 BaseUrl = new Uri(BbsApi),
-                UserAgent = "okhttp/4.8.0",
+                UserAgent = _gameCheckConfig.BbsUserAgent,
             };
             restClient.AddDefaultHeader("x-rpc-client_type", "2");
             restClient.AddDefaultHeader("x-rpc-sys_version", "6.0.1");
