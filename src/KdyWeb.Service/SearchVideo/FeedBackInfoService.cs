@@ -181,9 +181,14 @@ namespace KdyWeb.Service.SearchVideo
             {
                 return KdyResult.Error(KdyResultCode.Error, "仅支持豆瓣链接");
             }
+            var tempUrl = input.OriginalUrl;
+            if (input.OriginalUrl.Contains("?"))
+            {
+                tempUrl = input.OriginalUrl.Split('?').First();
+            }
 
             //获取豆瓣信息
-            var subjectId = input.OriginalUrl.GetNumber();
+            var subjectId = tempUrl.GetNumber();
             var result = await _douBanInfoService.CreateForSubjectIdAsync(subjectId);
             if (result.IsSuccess == false)
             {
