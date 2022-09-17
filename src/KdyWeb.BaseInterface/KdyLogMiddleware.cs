@@ -130,9 +130,15 @@ namespace KdyWeb.BaseInterface
 
                 _stopwatch.Stop();
                 data.TryAdd("time", _stopwatch.ElapsedMilliseconds + "ms");
-                //记录日志
-                _logger.LogTrace("用户请求{url}结束.时间：{time}ms,扩展:{exData}", request.Path.Value, _stopwatch.ElapsedMilliseconds, JsonConvert.SerializeObject(data));
-
+                if (request.Method.ToLower() != "get")
+                {
+                    _logger.LogInformation("用户请求{url}结束.时间：{time}ms,扩展:{exData}", request.Path.Value, _stopwatch.ElapsedMilliseconds, JsonConvert.SerializeObject(data));
+                }
+                else
+                {
+                    //记录日志
+                    _logger.LogTrace("用户请求{url}结束.时间：{time}ms,扩展:{exData}", request.Path.Value, _stopwatch.ElapsedMilliseconds, JsonConvert.SerializeObject(data));
+                }
             }
             catch (Exception ex) when (ex is KdyCustomException customException)
             {
