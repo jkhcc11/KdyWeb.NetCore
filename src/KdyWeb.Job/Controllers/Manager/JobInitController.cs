@@ -11,6 +11,7 @@ namespace KdyWeb.Job.Controllers.Manager
     /// <summary>
     /// Hangfire Job初始化
     /// </summary>
+    [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
     public class JobInitController : BaseManagerController
     {
         private readonly IJobInitService _jobInitService;
