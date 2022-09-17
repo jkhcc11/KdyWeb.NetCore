@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers.Manager
@@ -51,6 +53,7 @@ namespace KdyWeb.Job.Controllers.Manager
         /// <returns></returns>
         [HttpDelete("batchDelete")]
         [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
         public async Task<IActionResult> BatchDeleteAsync(BatchDeleteForIntKeyInput input)
         {
             var result = await _feedBackInfoService.BatchDeleteAsync(input);

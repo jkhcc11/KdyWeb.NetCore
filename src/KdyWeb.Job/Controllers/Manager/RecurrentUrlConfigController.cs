@@ -1,8 +1,10 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.IService.HttpCapture;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers.Manager
@@ -10,6 +12,7 @@ namespace KdyWeb.Job.Controllers.Manager
     /// <summary>
     /// 循环Url配置 相关
     /// </summary>
+    [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
     public class RecurrentUrlConfigController : BaseManagerController
     {
         private readonly IRecurrentUrlConfigService _recurrentUrlConfigService;
