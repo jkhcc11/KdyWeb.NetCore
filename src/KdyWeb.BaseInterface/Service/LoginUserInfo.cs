@@ -47,6 +47,11 @@ namespace KdyWeb.BaseInterface.Service
         public string RoleName { get; set; }
 
         /// <summary>
+        /// 是否资源管理
+        /// </summary>
+        public bool IsVodAdmin { get; set; }
+
+        /// <summary>
         /// 从当前请求初始化登录信息
         /// </summary>
         internal void InitUserInfo(HttpContext httpContext)
@@ -86,6 +91,8 @@ namespace KdyWeb.BaseInterface.Service
                                               a.Value == AuthorizationConst.NormalRoleName.SuperAdmin);
             LoginToken = httpContext.Request.Headers["Authorization"];
             RoleName = roleName;
+            IsVodAdmin = user.HasClaim(a => a.Type == JwtClaimTypes.Role &&
+                                            a.Value == AuthorizationConst.NormalRoleName.VodAdmin);
 
             #region old
 

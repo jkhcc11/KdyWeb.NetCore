@@ -161,6 +161,11 @@
             /// </summary>
             public const string UploadImgMaxSize = "UploadConfig:uploadImg_max_size";
         }
+
+        /// <summary>
+        /// 系统录入
+        /// </summary>
+        public const string SystemInput = "systeminput";
     }
 
     /// <summary>
