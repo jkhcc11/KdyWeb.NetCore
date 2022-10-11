@@ -125,6 +125,7 @@ namespace KdyWeb.Service.VideoConverts
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryOrderListWithAdminDto>>> QueryOrderListWithAdminAsync(QueryOrderListWithAdminInput input)
         {
+            var userId = LoginUserInfo.GetUserId();
             input.OrderBy ??= new List<KdyEfOrderConditions>()
             {
                 new KdyEfOrderConditions()
@@ -134,7 +135,15 @@ namespace KdyWeb.Service.VideoConverts
                 }
             };
 
-            var pageList = await _convertOrderRepository.GetQuery()
+            var query = _convertOrderRepository.GetQuery();
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                //非管理员 只能查看待审核和自己的
+                query = query.Where(a => a.ConvertOrderStatus == ConvertOrderStatus.Init ||
+                                         a.ModifyUserId == userId);
+            }
+
+            var pageList = await query
                 .Include(a => a.OrderDetails)
                 .GetDtoPageListAsync<ConvertOrder, QueryOrderListWithAdminDto>(input);
             return KdyResult.Success(pageList);
