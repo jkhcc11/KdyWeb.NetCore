@@ -446,21 +446,30 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "keyId错误");
             }
 
-            if (main.IsEnd)
+            if (main.VideoContentFeature == KdyWebServiceConst.SystemInput &&
+                main.SourceUrl == KdyWebServiceConst.SystemInput)
             {
-                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "影片已完结，无需同步");
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "无需操作");
             }
+            //if (main.IsEnd)
+            //{
+            //    return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "影片已完结，无需同步");
+            //}
 
-            var db = KdyRedisCache.GetDb(1);
-            await db.KeyDeleteAsync($"{KdyServiceCacheKey.NotEndKey}:{mainId}");
+            main.VideoContentFeature = KdyWebServiceConst.SystemInput;
+            main.SourceUrl = KdyWebServiceConst.SystemInput;
+            return KdyResult.Success();
 
-            var jobInput = new UpdateNotEndVideoMainJobInput(main.Id, main.SourceUrl, main.VideoContentFeature)
-            {
-                KeyWord = main.KeyWord
-            };
-            var jobId = BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.ExecuteAsync(jobInput));
+            //var db = KdyRedisCache.GetDb(1);
+            //await db.KeyDeleteAsync($"{KdyServiceCacheKey.NotEndKey}:{mainId}");
 
-            return KdyResult.Success($"任务Id:{jobId} 已添加");
+            //var jobInput = new UpdateNotEndVideoMainJobInput(main.Id, main.SourceUrl, main.VideoContentFeature)
+            //{
+            //    KeyWord = main.KeyWord
+            //};
+            //var jobId = BackgroundJob.Enqueue<UpdateNotEndVideoJobService>(a => a.ExecuteAsync(jobInput));
+
+            //return KdyResult.Success($"任务Id:{jobId} 已添加");
 
         }
 

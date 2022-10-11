@@ -57,5 +57,10 @@ namespace KdyWeb.BaseInterface.Service
         /// 角色名
         /// </summary>
         string RoleName { get; set; }
+
+        /// <summary>
+        /// 是否资源管理
+        /// </summary>
+        bool IsVodAdmin { get; set; }
     }
 }

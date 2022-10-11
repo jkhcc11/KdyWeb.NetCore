@@ -49,8 +49,10 @@ namespace KdyWeb.Service.SearchVideo
 
             var query = _kdyRepository.GetQuery();
             if (LoginUserInfo.IsLogin &&
-                LoginUserInfo.IsSuperAdmin == false)
+                LoginUserInfo.IsSuperAdmin == false &&
+                LoginUserInfo.IsVodAdmin == false)
             {
+
                 //非管理员登录后只能看自己
                 query = query.Where(a => a.CreatedUserId == LoginUserInfo.GetUserId());
             }

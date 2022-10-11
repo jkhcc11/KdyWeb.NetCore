@@ -20,6 +20,11 @@
             /// 普通
             /// </summary>
             public const string Normal = "normal";
+
+            /// <summary>
+            /// 影片管理员
+            /// </summary>
+            public const string VodAdmin = "vodAdmin";
         }
 
         /// <summary>
