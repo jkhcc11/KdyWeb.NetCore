@@ -57,7 +57,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.CloudParse", "KdyWeb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.CloudParseApi", "KdyWeb.CloudParseApi\KdyWeb.CloudParseApi.csproj", "{3BB619E8-72F7-49C0-8689-8635AA976EC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.HttpApi", "KdyWeb.HttpApi\KdyWeb.HttpApi.csproj", "{76A038E9-9CC9-46FB-A30A-ADFFF3D020A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.HttpApi", "KdyWeb.HttpApi\KdyWeb.HttpApi.csproj", "{76A038E9-9CC9-46FB-A30A-ADFFF3D020A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
