@@ -12,7 +12,7 @@ namespace KdyWeb.Job.Controllers.Manager
     /// <summary>
     /// 转码订单
     /// </summary>
-    [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+    //[Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
     public class ConvertOrderController : BaseManagerController
     {
         private readonly IConvertOrderService _convertOrderService;

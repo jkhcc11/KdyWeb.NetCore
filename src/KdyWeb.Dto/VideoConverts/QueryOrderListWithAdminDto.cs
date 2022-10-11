@@ -13,5 +13,10 @@ namespace KdyWeb.Dto.VideoConverts
         /// 创建用户名
         /// </summary>
         public string CreatedUserName { get; set; }
+
+        /// <summary>
+        /// 修改用户名
+        /// </summary>
+        public string ModifyUserName { get; set; }
     }
 }
