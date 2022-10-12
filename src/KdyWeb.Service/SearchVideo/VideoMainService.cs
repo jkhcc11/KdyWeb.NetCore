@@ -456,8 +456,11 @@ namespace KdyWeb.Service.SearchVideo
             //    return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "影片已完结，无需同步");
             //}
 
+            main.IsEnd = true;
             main.VideoContentFeature = KdyWebServiceConst.SystemInput;
             main.SourceUrl = KdyWebServiceConst.SystemInput;
+            _videoMainRepository.Update(main);
+            await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
 
             //var db = KdyRedisCache.GetDb(1);
