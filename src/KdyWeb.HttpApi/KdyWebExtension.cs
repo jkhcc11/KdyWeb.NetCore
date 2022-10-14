@@ -102,17 +102,33 @@ namespace KdyWeb.HttpApi
                     //登录普通
                     options.AddPolicy(AuthorizationConst.NormalPolicyName.NormalPolicy,
                         policy => policy.RequireAssertion(context =>
-                            context.User.HasClaim(c => c.Type == JwtClaimTypes.Role &&
-                                                       (c.Value == AuthorizationConst.NormalRoleName.Normal ||
-                                                        c.Value == AuthorizationConst.NormalRoleName.SuperAdmin)) &&
-                            context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope && c.Value == authServer.Scope)
+                            {
+                                return (context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin) ||
+                                        context.User.IsInRole(AuthorizationConst.NormalRoleName.Normal))
+                                       && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
+                                                                     c.Value == authServer.Scope);
+                            }
                         ));
 
                     //超管
                     options.AddPolicy(AuthorizationConst.NormalPolicyName.SuperAdminPolicy,
                         policy => policy.RequireAssertion(context =>
-                            context.User.HasClaim(a => a.Type == JwtClaimTypes.Role && a.Value == AuthorizationConst.NormalRoleName.SuperAdmin)
-                            && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope && c.Value == authServer.Scope)
+                            {
+                                return context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin)
+                                       && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
+                                                                     c.Value == authServer.Scope);
+                            }
+                        ));
+
+                    //Manager
+                    options.AddPolicy(AuthorizationConst.NormalPolicyName.ManagerPolicy,
+                        policy => policy.RequireAssertion(context =>
+                            {
+                                return (context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin) ||
+                                        context.User.IsInRole(AuthorizationConst.NormalRoleName.VodAdmin))
+                                       && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
+                                                                     c.Value == authServer.Scope);
+                            }
                         ));
 
                     //未登录跨域
@@ -127,9 +143,9 @@ namespace KdyWeb.HttpApi
 
             //初始化第三方组件
             services.InitIdGenerate(configuration)
-                .UseRedisCache(configuration)
-                .AddMemoryCache()
-                .AddMiniProfile();
+                    .UseRedisCache(configuration)
+                    .AddMemoryCache()
+                    .AddMiniProfile();
 
             //自有host
             services.Configure<KdySelfHostOption>(configuration?.GetSection(KdyWebServiceConst.SelfHostKey));
@@ -144,10 +160,10 @@ namespace KdyWeb.HttpApi
 
             //跨域
             services.AddCors(option =>
-                option.AddPolicy("kdyCors", policy =>
-                    policy.AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .WithOrigins(hostArray)));
+                        option.AddPolicy("kdyCors", policy =>
+                            policy.AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .WithOrigins(hostArray)));
 
             AddRateLimit(services);
             return services;
