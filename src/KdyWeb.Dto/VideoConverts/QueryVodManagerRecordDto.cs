@@ -38,12 +38,22 @@ namespace KdyWeb.Dto.VideoConverts
         public bool IsCheckout { get; set; }
 
         /// <summary>
+        /// 是否已结算Str
+        /// </summary>
+        public string IsCheckoutStr => IsCheckout ? "是" : "否";
+
+        /// <summary>
         /// 是否为有效记录
         /// </summary>
         /// <remarks>
         /// 重复提交的就是false
         /// </remarks>
         public bool IsValid { get; set; }
+
+        /// <summary>
+        /// 是否为有效记录Str
+        /// </summary>
+        public string IsValidStr => IsValid ? "是" : "否";
 
         /// <summary>
         /// 创建用户名
