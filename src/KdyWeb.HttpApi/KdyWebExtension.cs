@@ -102,34 +102,60 @@ namespace KdyWeb.HttpApi
                     //登录普通
                     options.AddPolicy(AuthorizationConst.NormalPolicyName.NormalPolicy,
                         policy => policy.RequireAssertion(context =>
-                            {
-                                return (context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin) ||
-                                        context.User.IsInRole(AuthorizationConst.NormalRoleName.Normal))
-                                       && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
-                                                                     c.Value == authServer.Scope);
-                            }
+                            context.User.HasClaim(c => c.Type == JwtClaimTypes.Role &&
+                                                       (c.Value == AuthorizationConst.NormalRoleName.Normal ||
+                                                        c.Value == AuthorizationConst.NormalRoleName.SuperAdmin)) &&
+                            context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope && c.Value == authServer.Scope)
                         ));
 
                     //超管
                     options.AddPolicy(AuthorizationConst.NormalPolicyName.SuperAdminPolicy,
                         policy => policy.RequireAssertion(context =>
-                            {
-                                return context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin)
-                                       && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
-                                                                     c.Value == authServer.Scope);
-                            }
+                            context.User.HasClaim(c => c.Type == JwtClaimTypes.Role &&
+                                                       c.Value == AuthorizationConst.NormalRoleName.SuperAdmin) &&
+                            context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope && c.Value == authServer.Scope)
                         ));
 
-                    //Manager
+                    //manager
                     options.AddPolicy(AuthorizationConst.NormalPolicyName.ManagerPolicy,
                         policy => policy.RequireAssertion(context =>
-                            {
-                                return (context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin) ||
-                                        context.User.IsInRole(AuthorizationConst.NormalRoleName.VodAdmin))
-                                       && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
-                                                                     c.Value == authServer.Scope);
-                            }
+                            context.User.HasClaim(c => c.Type == JwtClaimTypes.Role &&
+                                                       (c.Value == AuthorizationConst.NormalRoleName.VodAdmin ||
+                                                        c.Value == AuthorizationConst.NormalRoleName.SuperAdmin)) &&
+                            context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope && c.Value == authServer.Scope)
                         ));
+
+                    ////登录普通
+                    //options.AddPolicy(AuthorizationConst.NormalPolicyName.NormalPolicy,
+                    //    policy => policy.RequireAssertion(context =>
+                    //        {
+                    //            return (context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin) ||
+                    //                    context.User.IsInRole(AuthorizationConst.NormalRoleName.Normal))
+                    //                   && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
+                    //                                                 c.Value == authServer.Scope);
+                    //        }
+                    //    ));
+
+                    ////超管
+                    //options.AddPolicy(AuthorizationConst.NormalPolicyName.SuperAdminPolicy,
+                    //    policy => policy.RequireAssertion(context =>
+                    //        {
+                    //            return context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin)
+                    //                   && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
+                    //                                                 c.Value == authServer.Scope);
+                    //        }
+                    //    ));
+
+                    ////Manager
+                    //options.AddPolicy(AuthorizationConst.NormalPolicyName.ManagerPolicy,
+                    //    policy => policy.RequireAssertion(context =>
+                    //        {
+                    //            return (context.User.IsInRole(AuthorizationConst.NormalRoleName.SuperAdmin) ||
+                    //                    context.User.IsInRole(AuthorizationConst.NormalRoleName.VodAdmin))
+                    //                   && context.User.HasClaim(c => c.Type == JwtClaimTypes.Scope &&
+                    //                                                 c.Value == authServer.Scope);
+                    //        }
+                    //    ));
 
                     //未登录跨域
                     options.AddPolicy(AuthorizationConst.NormalPolicyName.CrossPolicy,
