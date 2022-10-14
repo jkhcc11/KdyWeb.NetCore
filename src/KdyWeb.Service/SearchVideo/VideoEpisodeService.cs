@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
+using KdyWeb.Dto.Job;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
+using KdyWeb.Entity.VideoConverts.Enum;
 using KdyWeb.IService.SearchVideo;
+using KdyWeb.IService.VideoConverts;
+using KdyWeb.Service.Job;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
@@ -21,7 +26,8 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
 
-        public VideoEpisodeService(IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository, IKdyRepository<VideoMain, long> videoMainRepository)
+        public VideoEpisodeService(IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
+            IKdyRepository<VideoMain, long> videoMainRepository)
             : base(unitOfWork)
         {
             _videoEpisodeRepository = videoEpisodeRepository;
@@ -77,6 +83,20 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             await UnitOfWork.SaveChangesAsync();
+
+            var recordType = VodManagerRecordType.SaveMove;
+            if (input.EpItems.Count > 10)
+            {
+                recordType = VodManagerRecordType.SaveTv;
+            }
+
+            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), recordType)
+            {
+                BusinessId = input.MainId,
+                Remark = $"剧集更新数量：{input.EpItems.Count}"
+            };
+            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
+
             return KdyResult.Success("剧集创建成功");
         }
 

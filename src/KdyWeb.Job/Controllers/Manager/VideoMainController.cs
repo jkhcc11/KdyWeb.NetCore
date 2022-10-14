@@ -95,5 +95,17 @@ namespace KdyWeb.Job.Controllers.Manager
             var result = await _videoMainService.ForceSyncVideoMainAsync(mainId);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 下架影片
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("down/{mainId}")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> DownVodAsync(long mainId)
+        {
+            var result = await _videoMainService.DownVodAsync(mainId);
+            return Ok(result);
+        }
     }
 }

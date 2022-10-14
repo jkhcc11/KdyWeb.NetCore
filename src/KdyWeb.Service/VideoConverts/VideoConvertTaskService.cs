@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
+using KdyWeb.Dto.Job;
 using KdyWeb.Dto.VideoConverts;
-using KdyWeb.Entity;
 using KdyWeb.Entity.VideoConverts;
 using KdyWeb.Entity.VideoConverts.Enum;
 using KdyWeb.IService.VideoConverts;
 using KdyWeb.Repository;
+using KdyWeb.Service.Job;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.VideoConverts
@@ -23,15 +25,12 @@ namespace KdyWeb.Service.VideoConverts
     {
         private readonly IKdyRepository<ConvertOrder, long> _convertOrderRepository;
         private readonly IKdyRepository<VideoConvertTask, long> _videoConvertTaskRepository;
-        private readonly IKdyRepository<KdyUser, long> _kdyUseRepository;
         public VideoConvertTaskService(IUnitOfWork unitOfWork,
             IKdyRepository<ConvertOrder, long> convertOrderRepository,
-            IKdyRepository<VideoConvertTask, long> videoConvertTaskRepository,
-            IKdyRepository<KdyUser, long> kdyUseRepository) : base(unitOfWork)
+            IKdyRepository<VideoConvertTask, long> videoConvertTaskRepository) : base(unitOfWork)
         {
             _convertOrderRepository = convertOrderRepository;
             _videoConvertTaskRepository = videoConvertTaskRepository;
-            _kdyUseRepository = kdyUseRepository;
         }
 
         /// <summary>
@@ -57,6 +56,12 @@ namespace KdyWeb.Service.VideoConverts
             await _videoConvertTaskRepository.CreateAsync(dbTask);
             await UnitOfWork.SaveChangesAsync();
 
+            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), VodManagerRecordType.CreateTask)
+            {
+                BusinessId = dbTask.Id,
+                Remark = $"任务名：{dbTask.TaskName}"
+            };
+            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
             return KdyResult.Success();
         }
 

@@ -23,6 +23,12 @@ namespace KdyWeb.Entity.SearchVideo
         /// 登录
         /// </summary>
         [Display(Name = "登录")]
-        Login
+        Login,
+
+        /// <summary>
+        /// 下架
+        /// </summary>
+        [Display(Name = "下架")]
+        Down = 10
     }
 }

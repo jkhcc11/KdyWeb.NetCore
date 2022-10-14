@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto.Job;
 using KdyWeb.Dto.VideoConverts;
 using KdyWeb.Entity.VideoConverts;
 using KdyWeb.Entity.VideoConverts.Enum;
 using KdyWeb.IService.VideoConverts;
 using KdyWeb.Repository;
+using KdyWeb.Service.Job;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.VideoConverts
@@ -71,6 +74,18 @@ namespace KdyWeb.Service.VideoConverts
             _convertOrderRepository.Update(dbOrder);
 
             await UnitOfWork.SaveChangesAsync();
+
+            var recordType = VodManagerRecordType.Audit;
+            if (dbOrder.ActualAmount > 50)
+            {
+                recordType = VodManagerRecordType.AuditMore;
+            }
+            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), recordType)
+            {
+                BusinessId = dbOrder.Id,
+                Remark = $"任务列表：{string.Join(",", dbOrder.OrderDetails.Select(a => a.TaskName))}"
+            };
+            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
             return KdyResult.Success();
         }
 

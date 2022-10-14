@@ -1,16 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
+using KdyWeb.Dto.Job;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
+using KdyWeb.Entity.VideoConverts.Enum;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Repository;
+using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
@@ -109,6 +113,7 @@ namespace KdyWeb.Service.SearchVideo
             _kdyRepository.Update(dbList);
             await UnitOfWork.SaveChangesAsync();
 
+            await CreateVodManagerRecordAsync(dbList);
             return KdyResult.Success();
         }
 
@@ -214,6 +219,28 @@ namespace KdyWeb.Service.SearchVideo
             await _kdyRepository.CreateAsync(dbFeedBack);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 创建管理记录 
+        /// </summary>
+        /// <returns></returns>
+        private async Task CreateVodManagerRecordAsync(List<FeedBackInfo> feedBacks)
+        {
+            await Task.CompletedTask;
+            if (feedBacks.All(a => a.FeedBackInfoStatus == FeedBackInfoStatus.Normal) == false)
+            {
+                return;
+            }
+
+            var sumAmount = feedBacks.Count * 0.5m;
+            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), VodManagerRecordType.InputAndFeedBack)
+            {
+                BusinessId = feedBacks.First().Id,
+                Remark = $"影片列表：{string.Join(",", feedBacks.Select(a => a.VideoName))}",
+                CheckoutAmount = sumAmount
+            };
+            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
         }
     }
 }

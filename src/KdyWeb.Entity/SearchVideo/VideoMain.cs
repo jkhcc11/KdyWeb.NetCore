@@ -152,5 +152,13 @@ namespace KdyWeb.Entity.SearchVideo
         {
             IsMatchInfo = true;
         }
+
+        /// <summary>
+        /// 设置下架
+        /// </summary>
+        public void SetDown()
+        {
+            VideoMainStatus = VideoMainStatus.Down;
+        }
     }
 }
