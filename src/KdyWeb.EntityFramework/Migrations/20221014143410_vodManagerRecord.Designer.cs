@@ -4,14 +4,16 @@ using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    partial class ReadWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20221014143410_vodManagerRecord")]
+    partial class vodManagerRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
