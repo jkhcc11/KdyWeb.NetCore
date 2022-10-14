@@ -84,5 +84,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<IList<QueryVideoMainDto>>> RandVideoByNormalAsync(int count);
+
+        /// <summary>
+        /// 下架影片
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DownVodAsync(long mainId);
     }
 }

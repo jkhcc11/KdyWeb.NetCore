@@ -11,8 +11,10 @@ using KdyWeb.BaseInterface.KdyOptions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
+using KdyWeb.Dto.Job;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
+using KdyWeb.Entity.VideoConverts.Enum;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
@@ -34,13 +36,12 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IKdyRepository<VideoMainInfo, long> _videoMainInfoRepository;
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
         private readonly IKdyRepository<VideoSeriesList, long> _videoSeriesListRepository;
-        private readonly KdySelfHostOption _kdySelfHostOption;
 
         public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
             IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
             IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
             IKdyRepository<VideoMainInfo, long> videoMainInfoRepository, IKdyRepository<UserHistory, long> userHistoryRepository,
-            IKdyRepository<VideoSeriesList, long> videoSeriesListRepository, IOptions<KdySelfHostOption> options) :
+            IKdyRepository<VideoSeriesList, long> videoSeriesListRepository) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
@@ -51,7 +52,6 @@ namespace KdyWeb.Service.SearchVideo
             _videoMainInfoRepository = videoMainInfoRepository;
             _userHistoryRepository = userHistoryRepository;
             _videoSeriesListRepository = videoSeriesListRepository;
-            _kdySelfHostOption = options.Value;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -317,6 +317,11 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "豆瓣信息不存在");
             }
 
+            if (dbDouBanInfo.VideoCountries.IsEmptyExt())
+            {
+                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息缺少国家，匹配信息");
+            }
+
             dbMain.ToVideoMain(dbDouBanInfo);
             dbMain.VideoImg = dbDouBanInfo.VideoImg;
             dbMain.IsMatchInfo = true;
@@ -326,6 +331,8 @@ namespace KdyWeb.Service.SearchVideo
             _douBanInfoRepository.Update(dbDouBanInfo);
 
             await UnitOfWork.SaveChangesAsync();
+
+            await CreateVodManagerRecordAsync(dbMain, dbDouBanInfo);
             return KdyResult.Success();
         }
 
@@ -547,6 +554,7 @@ namespace KdyWeb.Service.SearchVideo
             //生成条件和排序规则
             var query = _videoMainRepository.GetQuery()
                 .Include(a => a.VideoMainInfo)
+                .Where(a => a.VideoMainStatus != VideoMainStatus.Down)
                 .CreateConditions(input);
             if (input.VideoCountries.HasValue)
             {
@@ -611,6 +619,62 @@ namespace KdyWeb.Service.SearchVideo
                 item.ImgHandler();
             }
             return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 下架影片
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> DownVodAsync(long mainId)
+        {
+            if (LoginUserInfo.IsNormal)
+            {
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "操作失败,无权");
+            }
+
+            var main = await _videoMainRepository.FirstOrDefaultAsync(a => a.Id == mainId);
+            if (main == null)
+            {
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.ParError, "keyId错误");
+            }
+
+            if (main.VideoMainStatus == VideoMainStatus.Down)
+            {
+                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "已操作,无需重复操作");
+            }
+
+            main.SetDown();
+            _videoMainRepository.Update(main);
+            await UnitOfWork.SaveChangesAsync();
+
+            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), VodManagerRecordType.Down)
+            {
+                BusinessId = mainId,
+                Remark = $"影片名：{main.KeyWord}"
+            };
+            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
+            return null;
+        }
+
+        /// <summary>
+        /// 创建影片管理记录
+        /// </summary>
+        /// <returns></returns>
+        private async Task CreateVodManagerRecordAsync(VideoMain videoMain, DouBanInfo douBanInfo)
+        {
+            await Task.CompletedTask;
+            var recordType = VodManagerRecordType.UpdateMainInfo;
+            if (douBanInfo.CreatedUserId == LoginUserInfo.GetUserId())
+            {
+                recordType = VodManagerRecordType.UpdateMainInfoSelf;
+            }
+
+            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), recordType)
+            {
+                BusinessId = videoMain.Id,
+                Remark = $"影片名：{videoMain.KeyWord} 豆瓣信息编码:{douBanInfo.Id}"
+            };
+            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
         }
     }
 }

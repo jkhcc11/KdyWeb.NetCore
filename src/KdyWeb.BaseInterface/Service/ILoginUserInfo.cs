@@ -62,5 +62,10 @@ namespace KdyWeb.BaseInterface.Service
         /// 是否资源管理
         /// </summary>
         bool IsVodAdmin { get; set; }
+
+        /// <summary>
+        /// 是否普通用户（非资源管理和超管）
+        /// </summary>
+        bool IsNormal { get; set; }
     }
 }
