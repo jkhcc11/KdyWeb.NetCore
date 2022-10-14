@@ -10,8 +10,7 @@ namespace KdyWeb.Job.Controllers
     [Route("api/kdy-manager/[controller]")]
     [ApiController]
     [ApiExplorerSettings(GroupName = "manager")]
-    //[Authorize(Policy = AuthorizationConst.NormalPolicyName.NormalPolicy)]
-    [Authorize(Roles = AuthorizationConst.NormalRoleName.VodAdmin + "," + AuthorizationConst.NormalRoleName.SuperAdmin)]
+    [Authorize(Policy = AuthorizationConst.NormalPolicyName.ManagerPolicy)]
     public abstract class BaseManagerController : Controller
     {
 

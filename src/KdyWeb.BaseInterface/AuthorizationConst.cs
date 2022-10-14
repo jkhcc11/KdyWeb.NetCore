@@ -33,6 +33,15 @@
         public class NormalPolicyName
         {
             /// <summary>
+            /// 管理者策略名
+            /// </summary>
+            /// <remarks>
+            ///  管理者（资源管理或者是超管）
+            /// </remarks>
+            public const string ManagerPolicy = "Kdy_Manager_Policy";
+
+
+            /// <summary>
             /// 超管策略名
             /// </summary>
             public const string SuperAdminPolicy = "Kdy_SuperAdmin_Policy";
