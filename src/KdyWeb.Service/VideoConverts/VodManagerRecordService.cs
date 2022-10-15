@@ -52,6 +52,14 @@ namespace KdyWeb.Service.VideoConverts
             }
 
             var pageList = await query.GetDtoPageListAsync<VodManagerRecord, QueryVodManagerRecordDto>(input);
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                foreach (var item in pageList.Data)
+                {
+                    item.CreatedUserName = string.Empty;
+                }
+            }
+
             return KdyResult.Success(pageList);
         }
 
