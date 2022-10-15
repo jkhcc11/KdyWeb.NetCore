@@ -158,7 +158,17 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         public void SetDown()
         {
+            IsEnd = true;
             VideoMainStatus = VideoMainStatus.Down;
+        }
+
+        /// <summary>
+        /// 设置系统录入
+        /// </summary>
+        public void SetSysInput()
+        {
+            VideoContentFeature = SystemInput;
+            SourceUrl = SystemInput;
         }
     }
 }
