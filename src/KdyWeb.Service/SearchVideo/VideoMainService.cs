@@ -324,7 +324,17 @@ namespace KdyWeb.Service.SearchVideo
 
             dbMain.ToVideoMain(dbDouBanInfo);
             dbMain.VideoImg = dbDouBanInfo.VideoImg;
-            dbMain.IsMatchInfo = true;
+            if (dbDouBanInfo.VideoCountries.IsEmptyExt() == false &&
+                dbDouBanInfo.VideoDirectors.IsEmptyExt() == false)
+            {
+                dbMain.SetMatchDouBanInfo();
+            }
+
+            if (dbMain.IsEnd == false)
+            {
+                dbMain.SetSysInput();
+            }
+
             _videoMainRepository.Update(dbMain);
 
             dbDouBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
