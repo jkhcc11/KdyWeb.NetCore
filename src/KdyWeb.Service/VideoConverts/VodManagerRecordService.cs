@@ -113,18 +113,20 @@ namespace KdyWeb.Service.VideoConverts
         /// </remarks>
         /// <param name="recordType">记录类型</param>
         /// <param name="userId">用户Id</param>
+        /// <param name="userName">用户名</param>
         /// <param name="businessId">业务Id</param>
         /// <param name="checkoutAmount">结算金额</param>
         /// <param name="remark">备注</param>
         /// <returns></returns>
         public async Task CreateVodManagerRecordAsync(VodManagerRecordType recordType
-            , long userId, long businessId, decimal? checkoutAmount = null, string remark = "")
+            , long userId, string userName, long businessId, decimal? checkoutAmount = null, string remark = "")
         {
             var entity = new VodManagerRecord(recordType, recordType.GetCheckoutAmount())
             {
                 BusinessId = businessId,
                 Remark = remark,
-                CreatedUserId = userId
+                CreatedUserId = userId,
+                CreatedUserName = userName
             };
 
             if (checkoutAmount.HasValue &&

@@ -93,7 +93,8 @@ namespace KdyWeb.Service.SearchVideo
             var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), recordType)
             {
                 BusinessId = input.MainId,
-                Remark = $"剧集更新数量：{input.EpItems.Count}"
+                Remark = $"剧集更新数量：{input.EpItems.Count}",
+                LoginUserName = LoginUserInfo.UserName
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
 

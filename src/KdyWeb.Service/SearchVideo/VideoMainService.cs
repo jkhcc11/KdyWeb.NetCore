@@ -650,10 +650,11 @@ namespace KdyWeb.Service.SearchVideo
             var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), VodManagerRecordType.Down)
             {
                 BusinessId = mainId,
-                Remark = $"影片名：{main.KeyWord}"
+                Remark = $"影片名：{main.KeyWord}",
+                LoginUserName = LoginUserInfo.UserName
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
-            return null;
+            return KdyResult.Success();
         }
 
         /// <summary>
@@ -672,7 +673,8 @@ namespace KdyWeb.Service.SearchVideo
             var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), recordType)
             {
                 BusinessId = videoMain.Id,
-                Remark = $"影片名：{videoMain.KeyWord} 豆瓣信息编码:{douBanInfo.Id}"
+                Remark = $"影片名：{videoMain.KeyWord} 豆瓣信息编码:{douBanInfo.Id}",
+                LoginUserName = LoginUserInfo.UserName
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
         }

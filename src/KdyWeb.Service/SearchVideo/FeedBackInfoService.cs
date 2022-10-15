@@ -238,7 +238,8 @@ namespace KdyWeb.Service.SearchVideo
             {
                 BusinessId = feedBacks.First().Id,
                 Remark = $"影片列表：{string.Join(",", feedBacks.Select(a => a.VideoName))}",
-                CheckoutAmount = sumAmount
+                CheckoutAmount = sumAmount,
+                LoginUserName = LoginUserInfo.UserName
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
         }
