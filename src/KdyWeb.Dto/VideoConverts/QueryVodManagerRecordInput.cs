@@ -8,8 +8,15 @@ namespace KdyWeb.Dto.VideoConverts
     /// <summary>
     /// 查询影片管理者记录 input
     /// </summary>
-    public class QueryVodManagerRecordInput: BasePageInput
+    public class QueryVodManagerRecordInput : BasePageInput
     {
+        /// <summary>
+        /// 关键字
+        /// </summary>
+        [KdyQuery(nameof(VodManagerRecord.CreatedUserName), KdyOperator.Equal)]
+        [KdyQuery(nameof(VodManagerRecord.Remark), KdyOperator.Like)]
+        public string KeyWord { get; set; }
+
         /// <summary>
         /// 记录类型
         /// </summary>
