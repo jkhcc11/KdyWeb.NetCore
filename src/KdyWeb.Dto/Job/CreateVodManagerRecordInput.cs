@@ -26,6 +26,11 @@ namespace KdyWeb.Dto.Job
         public long UserId { get; set; }
 
         /// <summary>
+        /// 登录用户名
+        /// </summary>
+        public string LoginUserName { get; set; }
+
+        /// <summary>
         /// 记录类型
         /// </summary>
         public VodManagerRecordType RecordType { get; set; }

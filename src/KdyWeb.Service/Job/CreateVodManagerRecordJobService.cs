@@ -30,7 +30,7 @@ namespace KdyWeb.Service.Job
         public override async Task ExecuteAsync(CreateVodManagerRecordInput input)
         {
             await _vodManagerRecordService.CreateVodManagerRecordAsync(input.RecordType
-                , input.UserId, input.BusinessId, input.CheckoutAmount, input.Remark);
+                , input.UserId, input.LoginUserName, input.BusinessId, input.CheckoutAmount, input.Remark);
         }
     }
 }

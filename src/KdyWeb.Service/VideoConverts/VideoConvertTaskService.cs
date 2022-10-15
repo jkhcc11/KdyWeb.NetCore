@@ -59,7 +59,8 @@ namespace KdyWeb.Service.VideoConverts
             var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), VodManagerRecordType.CreateTask)
             {
                 BusinessId = dbTask.Id,
-                Remark = $"任务名：{dbTask.TaskName}"
+                Remark = $"任务名：{dbTask.TaskName}",
+                LoginUserName = LoginUserInfo.UserName
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
             return KdyResult.Success();
