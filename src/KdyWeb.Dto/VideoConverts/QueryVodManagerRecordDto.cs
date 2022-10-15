@@ -56,6 +56,16 @@ namespace KdyWeb.Dto.VideoConverts
         public string IsValidStr => IsValid ? "是" : "否";
 
         /// <summary>
+        /// 业务Id 
+        /// </summary>
+        public long BusinessId { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
+
+        /// <summary>
         /// 创建用户名
         /// </summary>
         public string CreatedUserName { get; set; }
