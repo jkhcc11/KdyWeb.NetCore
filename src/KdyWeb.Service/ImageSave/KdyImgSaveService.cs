@@ -363,7 +363,7 @@ namespace KdyWeb.Service.ImageSave
                 throw new KdyCustomException($"普通文件上传失败，未配置超星UID和Token");
             }
 
-            var normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload", "file",
+            var normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload?_from=mobilelearn", "file",
                 "data.previewUrl", kdyFileInput.FileName);
             if (kdyFileInput.FileBytes != null && kdyFileInput.FileBytes.Any())
             {
