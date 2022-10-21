@@ -74,8 +74,14 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var epName = input.EpisodeGroupType == EpisodeGroupType.VideoPlay ? "极速" : "点击下载";
+            if (douBanInfo.Subtype != Subtype.Movie)
+            {
+                epName = "1";
+            }
+
             //生成影片信息
-            var dbVideoMain = new VideoMain(douBanInfo.Subtype, douBanInfo.VideoTitle, douBanInfo.VideoImg, "systeminput", "systeminput");
+            var dbVideoMain = new VideoMain(douBanInfo.Subtype, douBanInfo.VideoTitle, douBanInfo.VideoImg, 
+                VideoMain.SystemInput, VideoMain.SystemInput);
             dbVideoMain.ToVideoMain(douBanInfo);
             dbVideoMain.EpisodeGroup = new List<VideoEpisodeGroup>()
             {
@@ -463,8 +469,8 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "keyId错误");
             }
 
-            if (main.VideoContentFeature == KdyWebServiceConst.SystemInput &&
-                main.SourceUrl == KdyWebServiceConst.SystemInput)
+            if (main.VideoContentFeature == VideoMain.SystemInput &&
+                main.SourceUrl == VideoMain.SystemInput)
             {
                 return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "无需操作");
             }
@@ -474,8 +480,8 @@ namespace KdyWeb.Service.SearchVideo
             //}
 
             main.IsEnd = true;
-            main.VideoContentFeature = KdyWebServiceConst.SystemInput;
-            main.SourceUrl = KdyWebServiceConst.SystemInput;
+            main.VideoContentFeature = VideoMain.SystemInput;
+            main.SourceUrl = VideoMain.SystemInput;
             _videoMainRepository.Update(main);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
