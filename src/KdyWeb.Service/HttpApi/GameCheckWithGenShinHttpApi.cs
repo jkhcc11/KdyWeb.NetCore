@@ -71,7 +71,7 @@ namespace KdyWeb.Service.HttpApi
             request.AddHeader("x-rpc-app_version", input.Version);
             var restClient = await GetBbsRestClient();
             var response = await restClient.ExecuteAsync<GenShinResult<SignRewardResult>>(request);
-            KdyLog.LogDebug($"用户UID:{input.Uid},Sign返回：{response.Content}");
+            KdyLog.LogInformation($"用户UID:{input.Uid},Sign返回：{response.Content}");
             if (response.IsSuccessful)
             {
                 return response.Data;
