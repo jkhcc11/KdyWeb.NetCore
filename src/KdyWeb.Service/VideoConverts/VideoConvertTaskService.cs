@@ -244,5 +244,34 @@ namespace KdyWeb.Service.VideoConverts
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }
+
+        /// <summary>
+        /// 删除任务
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> DeleteTaskAsync(long taskId)
+        {
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "操作失败,无权限");
+            }
+
+            var taskInfo = await _videoConvertTaskRepository
+                .GetQuery()
+                .FirstOrDefaultAsync(a => a.Id == taskId);
+            if (taskInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "操作失败,无效操作");
+            }
+
+            if (taskInfo.TaskStatus == VideoConvertTaskStatus.Finish)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "操作失败,状态无可操作");
+            }
+
+            _videoConvertTaskRepository.Delete(taskInfo);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
     }
 }

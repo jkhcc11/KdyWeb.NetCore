@@ -43,5 +43,17 @@ namespace KdyWeb.Job.Controllers.Manager
             var result = await _videoConvertTaskService.QueryConvertTaskWithAdminAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 删除Task
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("delete/{taskId}")]
+        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> DeleteTaskAsync(long taskId)
+        {
+            var result = await _videoConvertTaskService.DeleteTaskAsync(taskId);
+            return Ok(result);
+        }
     }
 }

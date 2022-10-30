@@ -53,5 +53,11 @@ namespace KdyWeb.IService.VideoConverts
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> CancelTaskAsync(BatchDeleteForLongKeyInput input);
+
+        /// <summary>
+        /// 删除任务
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DeleteTaskAsync(long taskId);
     }
 }
