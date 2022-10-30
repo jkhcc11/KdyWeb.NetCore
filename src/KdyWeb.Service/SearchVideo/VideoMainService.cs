@@ -73,24 +73,31 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error<CreateForDouBanInfoDto>(KdyResultCode.Error, "豆瓣信息Id错误");
             }
 
-            var epName = input.EpisodeGroupType == EpisodeGroupType.VideoPlay ? "极速" : "点击下载";
-            if (douBanInfo.Subtype != Subtype.Movie)
+            //是否存在
+            var anyVideoMain = await _videoMainRepository
+                .GetAsNoTracking()
+                .AnyAsync(a => a.VideoInfoUrl != null &&
+                            a.VideoInfoUrl.Contains(douBanInfo.VideoDetailId));
+            if (anyVideoMain)
             {
-                epName = "1";
+                return KdyResult.Error<CreateForDouBanInfoDto>(KdyResultCode.Error, "影片已存在 创建失败");
             }
 
+            //剧集列表
+            var episodes = input.EpUrl
+                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(GetVideoEpisodeByString)
+                .ToList();
+
             //生成影片信息
-            var dbVideoMain = new VideoMain(douBanInfo.Subtype, douBanInfo.VideoTitle, douBanInfo.VideoImg, 
+            var dbVideoMain = new VideoMain(douBanInfo.Subtype, douBanInfo.VideoTitle, douBanInfo.VideoImg,
                 VideoMain.SystemInput, VideoMain.SystemInput);
             dbVideoMain.ToVideoMain(douBanInfo);
             dbVideoMain.EpisodeGroup = new List<VideoEpisodeGroup>()
             {
                 new VideoEpisodeGroup(input.EpisodeGroupType,"默认组")
                 {
-                    Episodes = new List<VideoEpisode>()
-                    {
-                        new VideoEpisode(epName,input.EpUrl)
-                    }
+                    Episodes = episodes
                 }
             };
             dbVideoMain.IsMatchInfo = true;
@@ -99,8 +106,24 @@ namespace KdyWeb.Service.SearchVideo
 
             douBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
             _douBanInfoRepository.Update(douBanInfo);
-
             await UnitOfWork.SaveChangesAsync();
+
+            #region 用户行为记录
+            var recordType = VodManagerRecordType.SaveMove;
+            if (episodes.Count > 10)
+            {
+                recordType = VodManagerRecordType.SaveTv;
+            }
+            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), recordType)
+            {
+                BusinessId = dbVideoMain.Id,
+                Remark = $"剧集更新数量：{episodes.Count}",
+                LoginUserName = LoginUserInfo.UserName
+            };
+            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
+
+            await CreateVodManagerRecordAsync(dbVideoMain, douBanInfo);
+            #endregion
 
             var result = dbVideoMain.MapToExt<CreateForDouBanInfoDto>();
             return KdyResult.Success(result);
@@ -693,6 +716,21 @@ namespace KdyWeb.Service.SearchVideo
                 LoginUserName = LoginUserInfo.UserName
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
+        }
+
+        /// <summary>
+        /// 获取EpInfo
+        /// </summary>
+        /// <returns></returns>
+        private VideoEpisode GetVideoEpisodeByString(string url)
+        {
+            if (url.Contains("$") == false)
+            {
+                return new VideoEpisode("1", url);
+            }
+
+            var tempArray = url.Split('$').ToArray();
+            return new VideoEpisode(tempArray.First().GetNumber() + "", tempArray.Last());
         }
     }
 }
