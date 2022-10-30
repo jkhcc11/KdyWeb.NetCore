@@ -126,6 +126,7 @@ namespace KdyWeb.Entity.VideoConverts
         public void CancelTask()
         {
             TaskStatus = VideoConvertTaskStatus.Waiting;
+            TakeUserName = string.Empty;
             TakeUserId = null;
             TakeTime = null;
         }
