@@ -45,40 +45,5 @@ namespace KdyWeb.CloudParseApi.Controllers
             return result;
         }
         #endregion
-
-        #region 子账号
-        /// <summary>
-        /// 获取子账号列表
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("getChildrenList")]
-        public async Task<KdyResult<PageList<GetParseUserInfoChildrenDto>>> GetParseUserInfoChildrenAsync([FromQuery] GetParseUserInfoChildrenInput input)
-        {
-            var result = await _cloudParseUserService.GetParseUserInfoChildrenAsync(input);
-            return result;
-        }
-
-        /// <summary>
-        /// 新增子账号
-        /// </summary>
-        /// <returns></returns>
-        [HttpPut("createChildren")]
-        public async Task<KdyResult> SaveParseUserInfoChildrenAsync(SaveParseUserInfoChildrenInput input)
-        {
-            var result = await _cloudParseUserService.SaveParseUserInfoChildrenAsync(input);
-            return result;
-        }
-
-        /// <summary>
-        /// 获取子账号信息
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("getChildren/{id}")]
-        public async Task<KdyResult<GetParseUserInfoChildrenDto>> CreateUserAsync(int id)
-        {
-            var result = await _cloudParseUserService.GetParseUserInfoChildrenAsync(id);
-            return result;
-        }
-        #endregion
     }
 }

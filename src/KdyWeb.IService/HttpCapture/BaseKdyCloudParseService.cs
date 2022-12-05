@@ -12,7 +12,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using StackExchange.Redis;
 
 namespace KdyWeb.IService.HttpCapture
 {

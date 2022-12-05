@@ -129,7 +129,8 @@ namespace KdyWeb.Service.CrossRequest
             var tokenCache = new CrossTokenCacheItem()
             {
                 AccessToken = tokenResponse.AccessToken,
-                TokenType = tokenResponse.TokenType
+                TokenType = tokenResponse.TokenType,
+                RefreshToken = tokenResponse.RefreshToken,
             };
             return KdyResult.Success(tokenCache);
         }

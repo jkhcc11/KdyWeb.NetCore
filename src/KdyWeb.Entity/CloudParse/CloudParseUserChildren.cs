@@ -7,12 +7,19 @@ namespace KdyWeb.Entity.CloudParse
     /// <summary>
     /// 云盘用户 子账号
     /// </summary>
-    public class CloudParseUserChildren : BaseEntity<int>
+    public class CloudParseUserChildren : BaseEntity<long>
     {
         /// <summary>
         /// Cookie长度
         /// </summary>
         public const int CookieInfoLength = 1000;
+
+        /// <summary>
+        /// 别名长度
+        /// </summary>
+        public const int AliasLength = 50;
+
+        public const int OldSubAccountInfoLength = 10;
 
         /// <summary>
         /// 构造
@@ -44,8 +51,18 @@ namespace KdyWeb.Entity.CloudParse
         public string CookieInfo { get; set; }
 
         /// <summary>
-        /// 云盘用户
+        /// 别名
         /// </summary>
-        public virtual CloudParseUser CloudParseUser { get; set; }
+        [StringLength(AliasLength)]
+        public string Alias { get; set; }
+
+        /// <summary>
+        /// 旧子账号信息
+        /// </summary>
+        /// <remarks>
+        ///  兼容旧版使用 xxxx_id
+        /// </remarks>
+        [StringLength(OldSubAccountInfoLength)]
+        public string OldSubAccountInfo { get; set; }
     }
 }

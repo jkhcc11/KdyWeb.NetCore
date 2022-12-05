@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
+using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.IService.CloudParse
 {
@@ -10,12 +12,6 @@ namespace KdyWeb.IService.CloudParse
     /// </summary>
     public interface ICloudParseUserService : IKdyService
     {
-        ///// <summary>
-        ///// 解析用户登录
-        ///// </summary>
-        ///// <returns></returns>
-        //Task<KdyResult<GetParseUserInfoDto>> LoginWithParseUserAsync(LoginWithParseUserInput input);
-
         /// <summary>
         /// 获取解析用户信息
         /// </summary>
@@ -29,21 +25,21 @@ namespace KdyWeb.IService.CloudParse
         Task<KdyResult> SaveParseUserInfoAsync(SaveParseUserInfoInput input);
 
         /// <summary>
-        /// 获取解析用户子账号列表
+        /// 查询子账号列表
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult<PageList<GetParseUserInfoChildrenDto>>> GetParseUserInfoChildrenAsync(GetParseUserInfoChildrenInput input);
+        Task<KdyResult<PageList<QueryParseUserSubAccountDto>>> QueryParseUserSubAccountAsync(QueryParseUserSubAccountInput input);
 
         /// <summary>
-        /// 保存解析用户子账号信息
+        /// 创建和更新子账号信息
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> SaveParseUserInfoChildrenAsync(SaveParseUserInfoChildrenInput input);
+        Task<KdyResult> CreateAndUpdateSubAccountAsync(CreateAndUpdateSubAccountInput input);
 
         /// <summary>
-        /// 获取解析用户子账号信息
+        /// 根据类型获取子账号列表
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult<GetParseUserInfoChildrenDto>> GetParseUserInfoChildrenAsync(int childrenId);
+        Task<KdyResult<List<GetSubAccountByTypeDto>>> GetSubAccountByTypeAsync(CloudParseCookieType type);
     }
 }

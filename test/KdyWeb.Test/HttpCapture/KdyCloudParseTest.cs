@@ -19,7 +19,7 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestAli()
         {
-            var input = new BaseConfigInput(1, "tyest_123", "111111111");
+            var input = new BaseConfigInput("test-123","tyest_123", 11111);
             IAliYunCloudParseService parseService = new AliYunCloudParseService(input);
             var fileList = await parseService.QueryFileAsync(new BaseQueryInput<string>()
             {
@@ -60,7 +60,7 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestSt()
         {
-            var input = new BaseConfigInput(1, "tyest_124", "cloud_web_sid=8243a5fd");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             IStCloudParseService parseService = new StCloudParseService(input);
             var fileList = await parseService.QueryFileAsync(new BaseQueryInput<string>());
 
@@ -106,7 +106,7 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestTy()
         {
-            var input = new BaseConfigInput(1, "tyest_125", "11111");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             ITyPersonCloudParseService parseService = new TyPersonCloudParseService(input);
 
             var loginInfo = await parseService.GetLoginInfoAsync();
@@ -124,7 +124,7 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestTyFamily()
         {
-            var input = new BaseConfigInput(1, "tyest_126", "66AAA87C717EE0857E15AC1BAFB03182");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             ITyFamilyCloudParseService parseService = new TyFamilyCloudParseService(input);
 
             var familyList = await parseService.GetFamilyListAsync();
@@ -149,7 +149,7 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestTyCrop()
         {
-            var input = new BaseConfigInput(1, "tyest_127", "COOKIE_LOGIN_USER_CORP=976EF1EBED4DC1CFE406FCC7883AE9627E76874A27DA3A1F95C88585B5E60369D7DF278D7F8A5E8C7868F4B2B13433897FF25CDCBA6D23A38809DBCB3F90F48A0D47089075115F02C942F058859FE2DA3D8EFCCC8F129F6D282D25AD51935794;");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             ITyCropCloudParseService parseService = new TyCropCloudParseService(input);
 
             var cropList = await parseService.GetCropListAsync();

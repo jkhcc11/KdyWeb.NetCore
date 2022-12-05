@@ -1,9 +1,9 @@
-﻿namespace KdyWeb.Dto.Cache
+﻿namespace KdyWeb.Dto.KdyUser
 {
     /// <summary>
-    /// 跨域Token缓存
+    /// 获取登录Token
     /// </summary>
-    public class CrossTokenCacheItem
+    public class GetLoginTokenDto
     {
         /// <summary>
         /// 访问Token

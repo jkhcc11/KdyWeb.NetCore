@@ -1,16 +1,11 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using IdentityModel;
-using KdyWeb.BaseInterface;
-using KdyWeb.BaseInterface.KdyOptions;
 using KdyWeb.HttpApi;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using KdyWeb.Entity.CloudParse;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace KdyWeb.EntityFramework.Mapping
@@ -21,11 +20,6 @@ namespace KdyWeb.EntityFramework.Mapping
                 .HasConversion(
                     a => string.Join(',', a),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
-
-            builder.HasMany(a => a.CloudParseUserChildrens)
-                .WithOne(a => a.CloudParseUser)
-                .HasForeignKey(a => a.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

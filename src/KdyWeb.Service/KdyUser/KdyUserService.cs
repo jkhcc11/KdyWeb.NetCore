@@ -213,15 +213,21 @@ namespace KdyWeb.Service
         /// 获取用户登录Token
         /// </summary>
         /// <returns></returns>
-        public async Task<KdyResult> GetLoginTokenAsync(GetLoginTokenInput input)
+        public async Task<KdyResult<GetLoginTokenDto>> GetLoginTokenAsync(GetLoginTokenInput input)
         {
             var token = await _crossRequestService.GetAccessTokenByUserNameOrEmailAsync(input.UserName, input.UserPwd);
             if (token.IsSuccess == false)
             {
-                return KdyResult.Error(token.Code, token.Msg);
+                return KdyResult.Error<GetLoginTokenDto>(token.Code, token.Msg);
             }
 
-            return KdyResult.Success(token.Data.AccessToken, "登录成功");
+            var result = new GetLoginTokenDto()
+            {
+                AccessToken = token.Data.AccessToken,
+                RefreshToken = token.Data.RefreshToken,
+                TokenType = token.Data.TokenType,
+            };
+            return KdyResult.Success(result, "登录成功");
         }
 
         /// <summary>
@@ -238,6 +244,22 @@ namespace KdyWeb.Service
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(365)
                 });
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 获取用户登录信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<GetLoginInfoDto>> GetLoginInfoAsync()
+        {
+            var result = new GetLoginInfoDto()
+            {
+                UserId = LoginUserInfo.GetUserId(),
+                Username = LoginUserInfo.UserName,
+            };
+
+            await Task.CompletedTask;
+            return KdyResult.Success(result);
         }
 
         /// <summary>

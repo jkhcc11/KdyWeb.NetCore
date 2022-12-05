@@ -6,15 +6,16 @@ namespace KdyWeb.EntityFramework.Mapping
     /// <summary>
     /// 云盘用户子账号 Map
     /// </summary>
-    public class CloudParseUserChildrenMap : KdyBaseMap<CloudParseUserChildren, int>
+    public class CloudParseUserChildrenMap : KdyBaseMap<CloudParseUserChildren, long>
     {
-        public CloudParseUserChildrenMap() : base("CloudParse_UserChildren")
+        public CloudParseUserChildrenMap() : base("CloudParse_SubAccount")
         {
 
         }
 
         public override void MapperConfigure(EntityTypeBuilder<CloudParseUserChildren> builder)
         {
+
         }
     }
 }

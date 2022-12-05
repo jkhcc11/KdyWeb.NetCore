@@ -6,22 +6,18 @@
     public interface IBaseConfigEntity
     {
         /// <summary>
-        /// Url用户信息
+        /// 用户信息
         /// </summary>
         /// <remarks>
-        ///  格式：nickname_子账号Id    eg:tytest_152
+        ///  主账号用户名，子账号别名或子账号Id <br/>
+        ///  仅用于日志记录
         /// </remarks>
         string ReqUserInfo { get; set; }
 
         /// <summary>
-        /// 用户Id
-        /// </summary>
-        long UserId { get; set; }
-
-        /// <summary>
         /// 子账号Id
         /// </summary>
-        int ChildUserId { get; }
+        long ChildUserId { get; }
 
         /// <summary>
         /// 解析Cookie 
