@@ -12,36 +12,36 @@ namespace KdyWeb.EntityFramework.Mapping
     {
         public override void MapperConfigure(EntityTypeBuilder<KdyRole> builder)
         {
-            #region 种子数据
-            builder.HasData(
-                   new KdyRole()
-                   {
-                       Id = 1,
-                       KdyRoleType = KdyRoleType.Normal,
-                       CreatedTime = new DateTime(1977, 1, 1),
-                       IsActivate = true
-                   }, new KdyRole()
-                   {
-                       Id = 2,
-                       KdyRoleType = KdyRoleType.VideoAdmin,
-                       CreatedTime = new DateTime(1977, 1, 1),
-                       IsActivate = true
-                   },
-                   new KdyRole()
-                   {
-                       Id = 3,
-                       KdyRoleType = KdyRoleType.SupperAdmin,
-                       CreatedTime = new DateTime(1977, 1, 1),
-                       IsActivate = true
-                   },
-                   new KdyRole()
-                   {
-                       Id = 4,
-                       KdyRoleType = KdyRoleType.LiveAdmin,
-                       CreatedTime = new DateTime(1977, 1, 1),
-                       IsActivate = true
-                   });
-            #endregion
+            //#region 种子数据
+            //builder.HasData(
+            //       new KdyRole()
+            //       {
+            //           Id = 1,
+            //           KdyRoleType = KdyRoleType.Normal,
+            //           CreatedTime = new DateTime(1977, 1, 1),
+            //           IsActivate = true
+            //       }, new KdyRole()
+            //       {
+            //           Id = 2,
+            //           KdyRoleType = KdyRoleType.VideoAdmin,
+            //           CreatedTime = new DateTime(1977, 1, 1),
+            //           IsActivate = true
+            //       },
+            //       new KdyRole()
+            //       {
+            //           Id = 3,
+            //           KdyRoleType = KdyRoleType.SupperAdmin,
+            //           CreatedTime = new DateTime(1977, 1, 1),
+            //           IsActivate = true
+            //       },
+            //       new KdyRole()
+            //       {
+            //           Id = 4,
+            //           KdyRoleType = KdyRoleType.LiveAdmin,
+            //           CreatedTime = new DateTime(1977, 1, 1),
+            //           IsActivate = true
+            //       });
+            //#endregion
 
             builder.HasMany(a => a.KdyRoleMenus)
                 .WithOne(a => a.KdyRole)
