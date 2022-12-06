@@ -2,9 +2,12 @@
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.IService.GameDown;
 using KdyWeb.IService.Job;
+using KdyWeb.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Job.Controllers.Manager
 {
@@ -15,9 +18,16 @@ namespace KdyWeb.Job.Controllers.Manager
     public class JobInitController : BaseManagerController
     {
         private readonly IJobInitService _jobInitService;
-        public JobInitController(IJobInitService jobInitService)
+        private readonly IGameDownWithByrutService _gameDownWithByrutService;
+        private readonly IConfiguration _configuration;
+
+        public JobInitController(IJobInitService jobInitService,
+            IGameDownWithByrutService gameDownWithByrutService,
+            IConfiguration configuration)
         {
             _jobInitService = jobInitService;
+            _gameDownWithByrutService = gameDownWithByrutService;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -42,6 +52,21 @@ namespace KdyWeb.Job.Controllers.Manager
         {
             var result = await _jobInitService.InitRecurrentUrlJobAsync();
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 游戏下载分页初始化
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("init-game-down")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> InitGameDownQueryPageInfoAsync(int page)
+        {
+            var ua = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownUaWithByrut);
+            var cookie = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownCookieWithByrut);
+
+            await _gameDownWithByrutService.QueryPageInfoAsync(page, ua, cookie);
+            return Ok("操作成功");
         }
     }
 }
