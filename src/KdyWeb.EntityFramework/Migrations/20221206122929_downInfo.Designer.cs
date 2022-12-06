@@ -4,14 +4,16 @@ using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    partial class ReadWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20221206122929_downInfo")]
+    partial class downInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,12 +173,10 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasMaxLength(200);
 
                     b.Property<string>("GameSize")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GameVersion")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDelete")
                         .ValueGeneratedOnAdd()
@@ -217,8 +217,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasMaxLength(300);
 
                     b.Property<string>("UserHash")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(32)")
+                        .HasMaxLength(32);
 
                     b.Property<string>("VideoUrl")
                         .HasColumnType("nvarchar(300)")
@@ -601,6 +601,40 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("KdyRole");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActivate = true,
+                            IsDelete = false,
+                            KdyRoleType = (byte)1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActivate = true,
+                            IsDelete = false,
+                            KdyRoleType = (byte)5
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActivate = true,
+                            IsDelete = false,
+                            KdyRoleType = (byte)10
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActivate = true,
+                            IsDelete = false,
+                            KdyRoleType = (byte)15
+                        });
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.KdyRoleMenu", b =>
@@ -716,6 +750,32 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasIndex("KdyRoleId");
 
                     b.ToTable("KdyUser");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDelete = false,
+                            KdyRoleId = 3,
+                            OldUserId = 0,
+                            UserEmail = "137651076@qq.com",
+                            UserName = "admin",
+                            UserNick = "管理员",
+                            UserPwd = "496ec666bef4a074ac39915dfb645e51"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDelete = false,
+                            KdyRoleId = 1,
+                            OldUserId = 0,
+                            UserEmail = "123456@qq.com",
+                            UserName = "test",
+                            UserNick = "普通用户测试",
+                            UserPwd = "496ec666bef4a074ac39915dfb645e51"
+                        });
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldFeedBackInfo", b =>

@@ -93,6 +93,12 @@
             /// 游戏检查
             /// </summary>
             public const string GameCheckConfig = "KdyGameCheck";
+
+            /// <summary>
+            /// Byrut配置
+            /// </summary>
+            public const string GameDownUaWithByrut = "GameDownConfig:ua_byrut";
+            public const string GameDownCookieWithByrut = "GameDownConfig:cookie_byrut";
         }
 
         /// <summary>
