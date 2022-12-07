@@ -71,7 +71,9 @@ namespace KdyWeb.Service.GameDown
             #region 解析详情页
             var html = response.Data;
             var youtube = html.GetValueByXpath("//lite-youtube", "videoid");
-            string version = html.GetValueByXpath("//div[@class='subhname red']", "text").Split('[').First(),
+            string version = html.GetValueByXpath("//div[@class='subhname red']", "text")
+                    .Replace("&#91;","[")
+                    .Split('[').First(),
                 name = html.GetValueByXpath("//a[@class='itemdown_nottorent ubar']", "data-name"),
                 size = html.GetValueByXpath("//a[@class='itemdown_nottorent ubar']", "data-size")
                     .Replace("ГБ", "GB").Replace("МБ", "MB"),
@@ -92,15 +94,18 @@ namespace KdyWeb.Service.GameDown
 
             var screenNode = html.GetNodeCollection("//div[@class='scrblock']//img");
             var screenList = new List<string>();
-            foreach (var nodeItem in screenNode)
+            if (screenNode != null)
             {
-                var imgUrl = nodeItem.GetAttributeValue("src", "");
-                if (imgUrl.IsEmptyExt())
+                foreach (var nodeItem in screenNode)
                 {
-                    continue;
-                }
+                    var imgUrl = nodeItem.GetAttributeValue("src", "");
+                    if (imgUrl.IsEmptyExt())
+                    {
+                        continue;
+                    }
 
-                screenList.Add(imgUrl);
+                    screenList.Add(imgUrl);
+                }
             }
             #endregion
 
