@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -57,6 +58,9 @@ namespace KdyWeb.Service.GameDown
                 {
                     //请求被拦截
                     KdyLog.LogError($"分页Url:{detailUrl}.请求被拦截");
+
+                    //1分钟后重试
+                    CreateTaskQueue(false, 1 * 60, detailUrl: detailUrl);
                     return;
                 }
 
@@ -171,6 +175,9 @@ namespace KdyWeb.Service.GameDown
                 {
                     //请求被拦截
                     KdyLog.LogError($"分页Url:{pageUrl}.请求被拦截");
+
+                    //被Ban延迟1分钟
+                    CreateTaskQueue(true, 1 * 60, page: page);
                     return;
                 }
 
@@ -179,6 +186,8 @@ namespace KdyWeb.Service.GameDown
             }
 
             var detailNode = response.Data.GetNodeCollection("//*[@id='dle-content']//div[@class='short_title']/a");
+            //每个任务延迟30秒
+            var startDelaySecond = 0;
             foreach (var detailNodeItem in detailNode)
             {
                 var detailUrl = detailNodeItem.GetAttributeValue("href", "");
@@ -187,13 +196,48 @@ namespace KdyWeb.Service.GameDown
                     continue;
                 }
 
-                var input = new GameDownCaptureJobInput()
-                {
-                    DetailUrl = detailUrl
-                };
-                BackgroundJob.Enqueue<GameDownCaptureJobService>(a => a.ExecuteAsync(input));
-                //result.Add(detailUrl);
+                startDelaySecond += 30;
+                CreateTaskQueue(false, startDelaySecond, detailUrl: detailUrl);
             }
+        }
+
+        /// <summary>
+        /// 根据最大分页查询所有
+        /// </summary>
+        /// <remarks>
+        /// 初始化所有分页从1开始，到达最大页数每个创建一个任务
+        /// </remarks>
+        /// <returns></returns>
+        public async Task QueryAllInfoAsync(int maxPage, string userAgent, string cookie)
+        {
+            //每次延迟10秒
+            var startDelay = 0;
+            for (var i = 1; i <= maxPage; i++)
+            {
+                startDelay += 10;
+                CreateTaskQueue(true, startDelay, i);
+            }
+
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 创建任务队列
+        /// </summary>
+        /// <param name="isPageUrl">是否分页</param>
+        /// <param name="delaySecond">延迟秒</param>
+        /// <param name="page">页数</param>
+        /// <param name="detailUrl">详情Url</param>
+        private void CreateTaskQueue(bool isPageUrl, int delaySecond, int page = 0, string detailUrl = "")
+        {
+            var input = new GameDownCaptureJobInput()
+            {
+                DetailUrl = detailUrl,
+                IsPageUrl = isPageUrl,
+                Page = page
+            };
+            BackgroundJob.Schedule<GameDownCaptureJobService>(a => a.ExecuteAsync(input), TimeSpan.FromSeconds(delaySecond));
+
         }
     }
 }

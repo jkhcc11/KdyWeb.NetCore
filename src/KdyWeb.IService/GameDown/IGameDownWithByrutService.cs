@@ -21,5 +21,14 @@ namespace KdyWeb.IService.GameDown
         /// </remarks>
         /// <returns></returns>
         Task QueryPageInfoAsync(int page, string userAgent, string cookie);
+
+        /// <summary>
+        /// 根据最大分页查询所有
+        /// </summary>
+        /// <remarks>
+        /// 初始化所有分页从1开始，到达最大页数每个创建一个任务
+        /// </remarks>
+        /// <returns></returns>
+        Task QueryAllInfoAsync(int maxPage, string userAgent, string cookie);
     }
 }
