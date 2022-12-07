@@ -13,7 +13,7 @@ namespace KdyWeb.Entity.GameDown
     public class GameInfoMain : BaseEntity<long>
     {
         public const int GameNameLength = 200;
-        public const int GameVersionLength = 50;
+        public const int GameVersionLength = 100;
         public const int GameUrlLength = 300;
         public const int UserHashLength = 50;
 

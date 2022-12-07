@@ -34,7 +34,14 @@ namespace KdyWeb.Service.Job
             var ua = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownUaWithByrut);
             var cookie = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownCookieWithByrut);
 
-            await _gameDownWithByrutService.CreateDownInfoByDetailUrlAsync(input.DetailUrl, ua, cookie);
+            if (input.IsPageUrl)
+            {
+                await _gameDownWithByrutService.QueryPageInfoAsync(input.Page, ua, cookie);
+            }
+            else
+            {
+                await _gameDownWithByrutService.CreateDownInfoByDetailUrlAsync(input.DetailUrl, ua, cookie);
+            }
         }
     }
 }
