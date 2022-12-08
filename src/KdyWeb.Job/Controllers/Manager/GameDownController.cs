@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.GameDown;
-using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.GameDown;
-using KdyWeb.IService.SearchVideo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers.Manager
@@ -12,6 +12,7 @@ namespace KdyWeb.Job.Controllers.Manager
     /// <summary>
     /// 游戏下载地址
     /// </summary>
+    [Authorize(Policy = AuthorizationConst.NormalPolicyName.NormalPolicy)]
     public class GameDownController : BaseManagerController
     {
         private readonly IGameDownService _gameDownService;

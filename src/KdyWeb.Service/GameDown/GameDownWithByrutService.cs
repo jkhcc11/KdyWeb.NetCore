@@ -72,8 +72,7 @@ namespace KdyWeb.Service.GameDown
             var html = response.Data;
             var youtube = html.GetValueByXpath("//lite-youtube", "videoid");
             string version = html.GetValueByXpath("//div[@class='subhname red']", "text")
-                    .Replace("&#91;","[")
-                    .Split('[').First(),
+                    .Split('[', '&').First(),
                 name = html.GetValueByXpath("//a[@class='itemdown_nottorent ubar']", "data-name"),
                 size = html.GetValueByXpath("//a[@class='itemdown_nottorent ubar']", "data-size")
                     .Replace("ГБ", "GB").Replace("МБ", "MB"),
