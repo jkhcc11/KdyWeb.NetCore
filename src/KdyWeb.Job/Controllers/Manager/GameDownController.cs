@@ -71,7 +71,7 @@ namespace KdyWeb.Job.Controllers.Manager
             var startDelay = 0;
             foreach (var item in result)
             {
-                startDelay += 30;
+                startDelay += 5;
 
                 if (item.Magnet.IsEmptyExt())
                 {
@@ -97,6 +97,12 @@ namespace KdyWeb.Job.Controllers.Manager
                         UserHash = item.UserHash
                     };
                     BackgroundJob.Schedule<SteamInfoJobService>(a => a.ExecuteAsync(steamJobInput), TimeSpan.FromSeconds(startDelay));
+                }
+
+                if (startDelay > 600)
+                {
+                    //重置
+                    startDelay = 0;
                 }
             }
 

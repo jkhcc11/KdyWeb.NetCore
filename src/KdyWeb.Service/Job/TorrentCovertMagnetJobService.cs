@@ -14,7 +14,7 @@ namespace KdyWeb.Service.Job
     /// 种子转磁力Job
     /// </summary>
     [Queue(HangFireQueue.Capture)]
-    [AutomaticRetry(Attempts = 3, DelaysInSeconds = new[] { 60, 100, 120 })]
+    [AutomaticRetry(Attempts = 3, DelaysInSeconds = new[] { 10, 20, 30, 40, 50 })]
     public class TorrentCovertMagnetJobService : BaseKdyJob<TorrentCovertMagnetJobInput>
     {
         private readonly IGameDownService _gameDownService;
