@@ -54,7 +54,7 @@ namespace KdyWeb.Service.GameDown
             var request = new KdyRequestCommonInput(detailUrl, HttpMethod.Get)
             {
                 UserAgent = userAgent,
-                TimeOut = 5000,
+                TimeOut = 8,
                 ExtData = new KdyRequestCommonExtInput(),
                 Cookie = cookie
             };
@@ -174,7 +174,7 @@ namespace KdyWeb.Service.GameDown
             var request = new KdyRequestCommonInput(pageUrl, HttpMethod.Get)
             {
                 UserAgent = userAgent,
-                TimeOut = 5000,
+                TimeOut = 8,
                 ExtData = new KdyRequestCommonExtInput(),
                 Cookie = cookie,
                 IsAutoRedirect = true
@@ -243,7 +243,7 @@ namespace KdyWeb.Service.GameDown
             var request = new KdyRequestCommonInput("https://byrut.org/engine/ajax/controller.php?mod=ajaxsp", HttpMethod.Post)
             {
                 UserAgent = userAgent,
-                TimeOut = 5000,
+                TimeOut = 8,
                 ExtData = new KdyRequestCommonExtInput()
                 {
                     PostData = postData,
