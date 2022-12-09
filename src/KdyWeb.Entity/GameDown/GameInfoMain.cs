@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -16,6 +17,7 @@ namespace KdyWeb.Entity.GameDown
         public const int GameVersionLength = 100;
         public const int GameUrlLength = 300;
         public const int UserHashLength = 50;
+        public const int SteamIdLength = 20;
 
         /// <summary>
         /// 游戏主信息
@@ -52,6 +54,11 @@ namespace KdyWeb.Entity.GameDown
         public string ChineseName { get; set; }
 
         /// <summary>
+        /// 描述
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
         /// 大小
         /// </summary>
         /// <remarks>
@@ -69,6 +76,9 @@ namespace KdyWeb.Entity.GameDown
         /// <summary>
         /// 封面
         /// </summary>
+        /// <remarks>
+        /// 使用?t=xxxx访问
+        /// </remarks>
         [StringLength(GameUrlLength)]
         public string GameCovert { get; set; }
 
@@ -79,12 +89,7 @@ namespace KdyWeb.Entity.GameDown
         public string LogoUrl { get; set; }
 
         /// <summary>
-        /// 游戏截图列表
-        /// </summary>
-        public List<string> ScreenCapture { get; set; }
-
-        /// <summary>
-        /// 视频Url
+        /// 主视频Url
         /// </summary>
         [StringLength(GameUrlLength)]
         public string VideoUrl { get; set; }
@@ -111,7 +116,7 @@ namespace KdyWeb.Entity.GameDown
         /// 磁力链接
         /// </summary>
         [StringLength(GameUrlLength)]
-        public string Magnet { get; set; }
+        public string Magnet { get; protected set; }
 
         /// <summary>
         /// 详情Id
@@ -132,5 +137,72 @@ namespace KdyWeb.Entity.GameDown
         /// 下载列表
         /// </summary>
         public List<GameInfoWithDownItem> DownList { get; set; }
+
+        /// <summary>
+        /// Steam商店Url
+        /// </summary>
+        [StringLength(GameUrlLength)]
+        public string SteamUrl { get; protected set; }
+
+        /// <summary>
+        /// Steam商店Id
+        /// </summary>
+        /// <remarks>
+        /// 用于快速查找
+        /// </remarks>
+        [StringLength(SteamIdLength)]
+        public string SteamId { get; protected set; }
+
+        /// <summary>
+        /// 游戏截图列表
+        /// </summary>
+        /// <remarks>
+        /// 使用?t=xxxx访问
+        /// </remarks>
+        public List<string> ScreenCapture { get; set; }
+
+        /// <summary>
+        /// 预览视频列表
+        /// </summary>
+        /// <remarks>
+        /// 使用?t=xxxx访问
+        /// </remarks>
+        public List<string> MovieList { get; set; }
+
+        /// <summary>
+        /// 扩展信息
+        /// </summary>
+        public Dictionary<string, string> ExtInfo { get; set; }
+
+        /// <summary>
+        /// 设置磁力
+        /// </summary>
+        /// <param name="magnetLink">magnet:?xt=urn:btih:1CA512A4822EDC7C1B1CE354D7B8D2F84EE11C32&dn=ubuntu-14.10-desktop-amd64.iso</param>
+        public void SetMagnet(string magnetLink)
+        {
+            Magnet = magnetLink;
+        }
+
+        public void SetSteamUrl(string steamDetailUrl)
+        {
+            SteamUrl = steamDetailUrl;
+            // https://store.steampowered.com/app/529340/Victoria_3/
+            SteamId = steamDetailUrl.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)[3];
+        }
+
+        /// <summary>
+        /// 是否有steam信息
+        /// </summary>
+        /// <returns></returns>
+        public bool IsHaveSteamInfo()
+        {
+            if (SteamId.IsEmptyExt() &&
+                VideoUrl.Contains("steam"))
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

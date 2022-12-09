@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Dto.GameDown;
 
 namespace KdyWeb.IService.GameDown
 {
@@ -30,5 +32,18 @@ namespace KdyWeb.IService.GameDown
         /// </remarks>
         /// <returns></returns>
         Task QueryAllInfoAsync(int maxPage, string userAgent, string cookie);
+
+        /// <summary>
+        /// 根据Id和UseHash获取Stream商店Url
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetSteamStoreUrlByIdAndUserHashAsync(string userAgent, string cookie
+        , string customId, string userHash);
+
+        /// <summary>
+        /// 根据种子文件转换磁力
+        /// </summary>
+        /// <returns></returns>
+        Task<ConvertMagnetByByTorrentUrlDto> ConvertMagnetByByTorrentUrlAsync(ConvertMagnetByByTorrentInput input);
     }
 }

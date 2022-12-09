@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BencodeNET.Parsing;
+using BencodeNET.Torrents;
 using Hangfire;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto.GameDown;
 using KdyWeb.Dto.Job;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.Entity.GameDown;
@@ -16,6 +21,8 @@ using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using RestSharp;
+using RestSharp.Serializers.NewtonsoftJson;
 
 namespace KdyWeb.Service.GameDown
 {
@@ -223,6 +230,92 @@ namespace KdyWeb.Service.GameDown
             }
 
             await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 根据Id和UseHash获取Stream商店Url
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> GetSteamStoreUrlByIdAndUserHashAsync(string userAgent, string cookie,
+            string customId, string userHash)
+        {
+            var postData = $"castom=custom+id%3D'{customId}'+template%3D'modulesfull%2Fsteam_updinfo'+cache%3D'no'&user_hash={userHash}";
+            var request = new KdyRequestCommonInput("https://byrut.org/engine/ajax/controller.php?mod=ajaxsp", HttpMethod.Post)
+            {
+                UserAgent = userAgent,
+                TimeOut = 5000,
+                ExtData = new KdyRequestCommonExtInput()
+                {
+                    PostData = postData,
+                    IsAjax = true
+                },
+                Cookie = cookie,
+            };
+            var response = await _kdyRequestClientCommon.SendAsync(request);
+            if (response.IsSuccess == false)
+            {
+                if (response.HttpCode == HttpStatusCode.Forbidden)
+                {
+                    //请求被拦截
+                    throw new KdyCustomException($"获取Steam失败:{customId}|{userHash}.请求被拦截");
+                }
+
+                KdyLog.LogWarning($"获取Steam失败:{customId}|{userHash}.异常{response.ToJsonStr()}");
+                return default;
+            }
+
+            var steamNewsUrl = response.Data.GetValueByXpath("//a", "href");
+            //https://store.steampowered.com/news/app/1817070?updates=true
+            //转换 https://store.steampowered.com/app/1817070
+            if (steamNewsUrl.GetNumber().IsEmptyExt())
+            {
+                KdyLog.LogWarning($"获取Steam失败:{customId}|{userHash}.无Steam信息");
+                return default;
+            }
+
+            return steamNewsUrl
+                .Replace("?updates=true", "")
+                .Replace("/news", "");
+        }
+
+        /// <summary>
+        /// 根据种子文件转换磁力
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ConvertMagnetByByTorrentUrlDto> ConvertMagnetByByTorrentUrlAsync(ConvertMagnetByByTorrentInput input)
+        {
+            var restClient = new RestClient
+            {
+                UserAgent = input.UserAgent,
+            };
+            restClient.UseNewtonsoftJson();
+
+            var request = new RestRequest(input.TorrentUrl, Method.GET);
+            request.AddHeader("Cookie", input.Cookie);
+            request.AddHeader("Referer", input.Referer);
+            var response = await restClient.ExecuteAsync(request);
+            if (response.IsSuccessful == false)
+            {
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //请求被拦截 重试
+                    throw new KdyCustomException($"下载Url:{input.TorrentUrl}.请求被拦截");
+                }
+
+                KdyLog.LogWarning($"分页Url:{input.TorrentUrl}异常.{response.ToJsonStr()}");
+                return default;
+            }
+
+            //解析种子
+            var parser = new BencodeParser();
+            var fileStream = new MemoryStream(response.RawBytes);
+            var torrent = parser.Parse<Torrent>(fileStream);
+            return new ConvertMagnetByByTorrentUrlDto()
+            {
+                FileName = torrent.DisplayName,
+                InfoHash = torrent.OriginalInfoHash,
+                MagnetLink = torrent.GetMagnetLink(MagnetLinkOptions.None)
+            };
         }
 
         /// <summary>

@@ -99,6 +99,13 @@
             /// </summary>
             public const string GameDownUaWithByrut = "GameDownConfig:ua_byrut";
             public const string GameDownCookieWithByrut = "GameDownConfig:cookie_byrut";
+
+            /// <summary>
+            /// Steam配置
+            /// </summary>
+            public const string UaWithSteam = "GameDownConfig:ua_steam";
+            public const string CookieWithSteam = "GameDownConfig:cookie_steam";
+            public const string AcceptWithSteam = "GameDownConfig:accept_steam";
         }
 
         /// <summary>

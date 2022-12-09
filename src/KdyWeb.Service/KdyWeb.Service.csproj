@@ -8,10 +8,14 @@
 		<Compile Remove="KdyHttp\KdyRequestCommon.cs" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
-		<ProjectReference Include="..\KdyWeb.IService\KdyWeb.IService.csproj" />
-		<ProjectReference Include="..\KdyWeb.Repository\KdyWeb.Repository.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BencodeNET" Version="4.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
+    <ProjectReference Include="..\KdyWeb.IService\KdyWeb.IService.csproj" />
+    <ProjectReference Include="..\KdyWeb.Repository\KdyWeb.Repository.csproj" />
+  </ItemGroup>
 
 </Project>
