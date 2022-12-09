@@ -70,11 +70,11 @@ namespace KdyWeb.Service.HttpApi
                 {
                     //请求被拦截
                     KdyLog.LogError($"分页Url:{storeUrl}.请求被拦截");
-                    return KdyResult.Error<GetGameInfoByStoreUrlResponse>(KdyResultCode.Error, "请求被拦截");
+                    return KdyResult.Error<GetGameInfoByStoreUrlResponse>(KdyResultCode.HttpError, "请求被拦截");
                 }
 
                 KdyLog.LogWarning($"详情Url:{storeUrl}异常.{response.ToJsonStr()}");
-                return KdyResult.Error<GetGameInfoByStoreUrlResponse>(KdyResultCode.Error, "请求异常");
+                return KdyResult.Error<GetGameInfoByStoreUrlResponse>(KdyResultCode.HttpError, "请求异常");
             }
 
             var html = response.Data;

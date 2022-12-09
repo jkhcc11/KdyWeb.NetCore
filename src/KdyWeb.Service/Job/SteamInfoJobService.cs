@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Hangfire;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.HangFire;
 using KdyWeb.Dto.Job;
 using KdyWeb.IService.GameDown;
@@ -14,7 +15,7 @@ namespace KdyWeb.Service.Job
     /// 获取Steam信息Job
     /// </summary>
     [Queue(HangFireQueue.Capture)]
-    [AutomaticRetry(Attempts = 3, DelaysInSeconds = new[] { 60, 100, 120 })]
+    [AutomaticRetry(Attempts = 3, DelaysInSeconds = new[] { 10, 20, 30, 40, 50 })]
     public class SteamInfoJobService : BaseKdyJob<SteamInfoJobInput>
     {
         private readonly IGameDownService _gameDownService;
@@ -51,6 +52,10 @@ namespace KdyWeb.Service.Job
             if (steamResponse.IsSuccess)
             {
                 await _gameDownService.SaveSteamInfoByDownIdAsync(input.DownId, steamResponse.Data);
+            }
+            else if (steamResponse.Code == KdyResultCode.HttpError)
+            {
+                throw new KdyCustomException(steamResponse.Msg);
             }
         }
     }
