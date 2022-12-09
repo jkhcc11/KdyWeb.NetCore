@@ -24,10 +24,17 @@ namespace KdyWeb.EntityFramework.Mapping
                 .HasConversion(
                     a => string.Join(',', a),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+            builder.Property(a => a.MovieList)
+                .HasConversion(
+                    entity => string.Join(',', entity),
+                    dbEntity => dbEntity.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
 
             builder.Property(a => a.DownList)
                 .HasConversion(entity => entity.ToJsonStr(),
                     dbEntity => JsonConvert.DeserializeObject<List<GameInfoWithDownItem>>(dbEntity));
+            builder.Property(a => a.ExtInfo)
+                .HasConversion(entity => entity.ToJsonStr(),
+                    dbEntity => JsonConvert.DeserializeObject<Dictionary<string, string>>(dbEntity));
         }
     }
 }

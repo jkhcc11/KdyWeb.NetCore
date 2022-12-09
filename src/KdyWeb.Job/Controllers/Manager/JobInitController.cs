@@ -24,10 +24,11 @@ namespace KdyWeb.Job.Controllers.Manager
         private readonly IGameDownWithByrutService _gameDownWithByrutService;
         private readonly IConfiguration _configuration;
         public JobInitController(IJobInitService jobInitService,
-            IGameDownWithByrutService gameDownWithByrutService)
+            IGameDownWithByrutService gameDownWithByrutService, IConfiguration configuration)
         {
             _jobInitService = jobInitService;
             _gameDownWithByrutService = gameDownWithByrutService;
+            _configuration = configuration;
         }
 
         /// <summary>

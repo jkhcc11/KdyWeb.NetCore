@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
+using KdyWeb.Dto.GameDown;
 using KdyWeb.Dto.KdyImg;
 using KdyWeb.IService.GameDown;
+using KdyWeb.IService.HttpApi;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KdyWeb.Test.HttpCapture
@@ -8,7 +11,7 @@ namespace KdyWeb.Test.HttpCapture
     [TestClass]
     public class GameDownTest : BaseTest<IGameDownWithByrutService>
     {
-        private const string Cookie = "cf_clearance=aaysrsEU9t6MzLjIMUTww5A6zv5eOFLRngAEE4jB.6g-1670325979-0-160;__cf_bm=8Z4NDEuYGH0UBhvvrd9b3YJRfKeSJKTuhn4Wj03imNs-1670325985-0-Ado1D6IfX3RnINqXmwGUGOxsRn1jyVNl63kalkyGVm/ezloVYLMMtEs1bCMUIlHDxYmWDKIu2t8ohcLWHvKfnHv/V4nL1/vkW4+Jb7tPO/wfPcwDKIVY/EWWBBh3QRN6g+FI2Jpt/qpm5OBfWsC+5Sg=";
+        private const string Cookie = "cf_clearance=DYgXdR3bhLUhuQ.UO5OZ7gxRlFEUYbPCMe_AN_ktDHc-1670509783-0-250;__cf_bm=8zBICHRH_vhX6DZjfA2yABWbm_s4aNTs.nf8.pAWAOs-1670513690-0-AdnilgawQK7TfH/7OmhGGcFbRaMwsShbX/upqLvYh63PQXis/bHevMMv0HZl78UBhJn8imBICaLj7foiuaC8HzL1VO+K0cI812s1Tz4HxVCt6J/sekrG+X9Jz3K8pSYCSNgwdJSqMFrO/MOhGz0y2/8=";
 
         [TestMethod]
         public async Task DetailUrl()
@@ -26,6 +29,33 @@ namespace KdyWeb.Test.HttpCapture
                 , "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"
                 , Cookie);
             Assert.IsTrue(true);
+        }
+
+        [TestMethod]
+        public async Task TorrentTask()
+        {
+            var result = await _service.ConvertMagnetByByTorrentUrlAsync(
+                new ConvertMagnetByByTorrentInput("https://byrut.org/index.php?do=download&id=76987"
+                    , Cookie
+                    , "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"));
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public async Task SteamUrlTask()
+        {
+            var result = await _service.GetSteamStoreUrlByIdAndUserHashAsync(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"
+                , Cookie, "27599", "5b0f30660b0befa8b77e21d03d9e4dff0d25a9c2");
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public async Task SteamInfoTask()
+        {
+            var steamService = _host.Services.GetService<ISteamWebHttpApi>();
+            var result = await steamService.GetGameInfoByStoreUrlAsync("https://store.steampowered.com/app/1269710");
+            Assert.IsTrue(result.IsSuccess);
         }
     }
 }
