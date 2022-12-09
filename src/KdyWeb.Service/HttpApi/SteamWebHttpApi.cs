@@ -53,7 +53,7 @@ namespace KdyWeb.Service.HttpApi
             var request = new KdyRequestCommonInput(storeUrl, HttpMethod.Get)
             {
                 UserAgent = ua,
-                TimeOut = 5000,
+                TimeOut = 8,
                 ExtData = new KdyRequestCommonExtInput()
                 {
                     HeardDic = new Dictionary<string, string>()
