@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Hangfire;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto.GameDown;
@@ -11,6 +12,7 @@ using KdyWeb.EntityFramework.Migrations;
 using KdyWeb.IService.GameDown;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
