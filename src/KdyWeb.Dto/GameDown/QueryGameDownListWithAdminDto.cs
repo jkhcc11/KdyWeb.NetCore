@@ -9,7 +9,7 @@ namespace KdyWeb.Dto.GameDown
     /// 查询游戏下载列表 Dto
     /// </summary>
     [AutoMap(typeof(GameInfoMain))]
-    public class QueryGameDownListWithAdminDto : BaseEntityDto<long>
+    public class QueryGameDownListWithAdminDto : CreatedUserDto<long>
     {
         /// <summary>
         /// 游戏名
