@@ -9,7 +9,8 @@ namespace KdyWeb.IService.GameDown
     /// <summary>
     /// 游戏下载资源 服务接口
     /// </summary>
-    public interface IGameDownService : IKdyService
+    public interface
+        IGameDownService : IKdyService
     {
         /// <summary>
         /// 查询游戏下载列表
@@ -39,5 +40,20 @@ namespace KdyWeb.IService.GameDown
         /// <param name="steamResponse">steam返回信息</param>
         /// <returns></returns>
         Task<KdyResult> SaveSteamInfoByDownIdAsync(long downId, GetGameInfoByStoreUrlResponse steamResponse);
+
+        /// <summary>
+        /// 根据DownId直接更新steamUrl
+        /// </summary>
+        /// <param name="downId">下载Id</param>
+        /// <param name="steamUrl">steam地址</param>
+        /// <returns></returns>
+        Task SaveSteamUrlAsync(long downId, string steamUrl);
+
+        /// <summary>
+        /// 根据Id更新下载信息
+        /// </summary>
+        /// <param name="downId">下载Id</param>
+        /// <returns></returns>
+        Task FaceUpdateGameDownInfoByDownIdAsync(long downId);
     }
 }

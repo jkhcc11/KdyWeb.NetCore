@@ -75,16 +75,13 @@ namespace KdyWeb.Dto.GameDown
         public string Magnet { get; set; }
 
         /// <summary>
-        /// 详情Id
+        /// Steam商店Url
         /// </summary>
-        public string DetailId { get; set; }
+        public string SteamUrl { get; set; }
 
         /// <summary>
-        /// 用户Hash 
+        /// 扩展信息
         /// </summary>
-        /// <remarks>
-        /// 使用DetailId和UserHash 获取stream Url
-        /// </remarks>
-        public string UserHash { get; set; }
+        public Dictionary<string, string> ExtInfo { get; set; }
     }
 }

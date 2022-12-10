@@ -9,6 +9,7 @@ using BencodeNET.Parsing;
 using BencodeNET.Torrents;
 using Hangfire;
 using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.GameDown;
@@ -146,7 +147,6 @@ namespace KdyWeb.Service.GameDown
                 dbInfo.TorrentUrl = torrentUrl;
                 dbInfo.GameVersion = version;
                 dbInfo.GameSize = size;
-                dbInfo.VideoUrl = videoUrl.Replace("microtrailer", "movie_max");
                 _gameInfoMainRepository.Update(dbInfo);
                 KdyLog.LogInformation($"详情页：{detailUrl},更新成功");
             }
@@ -298,6 +298,12 @@ namespace KdyWeb.Service.GameDown
             {
                 if (response.StatusCode == HttpStatusCode.Forbidden)
                 {
+                    if (response.Content == "Access denied")
+                    {
+                        //已更新 重新获取详情
+                        return default;
+                    }
+
                     //请求被拦截 重试
                     throw new KdyCustomException($"下载Url:{input.TorrentUrl}.请求被拦截");
                 }

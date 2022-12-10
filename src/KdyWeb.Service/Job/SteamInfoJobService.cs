@@ -37,14 +37,20 @@ namespace KdyWeb.Service.Job
         /// </summary>
         public override async Task ExecuteAsync(SteamInfoJobInput input)
         {
-            var ua = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownUaWithByrut);
-            var cookie = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownCookieWithByrut);
-
-            //获取SteamUrl
-            var steamResult = await _gameDownWithByrutService.GetSteamStoreUrlByIdAndUserHashAsync(ua, cookie, input.CustomId, input.UserHash);
-            if (steamResult.IsEmptyExt())
+            var steamResult = input.SteamUrl;
+            if (input.IsSteamUrl == false)
             {
-                return;
+                #region 非真实steam地址，获取
+                var ua = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownUaWithByrut);
+                var cookie = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownCookieWithByrut);
+
+                //获取SteamUrl
+                steamResult = await _gameDownWithByrutService.GetSteamStoreUrlByIdAndUserHashAsync(ua, cookie, input.CustomId, input.UserHash);
+                if (steamResult.IsEmptyExt())
+                {
+                    return;
+                } 
+                #endregion
             }
 
             //根据SteamUrl获取信息
