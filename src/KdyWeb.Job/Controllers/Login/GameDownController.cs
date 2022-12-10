@@ -15,13 +15,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KdyWeb.Job.Controllers.Manager
+namespace KdyWeb.Job.Controllers.Login
 {
     /// <summary>
     /// 游戏下载地址
     /// </summary>
-    [Authorize(Policy = AuthorizationConst.NormalPolicyName.NormalPolicy)]
-    public class GameDownController : BaseManagerController
+    public class GameDownController : BaseLoginController
     {
         private readonly IKdyRepository<GameInfoMain, long> _gameInfoRepository;
         private readonly IGameDownService _gameDownService;
