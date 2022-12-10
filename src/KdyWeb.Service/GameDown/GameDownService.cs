@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
@@ -35,6 +37,24 @@ namespace KdyWeb.Service.GameDown
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryGameDownListWithAdminDto>>> QueryGameDownListWithAdminAsync(QueryGameDownListWithAdminInput input)
         {
+            if (input.OrderBy == null ||
+                input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new()
+                    {
+                        Key = $"{nameof(GameInfoMain.ModifyTime)}",
+                        OrderBy = KdyEfOrderBy.Desc
+                    },
+                    new()
+                    {
+                        Key = $"{nameof(GameInfoMain.CreatedTime)}",
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
             var query = _gameInfoRepository.GetAsNoTracking();
             if (input.KeyWord.IsEmptyExt() == false &&
                 (input.KeyWord.StartsWith("https://") ||
