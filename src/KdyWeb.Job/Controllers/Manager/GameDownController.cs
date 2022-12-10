@@ -8,7 +8,6 @@ using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto.GameDown;
 using KdyWeb.Dto.Job;
 using KdyWeb.Entity.GameDown;
-using KdyWeb.EntityFramework.Migrations;
 using KdyWeb.IService.GameDown;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
@@ -107,6 +106,18 @@ namespace KdyWeb.Job.Controllers.Manager
             }
 
             return Ok($"时长：{startDelay} 秒");
+        }
+
+        /// <summary>
+        /// 根据Id更新下载信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("face-update-info/{downId}")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> FaceUpdateGameDownInfoByDownIdAsync(long downId)
+        {
+            await _gameDownService.FaceUpdateGameDownInfoByDownIdAsync(downId);
+            return Ok("处理中");
         }
     }
 }

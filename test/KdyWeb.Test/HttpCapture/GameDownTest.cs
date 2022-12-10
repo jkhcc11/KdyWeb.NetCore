@@ -11,7 +11,7 @@ namespace KdyWeb.Test.HttpCapture
     [TestClass]
     public class GameDownTest : BaseTest<IGameDownWithByrutService>
     {
-        private const string Cookie = "cf_clearance=DYgXdR3bhLUhuQ.UO5OZ7gxRlFEUYbPCMe_AN_ktDHc-1670509783-0-250;__cf_bm=8zBICHRH_vhX6DZjfA2yABWbm_s4aNTs.nf8.pAWAOs-1670513690-0-AdnilgawQK7TfH/7OmhGGcFbRaMwsShbX/upqLvYh63PQXis/bHevMMv0HZl78UBhJn8imBICaLj7foiuaC8HzL1VO+K0cI812s1Tz4HxVCt6J/sekrG+X9Jz3K8pSYCSNgwdJSqMFrO/MOhGz0y2/8=";
+        private const string Cookie = "cf_clearance=3KDNxW54H_u0vBjOp1Me1LzOp2osPtMrbBch46q4_8M-1670646173-0-160;__cf_bm=9x2fFz.6LnQKXpDWXEDtuQFCdmHBJZOqxEMkIfLW07I-1670646174-0-Abvrcnkn0bUJw9bxOCm/tdj8UkdwXn/tBtbb+F/umqb2a5HKKiufUOQvN/t0uLPsW/pyN8Vz+BWG0Q0IhwR+nYYd8/j+4WLkiagbj8lPxjurr6bjEp0jaJ9OL85wdRNCinMcNimgVzYnL0SU/QkmLZ4=";
 
         [TestMethod]
         public async Task DetailUrl()
@@ -35,7 +35,7 @@ namespace KdyWeb.Test.HttpCapture
         public async Task TorrentTask()
         {
             var result = await _service.ConvertMagnetByByTorrentUrlAsync(
-                new ConvertMagnetByByTorrentInput("https://byrut.org/index.php?do=download&id=76987"
+                new ConvertMagnetByByTorrentInput("https://byrut.org/index.php?do=download&id=80920"
                     , Cookie
                     , "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"));
             Assert.IsNotNull(result);

@@ -13,6 +13,7 @@ using KdyWeb.IService.GameDown;
 using KdyWeb.Repository;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.GameDown
 {
@@ -60,8 +61,6 @@ namespace KdyWeb.Service.GameDown
         {
             var result = new GetDownMagnetByDownIdDto();
             var downInfo = await _gameInfoRepository.FirstOrDefaultAsync(a => a.Id == downId);
-          
-
             if (downInfo.Magnet.IsEmptyExt() == false)
             {
                 result.IsMagnet = true;
@@ -85,7 +84,7 @@ namespace KdyWeb.Service.GameDown
             }
 
             #region Steam信息
-            if (downInfo.SteamId.IsEmptyExt())
+            if (downInfo.SteamUrl.IsEmptyExt())
             {
                 //steam信息
                 var steamJobInput = new SteamInfoJobInput()
@@ -95,7 +94,17 @@ namespace KdyWeb.Service.GameDown
                     UserHash = downInfo.UserHash
                 };
                 BackgroundJob.Schedule<SteamInfoJobService>(a => a.ExecuteAsync(steamJobInput), TimeSpan.FromSeconds(40));
-            } 
+            }
+            else if (downInfo.SteamUrl.IsEmptyExt() == false)
+            {
+                var steamJobInput = new SteamInfoJobInput()
+                {
+                    DownId = downId,
+                    SteamUrl = downInfo.SteamUrl,
+                    IsSteamUrl = true
+                };
+                BackgroundJob.Schedule<SteamInfoJobService>(a => a.ExecuteAsync(steamJobInput), TimeSpan.FromSeconds(40));
+            }
             #endregion
 
             return KdyResult.Success(result);
@@ -151,6 +160,36 @@ namespace KdyWeb.Service.GameDown
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success($"成功：{downId}");
+        }
+
+        /// <summary>
+        /// 根据DownId直接更新steamUrl
+        /// </summary>
+        /// <param name="downId">下载Id</param>
+        /// <param name="steamUrl">steam地址</param>
+        /// <returns></returns>
+        public async Task SaveSteamUrlAsync(long downId, string steamUrl)
+        {
+            var downInfo = await _gameInfoRepository.FirstOrDefaultAsync(a => a.Id == downId);
+            downInfo.SetSteamUrl(steamUrl);
+            _gameInfoRepository.Update(downInfo);
+            await UnitOfWork.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// 根据Id更新下载信息
+        /// </summary>
+        /// <param name="downId">下载Id</param>
+        /// <returns></returns>
+        public async Task FaceUpdateGameDownInfoByDownIdAsync(long downId)
+        {
+            var downInfo = await _gameInfoRepository.FirstOrDefaultAsync(a => a.Id == downId);
+            var input = new GameDownCaptureJobInput()
+            {
+                DetailUrl = downInfo.SourceUrl
+            };
+            var jobId = BackgroundJob.Enqueue<GameDownCaptureJobService>(a => a.ExecuteAsync(input));
+            KdyLog.LogInformation($"DownId:{downId}，更新任务ID:{jobId}");
         }
     }
 }
