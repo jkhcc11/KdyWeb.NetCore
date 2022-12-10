@@ -36,8 +36,9 @@ namespace KdyWeb.Service.GameDown
         public async Task<KdyResult<PageList<QueryGameDownListWithAdminDto>>> QueryGameDownListWithAdminAsync(QueryGameDownListWithAdminInput input)
         {
             var query = _gameInfoRepository.GetAsNoTracking();
-            if (input.KeyWord.StartsWith("https://") ||
-                input.KeyWord.StartsWith("http://"))
+            if (input.KeyWord.IsEmptyExt() == false &&
+                (input.KeyWord.StartsWith("https://") ||
+                input.KeyWord.StartsWith("http://")))
             {
                 var steamId = input.KeyWord.GetNumber();
                 if (steamId.IsEmptyExt() == false)
