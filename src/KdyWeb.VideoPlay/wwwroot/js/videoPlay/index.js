@@ -213,6 +213,11 @@ InitVideoPlay.prototype = {
                 }
                 var v = that.jie(json.ResultData);
                 that.init('play-content', v, epId);
+                if (json.Player != null &&
+                    json.Player === 'potplayer') {
+                    that.setPotPlayer(v);
+                }
+
             }
         });
     },
@@ -332,6 +337,13 @@ InitVideoPlay.prototype = {
      */
     setData: function (dataJson) {
         this._dataJson = dataJson;
+    },
+    /**
+     * 设置PotPlayer播放器
+     * @param {any} url
+     */
+    setPotPlayer: function (url) {
+        $('#div_potplayer').html('<a href="potplayer://' + url + '">使用PotPlayer播放</a>');
     }
 }
 
