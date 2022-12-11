@@ -343,6 +343,7 @@ InitVideoPlay.prototype = {
      * @param {any} url
      */
     setPotPlayer: function (url) {
+        $('#div_potplayer').show();
         $('#div_potplayer').html('<a href="potplayer://' + url + '">使用PotPlayer播放</a>');
     }
 }
