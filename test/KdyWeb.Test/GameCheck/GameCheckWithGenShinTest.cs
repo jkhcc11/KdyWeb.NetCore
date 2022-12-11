@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using KdyWeb.Dto.HttpApi;
 using KdyWeb.IService.HttpApi;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KdyWeb.Test.GameCheck
@@ -45,6 +47,43 @@ namespace KdyWeb.Test.GameCheck
             };
             var t = await _service.QueryUserBindInfoByCookieAsync(input);
             Assert.IsTrue(t.IsSuccess);
+        }
+
+        [TestMethod]
+        public async Task GetAllChannels()
+        {
+            var service = _host.Services.GetService<ILiveTvHttpApi>();
+
+            var t = await service.GetAllChannelsAsync();
+            var china = t.Where(a => a.IsChina()).ToList();
+
+            Assert.IsTrue(china.Any());
+        }
+
+        [TestMethod]
+        public async Task GetAllStreams()
+        {
+            var service = _host.Services.GetService<ILiveTvHttpApi>();
+
+            var t = await service.GetAllStreamsAsync();
+            var valid = t.Where(a => a.IsValid()).ToList();
+
+            Assert.IsTrue(valid.Any());
+        }
+
+        [TestMethod]
+        public async Task GetChinaValid()
+        {
+            var service = _host.Services.GetService<ILiveTvHttpApi>();
+
+            var channels = await service.GetAllChannelsAsync();
+            var t = await service.GetAllStreamsAsync();
+
+            var china = channels.Where(a => a.IsChina()).ToList();
+            var valid = t.Where(a => a.IsValid() &&
+                                     china.Any(b => b.ChannelId == a.ChannelId)).ToList();
+
+            Assert.IsTrue(valid.Any());
         }
     }
 }
