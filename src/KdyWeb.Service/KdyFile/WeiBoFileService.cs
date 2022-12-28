@@ -78,7 +78,7 @@ namespace KdyWeb.Service.KdyFile
                 });
             var uploadResult = new KdyFileDto()
             {
-                Url = $"{publicPrefix.RandomItem()}/large/{newStr.GetStrMathExt("pid=", ";")}.jpg"
+                Url = $"https://{publicPrefix.RandomItem()}.sinaimg.cn/large/{newStr.GetStrMathExt("pid=", ";")}.jpg"
             };
 
             result = KdyResult.Success(uploadResult);
