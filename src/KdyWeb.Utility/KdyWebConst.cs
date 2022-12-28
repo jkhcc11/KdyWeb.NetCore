@@ -170,6 +170,11 @@
             public const string WeiBoCookieApiSuccessFlag = "UploadConfig:wb_api_successFlag";
 
             /// <summary>
+            /// 微博公共访问前缀
+            /// </summary>
+            public const string WeiBoPublicPrefix = "UploadConfig:wb_public_prefix";
+
+            /// <summary>
             /// 图片上传大小限制（MB）
             /// </summary>
             public const string UploadImgMaxSize = "UploadConfig:uploadImg_max_size";
