@@ -1,7 +1,6 @@
-﻿
-
-using System;
-using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -93,6 +92,21 @@ namespace KdyWeb.Utility
             //动态更改值
             var changeV = Convert.ChangeType(value, property.PropertyType);
             property.SetValue(model, changeV, null);
+        }
+
+        /// <summary>
+        /// 随机一项
+        /// </summary>
+        /// <returns></returns>
+        public static TItem RandomItem<TItem>(this IReadOnlyList<TItem> list)
+        {
+            if (list == null ||
+                list.Any() == false)
+            {
+                return default;
+            }
+
+            return list.OrderBy(_ => Guid.NewGuid()).First();
         }
     }
 }
