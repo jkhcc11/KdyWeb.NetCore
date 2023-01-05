@@ -311,8 +311,7 @@ namespace KdyWeb.Service.ImageSave
             //=>//xxx.com/cximg/60c70132a7b45d8c902cb099add0ba7f.png
             if (originalUrl.Contains("chaoxing.com"))
             {
-                var lastFlagIndex = originalUrl.LastIndexOf("/", StringComparison.CurrentCultureIgnoreCase);
-                originalUrl = $"{proxyHost}/cximg{originalUrl.Substring(lastFlagIndex)}";
+                originalUrl = $"{proxyHost}/cximg/{originalUrl.Split('/').Last()}";
             }
 
             if (originalUrl.Contains("doubanio.com"))
@@ -320,9 +319,16 @@ namespace KdyWeb.Service.ImageSave
                 //豆瓣替换 否则403
                 //https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2665925017.jpg
                 //=>//xxx.com/dbimg/p2665925017.jpg
-                var lastFlagIndex = originalUrl.LastIndexOf("/", StringComparison.CurrentCultureIgnoreCase);
-                originalUrl = $"{proxyHost}/dbimg{originalUrl.Substring(lastFlagIndex)}";
+                originalUrl = $"{proxyHost}/dbimg/{originalUrl.Split('/').Last()}";
             }
+
+            if (originalUrl.Contains("sinaimg.cn"))
+            {
+                //https://tvax2.sinaimg.cn/large/00816Hflgy1h9f9dhssz9j307i0aq74p.jpg
+                //=>//xxx.com/simg/00816Hflgy1h9f9dhssz9j307i0aq74p.jpg
+                originalUrl = $"{proxyHost}/simg/{originalUrl.Split('/').Last()}";
+            }
+
             return originalUrl;
         }
 
