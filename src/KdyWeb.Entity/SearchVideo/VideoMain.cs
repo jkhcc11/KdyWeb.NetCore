@@ -165,10 +165,11 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 设置系统录入
         /// </summary>
-        public void SetSysInput()
+        public void SetSysInput(bool isEnd)
         {
             VideoContentFeature = SystemInput;
             SourceUrl = SystemInput;
+            IsEnd = isEnd;
         }
     }
 }
