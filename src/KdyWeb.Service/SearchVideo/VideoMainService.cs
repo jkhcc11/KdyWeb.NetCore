@@ -361,7 +361,9 @@ namespace KdyWeb.Service.SearchVideo
 
             if (dbMain.IsEnd == false)
             {
-                dbMain.SetSysInput();
+                //间隔大于1年 直接完结
+                var isEnd = (DateTime.Now.Year - dbDouBanInfo.VideoYear) >= 1;
+                dbMain.SetSysInput(isEnd);
             }
 
             _videoMainRepository.Update(dbMain);
