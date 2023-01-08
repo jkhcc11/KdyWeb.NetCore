@@ -178,6 +178,11 @@
             /// 图片上传大小限制（MB）
             /// </summary>
             public const string UploadImgMaxSize = "UploadConfig:uploadImg_max_size";
+
+            /// <summary>
+            /// 百家号cookie
+            /// </summary>
+            public const string UploadConfigBjhDocCookie = "UploadConfig:bjh_cookie";
         }
     }
 
