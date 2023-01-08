@@ -473,8 +473,8 @@ namespace KdyWeb.Service.ImageSave
                 return KdyResult.Success($"{_kdySelfHostOption.ImgHost}/kdyImg/path/{dbImg.Id}", "获取成功");
             }
 
-            //3、微博上传
-            var weiBoResult = await _weiBoFileService.PostFile(weiBoInput);
+            //3、替换weibo
+            var weiBoResult = await UploadWithBackSinaAsync(minIoInput);
 
             //4、备用一个
             var normalResult = await NormalUploadAsync(minIoInput);
@@ -498,6 +498,49 @@ namespace KdyWeb.Service.ImageSave
             await _kdyImgSaveRepository.CreateAsync(dbImg);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success($"{_kdySelfHostOption.ImgHost}/kdyImg/path/{dbImg.Id}", "获取成功");
+        }
+
+        /// <summary>
+        /// 代替Sina通道2
+        /// </summary>
+        /// <returns></returns>
+        private async Task<KdyResult<KdyFileDto>> UploadWithBackSinaAsync(BaseKdyFileInput kdyFileInput)
+        {
+            //百家号
+            var cookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigBjhDocCookie);
+            if (string.IsNullOrEmpty(cookie))
+            {
+                throw new KdyCustomException("BackSina上传失败，未配置bjhCookie");
+            }
+
+            var normalInput = new NormalFileInput("https://baijiahao.baidu.com/builderinner/api/content/file/upload",
+                "media",
+                "ret.bos_url", kdyFileInput.FileName)
+            {
+                Cookie = cookie,
+                Referer = "https://baijiahao.baidu.com/builder/rc/material/imgs?app_id=1754196805771497"
+            };
+            if (kdyFileInput.FileBytes != null && kdyFileInput.FileBytes.Any())
+            {
+                normalInput.SetFileBytes(kdyFileInput.FileBytes);
+            }
+            else if (string.IsNullOrEmpty(kdyFileInput.FileUrl) == false)
+            {
+                normalInput.SetFileUrl(kdyFileInput.FileUrl);
+            }
+            else
+            {
+                throw new KdyCustomException($"BackSina上传失败，无效上传数据。url和Bytes不能同时为空");
+            }
+
+            normalInput.PostParDic = new Dictionary<string, string>()
+            {
+                {"id", "WU_FILE_0"},
+                {"is_avatar", "0"},
+                {"no_compress", "1"}
+            };
+
+            return await _normalFileService.PostFile(normalInput);
         }
         #endregion
     }
