@@ -2,6 +2,7 @@
 using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
+using KdyWeb.Entity.VideoConverts.Enum;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -69,11 +70,11 @@ namespace KdyWeb.Test.SearchVideo
             var input = new ModifyVideoMainInput()
             {
                 Id = 1348202780468318208,
-               // VideoImg = "tttt",
+                // VideoImg = "tttt",
                 Subtype = Subtype.Movie,
                 VideoMainStatus = VideoMainStatus.Normal,
                 DownUrl = "下载地址$www.baidu.com/1111\r\n下载地址1$www.baidu.com/1111",
-                VideoGenres="ttttt1111"
+                VideoGenres = "ttttt1111"
             };
 
             var result = await _service.ModifyVideoMainAsync(input);
@@ -83,6 +84,24 @@ namespace KdyWeb.Test.SearchVideo
         [TestMethod]
         public async Task GetCountInfoBySubtypeAsync()
         {
+            var t = VodManagerRecordType.SaveMove.GetSaveInfoCheckoutAmount(2015, 21);
+            Assert.IsTrue(t == 2);
+            t = VodManagerRecordType.SaveMove.GetSaveInfoCheckoutAmount(2015, 25);
+            Assert.IsTrue(t == 3);
+            t = VodManagerRecordType.SaveMove.GetSaveInfoCheckoutAmount(2015, 1);
+            Assert.IsTrue(t == 1);
+            t = VodManagerRecordType.SaveMove.GetSaveInfoCheckoutAmount(2015, 70);
+            Assert.IsTrue(t == 3);
+
+            t = VodManagerRecordType.SaveMove.GetSaveInfoCheckoutAmount(2019, 21);
+            Assert.IsTrue(t == 1);
+            t = VodManagerRecordType.SaveMove.GetSaveInfoCheckoutAmount(2020, 25);
+            Assert.IsTrue(t == 1.5M);
+            t = VodManagerRecordType.SaveMove.GetSaveInfoCheckoutAmount(2021, 1);
+            Assert.IsTrue(t == 0.5M);
+            t = VodManagerRecordType.SaveMove.GetSaveInfoCheckoutAmount(2021, 70);
+            Assert.IsTrue(t == 3);
+
             var input = new GetCountInfoBySubtypeInput()
             {
             };

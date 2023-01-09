@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface;
 
 namespace KdyWeb.Entity.VideoConverts.Enum
@@ -109,6 +110,53 @@ namespace KdyWeb.Entity.VideoConverts.Enum
                         throw new KdyCustomException("未知类型");
                     }
             }
+        }
+
+        /// <summary>
+        ///  影片保存结算金额计算
+        /// </summary>
+        /// <param name="recordType">类型</param>
+        /// <param name="year">年份</param>
+        /// <param name="epCount">剧集数</param>
+        /// <returns></returns>
+        public static decimal GetSaveInfoCheckoutAmount(this VodManagerRecordType recordType, int year, int epCount)
+        {
+            if (epCount < 10)
+            {
+                //最低10 影片按10计算
+                epCount = 10;
+            }
+
+            //5年之内(不含5)  0.5积分/10集  封顶3积分
+            //5年前   1积分/10集  封顶3积分
+            switch (recordType)
+            {
+                case VodManagerRecordType.SaveMove:
+                case VodManagerRecordType.SaveTv:
+                    {
+                        break;
+                    }
+                default:
+                    {
+                        return 0;
+                    }
+            }
+
+            if (year <= 0)
+            {
+                year = DateTime.Now.Year;
+            }
+
+            var isOver5 = (DateTime.Now.Year - year) >= 5;
+            //四舍五入 加0.5
+            var ratio = Math.Round((epCount + 0.5) / 10.0, 0);
+            var amount = isOver5 ? Convert.ToDecimal(ratio) : Convert.ToDecimal(ratio * 0.5);
+            if (amount > 3)
+            {
+                return 3;
+            }
+
+            return amount;
         }
     }
 }
