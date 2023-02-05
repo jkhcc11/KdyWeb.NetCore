@@ -232,7 +232,8 @@ namespace KdyWeb.Service.SearchVideo
             {
                 case SearchType.IsNoEnd:
                     {
-                        query = query.Where(a => a.IsEnd == false);
+                        query = query.Where(a => a.IsEnd == false ||
+                                                 a.VideoContentFeature != VideoMain.SystemInput);
                         break;
                     }
                 case SearchType.IsToday:
