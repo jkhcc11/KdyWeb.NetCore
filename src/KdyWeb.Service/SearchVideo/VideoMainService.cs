@@ -234,6 +234,20 @@ namespace KdyWeb.Service.SearchVideo
                     {
                         query = query.Where(a => a.IsEnd == false ||
                                                  a.VideoContentFeature != VideoMain.SystemInput);
+                        //高分优先
+                        input.OrderBy = new List<KdyEfOrderConditions>()
+                        {
+                            new KdyEfOrderConditions()
+                            {
+                                Key = nameof(VideoMain.VideoDouBan),
+                                OrderBy = KdyEfOrderBy.Desc
+                            },
+                            new KdyEfOrderConditions()
+                            {
+                                Key = nameof(VideoMain.CreatedTime),
+                                OrderBy = KdyEfOrderBy.Desc
+                            }
+                        };
                         break;
                     }
                 case SearchType.IsToday:
