@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.Dto.GameDown;
+using KdyWeb.Dto.HttpApi.Bilibili;
 using KdyWeb.Dto.KdyImg;
 using KdyWeb.IService.GameDown;
 using KdyWeb.IService.HttpApi;
@@ -55,6 +56,17 @@ namespace KdyWeb.Test.HttpCapture
         {
             var steamService = _host.Services.GetService<ISteamWebHttpApi>();
             var result = await steamService.GetGameInfoByStoreUrlAsync("https://store.steampowered.com/app/1269710");
+            Assert.IsTrue(result.IsSuccess);
+        }
+
+        [TestMethod]
+        public async Task BTest()
+        {
+            var steamService = _host.Services.GetService<IBilibiliHttpApi>();
+            var result = await steamService.GetVideoInfoByDetailUrlAsync(new GetVideoInfoByDetailUrlRequest()
+            {
+                DetailUrl = "https://www.bilibili.com/video/BV13A411Q7gS/?spm_id_from=333.337.search-card.all.click"
+            });
             Assert.IsTrue(result.IsSuccess);
         }
     }

@@ -4,9 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using Microsoft.Extensions.Configuration;
@@ -154,8 +152,16 @@ namespace KdyWeb.BaseInterface.HttpBase
                     return result;
                 }
 
-                var resultBytes = await response.Content.ReadAsByteArrayAsync();
-                var resultStr = CharsetHandler(input, resultBytes);
+                string resultStr;
+                if (input.EnCoding != null)
+                {
+                    var resultBytes = await response.Content.ReadAsByteArrayAsync();
+                    resultStr = input.EnCoding.GetString(resultBytes);
+                }
+                else
+                {
+                    resultStr = await response.Content.ReadAsStringAsync();
+                }
 
                 if (typeof(TData) == typeof(string))
                 {
@@ -196,56 +202,6 @@ namespace KdyWeb.BaseInterface.HttpBase
                 //    {"HttpInput",input}
                 //});
             }
-        }
-
-        /// <summary>
-        /// 网页编码处理
-        /// </summary>
-        protected string CharsetHandler(TInput input, byte[] repBytes)
-        {
-            string tempStr = Encoding.Default.GetString(repBytes);
-
-            if (tempStr.StartsWith("{") || tempStr.StartsWith("["))
-            {
-                if (input.EnCoding == null)
-                {
-                    input.EnCoding = Encoding.UTF8;
-                }
-
-                //json格式 使用请求编码返回 默认utf8
-                return input.EnCoding.GetString(repBytes);
-            }
-
-            //todo:无法识别 <meta charset=gb2312 /> xml格式
-            var meta = Regex.Match(tempStr, "<meta[^<]*charset=([^<]*)[\"']", RegexOptions.IgnoreCase);
-            string charset = string.Empty;
-            if (meta.Groups.Count > 0)
-            {
-                charset = meta.Groups[1].Value.ToLower().Trim();
-            }
-            if (charset.Length > 2)
-            {
-                try
-                {
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                    //todo:System.Text.Encoding.CodePages 需要引入这个 否则无法解析gbk
-                    input.EnCoding = Encoding.GetEncoding(charset.Replace("\"", string.Empty).Replace("'", "").Replace(";", "").Replace("iso-8859-1", "gbk").Trim());
-                }
-                catch
-                {
-                    //异常设置且没有设置
-                    if (input.EnCoding == null)
-                    {
-                        input.EnCoding = Encoding.Default;
-                    }
-                }
-            }
-            else if (input.EnCoding == null)
-            {
-                input.EnCoding = Encoding.Default;
-            }
-
-            return input.EnCoding.GetString(repBytes);
         }
 
         public void Dispose()

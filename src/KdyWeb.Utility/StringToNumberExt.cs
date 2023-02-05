@@ -19,6 +19,17 @@ namespace KdyWeb.Utility
         }
 
         /// <summary>
+        /// 字符串转Int64
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <returns></returns>
+        public static long ToInt64(this string str)
+        {
+            long.TryParse(str, out var r);
+            return r;
+        }
+
+        /// <summary>
         /// 字符串转double
         /// </summary>
         /// <param name="str">字符串</param>
