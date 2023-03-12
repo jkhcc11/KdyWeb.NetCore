@@ -115,6 +115,14 @@ namespace KdyWeb.Service.SearchVideo
             var dbEp = await _videoEpisodeRepository.GetQuery()
                 .Where(a => input.Ids.Contains(a.Id))
                 .ToListAsync();
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                if (dbEp.Any(a => a.EpisodeUrl.Contains("hcc11.com")))
+                {
+                    return KdyResult.Error(KdyResultCode.Error, "删除失败,剧集系统,暂时无法删除");
+                }
+            }
+
             _videoEpisodeRepository.Delete(dbEp);
             await UnitOfWork.SaveChangesAsync();
 
