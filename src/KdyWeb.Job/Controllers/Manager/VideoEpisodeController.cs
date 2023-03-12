@@ -53,7 +53,6 @@ namespace KdyWeb.Job.Controllers.Manager
         /// <returns></returns>
         [HttpDelete("delete")]
         [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
-        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
         public async Task<IActionResult> DeleteEpisodeAsync(BatchDeleteForLongKeyInput input)
         {
             var result = await _videoEpisodeService.DeleteEpisodeAsync(input);
