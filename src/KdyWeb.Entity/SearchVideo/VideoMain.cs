@@ -158,6 +158,8 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         public void SetDown()
         {
+            VideoContentFeature = SystemInput;
+            SourceUrl = SystemInput;
             IsEnd = true;
             VideoMainStatus = VideoMainStatus.Down;
         }
