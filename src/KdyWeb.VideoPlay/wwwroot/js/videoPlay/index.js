@@ -284,7 +284,7 @@ InitVideoPlay.prototype = {
      * @returns {} 
      */
     decodeStr: function (url) {
-        var n = (url.length - 6) / 2, o = url.substring(0, n), i = url.substring(n + 6);
+        var n = (url.length - 7) / 2, o = url.substring(0, n), i = url.substring(n + 7);
         return o + i;
     },
     /**
