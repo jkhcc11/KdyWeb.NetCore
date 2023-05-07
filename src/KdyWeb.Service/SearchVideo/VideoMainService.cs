@@ -743,7 +743,7 @@ namespace KdyWeb.Service.SearchVideo
         {
             if (url.Contains("$") == false)
             {
-                return new VideoEpisode("1", url);
+                return new VideoEpisode("极速", url);
             }
 
             var tempArray = url.Split('$').ToArray();
