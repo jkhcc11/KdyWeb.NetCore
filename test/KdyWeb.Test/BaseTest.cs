@@ -34,9 +34,10 @@ namespace KdyWeb.Test
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     hostingContext.Configuration = config.Build();
-                    var consulUrl = hostingContext.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
-
+                    var consulUrl = hostingContext.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulConfigUrl);
+                    var consulToken = hostingContext.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulToken);
                     config.InitConfigCenter(hostingContext, consulUrl,
+                        consulToken,
                         $"KdyWeb.NetCore/appsettings.Test.json");
                 }).ConfigureWebHostDefaults(webBuilder =>
                 {

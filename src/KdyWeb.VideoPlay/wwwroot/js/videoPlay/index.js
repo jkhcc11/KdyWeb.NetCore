@@ -28,8 +28,8 @@ InitVideoPlay.prototype = {
             that = this,
             system = that.checkSys(),
             sourceType = 'video/mp4';
-        //var tempV = vurl.split('$');//腾讯的
-        if (vurl.indexOf(".m3u8") > 0) {
+        //var tempV = vurl.split('$');//腾讯的  todo:指定类型 不要判断url
+        if (vurl.indexOf(".m3u8") > 0) { 
             vtype = "m3u8";
             sourceType = "application/x-mpegURL";
         } else if (vurl.indexOf("g3proxy.lecloud.com") > 0 && vurl.indexOf("tss=mp4") === -1) {
