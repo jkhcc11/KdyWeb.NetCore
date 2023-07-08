@@ -27,23 +27,21 @@ namespace KdyWeb.Utility
         }
 
         /// <summary>
-        /// 秒时间戳转 时间
+        /// 时间戳转本地时间(秒)
         /// </summary>
         /// <returns></returns>
-        public static DateTime ToDateTimeBySeconds(this long timestamp)
+        public static DateTime ToDataTimeByTimestamp(this int timestamp)
         {
-            var dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(timestamp);
-            return dateTimeOffset.UtcDateTime;
+            return DateTimeOffset.FromUnixTimeSeconds(timestamp).LocalDateTime;
         }
 
         /// <summary>
-        /// 毫秒时间戳转 时间
+        /// 时间戳转本地时间(毫秒)
         /// </summary>
         /// <returns></returns>
-        public static DateTime ToDateTimeByMilliseconds(this long timestamp)
+        public static DateTime ToDataTimeByTimestamp(this long timestamp)
         {
-            var dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
-            return dateTimeOffset.UtcDateTime;
+            return DateTimeOffset.FromUnixTimeMilliseconds(timestamp).LocalDateTime;
         }
     }
 }

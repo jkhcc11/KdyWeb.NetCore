@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AspNetCoreRateLimit;
@@ -57,11 +58,14 @@ namespace KdyWeb.HttpApi
 
             //注入HttpClient
             services.AddHttpClient(KdyBaseConst.HttpClientName)
-                .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
+                .ConfigurePrimaryHttpMessageHandler(config => new HttpClientHandler
                 {
-                    //取消自动跳转
-                    AllowAutoRedirect = false,
-                });
+                    //解析Gzip
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
+                    //取消自动跳转 todo:parse cloud test 
+                    AllowAutoRedirect = false
+                }
+                );
 
             #region ids
             services.Configure<KdyAuthServerOption>(configuration?.GetSection("AuthServer"));

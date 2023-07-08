@@ -120,6 +120,116 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.ToTable("CloudParse_SubAccount");
                 });
 
+            modelBuilder.Entity("KdyWeb.Entity.GameDown.GameInfoMain", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ChineseName")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CreatedUserName")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DetailId")
+                        .HasColumnType("nvarchar(32)")
+                        .HasMaxLength(32);
+
+                    b.Property<string>("DownList")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GameCovert")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("GameName")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("GameSize")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("GameVersion")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LogoUrl")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("Magnet")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ModifyUserName")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("MovieList")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ScreenCapture")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SourceMd5")
+                        .HasColumnType("nvarchar(32)")
+                        .HasMaxLength(32);
+
+                    b.Property<string>("SourceUrl")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("SteamId")
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<string>("SteamUrl")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("TorrentUrl")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("UserHash")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GameDown_Main");
+                });
+
             modelBuilder.Entity("KdyWeb.Entity.HttpCapture.PageSearchConfig", b =>
                 {
                     b.Property<long>("Id")
@@ -492,40 +602,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("KdyRole");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActivate = true,
-                            IsDelete = false,
-                            KdyRoleType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActivate = true,
-                            IsDelete = false,
-                            KdyRoleType = (byte)5
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActivate = true,
-                            IsDelete = false,
-                            KdyRoleType = (byte)10
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedTime = new DateTime(1977, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActivate = true,
-                            IsDelete = false,
-                            KdyRoleType = (byte)15
-                        });
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.KdyRoleMenu", b =>
@@ -641,32 +717,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasIndex("KdyRoleId");
 
                     b.ToTable("KdyUser");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            CreatedTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDelete = false,
-                            KdyRoleId = 3,
-                            OldUserId = 0,
-                            UserEmail = "137651076@qq.com",
-                            UserName = "admin",
-                            UserNick = "管理员",
-                            UserPwd = "496ec666bef4a074ac39915dfb645e51"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            CreatedTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDelete = false,
-                            KdyRoleId = 1,
-                            OldUserId = 0,
-                            UserEmail = "123456@qq.com",
-                            UserName = "test",
-                            UserNick = "普通用户测试",
-                            UserPwd = "496ec666bef4a074ac39915dfb645e51"
-                        });
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldFeedBackInfo", b =>

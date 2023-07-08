@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\common.props" />
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="KdyLog\**" />
+		<EmbeddedResource Remove="KdyLog\**" />
+		<None Remove="KdyLog\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="KdyLog\**" />
-    <EmbeddedResource Remove="KdyLog\**" />
-    <None Remove="KdyLog\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="HttpBase\BaseKdyHttpWebRequest.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="HttpBase\BaseKdyHttpWebRequest.cs" />
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />

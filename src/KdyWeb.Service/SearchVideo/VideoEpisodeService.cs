@@ -82,6 +82,16 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(saveResult.Code, saveResult.Msg);
             }
 
+            //主表信息
+            var mainInfo = await _videoMainRepository.GetAsNoTracking()
+                .Where(a => a.Id == input.MainId)
+                .Select(a => new
+                {
+                    MainId = a.Id,
+                    Year = a.VideoYear
+                })
+                .FirstAsync();
+
             await UnitOfWork.SaveChangesAsync();
 
             var recordType = VodManagerRecordType.SaveMove;
@@ -94,7 +104,8 @@ namespace KdyWeb.Service.SearchVideo
             {
                 BusinessId = input.MainId,
                 Remark = $"剧集更新数量：{input.EpItems.Count}",
-                LoginUserName = LoginUserInfo.UserName
+                LoginUserName = LoginUserInfo.UserName,
+                CheckoutAmount = recordType.GetSaveInfoCheckoutAmount(mainInfo.Year, input.EpItems.Count)
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
 
@@ -115,6 +126,14 @@ namespace KdyWeb.Service.SearchVideo
             var dbEp = await _videoEpisodeRepository.GetQuery()
                 .Where(a => input.Ids.Contains(a.Id))
                 .ToListAsync();
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                if (dbEp.Any(a => a.EpisodeUrl.Contains("hcc11.com")))
+                {
+                    return KdyResult.Error(KdyResultCode.Error, "删除失败,剧集系统,暂时无法删除");
+                }
+            }
+
             _videoEpisodeRepository.Delete(dbEp);
             await UnitOfWork.SaveChangesAsync();
 

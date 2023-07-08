@@ -1,10 +1,16 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Dto.Job;
+using KdyWeb.IService.GameDown;
 using KdyWeb.IService.Job;
+using KdyWeb.Service.Job;
+using KdyWeb.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Job.Controllers.Manager
 {
@@ -15,9 +21,14 @@ namespace KdyWeb.Job.Controllers.Manager
     public class JobInitController : BaseManagerController
     {
         private readonly IJobInitService _jobInitService;
-        public JobInitController(IJobInitService jobInitService)
+        private readonly IGameDownWithByrutService _gameDownWithByrutService;
+        private readonly IConfiguration _configuration;
+        public JobInitController(IJobInitService jobInitService,
+            IGameDownWithByrutService gameDownWithByrutService, IConfiguration configuration)
         {
             _jobInitService = jobInitService;
+            _gameDownWithByrutService = gameDownWithByrutService;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -42,6 +53,56 @@ namespace KdyWeb.Job.Controllers.Manager
         {
             var result = await _jobInitService.InitRecurrentUrlJobAsync();
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 游戏下载分页初始化
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("init-game-down")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> InitGameDownQueryPageInfoAsync(int page)
+        {
+            await Task.CompletedTask;
+            var input = new GameDownCaptureJobInput()
+            {
+                Page = page,
+                IsPageUrl = true
+            };
+            var jobId = BackgroundJob.Enqueue<GameDownCaptureJobService>(a => a.ExecuteAsync(input));
+            return Ok($"操作成功.{jobId}");
+        }
+
+        /// <summary>
+        /// 游戏下载详情初始化
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("init-game-down-detail")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> InitGameDownDetailAsync(string detailUrl)
+        {
+            await Task.CompletedTask;
+            var input = new GameDownCaptureJobInput()
+            {
+                DetailUrl = detailUrl
+            };
+            var jobId = BackgroundJob.Enqueue<GameDownCaptureJobService>(a => a.ExecuteAsync(input));
+            return Ok($"操作成功.{jobId}");
+        }
+
+        /// <summary>
+        /// 游戏下载分页初始化
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("init-game-down-all")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> InitGameDownQueryAllPageInfoAsync(int maxPage)
+        {
+            var ua = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownUaWithByrut);
+            var cookie = _configuration.GetValue<string>(KdyWebServiceConst.KdyWebParseConfig.GameDownCookieWithByrut);
+
+            await _gameDownWithByrutService.QueryAllInfoAsync(maxPage, ua, cookie);
+            return Ok($"操作成功");
         }
     }
 }

@@ -1,6 +1,6 @@
 {
   "SkyWalking": {
-    "ServiceName": "KdyWeb.NetCore",
+    "ServiceName": "KdyWeb.NetCore.Pro",
     "Namespace": "KdyWeb",
     "HeaderVersions": [
       "sw6"
@@ -19,7 +19,7 @@
       "QueueSize": 30000,
       "BatchSize": 3000,
       "gRPC": {
-        "Servers": "121.89.211.254:8004",
+        "Servers": "oap.hcc11.cn:8004",
         "Timeout": 10000,
         "ConnectTimeout": 10000,
         "ReportTimeout": 600000

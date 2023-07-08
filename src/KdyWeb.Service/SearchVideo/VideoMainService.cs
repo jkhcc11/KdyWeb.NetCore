@@ -232,7 +232,22 @@ namespace KdyWeb.Service.SearchVideo
             {
                 case SearchType.IsNoEnd:
                     {
-                        query = query.Where(a => a.IsEnd == false);
+                        query = query.Where(a => a.IsEnd == false ||
+                                                 a.VideoContentFeature != VideoMain.SystemInput);
+                        //高分优先
+                        input.OrderBy = new List<KdyEfOrderConditions>()
+                        {
+                            new KdyEfOrderConditions()
+                            {
+                                Key = nameof(VideoMain.VideoDouBan),
+                                OrderBy = KdyEfOrderBy.Desc
+                            },
+                            new KdyEfOrderConditions()
+                            {
+                                Key = nameof(VideoMain.CreatedTime),
+                                OrderBy = KdyEfOrderBy.Desc
+                            }
+                        };
                         break;
                     }
                 case SearchType.IsToday:
@@ -361,7 +376,9 @@ namespace KdyWeb.Service.SearchVideo
 
             if (dbMain.IsEnd == false)
             {
-                dbMain.SetSysInput();
+                //间隔大于1年 直接完结
+                var isEnd = (DateTime.Now.Year - dbDouBanInfo.VideoYear) >= 1;
+                dbMain.SetSysInput(isEnd);
             }
 
             _videoMainRepository.Update(dbMain);
@@ -726,7 +743,7 @@ namespace KdyWeb.Service.SearchVideo
         {
             if (url.Contains("$") == false)
             {
-                return new VideoEpisode("1", url);
+                return new VideoEpisode("极速", url);
             }
 
             var tempArray = url.Split('$').ToArray();

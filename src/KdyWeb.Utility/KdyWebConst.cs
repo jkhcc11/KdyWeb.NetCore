@@ -93,6 +93,19 @@
             /// 游戏检查
             /// </summary>
             public const string GameCheckConfig = "KdyGameCheck";
+
+            /// <summary>
+            /// Byrut配置
+            /// </summary>
+            public const string GameDownUaWithByrut = "GameDownConfig:ua_byrut";
+            public const string GameDownCookieWithByrut = "GameDownConfig:cookie_byrut";
+
+            /// <summary>
+            /// Steam配置
+            /// </summary>
+            public const string UaWithSteam = "GameDownConfig:ua_steam";
+            public const string CookieWithSteam = "GameDownConfig:cookie_steam";
+            public const string AcceptWithSteam = "GameDownConfig:accept_steam";
         }
 
         /// <summary>
@@ -157,9 +170,19 @@
             public const string WeiBoCookieApiSuccessFlag = "UploadConfig:wb_api_successFlag";
 
             /// <summary>
+            /// 微博公共访问前缀
+            /// </summary>
+            public const string WeiBoPublicPrefix = "UploadConfig:wb_public_prefix";
+
+            /// <summary>
             /// 图片上传大小限制（MB）
             /// </summary>
             public const string UploadImgMaxSize = "UploadConfig:uploadImg_max_size";
+
+            /// <summary>
+            /// 百家号cookie
+            /// </summary>
+            public const string UploadConfigBjhDocCookie = "UploadConfig:bjh_cookie";
         }
     }
 

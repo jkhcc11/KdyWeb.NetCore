@@ -42,6 +42,8 @@
     }
 }
 @*<input type="hidden" id="vToken" name="vToken" value="@GetAntiXsrfRequestToken()">*@
+<div id="div_potplayer" style="display: none">
+</div>
 <div id="play-content" style="background: #000">
     <div style="text-align: center">
         <img src="@GetDefaultImg()" style="width: 300px; height: 250px;" />
@@ -56,7 +58,7 @@
 <script src="/lib/abphtml5/ABPlayerExt.js"></script>
 <script src="/lib/abphtml5/ABPlayer.min.js?v=1.2"></script>
 <script src="/lib/abphtml5/ABPlayer_strings.zh.js?v=1.1"></script>
-<script src="//cdn.staticfile.org/hls.js/1.2.4/hls.min.js"></script>
+<script src="//cdn.staticfile.org/hls.js/1.4.2/hls.min.js"></script>
 
 <script type="text/javascript">
     var epId = '@ViewBag.EpId',
@@ -72,6 +74,28 @@
 <style type="text/css">
     #play-content {
         height: 100% !important;
+    }
+    #div_potplayer {
+        position: fixed;
+        z-index: 99;
+        top: 7%;
+        right: 1%;
+    }
+    #div_potplayer a {
+        display: inline-block;
+        width: 130px;
+        height: 30px;
+        background-color: #1E9FFF;
+        margin-bottom: 4px;
+        cursor: pointer;
+        outline: none;
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        line-height: 30px;
+        text-align: center;
+        border-radius: 15px;
     }
 </style>
 }

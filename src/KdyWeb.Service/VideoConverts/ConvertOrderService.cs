@@ -154,9 +154,11 @@ namespace KdyWeb.Service.VideoConverts
             var query = _convertOrderRepository.GetQuery();
             if (LoginUserInfo.IsSuperAdmin == false)
             {
-                //非管理员 只能查看待审核和自己的
-                query = query.Where(a => a.ConvertOrderStatus == ConvertOrderStatus.Init ||
-                                         a.ModifyUserId == userId);
+                //非管理员 只能查看待审核和自己的审核过的单
+                //看不到自己创建的单
+                query = query.Where(a => (a.ConvertOrderStatus == ConvertOrderStatus.Init ||
+                                         a.ModifyUserId == userId) &&
+                                         a.CreatedUserId != userId);
             }
 
             var pageList = await query

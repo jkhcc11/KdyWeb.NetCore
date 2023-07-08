@@ -28,8 +28,8 @@ InitVideoPlay.prototype = {
             that = this,
             system = that.checkSys(),
             sourceType = 'video/mp4';
-        //var tempV = vurl.split('$');//腾讯的
-        if (vurl.indexOf(".m3u8") > 0) {
+        //var tempV = vurl.split('$');//腾讯的  todo:指定类型 不要判断url
+        if (vurl.indexOf(".m3u8") > 0) { 
             vtype = "m3u8";
             sourceType = "application/x-mpegURL";
         } else if (vurl.indexOf("g3proxy.lecloud.com") > 0 && vurl.indexOf("tss=mp4") === -1) {
@@ -213,6 +213,11 @@ InitVideoPlay.prototype = {
                 }
                 var v = that.jie(json.ResultData);
                 that.init('play-content', v, epId);
+                if (json.Player != null &&
+                    json.Player === 'potplayer') {
+                    that.setPotPlayer(v);
+                }
+
             }
         });
     },
@@ -279,7 +284,7 @@ InitVideoPlay.prototype = {
      * @returns {} 
      */
     decodeStr: function (url) {
-        var n = (url.length - 6) / 2, o = url.substring(0, n), i = url.substring(n + 6);
+        var n = (url.length - 7) / 2, o = url.substring(0, n), i = url.substring(n + 7);
         return o + i;
     },
     /**
@@ -332,6 +337,14 @@ InitVideoPlay.prototype = {
      */
     setData: function (dataJson) {
         this._dataJson = dataJson;
+    },
+    /**
+     * 设置PotPlayer播放器
+     * @param {any} url
+     */
+    setPotPlayer: function (url) {
+        $('#div_potplayer').show();
+        $('#div_potplayer').html('<a href="potplayer://' + url + '">使用PotPlayer播放</a>');
     }
 }
 

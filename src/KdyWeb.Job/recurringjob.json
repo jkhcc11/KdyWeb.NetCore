@@ -1,11 +1,11 @@
 [
-  {
-    "job-name": "Check job genshin",
-    "job-type": "KdyWeb.Service.Job.Recurring.GameCheckRecurringJobService, KdyWeb.Service",
-    "cron-expression": "0 8 * * *",
-    "timezone": "China Standard Time",
-    "queue": "gamecheck"
-  }
+  //{
+  //  "job-name": "Check job genshin",
+  //  "job-type": "KdyWeb.Service.Job.Recurring.GameCheckRecurringJobService, KdyWeb.Service",
+  //  "cron-expression": "0 8 * * *",
+  //  "timezone": "China Standard Time",
+  //  "queue": "gamecheck"
+  //}
   //{
   //  "job-name": "My Job2",
   //  "job-type": "Hangfire.Samples.MyJob2, Hangfire.Samples",

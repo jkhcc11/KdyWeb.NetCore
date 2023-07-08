@@ -2,6 +2,7 @@ using System;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace KdyWeb.NetCore
@@ -21,9 +22,11 @@ namespace KdyWeb.NetCore
                      //环境变量
                      var env = hostingContext.HostingEnvironment;
                      hostingContext.Configuration = config.Build();
-                     var consulUrl = hostingContext.Configuration[ConsulConfigCenterExt.ConsulConfigUrl];
+                     var consulUrl = hostingContext.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulConfigUrl);
+                     var consulToken = hostingContext.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulToken);
 
                      config.InitConfigCenter(hostingContext, consulUrl,
+                         consulToken,
                          $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
                  })
                  .ConfigureWebHostDefaults(webBuilder =>

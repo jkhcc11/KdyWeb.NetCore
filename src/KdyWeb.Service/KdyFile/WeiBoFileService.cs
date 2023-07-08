@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.KdyFile;
@@ -23,7 +23,6 @@ namespace KdyWeb.Service.KdyFile
     public class WeiBoFileService : BaseKdyFileService<WeiBoFileInput>, IWeiBoFileService
     {
         private readonly string _postHost = "https://picupload.weibo.com";
-        private readonly string _publicHost = "https://tva2.sinaimg.cn";
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
         private readonly IKdyRedisCache _kdyRedisCache;
         public WeiBoFileService(IHttpClientFactory httpClientFactory, IKdyRequestClientCommon kdyRequestClientCommon, IKdyRedisCache kdyRedisCache) : base(httpClientFactory)
@@ -70,11 +69,16 @@ namespace KdyWeb.Service.KdyFile
                 return result;
             }
 
-            //取最后的pid
-            //https://tva2.sinaimg.cn/large/{location.Substring(lastIndex + 5)}.jpg
+            //取最后的pid 2022-12-28 fix
+            //https://tvax2.sinaimg.cn/large/{location.Substring(lastIndex + 5)}.jpg
+            var publicPrefix = KdyConfiguration.GetValue(
+                KdyWebServiceConst.UploadConfig.WeiBoPublicPrefix, new List<string>()
+                {
+                    "tvax2"
+                });
             var uploadResult = new KdyFileDto()
             {
-                Url = $"{_publicHost}/large/{newStr.GetStrMathExt("pid=", ";")}.jpg"
+                Url = $"https://{publicPrefix.RandomItem()}.sinaimg.cn/large/{newStr.GetStrMathExt("pid=", ";")}.jpg"
             };
 
             result = KdyResult.Success(uploadResult);

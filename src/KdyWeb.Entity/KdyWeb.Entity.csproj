@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
+	<Import Project="..\common.props" />
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+	</PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="CloudParse\Enum\CloudParseCookieType.cs" />
@@ -12,10 +12,10 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\KdyWeb.BaseInterface\KdyWeb.BaseInterface.csproj" />
-    <ProjectReference Include="..\KdyWeb.Utility\KdyWeb.Utility.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\KdyWeb.BaseInterface\KdyWeb.BaseInterface.csproj" />
+		<ProjectReference Include="..\KdyWeb.Utility\KdyWeb.Utility.csproj" />
+	</ItemGroup>
 
   <ItemGroup>
     <Folder Include="CloudParse\Enum\" />

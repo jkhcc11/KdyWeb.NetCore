@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using KdyWeb.BaseInterface.Extensions;
+using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.CloudParseApi
 {
@@ -18,14 +19,16 @@ namespace KdyWeb.CloudParseApi
                     //环境变量
                     var env = context.HostingEnvironment;
                     context.Configuration = config.Build();
-                    string consulUrl = context.Configuration[ConsulConfigCenterExt.ConsulConfigUrl],
-                        clientName = context.Configuration[ConsulConfigCenterExt.ConfigClientName];
+                    string consulUrl = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulConfigUrl),
+                        clientName = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConfigClientName),
+                        consulToken = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulToken);
                     if (string.IsNullOrEmpty(clientName) == false)
                     {
                         clientName = "." + clientName;
                     }
 
                     config.InitConfigCenter(context, consulUrl,
+                        consulToken,
                         $"{env.ApplicationName}/appsettings.{env.EnvironmentName}{clientName}.json");
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

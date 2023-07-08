@@ -118,8 +118,8 @@ namespace KdyWeb.IService.HttpCapture
             var ts = TimeSpan.FromMinutes(defaultCacheMinutes);
             if (expires.IsEmptyExt() == false)
             {
-                var expiresTime = Convert.ToInt64(expires)
-                    .ToDateTimeBySeconds()
+                var expiresTime = Convert.ToInt32(expires)
+                    .ToDataTimeByTimestamp()
                     .AddMinutes(-5);
                 ts = expiresTime - DateTime.Now;
             }
