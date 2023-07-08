@@ -9,7 +9,6 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpApi.AuthCenter;
 using KdyWeb.Entity.CloudParse;
-using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.IService;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.IService.HttpApi;
@@ -67,9 +66,9 @@ namespace KdyWeb.Service.CloudParse
             var userId = LoginUserInfo.GetUserId();
             var query = _cloudParseUserChildrenRepository.GetQuery()
                 .Where(a => a.UserId == userId);
-            if (input.SubAccountType.HasValue)
+            if (input.SubAccountTypeId.HasValue)
             {
-                query = query.Where(a => a.CookieType == input.SubAccountType);
+                query = query.Where(a => a.CloudParseCookieTypeId == input.SubAccountTypeId);
             }
 
             var result = await query.GetDtoPageListAsync<CloudParseUserChildren, QueryParseUserSubAccountDto>(input);
@@ -91,13 +90,13 @@ namespace KdyWeb.Service.CloudParse
 
                 dbChildren.Alias = input.Alias;
                 dbChildren.CookieInfo = input.Cookie;
-                dbChildren.CookieType = input.SubAccountType;
+                dbChildren.CloudParseCookieTypeId = input.SubAccountTypeId;
                 _cloudParseUserChildrenRepository.Update(dbChildren);
             }
             else
             {
                 //新增
-                var dbChildren = new CloudParseUserChildren(userId, input.SubAccountType, input.Cookie)
+                var dbChildren = new CloudParseUserChildren(userId, input.SubAccountTypeId, input.Cookie)
                 {
                     Alias = input.Alias
                 };
@@ -108,13 +107,13 @@ namespace KdyWeb.Service.CloudParse
             return KdyResult.Success();
         }
 
-        public async Task<KdyResult<List<GetSubAccountByTypeDto>>> GetSubAccountByTypeAsync(CloudParseCookieType type)
+        public async Task<KdyResult<List<GetSubAccountByTypeDto>>> GetSubAccountByTypeIdAsync(long cookieTypeId)
         {
             var userId = LoginUserInfo.GetUserId();
             var userName = LoginUserInfo.UserName;
             var subAccountList = await _cloudParseUserChildrenRepository.GetAsNoTracking()
                 .Where(a => a.UserId == userId &&
-                            a.CookieType == type)
+                            a.CloudParseCookieTypeId == cookieTypeId)
                 .ToListAsync();
             var result = subAccountList.Select(a => new GetSubAccountByTypeDto()
             {

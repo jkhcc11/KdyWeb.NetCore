@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.Entity.CloudParse
 {
@@ -25,12 +24,12 @@ namespace KdyWeb.Entity.CloudParse
         /// 构造
         /// </summary>
         /// <param name="userId">用户Id</param>
-        /// <param name="cookieType">Cookie类型</param>
+        /// <param name="cloudParseCookieTypeId">Cookie类型Id</param>
         /// <param name="cookieInfo">cookie</param>
-        public CloudParseUserChildren(long userId, CloudParseCookieType cookieType, string cookieInfo)
+        public CloudParseUserChildren(long userId, long cloudParseCookieTypeId, string cookieInfo)
         {
             UserId = userId;
-            CookieType = cookieType;
+            CloudParseCookieTypeId = cloudParseCookieTypeId;
             CookieInfo = cookieInfo;
         }
 
@@ -40,9 +39,11 @@ namespace KdyWeb.Entity.CloudParse
         public long UserId { get; set; }
 
         /// <summary>
-        ///  Cookie类型
+        /// Cookie类型Id
         /// </summary>
-        public CloudParseCookieType CookieType { get; set; }
+        public long CloudParseCookieTypeId { get; set; }
+
+        public virtual CloudParseCookieType CloudParseCookieType { get; set; }
 
         /// <summary>
         /// cookie

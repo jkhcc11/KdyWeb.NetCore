@@ -1,5 +1,4 @@
 ﻿using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.Dto.CloudParse
 {
@@ -9,8 +8,8 @@ namespace KdyWeb.Dto.CloudParse
     public class QueryParseUserSubAccountInput : BasePageInput
     {
         /// <summary>
-        /// 子账号类型
+        /// 子账号类型Id
         /// </summary>
-        public CloudParseCookieType? SubAccountType { get; set; }
+        public long? SubAccountTypeId { get; set; }
     }
 }

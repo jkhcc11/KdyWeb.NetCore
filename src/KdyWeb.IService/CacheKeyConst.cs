@@ -120,6 +120,11 @@
             /// 用户注销缓存Key
             /// </summary>
             public const string UserLogoutKey = "UserLogoutKeyCache";
+
+            /// <summary>
+            /// 所有Cookie类型缓存Key
+            /// </summary>
+            public const string AllCookieTypeKey = "AllCookieTypeKey";
         }
     }
 }

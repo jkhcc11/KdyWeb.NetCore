@@ -8,7 +8,6 @@ using KdyWeb.CloudParse.Input;
 using KdyWeb.CloudParse.Out;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
-using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.Service.HttpCapture.KdyCloudParse;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +17,7 @@ namespace KdyWeb.CloudParseApi.Controllers
     /// <summary>
     /// 阿里云盘
     /// </summary>
-    [Route("AliParse")]
+    [Route("ali-parse")]
     public class AliParseController : BaseApiController
     {
         private readonly ISubAccountService _subAccountService;
@@ -38,7 +37,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<IActionResult> QueryAliFileListAsync([FromQuery] BaseCloudQueryFileInput input)
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
-            CheckSubAccountAuth(_loginUserInfo.GetUserId(), CloudParseCookieType.AliDrive, subAccount);
+            CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
 
             var parseService = new AliYunCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
             var result = await parseService.QueryFileAsync(new BaseQueryInput<string>()
@@ -60,7 +59,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<IActionResult> BatchUpdateNameAsync(BaseBatchUpdateNameInput input)
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
-            CheckSubAccountAuth(_loginUserInfo.GetUserId(), CloudParseCookieType.AliDrive, subAccount);
+            CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
 
             var parseService = new AliYunCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
             var request = input.FileItems

@@ -189,12 +189,13 @@ namespace KdyWeb.Service.HttpCapture.KdyCloudParse
                 return KdyResult.Error<string>(KdyResultCode.Error, "获取地址异常02,请稍等1-2分钟后重试");
             }
 
+            var ts = GetExpiresByUrl(reqResult.LocationUrl, "Expires");
             //最后下载地址转为https的 这样移动网络可以不卡顿
             //2021-10 改为2小时
             var resultUrl = reqResult.LocationUrl.Replace("http:", "https:");
             await KdyRedisCache.GetCache().SetStringAsync(input.CacheKey, resultUrl, new DistributedCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(130)
+                AbsoluteExpirationRelativeToNow = ts
             });
 
             return KdyResult.Success<string>(resultUrl);

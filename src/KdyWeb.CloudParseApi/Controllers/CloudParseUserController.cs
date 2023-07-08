@@ -2,7 +2,6 @@
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.CloudParse;
-using KdyWeb.IService;
 using KdyWeb.IService.CloudParse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

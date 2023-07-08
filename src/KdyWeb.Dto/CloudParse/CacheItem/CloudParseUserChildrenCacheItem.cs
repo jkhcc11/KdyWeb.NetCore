@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
-using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.Dto.CloudParse.CacheItem
 {
@@ -19,7 +18,7 @@ namespace KdyWeb.Dto.CloudParse.CacheItem
         /// <summary>
         ///  Cookie类型
         /// </summary>
-        public CloudParseCookieType CookieType { get; set; }
+        public long CookieTypeId { get; set; }
 
         /// <summary>
         /// cookie

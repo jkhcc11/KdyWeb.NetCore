@@ -25,5 +25,25 @@ namespace KdyWeb.Utility
         {
             return (date.ToUniversalTime().Ticks - 621355968000000000) / 10000;
         }
+
+        /// <summary>
+        /// 秒时间戳转 时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime ToDateTimeBySeconds(this long timestamp)
+        {
+            var dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+            return dateTimeOffset.UtcDateTime;
+        }
+
+        /// <summary>
+        /// 毫秒时间戳转 时间
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime ToDateTimeByMilliseconds(this long timestamp)
+        {
+            var dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
+            return dateTimeOffset.UtcDateTime;
+        }
     }
 }

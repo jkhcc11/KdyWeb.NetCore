@@ -5,12 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CloudParse\Enum\CloudParseCookieType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\KdyWeb.BaseInterface\KdyWeb.BaseInterface.csproj" />
     <ProjectReference Include="..\KdyWeb.Utility\KdyWeb.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CloudParse\Enum\" />
   </ItemGroup>
 
 </Project>

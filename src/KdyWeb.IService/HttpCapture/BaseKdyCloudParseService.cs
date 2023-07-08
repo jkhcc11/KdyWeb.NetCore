@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -8,6 +9,7 @@ using KdyWeb.CloudParse.Input;
 using KdyWeb.CloudParse.Out;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.IService.KdyHttp;
+using KdyWeb.Utility;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -101,6 +103,28 @@ namespace KdyWeb.IService.HttpCapture
 
             //无效重新获取
             return await GetDownUrlForNoCacheAsync(input);
+        }
+
+        /// <summary>
+        /// 根据Url获取动态过期时间
+        /// </summary>
+        /// <param name="url">下载地址</param>
+        /// <param name="expiresFlag">过期时间标识 eg:Expires</param>
+        /// <param name="defaultCacheMinutes">默认缓存分钟</param>
+        /// <returns></returns>
+        protected virtual TimeSpan GetExpiresByUrl(string url, string expiresFlag, int defaultCacheMinutes = 130)
+        {
+            var expires = url.GetStrMathExt($"{expiresFlag}=", "&");
+            var ts = TimeSpan.FromMinutes(defaultCacheMinutes);
+            if (expires.IsEmptyExt() == false)
+            {
+                var expiresTime = Convert.ToInt64(expires)
+                    .ToDateTimeBySeconds()
+                    .AddMinutes(-5);
+                ts = expiresTime - DateTime.Now;
+            }
+
+            return ts;
         }
     }
 }

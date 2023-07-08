@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse.CacheItem;
 
@@ -14,5 +15,11 @@ namespace KdyWeb.IService.CloudParse
         /// </summary>
         /// <returns></returns>
         Task<CloudParseUserChildrenCacheItem> GetSubAccountCacheAsync(long subAccountId);
+
+        /// <summary>
+        /// 获取所有Cookie类型缓存
+        /// </summary>
+        /// <returns></returns>
+        Task<List<CloudParseCookieTypeCacheItem>> GetAllCookieTypeCacheAsync();
     }
 }

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
-using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.IService.CloudParse
 {
@@ -40,6 +39,6 @@ namespace KdyWeb.IService.CloudParse
         /// 根据类型获取子账号列表
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult<List<GetSubAccountByTypeDto>>> GetSubAccountByTypeAsync(CloudParseCookieType type);
+        Task<KdyResult<List<GetSubAccountByTypeDto>>> GetSubAccountByTypeIdAsync(long cookieTypeId);
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto;
 using KdyWeb.Dto.CloudParse;
+using KdyWeb.Dto.CloudParse.CacheItem;
 using KdyWeb.Dto.KdyUser;
-using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.IService;
 using KdyWeb.IService.CloudParse;
 using Microsoft.AspNetCore.Authorization;
@@ -22,11 +21,15 @@ namespace KdyWeb.CloudParseApi.Controllers
     {
         private readonly IKdyUserService _kdyUserService;
         private readonly ICloudParseUserService _cloudParseUserService;
+        private readonly ISubAccountService _subAccountService;
 
-        public ParseUserController(IKdyUserService kdyUserService, ICloudParseUserService cloudParseUserService)
+        public ParseUserController(IKdyUserService kdyUserService,
+            ICloudParseUserService cloudParseUserService,
+            ISubAccountService subAccountService)
         {
             _kdyUserService = kdyUserService;
             _cloudParseUserService = cloudParseUserService;
+            _subAccountService = subAccountService;
         }
 
         /// <summary>
@@ -106,14 +109,26 @@ namespace KdyWeb.CloudParseApi.Controllers
         }
 
         /// <summary>
-        /// 根据类型获取子账号列表
+        /// 根据类型Id获取子账号列表
         /// </summary>
         /// <returns></returns>
-        [HttpGet("get-sub-account")]
+        [HttpGet("get-sub-account/{typeId}")]
         [ProducesResponseType(typeof(KdyResult<List<GetSubAccountByTypeDto>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetSubAccountByTypeAsync(CloudParseCookieType type)
+        public async Task<IActionResult> GetSubAccountByTypeAsync(long typeId)
         {
-            var result = await _cloudParseUserService.GetSubAccountByTypeAsync(type);
+            var result = await _cloudParseUserService.GetSubAccountByTypeIdAsync(typeId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 获取所有类型Id
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-all-cookie-type")]
+        [ProducesResponseType(typeof(KdyResult<List<CloudParseCookieTypeCacheItem>>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAllCookieTypeCacheAsync()
+        {
+            var result = await _subAccountService.GetAllCookieTypeCacheAsync();
             return Ok(result);
         }
     }

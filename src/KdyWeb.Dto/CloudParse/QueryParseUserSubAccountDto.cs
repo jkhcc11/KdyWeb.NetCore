@@ -2,7 +2,6 @@
 using AutoMapper.Configuration.Annotations;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
-using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.Dto.CloudParse
 {
@@ -21,7 +20,7 @@ namespace KdyWeb.Dto.CloudParse
         /// <summary>
         ///  Cookie类型
         /// </summary>
-        public CloudParseCookieType SubAccountType { get; set; }
+        public long SubAccountTypeId { get; set; }
 
         /// <summary>
         /// cookie
