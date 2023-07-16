@@ -17,15 +17,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace KdyWeb.CloudParseApi.Controllers
 {
     /// <summary>
-    /// 阿里云盘
+    /// 胜天
     /// </summary>
-    [CustomRoute("ali")]
-    public class AliParseController : BaseCloudDiskApiController
+    [CustomRoute("st")]
+    public class BitQiuParseController : BaseCloudDiskApiController
     {
         private readonly ISubAccountService _subAccountService;
         private readonly ILoginUserInfo _loginUserInfo;
 
-        public AliParseController(ISubAccountService subAccountService, ILoginUserInfo loginUserInfo)
+        public BitQiuParseController(ISubAccountService subAccountService, ILoginUserInfo loginUserInfo)
         {
             _subAccountService = subAccountService;
             _loginUserInfo = loginUserInfo;
@@ -41,7 +41,7 @@ namespace KdyWeb.CloudParseApi.Controllers
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubAccountId);
             CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
 
-            var parseService = new AliYunCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
+            var parseService = new StCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
             var response = await parseService.QueryFileAsync(new BaseQueryInput<string>()
             {
                 Page = input.Page,
@@ -59,7 +59,6 @@ namespace KdyWeb.CloudParseApi.Controllers
             {
                 itemDto.IdEncode = itemDto.ResultId.StrToHex();
                 itemDto.NameEncode = itemDto.ResultName.StrToHex();
-                itemDto.ParseApiRoutePath = "/pan-parse/ali/";
             }
 
             return KdyResult.Success(result);
@@ -76,7 +75,7 @@ namespace KdyWeb.CloudParseApi.Controllers
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
             CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
 
-            var parseService = new AliYunCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
+            var parseService = new StCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
             var request = input.FileItems
                 .Where(a => a.OldName != a.NewName)
                 .Select(a => new BatchUpdateNameInput()
@@ -90,6 +89,7 @@ namespace KdyWeb.CloudParseApi.Controllers
             return result;
         }
 
+
         /// <summary>
         /// 获取当前网盘Cookie类型
         /// </summary>
@@ -98,13 +98,13 @@ namespace KdyWeb.CloudParseApi.Controllers
         public override async Task<KdyResult<string>> GetCurrentCookieTypeAsync()
         {
             var allCookieType = await _subAccountService.GetAllCookieTypeCacheAsync();
-            var aliCookieType = allCookieType.FirstOrDefault(a => a.BusinessFlag == CloudParseCookieType.Ali);
+            var aliCookieType = allCookieType.FirstOrDefault(a => a.BusinessFlag == CloudParseCookieType.BitQiu);
             if (aliCookieType == null)
             {
-                return KdyResult.Error<string>(KdyResultCode.Error,"获取类型失败");
+                return KdyResult.Error<string>(KdyResultCode.Error, "获取类型失败");
             }
 
-            return KdyResult.Success<string>(aliCookieType.Id+"");
+            return KdyResult.Success<string>(aliCookieType.Id + "");
         }
     }
 }

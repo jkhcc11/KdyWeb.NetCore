@@ -523,7 +523,7 @@ namespace KdyWeb.Service.HttpCapture.KdyCloudParse
         /// <returns></returns>
         internal string GetCacheKeyWithFileName()
         {
-            return $"{CacheKeyConst.AliYunCacheKey.FileNameCache}:{CloudConfig.ReqUserInfo}";
+            return $"{CacheKeyConst.AliYunCacheKey.FileNameCache}:{CloudConfig.ChildUserId}";
         }
 
         /// <summary>
@@ -532,7 +532,7 @@ namespace KdyWeb.Service.HttpCapture.KdyCloudParse
         /// <returns></returns>
         internal string GetCacheKeyWithRefreshToken()
         {
-            return $"{CacheKeyConst.AliYunCacheKey.AliRefreshToken}:{CloudConfig.ReqUserInfo}";
+            return $"{CacheKeyConst.AliYunCacheKey.AliRefreshToken}:{CloudConfig.ChildUserId}";
         }
         #endregion
 

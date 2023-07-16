@@ -12,5 +12,7 @@
 		<ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
 	</ItemGroup>
 
+	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
 
 </Project>

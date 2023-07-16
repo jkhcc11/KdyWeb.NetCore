@@ -15,7 +15,7 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// 主键
         /// </summary>
         [JsonConverter(typeof(JsonConverterLong))]
-        public TKey Id { get; set; }
+        public virtual TKey Id { get; set; }
     }
 
     /// <summary>

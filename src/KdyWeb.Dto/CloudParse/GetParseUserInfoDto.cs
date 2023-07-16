@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Annotations;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
+using KdyWeb.Entity.CloudParse.Enum;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.CloudParse
 {
@@ -31,5 +34,21 @@ namespace KdyWeb.Dto.CloudParse
         /// 子账号数量
         /// </summary>
         public int SubAccountCount { get; set; }
+
+        /// <summary>
+        /// 用户状态
+        /// </summary>
+        public ServerCookieStatus UserStatus { get; set; }
+
+        /// <summary>
+        /// 用户Id
+        /// </summary>
+        [JsonConverter(typeof(JsonConverterLong))]
+        public long UserId { get; set; }
+
+        /// <summary>
+        /// 昵称
+        /// </summary>
+        public string UserNick { get; set; }
     }
 }

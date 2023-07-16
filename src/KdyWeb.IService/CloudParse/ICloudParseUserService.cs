@@ -40,5 +40,29 @@ namespace KdyWeb.IService.CloudParse
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<List<GetSubAccountByTypeDto>>> GetSubAccountByTypeIdAsync(long cookieTypeId);
+
+        /// <summary>
+        /// 用户所有子账号列表
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<IList<QueryParseUserSubAccountDto>>> GetUserAllSubAccountAsync();
+
+        /// <summary>
+        /// 创建解析用户
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CreateParesUserAsync();
+
+        /// <summary>
+        /// 查询用户列表
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<QueryParseUserDto>>> QueryParseUserAsync(QueryParseUserInput input);
+
+        /// <summary>
+        /// 审批用户
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> AuditAsync(long userId);
     }
 }

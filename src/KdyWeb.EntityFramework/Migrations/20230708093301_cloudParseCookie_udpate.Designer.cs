@@ -4,14 +4,16 @@ using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    partial class ReadWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20230708093301_cloudParseCookie_udpate")]
+    partial class cloudParseCookie_udpate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,10 +25,6 @@ namespace KdyWeb.EntityFramework.Migrations
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("BusinessFlag")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
 
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
@@ -54,8 +52,7 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasMaxLength(100);
 
                     b.Property<string>("ShowText")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -104,9 +101,6 @@ namespace KdyWeb.EntityFramework.Migrations
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
-
-                    b.Property<int>("UserStatus")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -166,55 +160,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasIndex("CloudParseCookieTypeId");
 
                     b.ToTable("CloudParse_SubAccount");
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.CloudParse.ServerCookie", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CookieInfo")
-                        .HasColumnType("nvarchar(1000)")
-                        .HasMaxLength(1000);
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatedUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CreatedUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<bool>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifyTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("ModifyUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<int>("ServerCookieStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ServerIp")
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
-
-                    b.Property<long>("SubAccountId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CloudParse_ServerCookie");
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.GameDown.GameInfoMain", b =>

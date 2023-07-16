@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
 
 namespace KdyWeb.Dto.CloudParse

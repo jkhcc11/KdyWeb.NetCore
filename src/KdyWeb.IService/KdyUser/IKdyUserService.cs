@@ -58,5 +58,11 @@ namespace KdyWeb.IService
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<GetLoginInfoDto>> GetLoginInfoAsync();
+
+        /// <summary>
+        /// 根据刷新Token获取Token
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<GetLoginTokenDto>> RefreshTokenAsync(string refreshToken);
     }
 }

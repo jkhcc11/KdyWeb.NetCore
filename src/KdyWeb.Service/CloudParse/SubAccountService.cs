@@ -61,11 +61,12 @@ namespace KdyWeb.Service.CloudParse
         /// <returns></returns>
         public async Task<List<CloudParseCookieTypeCacheItem>> GetAllCookieTypeCacheAsync()
         {
-            var cache = await _distributedCache.GetValueAsync<List<CloudParseCookieTypeCacheItem>>(CacheKeyConst
+            var cache = await _distributedCache.GetValueAsync<List<CloudParseCookieType>>(CacheKeyConst
                 .KdyCacheName.AllCookieTypeKey);
-            if (cache.Any())
+            if (cache != null &&
+                cache.Any())
             {
-                return cache;
+                return cache.MapToListExt<CloudParseCookieTypeCacheItem>().ToList(); ;
             }
 
             var dbList = await _cloudParseCookieTypeRepository.GetQuery()
@@ -75,11 +76,10 @@ namespace KdyWeb.Service.CloudParse
                 return new List<CloudParseCookieTypeCacheItem>();
             }
 
-            cache = dbList.MapToListExt<CloudParseCookieTypeCacheItem>().ToList();
             await _distributedCache.SetValueAsync(CacheKeyConst
-                .KdyCacheName.AllCookieTypeKey, cache, TimeSpan.FromMinutes(30));
+                .KdyCacheName.AllCookieTypeKey, dbList, TimeSpan.FromMinutes(30));
 
-            return cache;
+            return dbList.MapToListExt<CloudParseCookieTypeCacheItem>().ToList(); ;
         }
     }
 }

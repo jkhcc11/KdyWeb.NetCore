@@ -27,5 +27,11 @@ namespace KdyWeb.IService.CrossRequest
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<CrossTokenCacheItem>> GetAccessTokenByUserNameOrEmailAsync(string userNameOrEmail, string pwd);
+
+        /// <summary>
+        /// 通过刷新Token获取 访问Token
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<CrossTokenCacheItem>> GetAccessTokenByRefreshAsync(string refreshToken);
     }
 }

@@ -136,6 +136,36 @@ namespace KdyWeb.Service.CrossRequest
         }
 
         /// <summary>
+        /// 通过刷新Token获取 访问Token
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<CrossTokenCacheItem>> GetAccessTokenByRefreshAsync(string refreshToken)
+        {
+            var tokenRequest = new RefreshTokenRequest()
+            {
+                Address = $"{_kdyAuthServerOption.AuthHost}/connect/token",
+                RefreshToken = refreshToken,
+                ClientId = _kdyAuthServerOption.ClientId,
+                ClientSecret = _kdyAuthServerOption.ClientSecret,
+            };
+
+            var client = _httpClientFactory.CreateClient("RefreshToken");
+            var tokenResponse = await client.RequestRefreshTokenAsync(tokenRequest);
+            if (tokenResponse.IsError)
+            {
+                return KdyResult.Error<CrossTokenCacheItem>(KdyResultCode.Error, tokenResponse.ErrorDescription);
+            }
+
+            var tokenCache = new CrossTokenCacheItem()
+            {
+                AccessToken = tokenResponse.AccessToken,
+                TokenType = tokenResponse.TokenType,
+                RefreshToken = tokenResponse.RefreshToken,
+            };
+            return KdyResult.Success(tokenCache);
+        }
+
+        /// <summary>
         /// 发起Token请求
         /// </summary>
         /// <returns></returns>

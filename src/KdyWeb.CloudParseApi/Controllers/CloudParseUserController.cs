@@ -11,7 +11,8 @@ namespace KdyWeb.CloudParseApi.Controllers
     /// <summary>
     /// 解析用户
     /// </summary>
-    [Authorize(Policy = AuthorizationConst.NormalPolicyName.NormalPolicy)]
+    //[Authorize(Policy = AuthorizationConst.NormalPolicyName.NormalPolicy)]
+    [CustomRoute("user-info")]
     public class CloudParseUserController : BaseApiController
     {
         private readonly ICloudParseUserService _cloudParseUserService;
@@ -21,7 +22,6 @@ namespace KdyWeb.CloudParseApi.Controllers
             _cloudParseUserService = cloudParseUserService;
         }
 
-        #region 主账号
         /// <summary>
         /// 保存用户信息
         /// </summary>
@@ -43,6 +43,39 @@ namespace KdyWeb.CloudParseApi.Controllers
             var result = await _cloudParseUserService.GetParseUserInfoAsync();
             return result;
         }
-        #endregion
+
+        /// <summary>
+        /// 创建解析用户
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("create")]
+        public async Task<KdyResult> CreateParesUserAsync()
+        {
+            var result = await _cloudParseUserService.CreateParesUserAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// 审批
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("audit/{id}")]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public async Task<KdyResult> AuditAsync(long id)
+        {
+            var result = await _cloudParseUserService.AuditAsync(id);
+            return result;
+        }
+
+        /// <summary>
+        /// 查询用户列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("query")]
+        public async Task<KdyResult<PageList<QueryParseUserDto>>> QueryParseUserAsync([FromQuery] QueryParseUserInput input)
+        {
+            var result = await _cloudParseUserService.QueryParseUserAsync(input);
+            return result;
+        }
     }
 }

@@ -9,6 +9,7 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpApi.AuthCenter;
 using KdyWeb.Entity.CloudParse;
+using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.IService;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.IService.HttpApi;
@@ -26,20 +27,23 @@ namespace KdyWeb.Service.CloudParse
         private readonly IAuthCenterHttpApi _authCenterHttpApi;
         private readonly IKdyRepository<CloudParseUser, long> _cloudParseUserRepository;
         private readonly IKdyRepository<CloudParseUserChildren, long> _cloudParseUserChildrenRepository;
+        private readonly ISubAccountService _subAccountService;
 
         public CloudParseUserService(IUnitOfWork unitOfWork, IKdyRepository<CloudParseUser, long> cloudParseUserRepository,
             IKdyRepository<CloudParseUserChildren, long> cloudParseUserChildrenRepository,
-            IAuthCenterHttpApi authCenterHttpApi) : base(unitOfWork)
+            IAuthCenterHttpApi authCenterHttpApi, ISubAccountService subAccountService) : base(unitOfWork)
         {
             _cloudParseUserRepository = cloudParseUserRepository;
             _cloudParseUserChildrenRepository = cloudParseUserChildrenRepository;
             _authCenterHttpApi = authCenterHttpApi;
+            _subAccountService = subAccountService;
         }
 
         public async Task<KdyResult<GetParseUserInfoDto>> GetParseUserInfoAsync()
         {
             var dbUserInfo = await GetCurrentNormalParseUser();
             var result = dbUserInfo.MapToExt<GetParseUserInfoDto>();
+            result.UserNick = LoginUserInfo.UserNick;
             return KdyResult.Success(result);
         }
 
@@ -63,23 +67,45 @@ namespace KdyWeb.Service.CloudParse
 
         public async Task<KdyResult<PageList<QueryParseUserSubAccountDto>>> QueryParseUserSubAccountAsync(QueryParseUserSubAccountInput input)
         {
+            var query = _cloudParseUserChildrenRepository.GetQuery();
             var userId = LoginUserInfo.GetUserId();
-            var query = _cloudParseUserChildrenRepository.GetQuery()
-                .Where(a => a.UserId == userId);
-            if (input.SubAccountTypeId.HasValue)
+            if (LoginUserInfo.IsSuperAdmin == false)
             {
-                query = query.Where(a => a.CloudParseCookieTypeId == input.SubAccountTypeId);
+                query = query.Where(a => a.UserId == userId);
             }
 
             var result = await query.GetDtoPageListAsync<CloudParseUserChildren, QueryParseUserSubAccountDto>(input);
+            if (result.DataCount == 0)
+            {
+                return KdyResult.Success(result);
+            }
+
+            var cacheType = await _subAccountService.GetAllCookieTypeCacheAsync();
+            foreach (var dtoItem in result.Data)
+            {
+                dtoItem.SubAccountTypeStr = cacheType
+                    .FirstOrDefault(a => a.Id == dtoItem.SubAccountTypeId)?.ShowText;
+            }
+
             return KdyResult.Success(result);
         }
 
         public async Task<KdyResult> CreateAndUpdateSubAccountAsync(CreateAndUpdateSubAccountInput input)
         {
             var userId = LoginUserInfo.GetUserId();
+            var subAccountQuery = _cloudParseUserChildrenRepository.GetQuery();
+            subAccountQuery = subAccountQuery.Where(a => a.CreatedUserId == userId &&
+                                                         (a.Alias == input.Alias ||
+                                                          a.CookieInfo == input.Cookie));
+
             if (input.SubAccountId.HasValue)
             {
+                subAccountQuery = subAccountQuery.Where(a => a.Id != input.SubAccountId);
+                if (await subAccountQuery.AnyAsync())
+                {
+                    return KdyResult.Error(KdyResultCode.Error, "操作失败,别名或cookie已存在");
+                }
+
                 //修改
                 var dbChildren =
                     await _cloudParseUserChildrenRepository.FirstOrDefaultAsync(a => a.Id == input.SubAccountId);
@@ -95,6 +121,11 @@ namespace KdyWeb.Service.CloudParse
             }
             else
             {
+                if (await subAccountQuery.AnyAsync())
+                {
+                    return KdyResult.Error(KdyResultCode.Error, "操作失败,别名或cookie已存在");
+                }
+
                 //新增
                 var dbChildren = new CloudParseUserChildren(userId, input.SubAccountTypeId, input.Cookie)
                 {
@@ -124,6 +155,71 @@ namespace KdyWeb.Service.CloudParse
         }
 
         /// <summary>
+        /// 用户所有子账号列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<IList<QueryParseUserSubAccountDto>>> GetUserAllSubAccountAsync()
+        {
+            var userId = LoginUserInfo.GetUserId();
+            var query = _cloudParseUserChildrenRepository.GetQuery();
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                query = query.Where(a => a.CreatedUserId == userId);
+            }
+
+            var dbEntities = await query.ToListAsync();
+            var result = dbEntities.MapToListExt<QueryParseUserSubAccountDto>();
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 创建解析用户
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> CreateParesUserAsync()
+        {
+            var userId = LoginUserInfo.GetUserId();
+            var query = _cloudParseUserRepository.GetQuery();
+            query = query.Where(a => a.UserId == userId);
+            if (await query.AnyAsync())
+            {
+                return KdyResult.Error(KdyResultCode.Error, "已提交申请");
+            }
+
+            var dbParseUser = new CloudParseUser(userId);
+            await _cloudParseUserRepository.CreateAsync(dbParseUser);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success("提交成功,请等待审核");
+        }
+
+        /// <summary>
+        /// 查询用户列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryParseUserDto>>> QueryParseUserAsync(QueryParseUserInput input)
+        {
+            var query = _cloudParseUserRepository.GetQuery();
+            var result = await query.GetDtoPageListAsync<CloudParseUser, QueryParseUserDto>(input);
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 审批用户
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> AuditAsync(long userId)
+        {
+            var query = _cloudParseUserRepository.GetQuery();
+            var dbUser = await query.FirstOrDefaultAsync(a => a.UserId == userId);
+            dbUser.UserStatus = ServerCookieStatus.Normal;
+            _cloudParseUserRepository.Update(dbUser);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success();
+        }
+
+        /// <summary>
         /// 获取当前登录用户信息
         /// </summary>
         /// <returns></returns>
@@ -131,10 +227,12 @@ namespace KdyWeb.Service.CloudParse
         {
             var userId = LoginUserInfo.GetUserId();
             var dbUserInfo = await _cloudParseUserRepository.GetQuery()
-                .FirstOrDefaultAsync(a => a.Id == userId);
-            if (dbUserInfo == null)
+                .FirstOrDefaultAsync(a => a.UserId == userId);
+            if (dbUserInfo == null ||
+                dbUserInfo.UserStatus == ServerCookieStatus.Init)
             {
-                throw new KdyCustomException("用户不存在,获取用户失败");
+                return new CloudParseUser(userId);
+                //throw new KdyCustomException("用户不存在,获取用户失败");
             }
 
             return dbUserInfo;

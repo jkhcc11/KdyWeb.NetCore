@@ -1,4 +1,7 @@
-﻿namespace KdyWeb.Dto.CloudParse
+﻿using KdyWeb.BaseInterface;
+using Newtonsoft.Json;
+
+namespace KdyWeb.Dto.CloudParse
 {
     /// <summary>
     /// 根据类型获取子账号列表
@@ -19,6 +22,7 @@
         /// <remarks>
         ///  直接用子账号Id
         /// </remarks>
+        [JsonConverter(typeof(JsonConverterLong))]
         public long QueryValue { get; set; }
     }
 }

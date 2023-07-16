@@ -1,34 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AutoMapper;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Entity.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
+using Newtonsoft.Json;
 
-namespace KdyWeb.Entity.CloudParse
+namespace KdyWeb.Dto.CloudParse
 {
     /// <summary>
-    /// 云盘用户
+    /// 查询用户列表
     /// </summary>
-    public class CloudParseUser : BaseEntity<long>
+    [AutoMap(typeof(CloudParseUser))]
+    public class QueryParseUserDto : CreatedUserDto<long>
     {
-        /// <summary>
-        /// 自有api地址长度
-        /// </summary>
-        public const int SelfApiUrlLength = 150;
-
-        public CloudParseUser(long userId)
-        {
-            UserId = userId;
-            UserStatus = ServerCookieStatus.Init;
-        }
-
         /// <summary>
         /// 用户Id
         /// </summary>
+        [JsonConverter(typeof(JsonConverterLong))]
         public long UserId { get; set; }
 
         /// <summary>
         /// 自有Api地址
         /// </summary>
-        [StringLength(SelfApiUrlLength)]
         public string SelfApiUrl { get; set; }
 
         /// <summary>

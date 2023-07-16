@@ -15,7 +15,7 @@ namespace KdyWeb.Dto.CloudParse
         /// <summary>
         ///  子账号Id
         /// </summary>
-        public long SubInfo { get; set; }
+        public long SubAccountId { get; set; }
 
         /// <summary>
         /// 文件Id

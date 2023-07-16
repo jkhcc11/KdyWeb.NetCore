@@ -263,6 +263,27 @@ namespace KdyWeb.Service
         }
 
         /// <summary>
+        /// 根据刷新Token获取Token
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<GetLoginTokenDto>> RefreshTokenAsync(string refreshToken)
+        {
+            var token = await _crossRequestService.GetAccessTokenByRefreshAsync(refreshToken);
+            if (token.IsSuccess == false)
+            {
+                return KdyResult.Error<GetLoginTokenDto>(token.Code, token.Msg);
+            }
+
+            var result = new GetLoginTokenDto()
+            {
+                AccessToken = token.Data.AccessToken,
+                RefreshToken = token.Data.RefreshToken,
+                TokenType = token.Data.TokenType,
+            };
+            return KdyResult.Success(result, "刷新成功");
+        }
+
+        /// <summary>
         /// 获取当前用户声明列表
         /// </summary>
         /// <returns></returns>

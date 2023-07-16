@@ -2,19 +2,14 @@
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
 
-namespace KdyWeb.Dto.CloudParse.CacheItem
+namespace KdyWeb.Dto.CloudParse
 {
     /// <summary>
-    /// 子账号类型缓存
+    /// 查询Cookie类型列表
     /// </summary>
     [AutoMap(typeof(CloudParseCookieType))]
-    public class CloudParseCookieTypeCacheItem : BaseEntityDto<long>
+    public class QueryCookieTypeDto : CreatedUserDto<long>
     {
-        /// <summary>
-        /// 主键
-        /// </summary>
-        public override long Id { get; set; }
-
         /// <summary>
         /// 显示文案
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto;
@@ -16,7 +17,7 @@ namespace KdyWeb.CloudParseApi.Controllers
     /// <summary>
     /// 用户
     /// </summary>
-    [Route("user")]
+    [CustomRoute("parse-user")]
     public class ParseUserController : BaseApiController
     {
         private readonly IKdyUserService _kdyUserService;
@@ -97,11 +98,21 @@ namespace KdyWeb.CloudParseApi.Controllers
         }
 
         /// <summary>
+        /// 查询子账号列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("query-sub-account")]
+        public async Task<KdyResult<PageList<QueryParseUserSubAccountDto>>> QueryParseUserSubAccountAsync([FromQuery] QueryParseUserSubAccountInput input)
+        {
+            var result = await _cloudParseUserService.QueryParseUserSubAccountAsync(input);
+            return result;
+        }
+
+        /// <summary>
         /// 新增或修改子账号
         /// </summary>
         /// <returns></returns>
         [HttpPost("create-and-update-sub-account")]
-        [ProducesResponseType(typeof(KdyResult<GetLoginInfoDto>), (int)HttpStatusCode.OK)]
         public async Task<KdyResult> CreateAndUpdateSubAccountAsync(CreateAndUpdateSubAccountInput input)
         {
             var result = await _cloudParseUserService.CreateAndUpdateSubAccountAsync(input);
@@ -109,15 +120,14 @@ namespace KdyWeb.CloudParseApi.Controllers
         }
 
         /// <summary>
-        /// 根据类型Id获取子账号列表
+        /// 用户所有子账号列表
         /// </summary>
         /// <returns></returns>
-        [HttpGet("get-sub-account/{typeId}")]
-        [ProducesResponseType(typeof(KdyResult<List<GetSubAccountByTypeDto>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetSubAccountByTypeAsync(long typeId)
+        [HttpGet("get-all-sub-account")]
+        public async Task<KdyResult<IList<QueryParseUserSubAccountDto>>> GetUserAllSubAccountAsync()
         {
-            var result = await _cloudParseUserService.GetSubAccountByTypeIdAsync(typeId);
-            return Ok(result);
+            var result = await _cloudParseUserService.GetUserAllSubAccountAsync();
+            return result;
         }
 
         /// <summary>
@@ -125,11 +135,27 @@ namespace KdyWeb.CloudParseApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("get-all-cookie-type")]
-        [ProducesResponseType(typeof(KdyResult<List<CloudParseCookieTypeCacheItem>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllCookieTypeCacheAsync()
+        public async Task<KdyResult<List<CloudParseCookieTypeCacheItem>>> GetAllCookieTypeCacheAsync()
         {
             var result = await _subAccountService.GetAllCookieTypeCacheAsync();
-            return Ok(result);
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 根据刷新Token获取Token
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("refresh/{refreshToken}")]
+        [AllowAnonymous]
+        public async Task<KdyResult<GetLoginTokenDto>> RefreshTokenAsync(string refreshToken)
+        {
+            var result = await _kdyUserService.RefreshTokenAsync(refreshToken);
+            if (result.IsSuccess == false)
+            {
+                throw new AuthenticationException("用户信息失效,请刷新页面");
+            }
+
+            return result;
         }
     }
 }
