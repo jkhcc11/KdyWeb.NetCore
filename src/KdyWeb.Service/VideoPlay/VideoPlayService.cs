@@ -44,7 +44,7 @@ namespace KdyWeb.Service
                 return result;
             }
 
-            var outModel = new GetVideoInfoByEpIdDto(epId, epInfo.Data.EpisodeUrl.ToStrConfuse());
+            var outModel = new GetVideoInfoByEpIdDto(epId, epInfo.Data.EpisodeUrl.ToStrConfuse(7));
 
             #region 网盘处理
             var epUrl = epInfo.Data.EpisodeUrl;
