@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    [Migration("20230902053903_oldSubAccountInfo")]
-    partial class oldSubAccountInfo
+    [Migration("20230902063542_v1.5.0")]
+    partial class v150
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
