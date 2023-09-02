@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using KdyWeb.IService.ImageSave;
+using KdyWeb.IService.FileStore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.NetCore.Controllers

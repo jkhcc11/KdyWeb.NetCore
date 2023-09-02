@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using KdyWeb.BaseInterface;
+using KdyWeb.Dto.CloudParse.CacheItem;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.CloudParseApi.Controllers
@@ -9,7 +11,29 @@ namespace KdyWeb.CloudParseApi.Controllers
     [Route("api/cloud-parse/v1/[controller]")]
     [ApiController]
     [ApiExplorerSettings(GroupName = "v1")]
+    [Authorize(Policy = AuthorizationConst.NormalPolicyName.NormalPolicy)]
     public abstract class BaseApiController : ControllerBase
     {
+        /// <summary>
+        /// 检查子账号权限
+        /// </summary>
+        /// <remarks>
+        ///  1、子账号不是当前登录用户 异常 <br/>
+        ///  2、没cookie 异常
+        /// </remarks>
+        /// <param name="userId">用户Id</param>
+        /// <param name="subAccountCacheItem">子账号缓存</param>
+        protected void CheckSubAccountAuth(long userId, CloudParseUserChildrenCacheItem subAccountCacheItem)
+        {
+            if (subAccountCacheItem.UserId != userId)
+            {
+                throw new KdyCustomException("参数错误,无效请求02");
+            }
+
+            if (string.IsNullOrEmpty(subAccountCacheItem.CookieInfo))
+            {
+                throw new KdyCustomException("参数错误,无效请求01");
+            }
+        }
     }
 }

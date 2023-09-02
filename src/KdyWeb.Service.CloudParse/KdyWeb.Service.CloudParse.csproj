@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Secp256k1.Net" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KdyWeb.CommonService\KdyWeb.CommonService.csproj" />
+    <ProjectReference Include="..\KdyWeb.IService.CloudParse\KdyWeb.IService.CloudParse.csproj" />
+    <ProjectReference Include="..\KdyWeb.Repository\KdyWeb.Repository.csproj" />
+  </ItemGroup>
+
+</Project>

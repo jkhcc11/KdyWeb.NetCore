@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Exceptionless;
 using KdyWeb.BaseInterface.BaseModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace KdyWeb.BaseInterface
 {
@@ -39,6 +41,7 @@ namespace KdyWeb.BaseInterface
         private readonly Stopwatch _stopwatch;
         private readonly IHostingEnvironment _environment;
         private readonly ILogger<KdyLogMiddleware> _logger;
+
         public KdyLogMiddleware(RequestDelegate next, IHostingEnvironment environment, ILogger<KdyLogMiddleware> logger)
         {
             _next = next;
@@ -143,7 +146,10 @@ namespace KdyWeb.BaseInterface
             catch (Exception ex) when (ex is KdyCustomException customException)
             {
                 var errResult = KdyResult.Error(KdyResultCode.Error, customException.Message);
-                var str = JsonConvert.SerializeObject(errResult);
+                var str = JsonConvert.SerializeObject(errResult, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
                 var bytes = Encoding.UTF8.GetBytes(str);
                 var newStream = new MemoryStream(bytes);
 
@@ -161,7 +167,10 @@ namespace KdyWeb.BaseInterface
                 }
 
                 _logger.LogError(ex, "系统异常：{ex.Message}", ex.Message);
-                var str = JsonConvert.SerializeObject(errResult);
+                var str = JsonConvert.SerializeObject(errResult, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
                 var bytes = Encoding.UTF8.GetBytes(str);
                 var newStream = new MemoryStream(bytes);
 

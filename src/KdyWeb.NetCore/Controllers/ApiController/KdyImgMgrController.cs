@@ -4,7 +4,7 @@ using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto;
 using KdyWeb.Dto.KdyImg;
-using KdyWeb.IService.ImageSave;
+using KdyWeb.IService.FileStore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

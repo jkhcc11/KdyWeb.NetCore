@@ -14,5 +14,10 @@
         /// Token 类型 默认Bearer
         /// </summary>
         public string TokenType { get; set; }
+
+        /// <summary>
+        /// 刷新Token
+        /// </summary>
+        public string RefreshToken { get; set; }
     }
 }

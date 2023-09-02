@@ -1,0 +1,17 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+body, html, #div_player {
+    width: 100%;
+    height: 100%;
+}
+
+#div_player {
+    background: #000000 !important;
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}

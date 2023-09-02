@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.CloudParse.CloudParseEnum;
 using KdyWeb.CloudParse.Input;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
-using KdyWeb.Dto.KdyImg;
-using KdyWeb.IService.HttpCapture.KdyCloudParse;
-using KdyWeb.IService.ImageSave;
-using KdyWeb.Service.HttpCapture.KdyCloudParse;
+using KdyWeb.IService.CloudParse.DiskCloudParse;
+using KdyWeb.IService.FileStore;
+using KdyWeb.Service.CloudParse.DiskCloudParse;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Secp256k1Net;
 
 namespace KdyWeb.Test.HttpCapture
 {
@@ -19,7 +21,7 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestAli()
         {
-            var input = new BaseConfigInput(1, "tyest_123", "111111111");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             IAliYunCloudParseService parseService = new AliYunCloudParseService(input);
             var fileList = await parseService.QueryFileAsync(new BaseQueryInput<string>()
             {
@@ -30,14 +32,14 @@ namespace KdyWeb.Test.HttpCapture
 
             var fileInfo = fileList.Data.First(a => a.FileType != CloudFileType.Dir);
             //id下载
-            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<DownTypeExtData>("test_1_id", fileInfo.ResultId));
+            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<string>("test_1_id", fileInfo.ResultId
+                , DownUrlSearchType.FileId));
             Assert.IsTrue(downInfo.IsSuccess);
 
             //name下载
-            downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<DownTypeExtData>("test_1_name", string.Empty)
+            downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<string>("test_1_name", string.Empty, DownUrlSearchType.Name)
             {
                 FileName = fileInfo.ResultName,
-                ExtData = DownTypeExtData.FileName
             });
             Assert.IsTrue(downInfo.IsSuccess);
 
@@ -60,14 +62,15 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestSt()
         {
-            var input = new BaseConfigInput(1, "tyest_124", "cloud_web_sid=8243a5fd");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             IStCloudParseService parseService = new StCloudParseService(input);
             var fileList = await parseService.QueryFileAsync(new BaseQueryInput<string>());
 
             Assert.IsTrue(fileList.IsSuccess && fileList.Data.Any());
 
             //id下载
-            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<StDownExtData>("test_1_id", "3187ebef5e0a41a4a39074bbcee966b8")
+            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<StDownExtData>("test_1_id",
+                "3187ebef5e0a41a4a39074bbcee966b8", DownUrlSearchType.FileId)
             {
                 ExtData = new StDownExtData()
                 {
@@ -106,7 +109,7 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestTy()
         {
-            var input = new BaseConfigInput(1, "tyest_125", "11111");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             ITyPersonCloudParseService parseService = new TyPersonCloudParseService(input);
 
             var loginInfo = await parseService.GetLoginInfoAsync();
@@ -117,14 +120,15 @@ namespace KdyWeb.Test.HttpCapture
             Assert.IsTrue(fileList.IsSuccess && fileList.Data.Any());
 
             //id下载
-            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<string>("test_1_id", "61499213207699173"));
+            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<string>("test_1_id",
+                "61499213207699173", DownUrlSearchType.FileId));
             Assert.IsTrue(downInfo.IsSuccess);
         }
 
         [TestMethod]
         public async Task TestTyFamily()
         {
-            var input = new BaseConfigInput(1, "tyest_126", "66AAA87C717EE0857E15AC1BAFB03182");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             ITyFamilyCloudParseService parseService = new TyFamilyCloudParseService(input);
 
             var familyList = await parseService.GetFamilyListAsync();
@@ -139,7 +143,8 @@ namespace KdyWeb.Test.HttpCapture
             Assert.IsTrue(fileList.IsSuccess && fileList.Data.Any());
 
             //id下载
-            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<string>("test_155_id", "9134112647612263")
+            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<string>("test_155_id",
+                "9134112647612263", DownUrlSearchType.FileId)
             {
                 ExtData = familyId
             });
@@ -149,7 +154,7 @@ namespace KdyWeb.Test.HttpCapture
         [TestMethod]
         public async Task TestTyCrop()
         {
-            var input = new BaseConfigInput(1, "tyest_127", "COOKIE_LOGIN_USER_CORP=976EF1EBED4DC1CFE406FCC7883AE9627E76874A27DA3A1F95C88585B5E60369D7DF278D7F8A5E8C7868F4B2B13433897FF25CDCBA6D23A38809DBCB3F90F48A0D47089075115F02C942F058859FE2DA3D8EFCCC8F129F6D282D25AD51935794;");
+            var input = new BaseConfigInput("test-123", "tyest_123", 11111);
             ITyCropCloudParseService parseService = new TyCropCloudParseService(input);
 
             var cropList = await parseService.GetCropListAsync();
@@ -164,11 +169,42 @@ namespace KdyWeb.Test.HttpCapture
             Assert.IsTrue(fileList.IsSuccess && fileList.Data.Any());
 
             //id下载
-            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<string>("test_111_id", "61440314511034017")
+            var downInfo = await parseService.GetDownUrlAsync(new BaseDownInput<string>("test_111_id",
+                "61440314511034017", DownUrlSearchType.FileId)
             {
                 ExtData = cropId
             });
             Assert.IsTrue(downInfo.IsSuccess);
+        }
+
+        [TestMethod]
+        public void TestSecp256k1()
+        {
+            using (var secp256K1 = new Secp256k1())
+            {
+                // 创建私钥
+                var privateKey = new byte[Secp256k1.PRIVKEY_LENGTH];
+                new Random().NextBytes(privateKey);
+
+                // 获取公钥
+                var publicKey = new byte[Secp256k1.PUBKEY_LENGTH];
+                secp256K1.PublicKeyCreate(publicKey, privateKey);
+
+                // 创建消息
+                byte[] message = Encoding.UTF8.GetBytes("Hello, world!");
+
+                var sha256 = SHA256.Create();
+                var msgHash = sha256.ComputeHash(message);
+
+                // 使用私钥对消息进行签名
+                var signature = new byte[Secp256k1.SIGNATURE_LENGTH];
+                secp256K1.Sign(signature, msgHash, privateKey);
+
+                // 使用公钥验证签名
+                bool isVerified = secp256K1.Verify(signature, msgHash, publicKey);
+
+                Console.WriteLine($"Signature is verified: {isVerified}");
+            }
         }
     }
 }

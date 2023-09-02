@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KdyWeb.Entity.CloudParse;
-using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.Dto.CloudParse
 {
@@ -12,8 +11,9 @@ namespace KdyWeb.Dto.CloudParse
         /// <summary>
         ///  Cookie类型
         /// </summary>
-        [EnumDataType(typeof(CloudParseCookieType), ErrorMessage = "类型错误")]
-        public CloudParseCookieType CookieType { get; set; }
+        [Required]
+        [Range(1,long.MaxValue,ErrorMessage = "类型错误")]
+        public long CookieTypeId { get; set; }
 
         /// <summary>
         /// cookie

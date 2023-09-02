@@ -9,9 +9,8 @@ using KdyWeb.Dto;
 using KdyWeb.Dto.HttpApi.AuthCenter;
 using KdyWeb.Dto.KdyUser;
 using KdyWeb.Dto.VerificationCode;
+using KdyWeb.ICommonService;
 using KdyWeb.IService;
-using KdyWeb.IService.CrossRequest;
-using KdyWeb.IService.HttpApi;
 using KdyWeb.IService.VerificationCode;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -213,15 +212,21 @@ namespace KdyWeb.Service
         /// 获取用户登录Token
         /// </summary>
         /// <returns></returns>
-        public async Task<KdyResult> GetLoginTokenAsync(GetLoginTokenInput input)
+        public async Task<KdyResult<GetLoginTokenDto>> GetLoginTokenAsync(GetLoginTokenInput input)
         {
             var token = await _crossRequestService.GetAccessTokenByUserNameOrEmailAsync(input.UserName, input.UserPwd);
             if (token.IsSuccess == false)
             {
-                return KdyResult.Error(token.Code, token.Msg);
+                return KdyResult.Error<GetLoginTokenDto>(token.Code, token.Msg);
             }
 
-            return KdyResult.Success(token.Data.AccessToken, "登录成功");
+            var result = new GetLoginTokenDto()
+            {
+                AccessToken = token.Data.AccessToken,
+                RefreshToken = token.Data.RefreshToken,
+                TokenType = token.Data.TokenType,
+            };
+            return KdyResult.Success(result, "登录成功");
         }
 
         /// <summary>
@@ -238,6 +243,43 @@ namespace KdyWeb.Service
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(365)
                 });
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 获取用户登录信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<GetLoginInfoDto>> GetLoginInfoAsync()
+        {
+            var result = new GetLoginInfoDto()
+            {
+                UserId = LoginUserInfo.GetUserId(),
+                Username = LoginUserInfo.UserName,
+            };
+
+            await Task.CompletedTask;
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 根据刷新Token获取Token
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<GetLoginTokenDto>> RefreshTokenAsync(string refreshToken)
+        {
+            var token = await _crossRequestService.GetAccessTokenByRefreshAsync(refreshToken);
+            if (token.IsSuccess == false)
+            {
+                return KdyResult.Error<GetLoginTokenDto>(token.Code, token.Msg);
+            }
+
+            var result = new GetLoginTokenDto()
+            {
+                AccessToken = token.Data.AccessToken,
+                RefreshToken = token.Data.RefreshToken,
+                TokenType = token.Data.TokenType,
+            };
+            return KdyResult.Success(result, "刷新成功");
         }
 
         /// <summary>

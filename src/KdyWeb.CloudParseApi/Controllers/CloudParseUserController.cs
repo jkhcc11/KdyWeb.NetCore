@@ -2,7 +2,6 @@
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.CloudParse;
-using KdyWeb.IService;
 using KdyWeb.IService.CloudParse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,8 @@ namespace KdyWeb.CloudParseApi.Controllers
     /// <summary>
     /// 解析用户
     /// </summary>
-    [Authorize(Policy = AuthorizationConst.NormalPolicyName.NormalPolicy)]
+    //[Authorize(Policy = AuthorizationConst.NormalPolicyName.NormalPolicy)]
+    [CustomRoute("user-info")]
     public class CloudParseUserController : BaseApiController
     {
         private readonly ICloudParseUserService _cloudParseUserService;
@@ -22,7 +22,6 @@ namespace KdyWeb.CloudParseApi.Controllers
             _cloudParseUserService = cloudParseUserService;
         }
 
-        #region 主账号
         /// <summary>
         /// 保存用户信息
         /// </summary>
@@ -44,41 +43,39 @@ namespace KdyWeb.CloudParseApi.Controllers
             var result = await _cloudParseUserService.GetParseUserInfoAsync();
             return result;
         }
-        #endregion
 
-        #region 子账号
         /// <summary>
-        /// 获取子账号列表
+        /// 创建解析用户
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getChildrenList")]
-        public async Task<KdyResult<PageList<GetParseUserInfoChildrenDto>>> GetParseUserInfoChildrenAsync([FromQuery] GetParseUserInfoChildrenInput input)
+        [HttpGet("create")]
+        public async Task<KdyResult> CreateParesUserAsync()
         {
-            var result = await _cloudParseUserService.GetParseUserInfoChildrenAsync(input);
+            var result = await _cloudParseUserService.CreateParesUserAsync();
             return result;
         }
 
         /// <summary>
-        /// 新增子账号
+        /// 审批
         /// </summary>
         /// <returns></returns>
-        [HttpPut("createChildren")]
-        public async Task<KdyResult> SaveParseUserInfoChildrenAsync(SaveParseUserInfoChildrenInput input)
+        [HttpPost("audit/{id}")]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public async Task<KdyResult> AuditAsync(long id)
         {
-            var result = await _cloudParseUserService.SaveParseUserInfoChildrenAsync(input);
+            var result = await _cloudParseUserService.AuditAsync(id);
             return result;
         }
 
         /// <summary>
-        /// 获取子账号信息
+        /// 查询用户列表
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getChildren/{id}")]
-        public async Task<KdyResult<GetParseUserInfoChildrenDto>> CreateUserAsync(int id)
+        [HttpGet("query")]
+        public async Task<KdyResult<PageList<QueryParseUserDto>>> QueryParseUserAsync([FromQuery] QueryParseUserInput input)
         {
-            var result = await _cloudParseUserService.GetParseUserInfoChildrenAsync(id);
+            var result = await _cloudParseUserService.QueryParseUserAsync(input);
             return result;
         }
-        #endregion
     }
 }

@@ -9,8 +9,8 @@ using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.Entity.HttpCapture;
+using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.IService.HttpCapture;
-using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
 
 namespace KdyWeb.Service.HttpCapture

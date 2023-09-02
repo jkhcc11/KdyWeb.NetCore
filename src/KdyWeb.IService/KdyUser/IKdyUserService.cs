@@ -45,12 +45,24 @@ namespace KdyWeb.IService
         /// 获取用户登录Token
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> GetLoginTokenAsync(GetLoginTokenInput input);
+        Task<KdyResult<GetLoginTokenDto>> GetLoginTokenAsync(GetLoginTokenInput input);
 
         /// <summary>
         /// 退出登录
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> LogoutAsync();
+
+        /// <summary>
+        /// 获取用户登录信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<GetLoginInfoDto>> GetLoginInfoAsync();
+
+        /// <summary>
+        /// 根据刷新Token获取Token
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<GetLoginTokenDto>> RefreshTokenAsync(string refreshToken);
     }
 }

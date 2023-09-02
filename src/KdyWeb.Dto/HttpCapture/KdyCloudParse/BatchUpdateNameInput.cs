@@ -23,9 +23,17 @@
         /// </summary>
         public string NewName { get; set; }
 
+        /// <summary>
+        /// 扩展Id
+        /// </summary>
+        /// <remarks>
+        /// 扩展Id 家庭Id|企业Id|等附加
+        /// </remarks>
+        public string ExtId { get; set; }
+
         public override string ToString()
         {
-            return $"FileId:{FileId},OldName:{OldName},NewName:{NewName}";
+            return $"FileId:{FileId},OldName:{OldName},NewName:{NewName},ExtId:{ExtId}";
         }
     }
 }

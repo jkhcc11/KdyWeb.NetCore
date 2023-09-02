@@ -41,5 +41,13 @@ namespace KdyWeb.CloudParse.Out
         /// 文件大小 （GB）
         /// </summary>
         public int FileSizeGb => FileSizeMb / 1024;
+
+        /// <summary>
+        /// 是否为根节点
+        /// </summary>
+        /// <remarks>
+        /// 如果为根节点时 ParentId 为根，后面每个请求都需要带上ParentId
+        /// </remarks>
+        public bool IsRoot { get; set; }
     }
 }

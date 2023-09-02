@@ -1,7 +1,7 @@
 ﻿@using KdyWeb.BaseInterface.KdyOptions
 @using KdyWeb.BaseInterface.Service
-@using KdyWeb.IService.CrossRequest
-@using KdyWeb.Utility
+@using KdyWeb.ICommonService
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.Options
 @section Styles
@@ -58,7 +58,7 @@
 <script src="/lib/abphtml5/ABPlayerExt.js"></script>
 <script src="/lib/abphtml5/ABPlayer.min.js?v=1.2"></script>
 <script src="/lib/abphtml5/ABPlayer_strings.zh.js?v=1.1"></script>
-<script src="//cdn.staticfile.org/hls.js/1.2.4/hls.min.js"></script>
+<script src="//cdn.staticfile.org/hls.js/1.4.2/hls.min.js"></script>
 
 <script type="text/javascript">
     var epId = '@ViewBag.EpId',

@@ -1,0 +1,28 @@
+﻿@section Styles
+    {
+    <title>parse player v2</title>
+    <link href="//cdn.staticfile.org/dplayer/1.25.0/DPlayer.min.css" rel="stylesheet">
+    <link href="/css/player.css" rel="stylesheet" />
+}
+    <div id="div_player">
+        <div style="text-align: center">
+            <img src="//img.gejiba.com/images/893b2483a225f7dc820f2815e8b182a9.gif" style="height: 250px;" />
+        </div>
+    </div>
+
+    @section Scripts
+    {
+    <script src="//cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdn.staticfile.org/hls.js/1.2.4/hls.min.js"></script>
+    <script src="//cdn.staticfile.org/dplayer/1.25.0/DPlayer.min.js"></script>
+
+    <script type="text/javascript">
+        var result_v2 = @Json.Serialize(ViewBag.ParseResult);
+    </script>
+    <environment include="Development">
+        <script src="/js/player/index.js?v=2020"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="/js/player/index.min.js" asp-append-version="true"></script>
+    </environment>
+}

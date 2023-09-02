@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.Utility;
+using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.Entity.CloudParse
 {
@@ -14,45 +14,19 @@ namespace KdyWeb.Entity.CloudParse
         /// 自有api地址长度
         /// </summary>
         public const int SelfApiUrlLength = 150;
-        /// <summary>
-        /// QQ长度
-        /// </summary>
-        public const int UserQqLength = 15;
+
+        public const int ApiTokenLength = 50;
+
+        public CloudParseUser(long userId)
+        {
+            UserId = userId;
+            UserStatus = ServerCookieStatus.Init;
+        }
 
         /// <summary>
-        /// 用户名
+        /// 用户Id
         /// </summary>
-        [StringLength(KdyUser.UserNameLength)]
-        public string UserName { get; set; }
-
-        /// <summary>
-        /// 昵称
-        /// </summary>
-        [StringLength(KdyUser.UserNickLength)]
-        public string UserNick { get; set; }
-
-        /// <summary>
-        /// 邮箱
-        /// </summary>
-        [StringLength(KdyUser.UserEmailLength)]
-        public string UserEmail { get; set; }
-
-        /// <summary>
-        /// Qq号
-        /// </summary>
-        [StringLength(UserQqLength)]
-        public string UserQq { get; set; }
-
-        /// <summary>
-        /// 密码
-        /// </summary>
-        [StringLength(KdyUser.UserPwdLength)]
-        public string UserPwd { get; set; }
-
-        /// <summary>
-        /// 用户状态
-        /// </summary>
-        public KdyUserStatus UserStatus { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 自有Api地址
@@ -71,19 +45,22 @@ namespace KdyWeb.Entity.CloudParse
         public string[] HoldLinkHost { get; set; }
 
         /// <summary>
-        /// 子账号列表
+        /// 用户状态
         /// </summary>
-        public virtual ICollection<CloudParseUserChildren> CloudParseUserChildrens { get; set; }
+        public ServerCookieStatus UserStatus { get; set; }
 
         /// <summary>
-        /// 检查密码
+        /// Api使用
         /// </summary>
-        /// <param name="userRawPwd">原始密码</param>
-        /// <returns></returns>
-        public bool CheckPwd(string userRawPwd)
+        [StringLength(ApiTokenLength)]
+        public string ApiToken { get; protected set; }
+
+        /// <summary>
+        /// 初始化token
+        /// </summary>
+        public void InitToken()
         {
-            var inputPwd = userRawPwd.Md5Ext();
-            return UserPwd == inputPwd;
+            ApiToken = $"parse-v2-{Guid.NewGuid():N}";
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.BaseInterface.Repository;
@@ -55,11 +54,11 @@ namespace KdyWeb.BaseInterface.Service
         }
 
         /// <summary>
-        /// 获取缓存
+        /// 获取缓存 (db:1)
         /// todo:待改造
         /// </summary>
         /// <returns></returns>
-        protected async Task<T> GetCacheValueAsync<T>(string cacheKey, Func<Task<T>> action, TimeSpan? cacheTime = null)
+        protected virtual async Task<T> GetCacheValueAsync<T>(string cacheKey, Func<Task<T>> action, TimeSpan? cacheTime = null)
         {
             var redisDb = KdyRedisCache.GetDb(1);
             var cacheV = await redisDb.GetValueAsync<T>(cacheKey);
@@ -76,6 +75,16 @@ namespace KdyWeb.BaseInterface.Service
             var result = KdyAsyncHelper.Run(action);
             await redisDb.SetValueAsync(cacheKey, result, cacheTime);
             return result;
+        }
+
+        /// <summary>
+        /// 删除缓存  (db:1)
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<bool> ClearCacheValueAsync(string cacheKey)
+        {
+            var redisDb = KdyRedisCache.GetDb(1);
+            return await redisDb.KeyDeleteAsync(cacheKey);
         }
 
         public virtual void Dispose()

@@ -9,10 +9,34 @@ namespace KdyWeb.CloudParse
     /// <summary>
     /// 网盘解析接口
     /// </summary>
+    public interface IKdyCloudParseService
+    {
+        /// <summary>
+        /// 根据关键字获取文件信息
+        /// </summary>
+        /// <param name="keyWord">关键字</param>
+        /// <returns>
+        ///  返回全字匹配结果  eg: 张三.ab.mp4  必须是 张三.ab.mp4
+        /// </returns>
+        Task<KdyResult<BaseResultOut>> GetFileInfoByKeyWordAsync(string keyWord);
+
+        /// <summary>
+        /// 清空缓存
+        /// </summary>
+        /// <remarks>
+        /// 根据各网盘缓存情况删除
+        /// </remarks>
+        /// <returns></returns>
+        Task<bool> ClearCacheAsync();
+    }
+
+    /// <summary>
+    /// 网盘解析接口
+    /// </summary>
     /// <typeparam name="TOut">搜索结果返回</typeparam>
     /// <typeparam name="TInput">搜索输入</typeparam>
     /// <typeparam name="TDownEntity">下载参数</typeparam>
-    public interface IKdyCloudParseService<TInput, TOut, TDownEntity>
+    public interface IKdyCloudParseService<TInput, TOut, TDownEntity> : IKdyCloudParseService
         where TOut : IBaseResultOut
     {
         /// <summary>
@@ -25,5 +49,6 @@ namespace KdyWeb.CloudParse
         /// </summary>
         /// <param name="input">下载参数</param>
         Task<KdyResult<string>> GetDownUrlAsync(BaseDownInput<TDownEntity> input);
+
     }
 }

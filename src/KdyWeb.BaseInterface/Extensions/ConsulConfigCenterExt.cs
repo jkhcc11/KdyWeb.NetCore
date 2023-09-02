@@ -16,6 +16,11 @@ namespace KdyWeb.BaseInterface.Extensions
         public const string ConsulConfigUrl = "ConsulConfigUrl";
 
         /// <summary>
+        /// ConsulToken 
+        /// </summary>
+        public const string ConsulToken = "ConsulToken";
+
+        /// <summary>
         /// 客户端名称
         /// </summary>
         /// <remarks>
@@ -29,8 +34,10 @@ namespace KdyWeb.BaseInterface.Extensions
         /// <param name="configurationBuilder"></param>
         /// <param name="hostingContext"></param>
         /// <param name="consulUrl">Consul地址</param>
+        /// <param name="token">Api token</param>
         /// <param name="consulKeys">支持多个配置文件</param>
-        public static void InitConfigCenter(this IConfigurationBuilder configurationBuilder, HostBuilderContext hostingContext, string consulUrl, params string[] consulKeys)
+        public static void InitConfigCenter(this IConfigurationBuilder configurationBuilder,
+            HostBuilderContext hostingContext, string consulUrl, string token, params string[] consulKeys)
         {
             foreach (var key in consulKeys)
             {
@@ -41,6 +48,7 @@ namespace KdyWeb.BaseInterface.Extensions
                         options.ConsulConfigurationOptions = consulConfig =>
                         {
                             consulConfig.Address = new Uri(consulUrl);
+                            consulConfig.Token = token;
                         };//Consul地址
                         options.Optional = true; //配置选项当前配置文件为可有可无
                         options.ReloadOnChange = true; //配置文件更新后重新加载

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
@@ -20,6 +21,7 @@ namespace KdyWeb.Service.OldMigration
     /// <summary>
     /// 旧版影视迁移
     /// </summary>
+    [Obsolete("已升级部分，暂废弃")]
     public class OldSysMainService : BaseKdyService, IOldSysMainService
     {
         private readonly IKdyRepository<OldSearchSysMain> _mainRepository;

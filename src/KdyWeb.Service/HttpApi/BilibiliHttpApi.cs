@@ -1,21 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpApi.Bilibili;
-using KdyWeb.Dto.HttpApi.Steam;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.IService.HttpApi;
-using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RestSharp;
 
 namespace KdyWeb.Service.HttpApi
 {
