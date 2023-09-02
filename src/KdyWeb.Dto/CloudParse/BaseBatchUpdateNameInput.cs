@@ -13,6 +13,14 @@ namespace KdyWeb.Dto.CloudParse
         public long SubInfo { get; set; }
 
         /// <summary>
+        /// 扩展Id
+        /// </summary>
+        /// <remarks>
+        /// 扩展Id 家庭Id|企业Id|等附加
+        /// </remarks>
+        public string ExtId { get; set; }
+
+        /// <summary>
         /// 文件列表
         /// </summary>
         public List<BatchUpdateNameItem> FileItems { get; set; }

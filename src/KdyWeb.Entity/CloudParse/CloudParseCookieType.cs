@@ -15,6 +15,7 @@ namespace KdyWeb.Entity.CloudParse
         public const string TyPerson = "TyPerson";
         public const string TyFamily = "TyFamily";
         public const string TyCrop = "TyCrop";
+        public const string Pan139 = "Pan139";
 
         /// <summary>
         /// 显示文案

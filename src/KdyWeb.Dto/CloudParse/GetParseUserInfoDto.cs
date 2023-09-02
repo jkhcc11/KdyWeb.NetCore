@@ -5,6 +5,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace KdyWeb.Dto.CloudParse
 {
@@ -23,6 +24,11 @@ namespace KdyWeb.Dto.CloudParse
         /// <summary>
         /// 防盗链
         /// </summary>
+        /// <remarks>
+        /// 开启时
+        /// web 校验来源 <br/>
+        /// api  校验Token 
+        /// </remarks>
         public bool IsHoldLink { get; set; }
 
         /// <summary>
@@ -50,5 +56,10 @@ namespace KdyWeb.Dto.CloudParse
         /// 昵称
         /// </summary>
         public string UserNick { get; set; }
+
+        /// <summary>
+        /// Api使用
+        /// </summary>
+        public string ApiToken { get; set; }
     }
 }

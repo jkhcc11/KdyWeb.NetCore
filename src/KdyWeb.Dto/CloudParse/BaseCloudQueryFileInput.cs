@@ -21,5 +21,13 @@ namespace KdyWeb.Dto.CloudParse
         /// 文件Id
         /// </summary>
         public string FileId { get; set; }
+
+        /// <summary>
+        /// 扩展Id
+        /// </summary>
+        /// <remarks>
+        /// 扩展Id 家庭Id|企业Id|等附加
+        /// </remarks>
+        public string ExtId { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ using KdyWeb.BaseInterface.HangFire;
 using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.Job;
 using KdyWeb.Dto.KdyHttp;
-using KdyWeb.IService.KdyHttp;
+using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.Utility;
 using Microsoft.Extensions.Logging;
 

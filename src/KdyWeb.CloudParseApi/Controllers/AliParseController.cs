@@ -10,7 +10,7 @@ using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
-using KdyWeb.Service.HttpCapture.KdyCloudParse;
+using KdyWeb.Service.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +41,9 @@ namespace KdyWeb.CloudParseApi.Controllers
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubAccountId);
             CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
 
-            var parseService = new AliYunCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
+            var parseService = new AliYunCloudParseService(new BaseConfigInput(subAccount.ShowName,
+                subAccount.CookieInfo,
+                subAccount.Id));
             var response = await parseService.QueryFileAsync(new BaseQueryInput<string>()
             {
                 Page = input.Page,
@@ -57,9 +59,8 @@ namespace KdyWeb.CloudParseApi.Controllers
             var result = response.Data.MapToListExt<BaseCloudQueryFileDto>();
             foreach (var itemDto in result)
             {
-                itemDto.IdEncode = itemDto.ResultId.StrToHex();
-                itemDto.NameEncode = itemDto.ResultName.StrToHex();
-                itemDto.ParseApiRoutePath = "/pan-parse/ali/";
+                itemDto.SetIdAndName(itemDto.ResultId, itemDto.ResultName);
+                itemDto.SetPathInfo("/player-v2/ali/", "/api-v2/ali/");
             }
 
             return KdyResult.Success(result);
@@ -78,7 +79,8 @@ namespace KdyWeb.CloudParseApi.Controllers
 
             var parseService = new AliYunCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
             var request = input.FileItems
-                .Where(a => a.OldName != a.NewName)
+                .Where(a => a != null &&
+                            a.OldName != a.NewName)
                 .Select(a => new BatchUpdateNameInput()
                 {
                     FileId = a.FileId,
@@ -101,10 +103,10 @@ namespace KdyWeb.CloudParseApi.Controllers
             var aliCookieType = allCookieType.FirstOrDefault(a => a.BusinessFlag == CloudParseCookieType.Ali);
             if (aliCookieType == null)
             {
-                return KdyResult.Error<string>(KdyResultCode.Error,"获取类型失败");
+                return KdyResult.Error<string>(KdyResultCode.Error, "获取类型失败");
             }
 
-            return KdyResult.Success<string>(aliCookieType.Id+"");
+            return KdyResult.Success<string>(aliCookieType.Id + "");
         }
     }
 }

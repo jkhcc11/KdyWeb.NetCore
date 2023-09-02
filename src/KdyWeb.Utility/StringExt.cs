@@ -289,7 +289,7 @@ namespace KdyWeb.Utility
         /// <param name="imgUrl">图片Url</param>
         /// <param name="proxyHost">代理host</param>
         /// <returns></returns>
-        public static string GetDouImgName(this string imgUrl,string proxyHost)
+        public static string GetDouImgName(this string imgUrl, string proxyHost)
         {
             if (string.IsNullOrEmpty(imgUrl))
             {
@@ -482,7 +482,7 @@ namespace KdyWeb.Utility
         }
 
         /// <summary>
-        /// Hex流转字符串
+        /// Hex流转字符串 原生
         /// </summary>
         /// <param name="vByte">16进制byte流</param>
         /// <returns></returns>
@@ -509,12 +509,40 @@ namespace KdyWeb.Utility
         /// 字符串转十六进制
         /// </summary>
         /// <param name="str">源字符串</param>
+        /// <remarks>
+        /// Hello=>48656C6C6F
+        /// </remarks>
         /// <returns></returns>
         public static string StrToHex(this string str)
         {
             if (string.IsNullOrEmpty(str))
                 return string.Empty;
             return BitConverter.ToString(Encoding.UTF8.GetBytes(str)).Replace("-", "");
+        }
+
+        /// <summary>
+        /// 十六进制转字符串
+        /// </summary>
+        /// <param name="hex">十六进制字符串</param>
+        /// <remarks>
+        /// 48656C6C6F=>Hello
+        /// </remarks>
+        /// <returns></returns>
+        public static string HexToStr(this string hex)
+        {
+            if (string.IsNullOrEmpty(hex))
+            {
+                return string.Empty;
+            }
+
+            var hexLength = hex.Length;
+            var bytes = new byte[hexLength / 2];
+            for (var i = 0; i < hexLength; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+
+            return Encoding.UTF8.GetString(bytes);
         }
 
         /// <summary>
@@ -542,6 +570,17 @@ namespace KdyWeb.Utility
             var charArray = endStr.ToCharArray();
             Array.Reverse(charArray);
             return new string(charArray);
+        }
+
+        /// <summary>
+        /// bytes To hexStr   BitConverter
+        /// </summary>
+        /// <returns></returns>
+        public static string ToHexStr(this byte[] msgBytes)
+        {
+            return BitConverter.ToString(msgBytes, 0)
+                .Replace("-", "")
+                .ToLower();
         }
         #endregion
     }

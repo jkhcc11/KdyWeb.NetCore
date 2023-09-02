@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse.Enum;
 
@@ -13,6 +14,8 @@ namespace KdyWeb.Entity.CloudParse
         /// 自有api地址长度
         /// </summary>
         public const int SelfApiUrlLength = 150;
+
+        public const int ApiTokenLength = 50;
 
         public CloudParseUser(long userId)
         {
@@ -45,5 +48,19 @@ namespace KdyWeb.Entity.CloudParse
         /// 用户状态
         /// </summary>
         public ServerCookieStatus UserStatus { get; set; }
+
+        /// <summary>
+        /// Api使用
+        /// </summary>
+        [StringLength(ApiTokenLength)]
+        public string ApiToken { get; protected set; }
+
+        /// <summary>
+        /// 初始化token
+        /// </summary>
+        public void InitToken()
+        {
+            ApiToken = $"parse-v2-{Guid.NewGuid():N}";
+        }
     }
 }

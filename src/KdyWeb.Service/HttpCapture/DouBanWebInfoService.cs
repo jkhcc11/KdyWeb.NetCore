@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.Entity.SearchVideo;
+using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.IService.HttpCapture;
-using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
 using Newtonsoft.Json.Linq;
 

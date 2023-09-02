@@ -148,6 +148,7 @@ namespace KdyWeb.BaseInterface.HttpBase
                 result.HttpCode = response.StatusCode;
                 if (response.IsSuccessStatusCode == false)
                 {
+                    KdyLog.LogWarning("Http请求异常,{msg}", await response.Content.ReadAsStringAsync());
                     result.IsSuccess = false;
                     return result;
                 }

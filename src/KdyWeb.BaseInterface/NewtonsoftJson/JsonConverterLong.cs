@@ -23,7 +23,8 @@ namespace KdyWeb.BaseInterface
         {
             if (reader.ValueType == null ||
                 reader.Value == null ||
-                reader.ValueType != typeof(long))
+                (reader.ValueType != typeof(long) &&
+                reader.ValueType != typeof(string)))
             {
                 return null;
             }
@@ -34,7 +35,8 @@ namespace KdyWeb.BaseInterface
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(long);
+            return objectType == typeof(long) ||
+                   objectType == typeof(string);
         }
     }
 }

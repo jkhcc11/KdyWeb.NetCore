@@ -18,7 +18,9 @@ namespace KdyWeb.Entity.CloudParse
         /// </summary>
         public const int AliasLength = 50;
 
-        public const int OldSubAccountInfoLength = 10;
+        public const int OldSubAccountInfoLength = 100;
+
+        public const int BusinessIdLength = 100;
 
         /// <summary>
         /// 构造
@@ -62,8 +64,18 @@ namespace KdyWeb.Entity.CloudParse
         /// </summary>
         /// <remarks>
         ///  兼容旧版使用 xxxx_id
+        ///  支持多个 xxx_id,xxx_id2
         /// </remarks>
         [StringLength(OldSubAccountInfoLength)]
         public string OldSubAccountInfo { get; set; }
+
+        /// <summary>
+        /// 业务Id
+        /// </summary>
+        /// <remarks>
+        /// 有些下载需要固定带上附加ID，如 分组ID等，这种不支持跨云盘切换，所以手动指定
+        /// </remarks>
+        [StringLength(BusinessIdLength)]
+        public string BusinessId { get; set; }
     }
 }

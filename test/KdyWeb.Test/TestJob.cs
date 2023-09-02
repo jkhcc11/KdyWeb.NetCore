@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Dto.Job;
-using KdyWeb.IService.KdyHttp;
+using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Service.Job;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

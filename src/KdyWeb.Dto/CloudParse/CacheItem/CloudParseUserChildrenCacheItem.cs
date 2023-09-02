@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
+using System.ComponentModel.DataAnnotations;
 
 namespace KdyWeb.Dto.CloudParse.CacheItem
 {
@@ -45,5 +46,14 @@ namespace KdyWeb.Dto.CloudParse.CacheItem
         ///  用于解析日志输出 没有别名就是用户名+数字
         /// </remarks>
         public string ShowName { get; set; }
+
+        /// <summary>
+        /// 业务Id
+        /// </summary>
+        /// <remarks>
+        /// 有些下载需要固定带上附加ID，如 分组ID等，这种不支持跨云盘切换，所以手动指定
+        /// </remarks>
+        public string BusinessId { get; set; }
+
     }
 }

@@ -10,7 +10,7 @@ using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
-using KdyWeb.Service.HttpCapture.KdyCloudParse;
+using KdyWeb.Service.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Mvc;
 
@@ -57,8 +57,8 @@ namespace KdyWeb.CloudParseApi.Controllers
             var result = response.Data.MapToListExt<BaseCloudQueryFileDto>();
             foreach (var itemDto in result)
             {
-                itemDto.IdEncode = itemDto.ResultId.StrToHex();
-                itemDto.NameEncode = itemDto.ResultName.StrToHex();
+                itemDto.SetIdAndName(itemDto.ResultId, itemDto.ResultName, itemDto.ParentId);
+                itemDto.SetPathInfo("/player-v2/st/", "/api-v2/st/");
             }
 
             return KdyResult.Success(result);
@@ -77,7 +77,8 @@ namespace KdyWeb.CloudParseApi.Controllers
 
             var parseService = new StCloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
             var request = input.FileItems
-                .Where(a => a.OldName != a.NewName)
+                .Where(a => a != null &&
+                            a.OldName != a.NewName)
                 .Select(a => new BatchUpdateNameInput()
                 {
                     FileId = a.FileId,
@@ -88,7 +89,6 @@ namespace KdyWeb.CloudParseApi.Controllers
             var result = await parseService.BatchUpdateNameAsync(request);
             return result;
         }
-
 
         /// <summary>
         /// 获取当前网盘Cookie类型

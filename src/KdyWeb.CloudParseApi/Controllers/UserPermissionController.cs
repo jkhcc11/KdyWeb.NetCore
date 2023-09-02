@@ -100,65 +100,7 @@ namespace KdyWeb.CloudParseApi.Controllers
                         }
                     }
                 },
-                new ()
-                {
-                    MenuUrl = "/cloud-disk",
-                    MenuName = "网盘列表",
-                    IconPrefix = "iconfont",
-                    Icon = "detail",
-                    RouteName = "CloudDisk",
-                    Children = new List<GetVueMenuWithWorkVueDto>()
-                    {
-                        new()
-                        {
-                            ParentPath = "/cloud-disk",
-                            MenuUrl = "/cloud-disk/ali-list",
-                            RouteName ="AliList",
-                            LocalFilePath="/cloudDisk/ali/ali-list",
-                            MenuName = "阿里",
-                            Cacheable = true,
-                        },
-                        new()
-                        {
-                            ParentPath = "/cloud-disk",
-                            MenuUrl = "/cloud-disk/st-list",
-                            MenuName = "胜天",
-                            RouteName ="StList",
-                            LocalFilePath="/cloudDisk/st-list",
-                            Cacheable = true
-                        },
-                        new()
-                        {
-                            ParentPath = "/cloudDisk",
-                            MenuUrl = "/cloudDisk/ty",
-                            MenuName = "天翼",
-                            Children = new List<GetVueMenuWithWorkVueDto>()
-                            {
-                                new()
-                                {
-                                    ParentPath = "/cloudDisk/ty",
-                                    MenuUrl = "/cloudDisk/ty/person-list",
-                                    MenuName = "个人",
-                                    Cacheable = true
-                                },
-                                new()
-                                {
-                                    ParentPath = "/cloudDisk/ty",
-                                    MenuUrl = "/cloudDisk/ty/family-list",
-                                    MenuName = "家庭",
-                                    Cacheable = true
-                                },
-                                new()
-                                {
-                                    ParentPath = "/cloudDisk/ty",
-                                    MenuUrl = "/cloudDisk/ty/crop-list",
-                                    MenuName = "企业",
-                                    Cacheable = true
-                                },
-                            }
-                        },
-                    }
-                },
+                BuildCloudParseMenu(),
                 new ()
                 {
                     MenuUrl = "/system",
@@ -215,65 +157,7 @@ namespace KdyWeb.CloudParseApi.Controllers
                         }
                     }
                 },
-                new ()
-                {
-                    MenuUrl = "/cloud-disk",
-                    MenuName = "网盘列表",
-                    IconPrefix = "iconfont",
-                    Icon = "detail",
-                    RouteName = "CloudDisk",
-                    Children = new List<GetVueMenuWithWorkVueDto>()
-                    {
-                        new()
-                        {
-                            ParentPath = "/cloud-disk",
-                            MenuUrl = "/cloud-disk/ali-list",
-                            RouteName ="AliList",
-                            LocalFilePath="/cloudDisk/ali/ali-list",
-                            MenuName = "阿里",
-                            Cacheable = true,
-                        },
-                        new()
-                        {
-                            ParentPath = "/cloud-disk",
-                            MenuUrl = "/cloud-disk/st-list",
-                            MenuName = "胜天",
-                            RouteName ="StList",
-                            LocalFilePath="/cloudDisk/st-list",
-                            Cacheable = true
-                        },
-                        new()
-                        {
-                            ParentPath = "/cloudDisk",
-                            MenuUrl = "/cloudDisk/ty",
-                            MenuName = "天翼",
-                            Children = new List<GetVueMenuWithWorkVueDto>()
-                            {
-                                new()
-                                {
-                                    ParentPath = "/cloudDisk/ty",
-                                    MenuUrl = "/cloudDisk/ty/person-list",
-                                    MenuName = "个人",
-                                    Cacheable = true
-                                },
-                                new()
-                                {
-                                    ParentPath = "/cloudDisk/ty",
-                                    MenuUrl = "/cloudDisk/ty/family-list",
-                                    MenuName = "家庭",
-                                    Cacheable = true
-                                },
-                                new()
-                                {
-                                    ParentPath = "/cloudDisk/ty",
-                                    MenuUrl = "/cloudDisk/ty/crop-list",
-                                    MenuName = "企业",
-                                    Cacheable = true
-                                },
-                            }
-                        },
-                    }
-                },
+                BuildCloudParseMenu(),
                 new ()
                 {
                     MenuUrl = "/system",
@@ -324,6 +208,80 @@ namespace KdyWeb.CloudParseApi.Controllers
             };
 
             return result;
+        }
+
+        private GetVueMenuWithWorkVueDto BuildCloudParseMenu()
+        {
+            return new GetVueMenuWithWorkVueDto()
+            {
+                MenuUrl = "/cloud-disk",
+                MenuName = "网盘列表",
+                IconPrefix = "iconfont",
+                Icon = "detail",
+                RouteName = "CloudDisk",
+                Children = new List<GetVueMenuWithWorkVueDto>()
+                {
+                    new()
+                    {
+                        ParentPath = "/cloud-disk",
+                        MenuUrl = "/cloud-disk/ali-list",
+                        RouteName = "AliList",
+                        LocalFilePath = "/cloudDisk/ali/ali-list",
+                        MenuName = "阿里",
+                        Cacheable = true,
+                    },
+                    new()
+                    {
+                        ParentPath = "/cloud-disk",
+                        MenuUrl = "/cloud-disk/st-list",
+                        MenuName = "胜天",
+                        RouteName = "StList",
+                        LocalFilePath = "/cloudDisk/st-list",
+                        Cacheable = true
+                    },
+                    new()
+                    {
+                        ParentPath = "/cloud-disk",
+                        MenuUrl = "/cloud-disk/hc-list",
+                        MenuName = "139盘",
+                        RouteName = "HcList",
+                        LocalFilePath = "/cloudDisk/139-list",
+                        Cacheable = true
+                    },
+                    new()
+                    {
+                        ParentPath = "/cloud-disk",
+                        MenuUrl = "/cloud-disk/ty",
+                        MenuName = "天翼",
+                        Children = new List<GetVueMenuWithWorkVueDto>()
+                        {
+                            new()
+                            {
+                                ParentPath = "/cloud-disk/ty",
+                                MenuUrl = "/cloud-disk/ty/person-list",
+                                LocalFilePath = "/cloudDisk/ty/person-list",
+                                MenuName = "个人",
+                                Cacheable = true
+                            },
+                            //new()
+                            //{
+                            //    ParentPath = "/cloudDisk/ty",
+                            //    MenuUrl = "/cloudDisk/ty/family-list",
+                            //    MenuName = "家庭",
+                            //    Cacheable = true
+                            //},
+                            new()
+                            {
+                                ParentPath = "/cloud-disk/ty",
+                                MenuUrl = "/cloud-disk/ty/crop-list",
+                                LocalFilePath = "/cloudDisk/ty/crop-list",
+                                MenuName = "企业",
+                                Cacheable = true
+                            },
+                        }
+                    },
+                }
+            };
         }
     }
 }

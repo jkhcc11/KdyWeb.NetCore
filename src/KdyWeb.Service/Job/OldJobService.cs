@@ -6,7 +6,7 @@ using KdyWeb.Dto.KdyImg;
 using KdyWeb.Dto.Message;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
-using KdyWeb.IService.ImageSave;
+using KdyWeb.IService.FileStore;
 using KdyWeb.IService.Message;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;

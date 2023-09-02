@@ -89,7 +89,7 @@ namespace KdyWeb.Dto.KdyHttp
         }
 
         /// <summary>
-        /// 设置Post请求数据
+        /// 设置Get请求数据
         /// </summary>
         /// <param name="url">PostUrl</param>
         public void SetGetRequest(string url)

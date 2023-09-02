@@ -67,6 +67,10 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("ApiToken")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
@@ -122,6 +126,10 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
+                    b.Property<string>("BusinessId")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
                     b.Property<long>("CloudParseCookieTypeId")
                         .HasColumnType("bigint");
 
@@ -155,8 +163,8 @@ namespace KdyWeb.EntityFramework.Migrations
                         .HasMaxLength(100);
 
                     b.Property<string>("OldSubAccountInfo")
-                        .HasColumnType("nvarchar(10)")
-                        .HasMaxLength(10);
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");

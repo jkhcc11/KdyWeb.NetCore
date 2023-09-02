@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.Dto.KdyImg;
-using KdyWeb.IService.ImageSave;
+using KdyWeb.IService.FileStore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KdyWeb.Test.HttpCapture

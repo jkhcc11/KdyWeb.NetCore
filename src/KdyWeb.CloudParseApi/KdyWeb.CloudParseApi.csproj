@@ -5,11 +5,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
+		<ProjectReference Include="..\KdyWeb.Service.CloudParse\KdyWeb.Service.CloudParse.csproj" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

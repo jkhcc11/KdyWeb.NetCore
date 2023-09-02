@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
-using Hangfire.Dashboard;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
@@ -13,8 +11,8 @@ using KdyWeb.BaseInterface.Repository;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Dto.KdyHttp;
 using KdyWeb.Entity.HttpCapture;
+using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.IService.HttpCapture;
-using KdyWeb.IService.KdyHttp;
 using KdyWeb.Utility;
 
 namespace KdyWeb.Service.HttpCapture

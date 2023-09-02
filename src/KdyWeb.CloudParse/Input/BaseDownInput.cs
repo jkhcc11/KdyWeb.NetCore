@@ -8,27 +8,16 @@ namespace KdyWeb.CloudParse.Input
     public class BaseDownInput<TExtEntity>
     {
         /// <summary>
-        /// 构造（未编码FileId）
+        /// 下载基类输入
         /// </summary>
         /// <param name="cacheKey">缓存Key</param>
         /// <param name="fileId">FileId</param>
-        public BaseDownInput(string cacheKey, string fileId)
+        /// <param name="downUrlSearchType">下载Url搜索类型</param>
+        public BaseDownInput(string cacheKey, string fileId, DownUrlSearchType downUrlSearchType)
         {
             CacheKey = cacheKey;
             FileId = fileId;
-        }
-
-        /// <summary>
-        /// 构造（编码FileId）
-        /// </summary>
-        /// <param name="cacheKey">缓存Key</param>
-        /// <param name="fileId">FileId</param>
-        /// <param name="isHex"></param>
-        public BaseDownInput(string cacheKey, string fileId, bool isHex)
-        {
-            CacheKey = cacheKey;
-            FileId = fileId;
-            IsHex = true;
+            DownUrlSearchType = downUrlSearchType;
         }
 
         /// <summary>
@@ -52,9 +41,17 @@ namespace KdyWeb.CloudParse.Input
         public TExtEntity ExtData { get; set; }
 
         /// <summary>
-        /// 是否为16进制转码
+        /// 下载Url搜索类型
         /// </summary>
-        public bool IsHex { get; set; }
+        public DownUrlSearchType DownUrlSearchType { get; set; }
+
+        /// <summary>
+        /// 是否切片
+        /// </summary>
+        /// <remarks>
+        /// 不可能所有都支持，根据实际情况来
+        /// </remarks>
+        public bool IsTs { get; set; }
 
         /// <summary>
         /// 重写ToString
@@ -64,5 +61,21 @@ namespace KdyWeb.CloudParse.Input
         {
             return $"{JsonConvert.SerializeObject(this)}";
         }
+    }
+
+    /// <summary>
+    /// 下载Url搜索类型
+    /// </summary>
+    public enum DownUrlSearchType
+    {
+        /// <summary>
+        /// 名称
+        /// </summary>
+        Name = 1,
+
+        /// <summary>
+        /// 文件Id
+        /// </summary>
+        FileId = 2
     }
 }

@@ -8,6 +8,16 @@
         /// <summary>
         /// 构造
         /// </summary>
+        /// <param name="subAccountId">子账号Id</param>
+        public BaseConfigInput(long subAccountId)
+        {
+            ChildUserId = subAccountId;
+            ReqUserInfo = subAccountId + "";
+        }
+
+        /// <summary>
+        /// 构造
+        /// </summary>
         /// <param name="reqUserInfo">Url用户信息</param>
         /// <param name="parseCookie">解析Cookie</param>
         /// <param name="subAccountId">子账号Id</param>

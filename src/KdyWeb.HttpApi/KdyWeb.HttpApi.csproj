@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\KdyWeb.MiniProfiler\KdyWeb.MiniProfiler.csproj" />
+		<ProjectReference Include="..\KdyWeb.Service.FileStore\KdyWeb.Service.FileStore.csproj" />
 		<ProjectReference Include="..\KdyWeb.Service\KdyWeb.Service.csproj" />
 	</ItemGroup>
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Dto.KdyHttp;
-using KdyWeb.IService.KdyHttp;
+using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.PageParse;
 using KdyWeb.Utility;
 

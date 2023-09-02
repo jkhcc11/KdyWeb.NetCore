@@ -30,5 +30,11 @@ namespace KdyWeb.Dto.HttpCapture.KdyCloudParse
         /// </summary>
         [JsonProperty("nick_name")]
         public string NickName { get; set; }
+
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty("device_id")]
+        public string DeviceId { get; set; }
     }
 }
