@@ -19,11 +19,17 @@ namespace KdyWeb.CloudParse.SelfHost
                     //环境变量
                     var env = context.HostingEnvironment;
                     context.Configuration = config.Build();
-                    var consulUrl = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulConfigUrl);
-                    var consulToken = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulToken);
+                    string consulUrl = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulConfigUrl),
+                        clientName = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConfigClientName),
+                        consulToken = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConsulToken);
+                    if (string.IsNullOrEmpty(clientName) == false)
+                    {
+                        clientName = "." + clientName;
+                    }
+
                     config.InitConfigCenter(context, consulUrl,
                         consulToken,
-                        $"{env.ApplicationName}/appsettings.{env.EnvironmentName}.json");
+                        $"{env.ApplicationName}/appsettings.{env.EnvironmentName}{clientName}.json");
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
