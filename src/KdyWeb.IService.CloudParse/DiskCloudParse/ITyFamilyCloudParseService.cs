@@ -13,7 +13,7 @@ namespace KdyWeb.IService.CloudParse.DiskCloudParse
     /// <remarks>
     /// 适用于家庭云 https://h5.cloud.189.cn/main.html#/family
     /// </remarks>
-    public interface ITyFamilyCloudParseService : IKdyCloudParseService<string, BaseResultOut, string>
+    public interface ITyFamilyCloudParseService : IKdyCloudParseService<string, BaseResultOut>
     {
         /// <summary>
         /// 获取当前用户加入的家庭云列表
@@ -26,5 +26,14 @@ namespace KdyWeb.IService.CloudParse.DiskCloudParse
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> BatchUpdateNameAsync(List<BatchUpdateNameInput> input);
+
+        /// <summary>
+        /// 同步名称和Id映射
+        /// </summary>
+        /// <remarks>
+        /// 没有搜索功能,只能映射
+        /// </remarks>
+        /// <returns></returns>
+        Task<KdyResult> SyncNameIdMapAsync(List<BatchUpdateNameInput> input);
     }
 }

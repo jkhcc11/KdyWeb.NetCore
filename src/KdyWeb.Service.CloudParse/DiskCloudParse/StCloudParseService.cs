@@ -25,7 +25,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 盛天网盘解析 实现
     /// </summary>
-    public class StCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut, StDownExtData>,
+    public class StCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         IStCloudParseService
     {
         public StCloudParseService(long childUserId)
@@ -165,7 +165,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             return KdyResult.Success(fileInfo);
         }
 
-        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync(BaseDownInput<StDownExtData> input)
+        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)
@@ -182,8 +182,13 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
             var baseInfo = await GetRootDirAsync();
             KdyRequestCommonInput.SetPostData("/apiToken/videoTranscode/getVideoP1080", $"userId={baseInfo.UserId}&fileUid={fileId}&fileId={fileId}&org_channel=default%7Cdefault%7Cdefault", "application/x-www-form-urlencoded", true);
-            KdyRequestCommonInput.UserAgent = input.ExtData.UserAgent;
-            KdyRequestCommonInput.Referer = $"{KdyRequestCommonInput.BaseHost}/video?fileUid={fileId}&resourceId={fileId}&parentId={input.ExtData.ParentId}";
+
+            if (input.ExtData is StDownExtData stDownExt)
+            {
+                KdyRequestCommonInput.UserAgent = stDownExt.UserAgent;
+            }
+
+            KdyRequestCommonInput.Referer = $"{KdyRequestCommonInput.BaseHost}/video?fileUid={fileId}&resourceId={fileId}";
             var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
             if (reqResult.IsSuccess == false ||
                 reqResult.Data.Contains("success") == false)

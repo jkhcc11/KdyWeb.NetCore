@@ -13,7 +13,7 @@ namespace KdyWeb.IService.CloudParse.DiskCloudParse
     /// <remarks>
     /// 适用于企业云 https://b.cloud.189.cn/
     /// </remarks>
-    public interface ITyCropCloudParseService : IKdyCloudParseService<string, BaseResultOut, string>
+    public interface ITyCropCloudParseService : IKdyCloudParseService<string, BaseResultOut>
     {
         /// <summary>
         /// 获取当前用户加入的企业云列表

@@ -23,6 +23,14 @@
         /// </summary>
         public virtual string Message { get; set; }
 
+        /// <summary>
+        /// 是否多音轨
+        /// </summary>
+        /// <remarks>
+        /// mp4多音轨 可使用potplayer
+        /// </remarks>
+        public virtual bool IsMultipleAudioTracks { get; set; }
+
         public static JsonParseDto SetSuccess(string url)
         {
             return SetSuccess(JsonParseStatus.Success, url);

@@ -65,5 +65,13 @@ namespace KdyWeb.IService.CloudParse
         /// </summary>
         /// <returns></returns>
         Task<bool> ClearUserInfoCacheAsync(long userId);
+
+        /// <summary>
+        /// 根据用户信息获取业务标识类型
+        /// </summary>
+        /// <param name="userInfo">xxx_xxx 旧    xxxxxxx 新</param>
+        /// <param name="isNew">是否新版</param>
+        /// <returns></returns>
+        Task<string> GetBusinessFlagByUserIdAsync(string userInfo,bool isNew);
     }
 }

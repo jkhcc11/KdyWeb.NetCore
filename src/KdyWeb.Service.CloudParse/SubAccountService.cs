@@ -167,6 +167,35 @@ namespace KdyWeb.Service.CloudParse
         }
 
         /// <summary>
+        /// 根据用户信息获取业务标识类型
+        /// </summary>
+        /// <param name="userInfo">xxx_xxx 旧    xxxxxxx 新</param>
+        /// <param name="isNew">是否新版</param>
+        /// <returns></returns>
+        public async Task<string> GetBusinessFlagByUserIdAsync(string userInfo, bool isNew)
+        {
+            CloudParseUserChildrenCacheItem subAccountCacheItem;
+            if (isNew)
+            {
+                long.TryParse(userInfo, out long userId);
+                subAccountCacheItem = await GetSubAccountCacheAsync(userId);
+            }
+            else
+            {
+                subAccountCacheItem = await GetSubAccountCacheAsync(userInfo);
+            }
+
+            if (subAccountCacheItem == null)
+            {
+                return string.Empty;
+            }
+
+            var allCookieType = await GetAllCookieTypeCacheAsync();
+            return allCookieType.FirstOrDefault(a => a.Id == subAccountCacheItem.CookieTypeId)?.BusinessFlag;
+        }
+
+
+        /// <summary>
         /// 获取子账号缓存Key
         /// </summary>
         /// <param name="subAccountId">

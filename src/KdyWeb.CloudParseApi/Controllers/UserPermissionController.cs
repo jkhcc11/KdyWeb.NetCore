@@ -263,13 +263,14 @@ namespace KdyWeb.CloudParseApi.Controllers
                                 MenuName = "个人",
                                 Cacheable = true
                             },
-                            //new()
-                            //{
-                            //    ParentPath = "/cloudDisk/ty",
-                            //    MenuUrl = "/cloudDisk/ty/family-list",
-                            //    MenuName = "家庭",
-                            //    Cacheable = true
-                            //},
+                            new()
+                            {
+                                ParentPath = "/cloud-disk/ty",
+                                MenuUrl = "/cloud-disk/ty/family-list",
+                                LocalFilePath = "/cloudDisk/ty/family-list",
+                                MenuName = "家庭",
+                                Cacheable = true
+                            },
                             new()
                             {
                                 ParentPath = "/cloud-disk/ty",

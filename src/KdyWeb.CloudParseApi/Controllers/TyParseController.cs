@@ -40,7 +40,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult<IList<BaseCloudQueryFileDto>>> QueryAliFileListAsync([FromQuery] BaseCloudQueryFileInput input)
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubAccountId);
-            CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
 
             var parseService = new TyPersonCloudParseService(new BaseConfigInput(subAccount.ShowName,
                 subAccount.CookieInfo,
@@ -61,7 +61,7 @@ namespace KdyWeb.CloudParseApi.Controllers
             foreach (var itemDto in result)
             {
                 itemDto.SetIdAndName(itemDto.ResultId, itemDto.ResultName);
-                itemDto.SetPathInfo("/player-v2/ty-person/", "/api-v2/ty-person/");
+                itemDto.SetPathInfoNew();
             }
 
             return KdyResult.Success(result);
@@ -76,7 +76,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult> BatchUpdateNameAsync(BaseBatchUpdateNameInput input)
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
-            CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
 
             var parseService = new TyPersonCloudParseService(new BaseConfigInput(subAccount.ShowName,
                 subAccount.CookieInfo, subAccount.Id));
@@ -121,7 +121,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult<IList<BaseCloudQueryFileDto>>> QueryAliFileListWithCorpAsync([FromQuery] BaseCloudQueryFileInput input)
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubAccountId);
-            CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
 
             var parseService = new TyCropCloudParseService(new BaseConfigInput(subAccount.ShowName,
                 subAccount.CookieInfo,
@@ -143,7 +143,7 @@ namespace KdyWeb.CloudParseApi.Controllers
             foreach (var itemDto in result)
             {
                 itemDto.SetIdAndName(itemDto.ResultId, itemDto.ResultName, input.ExtId);
-                itemDto.SetPathInfo("/player-v2/ty-crop/", "/api-v2/ty-crop/");
+                itemDto.SetPathInfoNew();
             }
 
             return KdyResult.Success(result);
@@ -158,7 +158,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult> BatchUpdateNameWithCorpAsync(BaseBatchUpdateNameInput input)
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
-            CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
 
             var parseService = new TyCropCloudParseService(new BaseConfigInput(subAccount.ShowName,
                 subAccount.CookieInfo, subAccount.Id));
@@ -193,6 +193,121 @@ namespace KdyWeb.CloudParseApi.Controllers
 
             return KdyResult.Success<string>(aliCookieType.Id + "");
         }
+        #endregion
+
+        #region 家庭
+        /// <summary>
+        /// 查询文件列表--家庭
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("family-index")]
+        public async Task<KdyResult<IList<BaseCloudQueryFileDto>>> QueryAliFileListWithFamilyAsync([FromQuery] BaseCloudQueryFileInput input)
+        {
+            var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubAccountId);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
+
+            var parseService = new TyFamilyCloudParseService(new BaseConfigInput(subAccount.ShowName,
+                subAccount.CookieInfo,
+                subAccount.Id));
+
+            var allNameMap = await parseService.GetAllFileInfoMapAsync();
+            var response = await parseService.QueryFileAsync(new BaseQueryInput<string>()
+            {
+                Page = input.Page,
+                PageSize = input.PageSize,
+                InputId = input.FileId,
+                KeyWord = input.KeyWord,
+                ExtData = input.ExtId
+            });
+            foreach (var tempDto in response.Data)
+            {
+                tempDto.IsCacheMap = allNameMap.ContainsKey(tempDto.ResultName.Md5Ext());
+            }
+
+            if (response.IsSuccess == false)
+            {
+                return KdyResult.Error<IList<BaseCloudQueryFileDto>>(KdyResultCode.Error, response.Msg);
+            }
+
+            var result = response.Data.MapToListExt<BaseCloudQueryFileDto>();
+            foreach (var itemDto in result)
+            {
+                itemDto.SetIdAndName(itemDto.ResultId, itemDto.ResultName, input.ExtId);
+                itemDto.SetPathInfoNew();
+            }
+
+            return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 批量修改文件--家庭
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("family-rename")]
+        public async Task<KdyResult> BatchUpdateNameWithFamilyAsync(BaseBatchUpdateNameInput input)
+        {
+            var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
+
+            var parseService = new TyFamilyCloudParseService(new BaseConfigInput(subAccount.ShowName,
+                subAccount.CookieInfo, subAccount.Id));
+            var request = input.FileItems
+                .Where(a => a != null &&
+                            a.OldName != a.NewName)
+                .Select(a => new BatchUpdateNameInput()
+                {
+                    ExtId = input.ExtId,
+                    FileId = a.FileId,
+                    OldName = a.OldName,
+                    NewName = a.NewName,
+                })
+                .ToList();
+            var result = await parseService.BatchUpdateNameAsync(request);
+            return result;
+        }
+
+        /// <summary>
+        /// 获取当前网盘Cookie类型--家庭
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("family-get-cookie-type-id")]
+        public async Task<KdyResult<string>> GetCurrentCookieTypeWithFamilyAsync()
+        {
+            var allCookieType = await _subAccountService.GetAllCookieTypeCacheAsync();
+            var aliCookieType = allCookieType.FirstOrDefault(a => a.BusinessFlag == CloudParseCookieType.TyFamily);
+            if (aliCookieType == null)
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "获取类型失败");
+            }
+
+            return KdyResult.Success<string>(aliCookieType.Id + "");
+        }
+
+        /// <summary>
+        /// 同步映射--家庭
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("family-sync")]
+        public async Task<KdyResult> SyncNameIdMapAsync(BaseBatchUpdateNameInput input)
+        {
+            var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
+
+            var parseService = new TyFamilyCloudParseService(new BaseConfigInput(subAccount.ShowName,
+                subAccount.CookieInfo, subAccount.Id));
+            var request = input.FileItems
+                .Where(a => a != null &&
+                            a.OldName.IsEmptyExt() == false)
+                .Select(a => new BatchUpdateNameInput()
+                {
+                    FileId = a.FileId,
+                    OldName = a.OldName,
+                })
+                .ToList();
+            var result = await parseService.SyncNameIdMapAsync(request);
+            return result;
+        }
+
         #endregion
     }
 }

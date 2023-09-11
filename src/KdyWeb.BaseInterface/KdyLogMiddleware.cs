@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,8 +67,9 @@ namespace KdyWeb.BaseInterface
             //    await _next(context);
             //    return;
             //}
+            var includeApiPrefix = new[] { "/api/", "/api-v2/", "/player-v2/", "self-api-v2" };
 
-            if (request.Path.Value.Contains("/api/") == false)
+            if (includeApiPrefix.Any(request.Path.Value.StartsWith) == false)
             {
                 //非api不用记录
                 await _next(context);

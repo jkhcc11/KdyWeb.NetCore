@@ -11,7 +11,7 @@ namespace KdyWeb.IService.CloudParse.DiskCloudParse
     /// <summary>
     /// 盛天网盘解析 接口
     /// </summary>
-    public interface IStCloudParseService : IKdyCloudParseService<string, BaseResultOut, StDownExtData>
+    public interface IStCloudParseService : IKdyCloudParseService<string, BaseResultOut>
     {
         /// <summary>
         /// 离线下载

@@ -30,6 +30,7 @@
 
 
 	<ItemGroup>
+		<ProjectReference Include="..\KdyWeb.CommonService\KdyWeb.CommonService.csproj" />
 		<ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
 	</ItemGroup>
 

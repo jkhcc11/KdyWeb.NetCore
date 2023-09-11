@@ -49,5 +49,13 @@ namespace KdyWeb.CloudParse.Out
         /// 如果为根节点时 ParentId 为根，后面每个请求都需要带上ParentId
         /// </remarks>
         public bool IsRoot { get; set; }
+
+        /// <summary>
+        /// 是否缓存映射
+        /// </summary>
+        /// <remarks>
+        /// 文件名和文件Id映射过
+        /// </remarks>
+        public bool IsCacheMap { get; set; }
     }
 }

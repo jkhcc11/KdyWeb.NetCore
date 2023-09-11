@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -47,15 +48,21 @@ namespace KdyWeb.Service
             var outModel = new GetVideoInfoByEpIdDto(epId, epInfo.Data.EpisodeUrl.ToStrConfuse(7));
 
             #region 网盘处理
+
+            var cloudParsePrefix = new[]
+            {
+                "/Cloud/Down", "/self-api-v2",
+            };
             var epUrl = epInfo.Data.EpisodeUrl;
             var cloudDiskParseHost = _configuration.GetValue<string>(KdyWebServiceConst.CloudDiskParseHost);
+            var cloudDiskParseHostNew = _configuration.GetValue<string>(KdyWebServiceConst.CloudDiskParseHostNew);
             var desKey = _configuration.GetValue<string>(KdyWebServiceConst.DesKey);
             if (epUrl.EndsWith(".m3u8") ||
                 epUrl.EndsWith(".mp4"))
             {
                 result = KdyResult.Success(outModel);
             }
-            else if (epUrl.Contains("/Cloud/Down"))
+            else if (cloudParsePrefix.Any(epUrl.Contains))
             {
                 //云网盘解析
                 if (epUrl.StartsWith("//"))
@@ -68,7 +75,16 @@ namespace KdyWeb.Service
                     .Replace("http://", "")
                     .Replace("https://", "");
 
-                outModel.ExtensionParseHost = $"//{cloudDiskParseHost}";
+                if (cloudDiskParseHostNew.IsEmptyExt())
+                {
+                    outModel.ExtensionParseHost = $"//{cloudDiskParseHost}";
+                }
+                else
+                {
+                    outModel.ExtensionParseHost = $"//{cloudDiskParseHostNew}";
+                    outModel.IsNewParse = true;
+                }
+
                 outModel.PlayUrl = epInfo.Data.EpisodeUrl.ToDesHexExt(desKey);
                 result = KdyResult.Success(outModel);
             }

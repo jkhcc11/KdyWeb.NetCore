@@ -23,13 +23,18 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 天翼家庭网盘解析 实现
     /// </summary>
-    public class TyFamilyCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut, string>,
+    public class TyFamilyCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         ITyFamilyCloudParseService
     {
         /// <summary>
         /// 家庭Id
         /// </summary>
         private string FamilyId { get; set; }
+
+        public TyFamilyCloudParseService(long childUserId)
+        {
+            CloudConfig = new BaseConfigInput(childUserId);
+        }
 
         public TyFamilyCloudParseService(BaseConfigInput cloudConfig) : base(cloudConfig)
         {
@@ -115,14 +120,14 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 input.PageSize = 60;
             }
 
-            var reqUrl = $"/open/family/file/listFiles.action?pageNum={input.Page}&pageSize={input.PageSize}&familyId={input.ExtData}&folderId=&iconOption=5&orderBy=1&descending=false";
+            var reqUrl = $"/open/family/file/listFiles.action?pageNum={input.Page}&pageSize={input.PageSize}&familyId={input.ExtData}&filename=Abc&folderId=&iconOption=5&orderBy=1&descending=false";
             if (string.IsNullOrEmpty(input.InputId) == false)
             {
-                reqUrl = $"/open/family/file/listFiles.action?pageNum={input.Page}&pageSize={input.PageSize}&familyId={input.ExtData}&folderId={input.InputId}&iconOption=5&orderBy=1&descending=false";
+                reqUrl = $"/open/family/file/listFiles.action?pageNum={input.Page}&pageSize={input.PageSize}&familyId={input.ExtData}&filename=Abc&folderId={input.InputId}&iconOption=5&orderBy=1&descending=false";
             }
 
             var time = DateTime.Now.ToMillisecondTimestamp() + "";
-            var url = $"AccessToken={CloudConfig.ParseCookie}&Timestamp={time}&descending=false&familyId={input.ExtData}&folderId={input.InputId}&iconOption=5&orderBy=1&pageNum={input.Page}&pageSize={input.PageSize}";
+            var url = $"AccessToken={CloudConfig.ParseCookie}&Timestamp={time}&descending=false&familyId={input.ExtData}&filename=Abc&folderId={input.InputId}&iconOption=5&orderBy=1&pageNum={input.Page}&pageSize={input.PageSize}";
             BuilderReqHeadSign(url, time);
 
             KdyRequestCommonInput.SetGetRequest(reqUrl);
@@ -142,9 +147,19 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         /// 根据关键字获取文件信息
         /// </summary>
         /// <returns></returns>
-        public override Task<KdyResult<BaseResultOut>> GetFileInfoByKeyWordAsync(string keyWord)
+        public override async Task<KdyResult<BaseResultOut>> GetFileInfoByKeyWordAsync(string keyWord)
         {
-            throw new NotSupportedException("家庭云暂时未实现关键字搜索");
+            var nameCacheKey = GetCacheKeyWithFileName();
+            var nameDb = GetNameCacheDb();
+
+            var fileNameMd5 = keyWord.Md5Ext();
+            var fileNameInfo = await nameDb.GetHashSetAsync<BaseResultOut>(nameCacheKey, fileNameMd5);
+            if (fileNameInfo != null)
+            {
+                return KdyResult.Success(fileNameInfo);
+            }
+
+            return KdyResult.Error<BaseResultOut>(KdyResultCode.Error, "未找到,请先同步");
         }
 
         public async Task<Dictionary<string, string>> GetFamilyListAsync()
@@ -230,9 +245,41 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             return KdyResult.Error(KdyResultCode.Error, "改名失败");
         }
 
-        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync(BaseDownInput<string> input)
+        /// <summary>
+        /// 同步名称和Id映射
+        /// </summary>
+        /// <remarks>
+        /// 没有搜索功能,只能映射
+        /// </remarks>
+        /// <returns></returns>
+        public async Task<KdyResult> SyncNameIdMapAsync(List<BatchUpdateNameInput> input)
         {
-            FamilyId = input.ExtData;
+            var nameCacheKey = GetCacheKeyWithFileName();
+            var nameDb = GetNameCacheDb();
+
+            var result = new List<bool>();
+            foreach (var inputItem in input)
+            {
+                var fileNameMd5 = inputItem.OldName.Md5Ext();
+                var setResult = await nameDb.SetHashSetAsync<BaseResultOut>(nameCacheKey, fileNameMd5,
+                    new BaseResultOut()
+                    {
+                        ResultId = inputItem.FileId,
+                        ResultName = inputItem.OldName
+                    });
+                result.Add(setResult);
+            }
+
+            return KdyResult.Success($"成功数量：{result.Count(a => a)}");
+        }
+
+        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
+        {
+            if (input.ExtData is string familyId)
+            {
+                FamilyId = familyId;
+            }
+
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)
             {

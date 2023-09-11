@@ -29,7 +29,7 @@ InitVideoPlay.prototype = {
             system = that.checkSys(),
             sourceType = 'video/mp4';
         //var tempV = vurl.split('$');//腾讯的  todo:指定类型 不要判断url
-        if (vurl.indexOf(".m3u8") > 0) { 
+        if (vurl.indexOf(".m3u8") > 0) {
             vtype = "m3u8";
             sourceType = "application/x-mpegURL";
         } else if (vurl.indexOf("g3proxy.lecloud.com") > 0 && vurl.indexOf("tss=mp4") === -1) {
@@ -222,6 +222,33 @@ InitVideoPlay.prototype = {
         });
     },
     /**
+ * 获取解析平台播放地址New
+ * @param { 请求Host} reqUrl
+ * @param { Des加密Url} enUrl
+ * @param { 剧集Id} epId
+ */
+    getApiUrlNew: function (reqUrl, enUrl, epId) {
+        var that = this, pd = {}, parseApi = reqUrl + '/self-api-v2/parse';
+        pd.encodeUrl = enUrl;
+        $.ajax({
+            url: parseApi,
+            data: pd,
+            type: 'POST',
+            success: function (json) {
+                if (json.success==false) {
+                    $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">异常,请重试或联系管理</div>");
+                    return;
+                }
+                var v = that.jie(json.url);
+                that.init('play-content', v, epId);
+                if (json.isMultipleAudioTracks) {
+                    that.setPotPlayer(v);
+                }
+
+            }
+        });
+    },
+    /**
     * 检查系统
     * @returns {} 
     */
@@ -366,6 +393,13 @@ $(function () {
 
             if (json.data.extensionParseHost != null &&
                 json.data.extensionParseHost.length > 0) {
+
+                if (json.data.isNewParse) {
+                    //网盘处理
+                    initVideo.getApiUrlNew(json.data.extensionParseHost, json.data.playUrl, json.data.epId);
+                    return;
+                }
+
                 //网盘处理
                 initVideo.getApiUrl(json.data.extensionParseHost, json.data.playUrl, json.data.epId);
                 return;

@@ -25,7 +25,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 天翼个人网盘解析 实现
     /// </summary>
-    public class TyPersonCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut, string>,
+    public class TyPersonCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         ITyPersonCloudParseService
     {
         public TyPersonCloudParseService(long childUserId)
@@ -252,7 +252,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             return KdyResult.Error(KdyResultCode.Error, "改名失败");
         }
 
-        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync(BaseDownInput<string> input)
+        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)

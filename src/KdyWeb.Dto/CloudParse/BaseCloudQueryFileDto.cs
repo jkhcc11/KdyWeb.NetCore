@@ -63,9 +63,9 @@ namespace KdyWeb.Dto.CloudParse
         /// <summary>
         /// 设置路径信息
         /// </summary>
-        /// <param name="playRoutePath">播放器前缀</param>
-        /// <param name="jsonPath">json前缀</param>
-        public void SetPathInfo(string playRoutePath, string jsonPath)
+        /// <param name="playRoutePath">播放器前缀 默认 /player-v2/common/ </param>
+        /// <param name="jsonPath">json前缀  默认 /api-v2/common/</param>
+        public void SetPathInfoNew(string playRoutePath = "/player-v2/common/", string jsonPath = "/api-v2/common/")
         {
             ParseApiRoutePath = playRoutePath;
             ParseApiJsonPath = jsonPath;

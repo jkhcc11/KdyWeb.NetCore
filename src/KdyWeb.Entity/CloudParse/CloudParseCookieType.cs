@@ -31,5 +31,27 @@ namespace KdyWeb.Entity.CloudParse
         /// </remarks>
         [StringLength(BusinessFlagLength)]
         public string BusinessFlag { get; set; }
+
+        /// <summary>
+        /// 是否需要服务器Cookie
+        /// </summary>
+        /// <param name="businessFlag">业务标识</param>
+        /// <returns></returns>
+        public static bool IsNeedServerCookie(string businessFlag)
+        {
+            switch (businessFlag)
+            {
+                case TyCrop:
+                case TyPerson:
+                case TyFamily:
+                    {
+                        return true;
+                    }
+                default:
+                    {
+                        return false;
+                    }
+            }
+        }
     }
 }

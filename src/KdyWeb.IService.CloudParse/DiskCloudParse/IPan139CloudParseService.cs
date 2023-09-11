@@ -10,7 +10,7 @@ namespace KdyWeb.IService.CloudParse.DiskCloudParse
     /// <summary>
     /// 139解析 接口
     /// </summary>
-    public interface IPan139CloudParseService : IKdyCloudParseService<string, BaseResultOut, string>
+    public interface IPan139CloudParseService : IKdyCloudParseService<string, BaseResultOut>
     {
         /// <summary>
         /// 批量改名

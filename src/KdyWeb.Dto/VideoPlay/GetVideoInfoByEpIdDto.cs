@@ -46,5 +46,10 @@ namespace KdyWeb.Dto
         /// 扩展解析Host
         /// </summary>
         public string ExtensionParseHost { get; set; }
+
+        /// <summary>
+        /// 是否为新版解析
+        /// </summary>
+        public bool IsNewParse { get; set; }
     }
 }

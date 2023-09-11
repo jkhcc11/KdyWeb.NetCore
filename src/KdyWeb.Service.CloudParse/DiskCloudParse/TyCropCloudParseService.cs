@@ -25,7 +25,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 天翼企业云网盘解析 实现
     /// </summary>
-    public class TyCropCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut, string>,
+    public class TyCropCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         ITyCropCloudParseService
     {
 
@@ -278,9 +278,13 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             return KdyResult.Error(KdyResultCode.Error, "改名失败");
         }
 
-        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync(BaseDownInput<string> input)
+        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
-            CorpId = input.ExtData;
+            if (input.ExtData is string corpId)
+            {
+                CorpId = corpId;
+            }
+
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)
             {
@@ -294,7 +298,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 fileId = nameFileInfo.Data.ResultId;
             }
 
-            var fileInfo = await GetFileInfoAsync(fileId, input.ExtData);
+            var fileInfo = await GetFileInfoAsync(fileId, CorpId);
 
             //1、获取下载
             var reqInput = new KdyRequestCommonInput(fileInfo.TempDownUrl, HttpMethod.Get)

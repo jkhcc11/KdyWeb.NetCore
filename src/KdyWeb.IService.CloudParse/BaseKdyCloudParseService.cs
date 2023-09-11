@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -21,8 +22,8 @@ namespace KdyWeb.IService.CloudParse
     /// <summary>
     ///  网盘解析 基础抽象
     /// </summary>
-    public abstract class BaseKdyCloudParseService<TConfigEntity, TInput, TOut, TDownEntity> :
-        IKdyCloudParseService<TInput, TOut, TDownEntity>
+    public abstract class BaseKdyCloudParseService<TConfigEntity, TInput, TOut> :
+        IKdyCloudParseService<TInput, TOut>
         where TConfigEntity : class, IBaseConfigEntity
         where TOut : class, IBaseResultOut
     {
@@ -75,7 +76,7 @@ namespace KdyWeb.IService.CloudParse
         /// 获取实际下载地址
         /// </summary>
         /// <returns></returns>
-        public abstract Task<KdyResult<string>> GetDownUrlForNoCacheAsync(BaseDownInput<TDownEntity> input);
+        public abstract Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input);
 
         /// <summary>
         /// 检查下载地址有效性 默认为true
@@ -91,7 +92,7 @@ namespace KdyWeb.IService.CloudParse
         /// 获取下载地址 检查了缓存
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<KdyResult<string>> GetDownUrlAsync(BaseDownInput<TDownEntity> input)
+        public virtual async Task<KdyResult<string>> GetDownUrlAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
             var cacheV = await KdyRedisCache.GetCache().GetStringAsync(input.CacheKey);
             if (string.IsNullOrEmpty(cacheV))
@@ -109,6 +110,19 @@ namespace KdyWeb.IService.CloudParse
 
             //无效重新获取
             return await GetDownUrlForNoCacheAsync(input);
+        }
+
+        /// <summary>
+        /// 获取所有文件映射关系
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Dictionary<string, bool>> GetAllFileInfoMapAsync()
+        {
+            var nameCacheKey = GetCacheKeyWithFileName();
+            var nameDb = GetNameCacheDb();
+            var allSet = await nameDb.HashGetAllAsync(nameCacheKey);
+            return allSet.ToDictionary()
+                .ToDictionary(a => a.Key + "", a => a.Value.IsNullOrEmpty);
         }
 
         /// <summary>

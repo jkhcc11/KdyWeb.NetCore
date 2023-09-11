@@ -11,7 +11,7 @@ namespace KdyWeb.IService.CloudParse.DiskCloudParse
     /// 阿里云盘解析 接口 <br/>
     /// https://www.aliyundrive.com
     /// </summary>
-    public interface IAliYunCloudParseService : IKdyCloudParseService<string, BaseResultOut, string>
+    public interface IAliYunCloudParseService : IKdyCloudParseService<string, BaseResultOut>
     {
         /// <summary>
         /// 获取用户登录信息

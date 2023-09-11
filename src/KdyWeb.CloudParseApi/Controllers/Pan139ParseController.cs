@@ -37,7 +37,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult<IList<BaseCloudQueryFileDto>>> QueryAliFileListAsync([FromQuery] BaseCloudQueryFileInput input)
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubAccountId);
-            CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
 
             var parseService = new Pan139CloudParseService(new BaseConfigInput(subAccount.ShowName,
                 subAccount.CookieInfo,
@@ -58,7 +58,7 @@ namespace KdyWeb.CloudParseApi.Controllers
             foreach (var itemDto in result)
             {
                 itemDto.SetIdAndName(itemDto.ResultId, itemDto.ResultName);
-                itemDto.SetPathInfo("/player-v2/hc/", "/api-v2/hc/");
+                itemDto.SetPathInfoNew();
             }
 
             return KdyResult.Success(result);
@@ -72,7 +72,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult> BatchUpdateNameAsync(BaseBatchUpdateNameInput input)
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
-            CheckSubAccountAuth(_loginUserInfo.GetUserId(), subAccount);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
 
             var parseService = new Pan139CloudParseService(new BaseConfigInput(subAccount.ShowName, subAccount.CookieInfo, subAccount.Id));
             var request = input.FileItems

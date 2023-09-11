@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Dynamic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -30,7 +29,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 阿里云盘解析 实现
     /// </summary>
-    public class AliYunCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut, string>,
+    public class AliYunCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         IAliYunCloudParseService
     {
         /// <summary>
@@ -251,7 +250,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             return await base.ClearCacheAsync();
         }
 
-        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync(BaseDownInput<string> input)
+        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
             var token = await GetLoginInfoAsync();
             var fileId = input.FileId;
@@ -272,7 +271,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             string downUrl;
             if (isTs)
             {
-                ts = TimeSpan.FromMinutes(13);
+                ts = TimeSpan.FromSeconds(14000);
                 downUrl = await GetTsUrlByFileIdAsync(fileId, token.Data.DriveId, "FHD");
             }
             else

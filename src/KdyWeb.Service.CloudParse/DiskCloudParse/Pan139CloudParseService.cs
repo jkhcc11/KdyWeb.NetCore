@@ -24,7 +24,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 139解析 实现
     /// </summary>
-    public class Pan139CloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut, string>,
+    public class Pan139CloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         IPan139CloudParseService
     {
         private readonly string _account;
@@ -249,7 +249,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             return KdyResult.Success(fileInfo);
         }
 
-        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync(BaseDownInput<string> input)
+        public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)

@@ -14,7 +14,7 @@ namespace KdyWeb.IService.CloudParse.DiskCloudParse
     /// <remarks>
     /// 适用于个人云 https://cloud.189.cn/web/login.html
     /// </remarks>
-    public interface ITyPersonCloudParseService : IKdyCloudParseService<string, BaseResultOut, string>
+    public interface ITyPersonCloudParseService : IKdyCloudParseService<string, BaseResultOut>
     {
         /// <summary>
         /// 获取用户登录信息

@@ -1,4 +1,7 @@
-﻿namespace KdyWeb.IService.CloudParse
+﻿using KdyWeb.BaseInterface;
+using KdyWeb.Entity.CloudParse;
+
+namespace KdyWeb.IService.CloudParse
 {
     public class CacheKeyConst
     {
@@ -111,6 +114,7 @@
             public const string DownCacheKey = Prefix + "DownUrl";
 
             public const string CropDownCacheKey = Prefix + "CropDownUrl";
+            public const string FamilyDownCacheKey = Prefix + "FamilyDownUrl";
         }
 
         /// <summary>
@@ -168,6 +172,79 @@
             /// 用户信息缓存Key
             /// </summary>
             public const string UserInfoCacheKey = "UserInfoCacheKey";
+        }
+
+        /// <summary>
+        /// 业务标识转下载缓存前缀
+        /// </summary>
+        /// <returns></returns>
+        public static string BusinessFlagToDownCachePrefix(string businessFlag)
+        {
+            //todo:新增业务类型这里
+            switch (businessFlag)
+            {
+                case CloudParseCookieType.TyPerson:
+                    {
+                        return TyCacheKey.DownCacheKey;
+                    }
+                case CloudParseCookieType.TyCrop:
+                    {
+                        return TyCacheKey.CropDownCacheKey;
+                    }
+                case CloudParseCookieType.TyFamily:
+                    {
+                        return TyCacheKey.FamilyDownCacheKey;
+                    }
+                case CloudParseCookieType.Ali:
+                    {
+                        return AliYunCacheKey.DownCacheKey;
+                    }
+
+                case CloudParseCookieType.BitQiu:
+                    {
+                        return StCacheKey.DownCacheKey;
+                    }
+                case CloudParseCookieType.Pan139:
+                    {
+                        return Pan139CacheKey.DownCacheKey;
+                    }
+            }
+
+            throw new KdyCustomException("BusinessFlagToDownCachePrefix未知业务类型");
+        }
+
+        /// <summary>
+        /// 旧网盘类型 转  业务标识
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="KdyCustomException">没有匹配到</exception>
+        public static string ToBusinessFlag(string oldCloudType)
+        {
+            //Index=>TyPerson
+            //AliCloud=>Ali
+            //NSt|St=>St
+            switch (oldCloudType)
+            {
+                case "Index":
+                    {
+                        return CloudParseCookieType.TyPerson;
+                    }
+                case "IndexV4":
+                    {
+                        return CloudParseCookieType.TyFamily;
+                    }
+                case "AliCloud":
+                    {
+                        return CloudParseCookieType.Ali;
+                    }
+                case "St":
+                case "NSt":
+                    {
+                        return CloudParseCookieType.BitQiu;
+                    }
+            }
+
+            throw new KdyCustomException("oldCloudType未知");
         }
     }
 }

@@ -62,6 +62,11 @@
         public const string CloudDiskParseHost = "CloudDiskParseHost";
 
         /// <summary>
+        /// 云网盘解析域名V2
+        /// </summary>
+        public const string CloudDiskParseHostNew = "CloudDiskParseHostNew";
+
+        /// <summary>
         /// 内部http请求标识
         /// </summary>
         public const string DefaultUserAgent = "kdy/custom_client 1.0";

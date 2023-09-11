@@ -9,12 +9,14 @@ namespace KdyWeb.CloudParse.SelfHost.Models
         /// 用户信息
         /// </summary>
         [FromRoute]
+        [Required(ErrorMessage = "userInfo is not valid")]
         public string UserInfo { get; set; }
 
         /// <summary>
         /// 文件信息
         /// </summary>
         [FromRoute]
+        [Required(ErrorMessage = "fileInfo is not valid")]
         public string FileInfo { get; set; }
 
         /// <summary>

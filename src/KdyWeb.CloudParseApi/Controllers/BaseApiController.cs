@@ -1,4 +1,5 @@
 ﻿using KdyWeb.BaseInterface;
+using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse.CacheItem;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +22,12 @@ namespace KdyWeb.CloudParseApi.Controllers
         ///  1、子账号不是当前登录用户 异常 <br/>
         ///  2、没cookie 异常
         /// </remarks>
-        /// <param name="userId">用户Id</param>
+        /// <param name="loginUserInfo">登录信息</param>
         /// <param name="subAccountCacheItem">子账号缓存</param>
-        protected void CheckSubAccountAuth(long userId, CloudParseUserChildrenCacheItem subAccountCacheItem)
+        protected void CheckSubAccountAuth(ILoginUserInfo loginUserInfo, CloudParseUserChildrenCacheItem subAccountCacheItem)
         {
-            if (subAccountCacheItem.UserId != userId)
+            if (loginUserInfo.IsSuperAdmin == false &&
+                subAccountCacheItem.UserId != loginUserInfo.GetUserId())
             {
                 throw new KdyCustomException("参数错误,无效请求02");
             }
