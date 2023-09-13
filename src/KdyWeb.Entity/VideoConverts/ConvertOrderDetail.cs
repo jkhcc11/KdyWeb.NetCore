@@ -22,6 +22,6 @@ namespace KdyWeb.Entity.VideoConverts
         /// 任务名
         /// </summary>
         [StringLength(VideoConvertTask.TaskNameLength)]
-        public string TaskName { get; set; }
+        public string? TaskName { get; set; }
     }
 }

@@ -74,6 +74,7 @@ namespace KdyWeb.Entity
         ///  密码
         /// </summary>
         [StringLength(UserPwdLength)]
+        [Required]
         public string UserPwd { get; set; }
 
         /// <summary>

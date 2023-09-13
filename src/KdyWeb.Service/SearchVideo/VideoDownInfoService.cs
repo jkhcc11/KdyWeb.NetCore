@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Repository;
 
 namespace KdyWeb.Service.SearchVideo
 {

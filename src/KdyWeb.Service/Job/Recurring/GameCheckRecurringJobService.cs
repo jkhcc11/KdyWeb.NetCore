@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using System.Linq;
+using Hangfire;
 using Hangfire.RecurringJobExtensions;
 using Hangfire.Server;
 using KdyWeb.BaseInterface;

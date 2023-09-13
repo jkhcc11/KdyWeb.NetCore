@@ -11,7 +11,6 @@ using KdyWeb.Entity.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.ICommonService;
 using KdyWeb.IService.CloudParse;
-using KdyWeb.Repository;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 

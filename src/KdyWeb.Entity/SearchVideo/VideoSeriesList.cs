@@ -25,11 +25,11 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 系列
         /// </summary>
-        public virtual VideoSeries VideoSeries { get; set; }
+        public virtual VideoSeries? VideoSeries { get; set; }
 
         /// <summary>
         /// 影片
         /// </summary>
-        public virtual VideoMain VideoMain { get; set; }
+        public virtual VideoMain? VideoMain { get; set; }
     }
 }

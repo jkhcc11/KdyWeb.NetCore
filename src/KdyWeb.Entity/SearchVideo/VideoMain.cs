@@ -94,7 +94,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         /// <remarks>多个名称，逗号隔开</remarks>
         [StringLength(DouBanInfo.AkaLength)]
-        public string Aka { get; set; }
+        public string? Aka { get; set; }
 
         /// <summary>
         /// 源Url
@@ -128,7 +128,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 豆瓣Url或其他影片介绍地址
         /// </remarks>
         [StringLength(UrlLength)]
-        public string VideoInfoUrl { get; set; }
+        public string? VideoInfoUrl { get; set; }
 
         /// <summary>
         /// 旧KeyId
@@ -138,12 +138,12 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 影片主表 扩展信息
         /// </summary>
-        public virtual VideoMainInfo VideoMainInfo { get; set; }
+        public virtual VideoMainInfo? VideoMainInfo { get; set; }
 
         /// <summary>
         /// 剧集信息组
         /// </summary>
-        public virtual ICollection<VideoEpisodeGroup> EpisodeGroup { get; set; }
+        public virtual ICollection<VideoEpisodeGroup>? EpisodeGroup { get; set; }
 
         /// <summary>
         /// 设置豆瓣信息匹配

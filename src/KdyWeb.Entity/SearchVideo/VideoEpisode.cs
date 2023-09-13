@@ -41,7 +41,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 备注扩展
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 排序
@@ -64,7 +64,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 剧集组
         /// </summary>
-        public virtual VideoEpisodeGroup VideoEpisodeGroup { get; set; }
+        public virtual VideoEpisodeGroup? VideoEpisodeGroup { get; set; }
 
         /// <summary>
         /// 设置剧集组Id

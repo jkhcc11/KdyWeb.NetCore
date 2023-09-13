@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.HangFire;
@@ -19,7 +18,7 @@ namespace KdyWeb.Service.Job
     {
         public override async Task ExecuteAsync(SendMsgWithFtqqJobInput input)
         {
-            var request = new RestRequest("SCT166795Tp7Q1qE4FRHy70pP7AAE0HVzL.send", Method.POST);
+            var request = new RestRequest("SCT166795Tp7Q1qE4FRHy70pP7AAE0HVzL.send", Method.Post);
             request.AddParameter("title", input.Title);
             request.AddParameter("desp", input.Content);
 
@@ -35,13 +34,16 @@ namespace KdyWeb.Service.Job
         private async Task<RestClient> GetRestClient()
         {
             await Task.CompletedTask;
-            var restClient = new RestClient
-            {
-                BaseUrl = new Uri("https://sctapi.ftqq.com"),
-                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54",
-            };
+            //var restClient = new RestClient
+            //{
+            //    BaseUrl = new Uri("https://sctapi.ftqq.com"),
+            //    UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54",
+            //};
+            var options = new RestClientOptions("https://sctapi.ftqq.com");
+            var restClient = new RestClient(options, configureSerialization: cfg => cfg.UseNewtonsoftJson());
+
             restClient.AddDefaultHeader("Accept", "application/json,text/plain,*/*");
-            restClient.UseNewtonsoftJson();
+            //restClient.UseNewtonsoftJson();
             return restClient;
         }
     }

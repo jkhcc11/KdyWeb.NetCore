@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using StackExchange.Redis;
 
 namespace KdyWeb.BaseInterface.KdyRedis
 {

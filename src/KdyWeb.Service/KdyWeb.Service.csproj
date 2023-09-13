@@ -1,18 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="..\common.props" />
 	<PropertyGroup>
-		<TargetFramework>netstandard2.1</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 	</PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BencodeNET" Version="4.0.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
     <ProjectReference Include="..\KdyWeb.IService.FileStore\KdyWeb.IService.FileStore.csproj" />
     <ProjectReference Include="..\KdyWeb.IService\KdyWeb.IService.csproj" />
-    <ProjectReference Include="..\KdyWeb.Repository\KdyWeb.Repository.csproj" />
   </ItemGroup>
 
 </Project>

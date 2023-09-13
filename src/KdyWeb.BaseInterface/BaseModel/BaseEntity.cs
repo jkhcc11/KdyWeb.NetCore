@@ -17,7 +17,7 @@ namespace KdyWeb.BaseInterface.BaseModel
     /// <summary>
     /// 是否激活
     /// </summary>
-    public interface IsActivate
+    public interface IIsActivate
     {
         /// <summary>
         /// 是否激活
@@ -33,6 +33,7 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 并发控制字段
         /// </summary>
+        [Required]
         byte[] RowVersion { get; set; }
     }
 
@@ -60,7 +61,7 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 创建用户名
         /// </summary>
-        string CreatedUserName { get; set; }
+        string? CreatedUserName { get; set; }
 
         /// <summary>
         /// 修改用户Id
@@ -70,7 +71,7 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 创建用户名
         /// </summary>
-        string ModifyUserName { get; set; }
+        string? ModifyUserName { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -87,6 +88,7 @@ namespace KdyWeb.BaseInterface.BaseModel
     /// 基类 包含是否删除，创建修改时间
     /// </summary>
     public class BaseEntity<TKey> : IBaseKey<TKey>
+    where TKey : struct
     {
         /// <summary>
         /// 主键
@@ -104,14 +106,14 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// </summary>
         public long? CreatedUserId { get; set; }
 
-        public string CreatedUserName { get; set; }
+        public string? CreatedUserName { get; set; }
 
         /// <summary>
         /// 修改用户
         /// </summary>
         public long? ModifyUserId { get; set; }
 
-        public string ModifyUserName { get; set; }
+        public string? ModifyUserName { get; set; }
 
         /// <summary>
         /// 创建时间

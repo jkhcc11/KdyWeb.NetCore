@@ -65,7 +65,7 @@ namespace KdyWeb.Entity.VideoConverts
         /// 备注
         /// </summary>
         [StringLength(VideoConvertTask.TaskRemarkLength)]
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 设置结算金额

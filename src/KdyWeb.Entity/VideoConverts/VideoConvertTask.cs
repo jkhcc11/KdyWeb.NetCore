@@ -75,13 +75,13 @@ namespace KdyWeb.Entity.VideoConverts
         /// 提取码等
         /// </remarks>
         [StringLength(SourceLinkExtLength)]
-        public string SourceLinkExt { get; set; }
+        public string? SourceLinkExt { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         [StringLength(TaskRemarkLength)]
-        public string TaskRemark { get; set; }
+        public string? TaskRemark { get; set; }
 
         /// <summary>
         /// 接单人id
@@ -92,7 +92,7 @@ namespace KdyWeb.Entity.VideoConverts
         /// 接单人
         /// </summary>
         [StringLength(TakeUserNameLength)]
-        public string TakeUserName { get; set; }
+        public string? TakeUserName { get; set; }
 
         /// <summary>
         /// 接单时间

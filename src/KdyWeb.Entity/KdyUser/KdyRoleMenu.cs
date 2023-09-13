@@ -5,7 +5,7 @@ namespace KdyWeb.Entity
     /// <summary>
     /// 角色菜单
     /// </summary>
-    public class KdyRoleMenu : BaseEntity<int>,IsActivate
+    public class KdyRoleMenu : BaseEntity<int>, IIsActivate
     {
         /// <summary>
         /// 菜单Id

@@ -21,13 +21,13 @@ namespace KdyWeb.BaseInterface.Extensions
                 collection.AddLogging(builder =>
                 {
                     var exceptionLessSection = context.Configuration.GetSection("Exceptionless");
-                    if (exceptionLessSection == null)
+                    string apiKey = exceptionLessSection.GetValue<string>("ApiKey"),
+                        serverUrl = exceptionLessSection.GetValue<string>("ServerUrl");
+                    if (string.IsNullOrEmpty(apiKey) ||
+                        string.IsNullOrEmpty(serverUrl))
                     {
                         throw new KdyCustomException($"启动ExceptionLess异常，未配置Exceptionless节点信息。In:{nameof(ConfigureExceptionLessLogging)}");
                     }
-
-                    string apiKey = exceptionLessSection.GetValue<string>("ApiKey"),
-                        serverUrl = exceptionLessSection.GetValue<string>("ServerUrl");
                     builder.AddExceptionless(apiKey, serverUrl);
                     //var client = new ExceptionlessClient(configure =>
                     //{

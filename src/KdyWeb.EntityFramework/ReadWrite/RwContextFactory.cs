@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using KdyWeb.BaseInterface.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.EntityFramework

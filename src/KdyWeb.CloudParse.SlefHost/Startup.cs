@@ -22,7 +22,7 @@ namespace KdyWeb.CloudParse.SelfHost
             //自定义模型校验
             services.AddControllersWithViews(options => { options.Filters.Add<ModelStateValidFilter>(); });
 
-            services.AddKdyDefaultExt();
+            services.AddKdyDefaultExt(Configuration);
             //services.AddRazorPages();
         }
 

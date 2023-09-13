@@ -51,12 +51,12 @@ namespace KdyWeb.Entity.GameDown
         /// 中文名
         /// </summary>
         [StringLength(GameNameLength)]
-        public string ChineseName { get; set; }
+        public string? ChineseName { get; set; }
 
         /// <summary>
         /// 描述
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// 大小
@@ -86,13 +86,13 @@ namespace KdyWeb.Entity.GameDown
         /// Logo
         /// </summary>
         [StringLength(GameUrlLength)]
-        public string LogoUrl { get; set; }
+        public string? LogoUrl { get; set; }
 
         /// <summary>
         /// 主视频Url
         /// </summary>
         [StringLength(GameUrlLength)]
-        public string VideoUrl { get; set; }
+        public string? VideoUrl { get; set; }
 
         /// <summary>
         /// 源Md5 用于检查网页更新
@@ -116,13 +116,13 @@ namespace KdyWeb.Entity.GameDown
         /// 磁力链接
         /// </summary>
         [StringLength(GameUrlLength)]
-        public string Magnet { get; protected set; }
+        public string? Magnet { get; protected set; }
 
         /// <summary>
         /// 详情Id
         /// </summary>
         [StringLength(VideoMain.VideoContentFeatureLength)]
-        public string DetailId { get; set; }
+        public string? DetailId { get; set; }
 
         /// <summary>
         /// 用户Hash 
@@ -131,18 +131,18 @@ namespace KdyWeb.Entity.GameDown
         /// 使用DetailId和UserHash 获取stream Url
         /// </remarks>
         [StringLength(UserHashLength)]
-        public string UserHash { get; set; }
+        public string? UserHash { get; set; }
 
         /// <summary>
         /// 下载列表
         /// </summary>
-        public List<GameInfoWithDownItem> DownList { get; set; }
+        public List<GameInfoWithDownItem>? DownList { get; set; }
 
         /// <summary>
         /// Steam商店Url
         /// </summary>
         [StringLength(GameUrlLength)]
-        public string SteamUrl { get; protected set; }
+        public string? SteamUrl { get; protected set; }
 
         /// <summary>
         /// Steam商店Id
@@ -151,7 +151,7 @@ namespace KdyWeb.Entity.GameDown
         /// 用于快速查找
         /// </remarks>
         [StringLength(SteamIdLength)]
-        public string SteamId { get; protected set; }
+        public string? SteamId { get; protected set; }
 
         /// <summary>
         /// 游戏截图列表
@@ -159,7 +159,7 @@ namespace KdyWeb.Entity.GameDown
         /// <remarks>
         /// 使用?t=xxxx访问
         /// </remarks>
-        public List<string> ScreenCapture { get; set; }
+        public List<string>? ScreenCapture { get; set; }
 
         /// <summary>
         /// 预览视频列表
@@ -167,12 +167,12 @@ namespace KdyWeb.Entity.GameDown
         /// <remarks>
         /// 使用?t=xxxx访问
         /// </remarks>
-        public List<string> MovieList { get; set; }
+        public List<string>? MovieList { get; set; }
 
         /// <summary>
         /// 扩展信息
         /// </summary>
-        public Dictionary<string, string> ExtInfo { get; set; }
+        public Dictionary<string, string>? ExtInfo { get; set; }
 
         /// <summary>
         /// 设置磁力
@@ -197,6 +197,7 @@ namespace KdyWeb.Entity.GameDown
         public bool IsHaveSteamInfo()
         {
             if (SteamId.IsEmptyExt() &&
+                string.IsNullOrEmpty(VideoUrl) == false &&
                 VideoUrl.Contains("steam"))
             {
                 return false;

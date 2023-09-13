@@ -51,7 +51,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 备注
         /// </summary>
         [StringLength(RemarkLength)]
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 源Url
@@ -73,13 +73,13 @@ namespace KdyWeb.Entity.SearchVideo
         /// 视频名称
         /// </summary>
         [StringLength(VideoNameLength)]
-        public string VideoName { get; set; }
+        public string? VideoName { get; set; }
 
         /// <summary>
         /// 用户Email
         /// </summary>
         [StringLength(UserEmailLength)]
-        public string UserEmail { get; set; }
+        public string? UserEmail { get; set; }
         #endregion
 
     }

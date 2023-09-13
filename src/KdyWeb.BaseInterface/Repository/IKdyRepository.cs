@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.InterfaceFlag;
 
 namespace KdyWeb.BaseInterface.Repository
@@ -51,7 +50,7 @@ namespace KdyWeb.BaseInterface.Repository
         /// 获取单个
         /// </summary>
         /// <returns></returns>
-        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> whereExpression);
+        Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> whereExpression);
 
         /// <summary>
         /// 获取列表

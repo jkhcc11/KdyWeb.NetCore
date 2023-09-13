@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using IdentityModel.Client;
@@ -49,11 +48,8 @@ namespace KdyWeb.CommonService
                 GrantType = "client_credentials",
                 ClientId = _kdyAuthServerOption.ClientId,
                 ClientSecret = _kdyAuthServerOption.ClientSecret,
-                Parameters = new Dictionary<string, string>()
-                {
-                    {"scope",$"kdy_cross_auth {_kdyAuthServerOption.Scope}"}
-                }
             };
+            tokenRequest.Parameters.Add("scope", $"kdy_cross_auth {_kdyAuthServerOption.Scope}");
 
             var tokenResponse = await SendToken(tokenRequest);
             var tokenCache = new CrossTokenCacheItem()
@@ -80,13 +76,16 @@ namespace KdyWeb.CommonService
                 GrantType = "password",
                 ClientId = "kdy_admin_client",
                 ClientSecret = _kdyAuthServerOption.AuthMgrSecret,
-                Parameters = new Dictionary<string, string>()
-                {
-                    {"scope","kdy_admin_client_api"},
-                    {"username",_kdyAuthServerOption.AuthMgrUser},
-                    {"password",_kdyAuthServerOption.AuthMgrUserPwd}
-                }
+                //Parameters = new Dictionary<string, string>()
+                //{
+                //    {"scope","kdy_admin_client_api"},
+                //    {"username",_kdyAuthServerOption.AuthMgrUser},
+                //    {"password",_kdyAuthServerOption.AuthMgrUserPwd}
+                //}
             };
+            tokenRequest.Parameters.Add("scope", "kdy_admin_client_api");
+            tokenRequest.Parameters.Add("username", _kdyAuthServerOption.AuthMgrUser);
+            tokenRequest.Parameters.Add("password", _kdyAuthServerOption.AuthMgrUserPwd);
 
             var tokenResponse = await SendToken(tokenRequest);
             if (tokenResponse.IsError)
@@ -112,13 +111,17 @@ namespace KdyWeb.CommonService
                 GrantType = "kdy-login",
                 ClientId = _kdyAuthServerOption.ClientId,
                 ClientSecret = _kdyAuthServerOption.ClientSecret,
-                Parameters = new Dictionary<string, string>()
-                {
-                    {"scope",_kdyAuthServerOption.AllScope},
-                    {"username",userNameOrEmail},
-                    {"password",pwd}
-                }
+                //Parameters = new Dictionary<string, string>()
+                //{
+                //    {"scope",_kdyAuthServerOption.AllScope},
+                //    {"username",userNameOrEmail},
+                //    {"password",pwd}
+                //}
             };
+
+            tokenRequest.Parameters.Add("scope", _kdyAuthServerOption.AllScope);
+            tokenRequest.Parameters.Add("username", userNameOrEmail);
+            tokenRequest.Parameters.Add("password", pwd);
 
             var tokenResponse = await SendToken(tokenRequest);
             if (tokenResponse.IsError)

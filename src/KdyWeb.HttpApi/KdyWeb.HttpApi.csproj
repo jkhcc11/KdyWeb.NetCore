@@ -1,18 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="..\common.props" />
 	<PropertyGroup>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AspNetCoreRateLimit.Redis" Version="1.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.21" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.3" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.2" />
+		<PackageReference Include="AspNetCoreRateLimit.Redis" Version="2.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.10" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.11" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\KdyWeb.CommonService\KdyWeb.CommonService.csproj" />
 		<ProjectReference Include="..\KdyWeb.MiniProfiler\KdyWeb.MiniProfiler.csproj" />
+		<ProjectReference Include="..\KdyWeb.Repository\KdyWeb.Repository.csproj" />
 		<ProjectReference Include="..\KdyWeb.Service.FileStore\KdyWeb.Service.FileStore.csproj" />
 		<ProjectReference Include="..\KdyWeb.Service\KdyWeb.Service.csproj" />
 	</ItemGroup>

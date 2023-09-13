@@ -26,13 +26,13 @@ namespace KdyWeb.Entity.SearchVideo
         /// 颜色
         /// </summary>
         [StringLength(DColorLength)]
-        public string DColor { get; set; }
+        public string? DColor { get; set; }
 
         /// <summary>
         /// 弹幕内容
         /// </summary>
         [StringLength(MsgLength)]
-        public string Msg { get; set; }
+        public string? Msg { get; set; }
 
         /// <summary>
         /// 剧集Id

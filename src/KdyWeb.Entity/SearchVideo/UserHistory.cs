@@ -52,22 +52,22 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 剧集名
         /// </summary>
-        public string EpName { get; set; }
+        public string? EpName { get; set; }
 
         /// <summary>
         /// 影片名
         /// </summary>
-        public string VodName { get; set; }
+        public string? VodName { get; set; }
 
         /// <summary>
         /// 播放地址
         /// </summary>
-        public string VodUrl { get; set; }
+        public string? VodUrl { get; set; }
 
         /// <summary>
         /// 用户名
         /// </summary>
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         #endregion
 

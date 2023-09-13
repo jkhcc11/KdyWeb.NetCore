@@ -47,25 +47,25 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 影片主表
         /// </summary>
-        public virtual VideoMain VideoMain { get; set; }
+        public virtual VideoMain? VideoMain { get; set; }
 
         #region 冗余
 
         /// <summary>
         /// 剧集名
         /// </summary>
-        public string EpName { get; set; }
+        public string? EpName { get; set; }
 
         /// <summary>
         /// 影片名
         /// </summary>
-        public string VodName { get; set; }
+        public string? VodName { get; set; }
 
         /// <summary>
         /// 海报
         /// </summary>
         [StringLength(DouBanInfo.VideoImgLength)]
-        public string VodImgUrl { get; set; }
+        public string? VodImgUrl { get; set; }
         #endregion
 
         /// <summary>

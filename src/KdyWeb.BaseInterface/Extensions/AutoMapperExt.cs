@@ -31,7 +31,7 @@ namespace KdyWeb.BaseInterface.Extensions
         /// <typeparam name="TTarget">目标实体 泛型</typeparam>
         /// <param name="source">源实体类</param>
         /// <returns></returns>
-        public static TTarget MapToExt<TTarget>(this object source)
+        public static TTarget MapToExt<TTarget>(this object? source)
         {
             var mapper = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IMapper>();
             return mapper.Map<TTarget>(source);

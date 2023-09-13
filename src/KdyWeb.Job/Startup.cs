@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.Dto.HttpApi.GameCheck;
-using KdyWeb.Dto.HttpCapture;
 using KdyWeb.HttpApi;
 using KdyWeb.Job.Extensions;
 using KdyWeb.Service.ServiceExtension;
@@ -30,7 +29,7 @@ namespace KdyWeb.Job
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddKdyDefaultExt()
+            services.AddKdyDefaultExt(Configuration)
                 .AddOldJob()
                 .InitHangFireServer(Configuration);
 
@@ -86,11 +85,7 @@ namespace KdyWeb.Job
             });
 
             //gamecheck
-            var check = Configuration.GetSection(KdyWebServiceConst.KdyWebParseConfig.GameCheckConfig);
-            if (check != null)
-            {
-                services.Configure<GameCheckConfig>(check);
-            }
+            services.Configure<GameCheckConfig>(Configuration.GetSection(KdyWebServiceConst.KdyWebParseConfig.GameCheckConfig));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

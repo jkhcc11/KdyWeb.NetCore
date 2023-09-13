@@ -36,7 +36,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 用户邮箱
         /// </summary>
-        public string UserEmail { get; set; }
+        public string? UserEmail { get; set; }
 
         /// <summary>
         /// 用户订阅类型

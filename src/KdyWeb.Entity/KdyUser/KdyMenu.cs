@@ -7,7 +7,7 @@ namespace KdyWeb.Entity
     /// <summary>
     /// 菜单信息
     /// </summary>
-    public class KdyMenu : BaseEntity<int>, IsActivate
+    public class KdyMenu : BaseEntity<int>, IIsActivate
     {
         #region 常量
         /// <summary>

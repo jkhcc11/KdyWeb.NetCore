@@ -43,7 +43,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 导演
         /// </summary>
         [StringLength(DouBanInfo.VideoDirectorsLength)]
-        public string VideoDirectors { get; set; }
+        public string? VideoDirectors { get; set; }
 
         /// <summary>
         /// 下载地址

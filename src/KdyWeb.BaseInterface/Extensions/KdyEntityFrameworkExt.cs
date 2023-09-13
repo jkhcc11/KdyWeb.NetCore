@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.BaseInterface.Extensions
 {
@@ -198,6 +197,73 @@ namespace KdyWeb.BaseInterface.Extensions
             }
 
             return query;
+        }
+
+        /// <summary>
+        /// 分页获取
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<PageList<TEntity>> GetPageListAsync<TEntity>(this IQueryable<TEntity> dbQuery, 
+            object input)
+        {
+            var pageInput = input as IPageInput;
+            if (pageInput == null)
+            {
+                return new PageList<TEntity>(0, 0);
+            }
+
+            if (pageInput.Page <= 0)
+            {
+                pageInput.Page = 1;
+            }
+
+            var result = new PageList<TEntity>(pageInput.Page, pageInput.PageSize);
+            dbQuery = dbQuery.CreateConditions(input);
+            result.DataCount = await dbQuery.CountAsync();
+            if (result.DataCount <= 0)
+            {
+                result.Data = new List<TEntity>();
+                return result;
+            }
+
+            if (pageInput.OrderBy != null &&
+                pageInput.OrderBy.Any())
+            {
+                dbQuery = dbQuery.KdyOrderBy(pageInput);
+            }
+
+            result.Data = await dbQuery.KdyPageList(pageInput).ToListAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// 获取分页
+        /// </summary>
+        /// <typeparam name="TEntity">数据库实体类</typeparam>
+        /// <typeparam name="TDto">Dto</typeparam>
+        /// <returns></returns>
+        public static async Task<PageList<TDto>> GetDtoPageListAsync<TEntity, TDto>(this IQueryable<TEntity> dbQuery,
+            object input)
+            where TDto : class
+        {
+            var pageInput = input as IPageInput;
+            if (pageInput == null)
+            {
+                return new PageList<TDto>(0, 0);
+            }
+
+            if (pageInput.Page <= 0)
+            {
+                pageInput.Page = 1;
+            }
+
+            var dbResult = await dbQuery.GetPageListAsync(input);
+            var result = new PageList<TDto>(pageInput.Page, pageInput.PageSize)
+            {
+                DataCount = dbResult.DataCount,
+                Data = dbResult.Data.MapToListExt<TDto>()
+            };
+            return result;
         }
     }
 }

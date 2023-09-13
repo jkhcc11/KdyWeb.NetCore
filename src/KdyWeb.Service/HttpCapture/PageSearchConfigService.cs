@@ -10,7 +10,6 @@ using KdyWeb.Dto.HttpCapture;
 using KdyWeb.Entity.HttpCapture;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.PageParse;
-using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

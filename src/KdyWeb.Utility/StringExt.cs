@@ -18,7 +18,7 @@ namespace KdyWeb.Utility
         /// 为空校验
         /// </summary>
         /// <returns></returns>
-        public static bool IsEmptyExt(this string str)
+        public static bool IsEmptyExt(this string? str)
         {
             return string.IsNullOrEmpty(str);
         }
@@ -27,9 +27,9 @@ namespace KdyWeb.Utility
         /// Html提取时移除多余字符
         /// </summary>
         /// <returns></returns>
-        public static string InnerHtmlHandler(this string str)
+        public static string InnerHtmlHandler(this string? str)
         {
-            if (str.IsEmptyExt())
+            if (string.IsNullOrEmpty(str))
             {
                 return string.Empty;
             }
@@ -45,7 +45,7 @@ namespace KdyWeb.Utility
         /// <param name="str">待处理字符串</param>
         /// <param name="removeArray">需要移除的字符</param>
         /// <returns></returns>
-        public static string RemoveStrExt(this string str, params string[] removeArray)
+        public static string RemoveStrExt(this string str, params string[]? removeArray)
         {
             if (str.IsEmptyExt() || removeArray == null)
             {

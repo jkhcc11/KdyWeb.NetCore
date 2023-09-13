@@ -48,7 +48,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 描述
         /// </summary>
-        public string VideoSummary { get; set; }
+        public string? VideoSummary { get; set; }
 
         /// <summary>
         /// 主演
@@ -75,13 +75,13 @@ namespace KdyWeb.Entity.SearchVideo
         /// 解说Url
         /// </summary>
         [StringLength(VideoMain.UrlLength)]
-        public string NarrateUrl { get; set; }
+        public string? NarrateUrl { get; set; }
 
         /// <summary>
         /// 版权跳转Url
         /// </summary>
         [StringLength(VideoMain.UrlLength)]
-        public string BanVideoJumpUrl { get; set; }
+        public string? BanVideoJumpUrl { get; set; }
 
         /// <summary>
         /// 影片主表Id
@@ -91,6 +91,6 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 影片主表
         /// </summary>
-        public virtual VideoMain VideoMain { get; set; }
+        public virtual VideoMain? VideoMain { get; set; }
     }
 }

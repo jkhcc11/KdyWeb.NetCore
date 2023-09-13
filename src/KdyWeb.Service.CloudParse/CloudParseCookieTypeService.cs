@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
-using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.CloudParse

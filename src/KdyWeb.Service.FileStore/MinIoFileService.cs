@@ -16,6 +16,7 @@ namespace KdyWeb.Service.FileStore
 {
     /// <summary>
     /// MinIO存储 服务实现
+    /// todo:改成注入方式
     /// </summary>
     public class MinIoFileService : BaseKdyFileService<MinIoFileInput>, IMinIoFileService
     {
@@ -40,14 +41,26 @@ namespace KdyWeb.Service.FileStore
             try
             {
                 //检查存储通是否存在 不存在则创建
-                bool found = await minIoClient.BucketExistsAsync(input.BucketName);
+                var beArgs = new BucketExistsArgs()
+                    .WithBucket(input.BucketName);
+
+                bool found = await minIoClient.BucketExistsAsync(beArgs);
                 if (found == false)
                 {
-                    await minIoClient.MakeBucketAsync(input.BucketName, input.Location);
+                    var mbArgs = new MakeBucketArgs()
+                        .WithBucket(input.BucketName)
+                        .WithLocation(input.Location);
+                    await minIoClient.MakeBucketAsync(mbArgs);
                 }
 
                 await using var memoryStream = new MemoryStream(input.FileBytes);
-                await minIoClient.PutObjectAsync(input.BucketName, input.FileName, memoryStream, memoryStream.Length, contentType);
+
+                var putObjectArgs = new PutObjectArgs()
+                    .WithBucket(input.BucketName)
+                    .WithObject(input.FileName)
+                    .WithStreamData(memoryStream)
+                    .WithContentType(contentType);
+                await minIoClient.PutObjectAsync(putObjectArgs);
 
                 var uploadResult = new KdyFileDto()
                 {
@@ -74,13 +87,27 @@ namespace KdyWeb.Service.FileStore
             var config = _configuration
                 .GetSection(KdyWebServiceConst.MinIoConfigKey)
                 .Get<MinioConfig>();
-            var client = new MinioClient(config.ServerUrl, config.AccessKey, config.SecretKey, "cn-249");
-            if (config.IsSSL)
+            if (config == null)
             {
-                return client.WithSSL();
+                throw new ArgumentNullException($"{nameof(GetMinIoClient)} 未配置");
             }
 
-            return client;
+            var client = new MinioClient()
+                .WithEndpoint(config.ServerUrl)
+                .WithCredentials(config.AccessKey, config.SecretKey)
+                .WithSSL(config.IsSSL)
+                .WithRegion("cn-249");
+
+            return client.Build();
+            //old
+
+            //var client = new MinioClient(config.ServerUrl, config.AccessKey, config.SecretKey, "cn-249");
+            //if (config.IsSSL)
+            //{
+            //    return client.WithSSL();
+            //}
+
+            //return client;
         }
     }
 }

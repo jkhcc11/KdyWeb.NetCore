@@ -17,11 +17,11 @@ namespace KdyWeb.Entity
         /// Md5值  
         /// </summary>
         [StringLength(KdyImgSave.FileMd5Length)]
-        public string FileMd5 { get; set; }
+        public string? FileMd5 { get; set; }
 
         /// <summary>  
         /// 图片路径  
         /// </summary>  
-        public string[] ImgPath { get; set; }
+        public string[]? ImgPath { get; set; }
     }
 }

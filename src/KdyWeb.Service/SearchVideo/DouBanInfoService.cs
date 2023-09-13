@@ -13,7 +13,6 @@ using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.FileStore;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Repository;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

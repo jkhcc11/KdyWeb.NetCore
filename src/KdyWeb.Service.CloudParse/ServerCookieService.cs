@@ -10,7 +10,6 @@ using KdyWeb.Dto.CloudParse;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.IService.CloudParse;
-using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.CloudParse

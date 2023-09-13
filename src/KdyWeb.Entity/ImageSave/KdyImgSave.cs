@@ -77,11 +77,11 @@ namespace KdyWeb.Entity
         /// 备用 
         /// </summary>
         [StringLength(UrlLength)]
-        public string UrlBack { get; set; }
+        public string? UrlBack { get; set; }
 
         /// <summary>
         ///  后期可扩展多个Url 
         /// </summary>
-        public string[] Urls { get; set; }
+        public string[]? Urls { get; set; }
     }
 }

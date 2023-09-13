@@ -40,7 +40,7 @@ namespace KdyWeb.Entity.VideoConverts
         /// <summary>
         /// 订单详情
         /// </summary>
-        public virtual ICollection<ConvertOrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<ConvertOrderDetail>? OrderDetails { get; set; }
 
         /// <summary>
         /// 订单内容
@@ -55,7 +55,7 @@ namespace KdyWeb.Entity.VideoConverts
         /// 订单备注
         /// </summary>
         [StringLength(VideoConvertTask.TaskRemarkLength)]
-        public string OrderRemark { get; set; }
+        public string? OrderRemark { get; set; }
 
         /// <summary>
         /// 设置成功

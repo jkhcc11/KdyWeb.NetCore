@@ -58,7 +58,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 备注
         /// </summary>
         [StringLength(SeriesRemarkLength)]
-        public string SeriesRemark { get; set; }
+        public string? SeriesRemark { get; set; }
 
         /// <summary>
         /// 排序
@@ -69,17 +69,17 @@ namespace KdyWeb.Entity.SearchVideo
         /// 直播Url
         /// </summary>
         [StringLength(LiveUrlLength)]
-        public string LiveUrl { get; set; }
+        public string? LiveUrl { get; set; }
 
         /// <summary>
         /// 系列简介url
         /// </summary>
         [StringLength(SeriesDesUrlLength)]
-        public string SeriesDesUrl { get; set; }
+        public string? SeriesDesUrl { get; set; }
 
         /// <summary>
         /// 系列列表
         /// </summary>
-        public virtual ICollection<VideoSeriesList> SeriesList { get; set; }
+        public virtual ICollection<VideoSeriesList>? SeriesList { get; set; }
     }
 }

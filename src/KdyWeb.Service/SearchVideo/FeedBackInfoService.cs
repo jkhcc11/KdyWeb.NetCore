@@ -13,7 +13,6 @@ using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.Entity.VideoConverts.Enum;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Repository;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;

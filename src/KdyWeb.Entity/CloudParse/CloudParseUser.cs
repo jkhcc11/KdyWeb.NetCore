@@ -21,6 +21,7 @@ namespace KdyWeb.Entity.CloudParse
         {
             UserId = userId;
             UserStatus = ServerCookieStatus.Init;
+            IsHoldLink = false;
         }
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace KdyWeb.Entity.CloudParse
         /// 自有Api地址
         /// </summary>
         [StringLength(SelfApiUrlLength)]
-        public string SelfApiUrl { get; set; }
+        public string? SelfApiUrl { get; set; }
 
         /// <summary>
         /// 防盗链
@@ -53,7 +54,7 @@ namespace KdyWeb.Entity.CloudParse
         /// Api使用
         /// </summary>
         [StringLength(ApiTokenLength)]
-        public string ApiToken { get; protected set; }
+        public string? ApiToken { get; protected set; }
 
         /// <summary>
         /// 初始化token

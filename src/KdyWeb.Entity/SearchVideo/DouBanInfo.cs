@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AutoMapper.Configuration.Conventions;
 using KdyWeb.BaseInterface.BaseModel;
 
 namespace KdyWeb.Entity.SearchVideo
@@ -56,6 +55,12 @@ namespace KdyWeb.Entity.SearchVideo
         public const int ImdbStrLength = 100;
         #endregion
 
+        public DouBanInfo(string videoTitle)
+        {
+            VideoTitle = videoTitle;
+            DouBanInfoStatus = DouBanInfoStatus.SearchWait;
+        }
+
         /// <summary>
         /// 名称
         /// </summary>
@@ -66,12 +71,12 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 豆瓣信息状态
         /// </summary>
-        public DouBanInfoStatus DouBanInfoStatus { get; set; }
+        public DouBanInfoStatus DouBanInfoStatus { get; protected set; }
 
         /// <summary>
         /// 待搜索状态
         /// </summary>
-        public string OldStatus { get; set; }
+        public string? OldStatus { get; set; }
 
         /// <summary>
         /// 影片类型
@@ -81,7 +86,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 影片类型 电视或电影
         /// </summary>
-        public string OldVideoType { get; set; }
+        public string? OldVideoType { get; set; }
 
         /// <summary>
         /// 年份
@@ -93,19 +98,19 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         [StringLength(VideoImgLength)]
         [Required]
-        public string VideoImg { get; set; }
+        public string? VideoImg { get; set; }
 
         /// <summary>
         /// 主演
         /// </summary>
         [StringLength(VideoCastsLength)]
-        public string VideoCasts { get; set; }
+        public string? VideoCasts { get; set; }
 
         /// <summary>
         /// 导演
         /// </summary>
         [StringLength(VideoDirectorsLength)]
-        public string VideoDirectors { get; set; }
+        public string? VideoDirectors { get; set; }
 
         /// <summary>
         /// 影片类型 武侠，动作等
@@ -114,7 +119,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 多个以 ，隔开
         /// </remarks>
         [StringLength(VideoGenresLength)]
-        public string VideoGenres { get; set; }
+        public string? VideoGenres { get; set; }
 
         /// <summary>
         /// 评分
@@ -124,14 +129,14 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 描述
         /// </summary>
-        public string VideoSummary { get; set; }
+        public string? VideoSummary { get; set; }
 
         /// <summary>
         /// 详情Id
         /// </summary>
         [StringLength(VideoDetailIdLength)]
         [Required]
-        public string VideoDetailId { get; set; }
+        public string? VideoDetailId { get; set; }
 
         /// <summary>
         /// 国家
@@ -140,7 +145,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// 多个以 ，隔开
         /// </remarks>
         [StringLength(VideoCountriesLength)]
-        public string VideoCountries { get; set; }
+        public string? VideoCountries { get; set; }
 
         /// <summary>
         /// 评分人数
@@ -162,12 +167,20 @@ namespace KdyWeb.Entity.SearchVideo
         /// </summary>
         /// <remarks>多个名称，逗号隔开</remarks>
         [StringLength(AkaLength)]
-        public string Aka { get; set; }
+        public string? Aka { get; set; }
 
         /// <summary>
         /// Imdb Url
         /// </summary>
         [StringLength(VideoImgLength)]
-        public string ImdbStr { get; set; }
+        public string? ImdbStr { get; set; }
+
+        /// <summary>
+        /// 设置状态
+        /// </summary>
+        public void SetStatus(DouBanInfoStatus douBanInfoStatus)
+        {
+            DouBanInfoStatus = douBanInfoStatus;
+        }
     }
 }

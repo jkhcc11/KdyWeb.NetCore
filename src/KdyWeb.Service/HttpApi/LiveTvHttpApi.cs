@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Repository;
@@ -32,7 +31,7 @@ namespace KdyWeb.Service.HttpApi
         /// <returns></returns>
         public async Task<List<GetAllChannelsDto>> GetAllChannelsAsync()
         {
-            var request = new RestRequest("/api/channels.json", Method.GET);
+            var request = new RestRequest("/api/channels.json");
             var restClient = await GetRestClient();
             var response = await restClient.ExecuteAsync<List<GetAllChannelsDto>>(request);
             if (response.IsSuccessful)
@@ -50,7 +49,7 @@ namespace KdyWeb.Service.HttpApi
         /// <returns></returns>
         public async Task<List<GetAllStreamsDto>> GetAllStreamsAsync()
         {
-            var request = new RestRequest("/api/streams.json", Method.GET);
+            var request = new RestRequest("/api/streams.json");
             var restClient = await GetRestClient();
             var response = await restClient.ExecuteAsync<List<GetAllStreamsDto>>(request);
             if (response.IsSuccessful)
@@ -69,12 +68,18 @@ namespace KdyWeb.Service.HttpApi
         private async Task<RestClient> GetRestClient()
         {
             await Task.CompletedTask;
-            var restClient = new RestClient
+            var options = new RestClientOptions(BaseApi)
             {
-                BaseUrl = new Uri(BaseApi),
                 UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54",
             };
-            restClient.UseNewtonsoftJson();
+            var restClient = new RestClient(options, configureSerialization: cfg => cfg.UseNewtonsoftJson());
+
+            //var restClient = new RestClient
+            //{
+            //    BaseUrl = new Uri(BaseApi),
+            //    UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54",
+            //};
+            //restClient.UseNewtonsoftJson();
             return restClient;
         }
     }

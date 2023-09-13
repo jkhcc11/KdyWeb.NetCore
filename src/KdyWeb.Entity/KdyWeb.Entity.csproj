@@ -1,15 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="..\common.props" />
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="OldVideo\**" />
+	  <EmbeddedResource Remove="OldVideo\**" />
+	  <None Remove="OldVideo\**" />
+	</ItemGroup>
 
   <ItemGroup>
     <Compile Remove="CloudParse\Enum\CloudParseCookieType.cs" />
+    <Compile Remove="KdyUser\KdyRole.cs" />
+    <Compile Remove="KdyUser\KdyUser.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
 	<ItemGroup>

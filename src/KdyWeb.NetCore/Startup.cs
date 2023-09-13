@@ -30,7 +30,7 @@ namespace KdyWeb.NetCore
             //自定义模型校验
             services.AddControllersWithViews(options => { options.Filters.Add<ModelStateValidFilter>(); });
 
-            services.AddKdyDefaultExt();
+            services.AddKdyDefaultExt(Configuration);
 
             //初始化第三方组件
             services.InitHangFire(Configuration);

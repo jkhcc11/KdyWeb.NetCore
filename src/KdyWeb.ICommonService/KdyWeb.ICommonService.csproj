@@ -1,15 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+	  <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\KdyWeb.Dto\KdyWeb.Dto.csproj" />
+    <ProjectReference Include="..\KdyWeb.IRepository\KdyWeb.IRepository.csproj" />
   </ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="106.10.1" />
+		<PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="110.2.0" />
 	</ItemGroup>
 
 </Project>

@@ -45,19 +45,19 @@ namespace KdyWeb.Entity.CloudParse
         /// </summary>
         public long CloudParseCookieTypeId { get; set; }
 
-        public virtual CloudParseCookieType CloudParseCookieType { get; set; }
+        public virtual CloudParseCookieType? CloudParseCookieType { get; set; }
 
         /// <summary>
         /// cookie
         /// </summary>
         [StringLength(CookieInfoLength)]
-        public string CookieInfo { get; set; }
+        public string? CookieInfo { get; set; }
 
         /// <summary>
         /// 别名
         /// </summary>
         [StringLength(AliasLength)]
-        public string Alias { get; set; }
+        public string? Alias { get; set; }
 
         /// <summary>
         /// 旧子账号信息
@@ -67,7 +67,7 @@ namespace KdyWeb.Entity.CloudParse
         ///  支持多个 xxx_id,xxx_id2
         /// </remarks>
         [StringLength(OldSubAccountInfoLength)]
-        public string OldSubAccountInfo { get; set; }
+        public string? OldSubAccountInfo { get; set; }
 
         /// <summary>
         /// 业务Id
@@ -76,6 +76,6 @@ namespace KdyWeb.Entity.CloudParse
         /// 有些下载需要固定带上附加ID，如 分组ID等，这种不支持跨云盘切换，所以手动指定
         /// </remarks>
         [StringLength(BusinessIdLength)]
-        public string BusinessId { get; set; }
+        public string? BusinessId { get; set; }
     }
 }

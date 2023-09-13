@@ -18,10 +18,21 @@ namespace KdyWeb.Entity.CloudParse
         public const string Pan139 = "Pan139";
 
         /// <summary>
+        /// 云盘Cookie类型
+        /// </summary>
+        /// <param name="showText">显示文案</param>
+        /// <param name="businessFlag">业务标识</param>
+        public CloudParseCookieType(string showText, string businessFlag)
+        {
+            ShowText = showText;
+            BusinessFlag = businessFlag;
+        }
+
+        /// <summary>
         /// 显示文案
         /// </summary>
         [StringLength(ShowTextLength)]
-        public string ShowText { get; set; }
+        public string ShowText { get; protected set; }
 
         /// <summary>
         /// 业务标识
@@ -30,7 +41,7 @@ namespace KdyWeb.Entity.CloudParse
         /// 网盘标识
         /// </remarks>
         [StringLength(BusinessFlagLength)]
-        public string BusinessFlag { get; set; }
+        public string BusinessFlag { get; protected set; }
 
         /// <summary>
         /// 是否需要服务器Cookie

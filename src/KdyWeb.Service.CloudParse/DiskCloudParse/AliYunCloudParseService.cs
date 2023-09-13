@@ -48,9 +48,10 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         {
             KdyRequestCommonInput = new KdyRequestCommonInput("https://api.aliyundrive.com")
             {
-                UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0",
+                //UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0",
                 TimeOut = 5000,
-                ExtData = new KdyRequestCommonExtInput()
+                ExtData = new KdyRequestCommonExtInput(),
+                Referer = "https://aliyundrive.com"
             };
         }
 
@@ -619,10 +620,10 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             var postJson = JsonConvert.SerializeObject(reqData);
             var hc = new Dictionary<string, string>()
             {
-                {"Authorization",$"Bearer {token.Data.Token}"},
                 {"x-signature",signStr},
                 {"x-device-id",token.Data.DeviceId},
                 {"x-request-id",Guid.NewGuid().ToString("n")},
+                {"Authorization",$"Bearer {token.Data.Token}"},
             };
 
             KdyRequestCommonInput.ExtData.HeardDic = hc;

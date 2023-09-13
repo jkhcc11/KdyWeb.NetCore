@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BencodeNET.Parsing;
-using BencodeNET.Torrents;
 using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Repository;
@@ -21,8 +18,6 @@ using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using RestSharp;
-using RestSharp.Serializers.NewtonsoftJson;
 
 namespace KdyWeb.Service.GameDown
 {
@@ -281,46 +276,47 @@ namespace KdyWeb.Service.GameDown
         /// 根据种子文件转换磁力
         /// </summary>
         /// <returns></returns>
-        public async Task<ConvertMagnetByByTorrentUrlDto> ConvertMagnetByByTorrentUrlAsync(ConvertMagnetByByTorrentInput input)
+        public Task<ConvertMagnetByByTorrentUrlDto> ConvertMagnetByByTorrentUrlAsync(ConvertMagnetByByTorrentInput input)
         {
-            var restClient = new RestClient
-            {
-                UserAgent = input.UserAgent,
-            };
-            restClient.UseNewtonsoftJson();
+            throw new NotImplementedException("文件转磁力为实现");
+            //var restClient = new RestClient
+            //{
+            //    UserAgent = input.UserAgent,
+            //};
+            //restClient.UseNewtonsoftJson();
 
-            var request = new RestRequest(input.TorrentUrl, Method.GET);
-            request.AddHeader("Cookie", input.Cookie);
-            request.AddHeader("Referer", input.Referer);
-            var response = await restClient.ExecuteAsync(request);
-            if (response.IsSuccessful == false)
-            {
-                if (response.StatusCode == HttpStatusCode.Forbidden)
-                {
-                    if (response.Content == "Access denied")
-                    {
-                        //已更新 重新获取详情
-                        return default;
-                    }
+            //var request = new RestRequest(input.TorrentUrl, Method.GET);
+            //request.AddHeader("Cookie", input.Cookie);
+            //request.AddHeader("Referer", input.Referer);
+            //var response = await restClient.ExecuteAsync(request);
+            //if (response.IsSuccessful == false)
+            //{
+            //    if (response.StatusCode == HttpStatusCode.Forbidden)
+            //    {
+            //        if (response.Content == "Access denied")
+            //        {
+            //            //已更新 重新获取详情
+            //            return default;
+            //        }
 
-                    //请求被拦截 重试
-                    throw new KdyCustomException($"下载Url:{input.TorrentUrl}.请求被拦截");
-                }
+            //        //请求被拦截 重试
+            //        throw new KdyCustomException($"下载Url:{input.TorrentUrl}.请求被拦截");
+            //    }
 
-                KdyLog.LogWarning($"分页Url:{input.TorrentUrl}异常.{response.ToJsonStr()}");
-                return default;
-            }
+            //    KdyLog.LogWarning($"分页Url:{input.TorrentUrl}异常.{response.ToJsonStr()}");
+            //    return default;
+            //}
 
-            //解析种子
-            var parser = new BencodeParser();
-            var fileStream = new MemoryStream(response.RawBytes);
-            var torrent = parser.Parse<Torrent>(fileStream);
-            return new ConvertMagnetByByTorrentUrlDto()
-            {
-                FileName = torrent.DisplayName,
-                InfoHash = torrent.OriginalInfoHash,
-                MagnetLink = torrent.GetMagnetLink(MagnetLinkOptions.None)
-            };
+            ////解析种子
+            //var parser = new BencodeParser();
+            //var fileStream = new MemoryStream(response.RawBytes);
+            //var torrent = parser.Parse<Torrent>(fileStream);
+            //return new ConvertMagnetByByTorrentUrlDto()
+            //{
+            //    FileName = torrent.DisplayName,
+            //    InfoHash = torrent.OriginalInfoHash,
+            //    MagnetLink = torrent.GetMagnetLink(MagnetLinkOptions.None)
+            //};
         }
 
         /// <summary>

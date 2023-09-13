@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AspNetCoreRateLimit;
-using AspNetCoreRateLimit.Redis;
 using IdentityModel;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.Extensions;
@@ -32,12 +31,15 @@ namespace KdyWeb.HttpApi
         /// 添加默认扩展
         /// </summary>
         /// <returns></returns>
-        public static IServiceCollection AddKdyDefaultExt(this IServiceCollection services)
+        public static IServiceCollection AddKdyDefaultExt(this IServiceCollection services,
+            IConfiguration configuration)
         {
             //清空微软默认的cliam type
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            //var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+            //var configuration =services.BuildServiceProvider()
+
 
             //关闭ModelState自动校验
             services.Configure<ApiBehaviorOptions>(option =>
@@ -68,7 +70,7 @@ namespace KdyWeb.HttpApi
                 );
 
             #region ids
-            services.Configure<KdyAuthServerOption>(configuration?.GetSection("AuthServer"));
+            services.Configure<KdyAuthServerOption>(configuration.GetSection("AuthServer"));
             var authServer = configuration?.GetSection("AuthServer").Get<KdyAuthServerOption>();
             if (authServer != null)
             {
@@ -178,7 +180,7 @@ namespace KdyWeb.HttpApi
                     .AddMiniProfile();
 
             //自有host
-            services.Configure<KdySelfHostOption>(configuration?.GetSection(KdyWebServiceConst.SelfHostKey));
+            services.Configure<KdySelfHostOption>(configuration.GetSection(KdyWebServiceConst.SelfHostKey));
 
             var allowHost = configuration.GetValue<string>("AllowedHosts");
             if (string.IsNullOrEmpty(allowHost))

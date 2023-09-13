@@ -54,36 +54,53 @@ namespace KdyWeb.Entity.HttpCapture
         #endregion
 
         /// <summary>
+        /// 站点页面搜索配置
+        /// </summary>
+        /// <param name="hostName">站点名</param>
+        /// <param name="baseHost">搜索域名</param>
+        /// <param name="configHttpMethod">搜索请求方法</param>
+        /// <param name="serviceFullName">服务实例名</param>
+        public PageSearchConfig(string hostName, string baseHost,
+            ConfigHttpMethod configHttpMethod, string serviceFullName)
+        {
+            HostName = hostName;
+            BaseHost = baseHost;
+            ConfigHttpMethod = configHttpMethod;
+            ServiceFullName = serviceFullName;
+            SearchConfigStatus = SearchConfigStatus.Normal;
+        }
+
+        /// <summary>
         /// 站点名
         /// </summary>
         [Required]
         [StringLength(HostNameLength)]
-        public string HostName { get; set; }
+        public string HostName { get; protected set; }
 
         /// <summary>
         /// 站点备注
         /// </summary>
         [StringLength(HostRemarkLength)]
-        public string HostRemark { get; set; }
+        public string? HostRemark { get; set; }
 
         /// <summary>
         /// 搜索域名
         /// </summary>
         [StringLength(BaseHostLength)]
         [Required]
-        public string BaseHost { get; set; }
+        public string BaseHost { get; protected set; }
 
         /// <summary>
         /// 备用域名
         /// </summary>
         [StringLength(OtherHostLength)]
-        public string OtherHost { get; set; }
+        public string? OtherHost { get; set; }
 
         /// <summary>
         /// 用户代理
         /// </summary>
         [StringLength(UserAgentLength)]
-        public string UserAgent { get; set; }
+        public string? UserAgent { get; set; }
 
         /// <summary>
         /// 搜索请求方法
@@ -91,7 +108,7 @@ namespace KdyWeb.Entity.HttpCapture
         /// <remarks>
         /// Get、Post
         /// </remarks>
-        public ConfigHttpMethod ConfigHttpMethod { get; set; }
+        public ConfigHttpMethod ConfigHttpMethod { get; protected set; }
 
         /// <summary>
         /// 搜索路径
@@ -101,13 +118,13 @@ namespace KdyWeb.Entity.HttpCapture
         /// </remarks>
         [StringLength(SearchPathLength)]
 
-        public string SearchPath { get; set; }
+        public string? SearchPath { get; set; }
 
         /// <summary>
         /// Post数据
         /// </summary>
         [StringLength(SearchDataLength)]
-        public string SearchData { get; set; }
+        public string? SearchData { get; set; }
 
         /// <summary>
         /// 服务实例名
@@ -122,13 +139,13 @@ namespace KdyWeb.Entity.HttpCapture
         /// </summary>
         [StringLength(XpathLength)]
         [Required]
-        public string SearchXpath { get; set; }
+        public string? SearchXpath { get; set; }
 
         /// <summary>
         /// 搜索页 完结匹配Xpath
         /// </summary>
         [StringLength(XpathLength)]
-        public string EndXpath { get; set; }
+        public string? EndXpath { get; set; }
 
         /// <summary>
         /// 未完结 标识
@@ -137,17 +154,17 @@ namespace KdyWeb.Entity.HttpCapture
         /// 更新至、连载中、连载至等
         /// </remarks>
         [StringLength(NotEndKeyLength)]
-        public string NotEndKey { get; set; }
+        public string? NotEndKey { get; set; }
 
         /// <summary>
         /// 图片所在A标签属性name
         /// </summary>
-        public string[] ImgAttr { get; set; }
+        public string[]? ImgAttr { get; set; }
 
         /// <summary>
         /// 名称所在A标签属性name
         /// </summary>
-        public string[] NameAttr { get; set; }
+        public string[]? NameAttr { get; set; }
         #endregion
 
         #region 详情页
@@ -156,25 +173,25 @@ namespace KdyWeb.Entity.HttpCapture
         /// </summary>
         [StringLength(XpathLength)]
         [Required]
-        public string DetailXpath { get; set; }
+        public string? DetailXpath { get; set; }
 
         /// <summary>
         /// 详情图片匹配Xpath
         /// </summary>
         [StringLength(XpathLength)]
-        public string DetailImgXpath { get; set; }
+        public string? DetailImgXpath { get; set; }
 
         /// <summary>
         /// 详情名称匹配Xpath
         /// </summary>
         [StringLength(XpathLength)]
-        public string DetailNameXpath { get; set; }
+        public string? DetailNameXpath { get; set; }
 
         /// <summary>
         /// 详情完结匹配Xpath
         /// </summary>
         [StringLength(XpathLength)]
-        public string DetailEndXpath { get; set; }
+        public string? DetailEndXpath { get; set; }
 
         /// <summary>
         /// 播放地址后缀 
@@ -182,24 +199,24 @@ namespace KdyWeb.Entity.HttpCapture
         /// <remarks>
         ///  适用于资源站(从前往后匹配)
         /// </remarks>
-        public string[] PlayUrlSuffix { get; set; }
+        public string[]? PlayUrlSuffix { get; set; }
 
         /// <summary>
         /// 详情页年份Xpath
         /// </summary>
-        public string YearXpath { get; set; }
+        public string? YearXpath { get; set; }
         #endregion
 
         /// <summary>
         /// 采集详情地址 
         /// </summary>
-        public string[] CaptureDetailUrl { get; set; }
+        public string[]? CaptureDetailUrl { get; set; }
 
         /// <summary>
         /// 采集详情匹配Xpath
         /// </summary>
         [StringLength(XpathLength)]
-        public string CaptureDetailXpath { get; set; }
+        public string? CaptureDetailXpath { get; set; }
 
         /// <summary>
         /// 采集详情名称处理
@@ -209,11 +226,19 @@ namespace KdyWeb.Entity.HttpCapture
         ///  xxxxHD高清->xxxx <br/>
         ///  xxxx更新至36集->xxxx <br/>
         /// </remarks>
-        public string[] CaptureDetailNameSplit { get; set; }
+        public string[]? CaptureDetailNameSplit { get; set; }
 
         /// <summary>
         /// 配置状态
         /// </summary>
-        public SearchConfigStatus SearchConfigStatus { get; set; }
+        public SearchConfigStatus SearchConfigStatus { get; protected set; }
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        public void Ban()
+        {
+            SearchConfigStatus = SearchConfigStatus.Ban;
+        }
     }
 }

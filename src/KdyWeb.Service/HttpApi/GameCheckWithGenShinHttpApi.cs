@@ -38,7 +38,7 @@ namespace KdyWeb.Service.HttpApi
 
         public async Task<GenShinResult<DailyNoteResult>> QueryDailyNoteAsync(QueryDailyNoteInput input)
         {
-            var request = new RestRequest("/api/dailyNote", Method.GET);
+            var request = new RestRequest("/api/dailyNote");
             request.AddQueryParameter("server", input.Region);
             request.AddQueryParameter("role_id", input.Uid);
             request.AddHeader("DS", BuildDs(input.Salt, $"server={input.Region}&role_id={input.Uid}"));
@@ -57,7 +57,7 @@ namespace KdyWeb.Service.HttpApi
 
         public async Task<GenShinResult<SignRewardResult>> BBsSignRewardAsync(BBsSignRewardInput input)
         {
-            var request = new RestRequest("/event/bbs_sign_reward/sign", Method.POST);
+            var request = new RestRequest("/event/bbs_sign_reward/sign", Method.Post);
             var reqBody = new
             {
                 act_id = input.ActId,
@@ -83,7 +83,7 @@ namespace KdyWeb.Service.HttpApi
 
         public async Task<GenShinResult<QuerySignInfoResult>> QuerySignInfoAsync(QuerySignInfoInput input)
         {
-            var request = new RestRequest("/event/bbs_sign_reward/info", Method.GET);
+            var request = new RestRequest("/event/bbs_sign_reward/info");
             request.AddQueryParameter("act_id", input.ActId);
             request.AddQueryParameter("region", input.Region);
             request.AddQueryParameter("uid", input.Uid);
@@ -107,7 +107,7 @@ namespace KdyWeb.Service.HttpApi
         /// <returns></returns>
         public async Task<GenShinResult<QueryUserBindInfoByCookieResult>> QueryUserBindInfoByCookieAsync(QueryUserBindInfoByCookieInput input)
         {
-            var request = new RestRequest("/binding/api/getUserGameRolesByCookie", Method.GET);
+            var request = new RestRequest("/binding/api/getUserGameRolesByCookie");
             request.AddHeader("Cookie", input.Cookie);
             request.AddHeader("Referer", "https://app.mihoyo.com");
             request.AddHeader("x-rpc-app_version", input.Version);
@@ -129,16 +129,22 @@ namespace KdyWeb.Service.HttpApi
         private async Task<RestClient> GetRestClient()
         {
             await Task.CompletedTask;
-            var restClient = new RestClient
+
+            var options = new RestClientOptions(DailyNoteApi)
             {
-                BaseUrl = new Uri(DailyNoteApi),
-                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54",
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54"
             };
+
+            var restClient = new RestClient(options, configureSerialization: cfg => cfg.UseNewtonsoftJson());
+
+            //var restClient = new RestClient
+            //{
+            //    BaseUrl = new Uri(DailyNoteApi),
+            //    UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54",
+            //};
             restClient.AddDefaultHeader("x-requested-with", "com.mihoyo.hyperion");
             restClient.AddDefaultHeader("x-rpc-client_type", "5");
-
             restClient.AddDefaultHeader("Accept", "application/json,text/plain,*/*");
-            restClient.UseNewtonsoftJson();
             return restClient;
         }
 
@@ -149,18 +155,23 @@ namespace KdyWeb.Service.HttpApi
         private async Task<RestClient> GetBbsRestClient()
         {
             await Task.CompletedTask;
-            var restClient = new RestClient
+            //var restClient = new RestClient
+            //{
+            //    BaseUrl = new Uri(BbsApi),
+            //    UserAgent = _gameCheckConfig.BbsUserAgent,
+            //};
+            var options = new RestClientOptions(BbsApi)
             {
-                BaseUrl = new Uri(BbsApi),
                 UserAgent = _gameCheckConfig.BbsUserAgent,
             };
+            var restClient = new RestClient(options, configureSerialization: cfg => cfg.UseNewtonsoftJson());
+
             restClient.AddDefaultHeader("x-rpc-client_type", "2");
             restClient.AddDefaultHeader("x-rpc-sys_version", "6.0.1");
             restClient.AddDefaultHeader("x-rpc-channel", "miyousheluodi");
             restClient.AddDefaultHeader("x-rpc-device_id", Guid.NewGuid().ToString("N"));
             restClient.AddDefaultHeader("x-rpc-device_name", GetRandomStr());
             restClient.AddDefaultHeader("x-rpc-device_model", "Mi 10");
-            restClient.UseNewtonsoftJson();
             return restClient;
         }
 

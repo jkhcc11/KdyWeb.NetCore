@@ -7,7 +7,7 @@ namespace KdyWeb.Entity
     /// <summary>
     /// 角色
     /// </summary>
-    public class KdyRole : BaseEntity<int>, IsActivate
+    public class KdyRole : BaseEntity<int>, IIsActivate
     {
         /// <summary>
         /// 角色类型

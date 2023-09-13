@@ -33,7 +33,7 @@ namespace KdyWeb.CommonService
 
         public async Task<KdyResult<CreateUserResponse>> CreateUserAsync(string userName, string userNick, string userEmail)
         {
-            var request = new RestRequest("/api/Users", Method.POST);
+            var request = new RestRequest("/api/Users", Method.Post);
             request.AddJsonBody(new
             {
                 userName = userName,
@@ -68,7 +68,7 @@ namespace KdyWeb.CommonService
         /// <returns></returns>
         public async Task<KdyResult> ChangePwdAsync(long userId, string pwd)
         {
-            var request = new RestRequest("/api/Users/ChangePassword", Method.POST);
+            var request = new RestRequest("/api/Users/ChangePassword", Method.Post);
             request.AddJsonBody(new
             {
                 userId = userId,
@@ -86,7 +86,7 @@ namespace KdyWeb.CommonService
 
         public async Task<KdyResult> SetUserRoleAsync(long userId, long roleId)
         {
-            var request = new RestRequest("/api/Users/Roles", Method.POST);
+            var request = new RestRequest("/api/Users/Roles", Method.Post);
             request.AddJsonBody(new
             {
                 userId = userId,
@@ -103,7 +103,7 @@ namespace KdyWeb.CommonService
 
         public async Task<KdyResult<SearchUserResponse>> SearchUserAsync(string userEmail)
         {
-            var request = new RestRequest("/api/Users", Method.GET);
+            var request = new RestRequest("/api/Users");
             request.AddParameter("searchText", userEmail);
             var response = await SendHttp<SearchUserResponse>(request);
             if (response.IsSuccess == false)
@@ -116,7 +116,7 @@ namespace KdyWeb.CommonService
 
         public async Task<KdyResult> SetUserClaimsAsync(long userId, string claimType, string claimValue)
         {
-            var request = new RestRequest("/api/Users/Claims", Method.POST);
+            var request = new RestRequest("/api/Users/Claims", Method.Post);
             request.AddJsonBody(new
             {
                 userId = userId,
@@ -134,7 +134,7 @@ namespace KdyWeb.CommonService
 
         public async Task<KdyResult> UpdateUserClaimsAsync(long userId, int claimId, string claimType, string claimValue)
         {
-            var request = new RestRequest("/api/Users/Claims", Method.PUT);
+            var request = new RestRequest("/api/Users/Claims", Method.Put);
             request.AddJsonBody(new
             {
                 claimId = claimId,
@@ -153,7 +153,7 @@ namespace KdyWeb.CommonService
 
         public async Task<KdyResult<GetUserClaimsResponse>> GetUserClaimsAsync(long userId)
         {
-            var request = new RestRequest($"/api/Users/{userId}/Claims", Method.GET);
+            var request = new RestRequest($"/api/Users/{userId}/Claims");
             var response = await SendHttp<GetUserClaimsResponse>(request);
             if (response.IsSuccess == false)
             {
@@ -218,12 +218,20 @@ namespace KdyWeb.CommonService
         private async Task<RestClient> GetRestClient()
         {
             var mgrToken = await _crossRequestService.GetAuthCenterMgrTokenAsync();
-            var restClient = new RestClient
+
+            var options = new RestClientOptions(_kdyAuthServerOption.AuthMgrApiHost)
             {
-                Authenticator = new JwtAuthenticator(mgrToken.AccessToken),
-                BaseUrl = new Uri(_kdyAuthServerOption.AuthMgrApiHost)
+                Authenticator = new JwtAuthenticator(mgrToken.AccessToken)
             };
-            return restClient;
+            return new RestClient(options);
+
+            //old
+            //var restClient = new RestClient
+            //{
+            //    Authenticator = new JwtAuthenticator(mgrToken.AccessToken),
+            //    BaseUrl = new Uri()
+            //};
+            // return restClient;
         }
 
     }

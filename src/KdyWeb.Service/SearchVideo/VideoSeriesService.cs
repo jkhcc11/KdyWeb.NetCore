@@ -9,7 +9,6 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.SearchVideo
