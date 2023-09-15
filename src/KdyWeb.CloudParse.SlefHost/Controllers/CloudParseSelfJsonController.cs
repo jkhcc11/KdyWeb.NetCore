@@ -9,6 +9,7 @@ using KdyWeb.IService.CloudParse;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.CloudParse.SelfHost.Controllers
 {
@@ -22,12 +23,15 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         private readonly IDiskParseService _diskParseService;
         private readonly IConfiguration _configuration;
         private readonly ISubAccountService _subAccountService;
+        private readonly ILogger<CloudParseSelfJsonController> _logger;
         public CloudParseSelfJsonController(IDiskParseService diskParseService,
-            IConfiguration configuration, ISubAccountService subAccountService)
+            IConfiguration configuration, ISubAccountService subAccountService, 
+            ILogger<CloudParseSelfJsonController> logger)
         {
             _diskParseService = diskParseService;
             _configuration = configuration;
             _subAccountService = subAccountService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -35,7 +39,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("parse")]
-        public async Task<JsonParseDto> SelfParseAsync(SelfParseInput input)
+        public async Task<JsonParseDto> SelfParseAsync([FromForm]SelfParseInput input)
         {
             var desKey = _configuration.GetValue<string>(KdyWebServiceConst.DesKey, "hcc11com");
             var decodeUrl = input.EncodeUrl.DesHexToStr(desKey);
@@ -51,7 +55,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
                         var cloudType = tempArray[2]; //天翼个人、阿里、天翼家庭
                         var cloudUser = tempArray[3]; //用户昵称 xx_xx
                         var cloudIdOrName = tempArray[4]; //id或name hex
-                        var cloudModel = tempArray.Last(); // 2 id 6 name
+                        var cloudModel = tempArray.Last(); // 2 id 6|7 name 
 
                         return await SelfParseOldAsync(cloudType, cloudUser, cloudIdOrName, cloudModel);
                     }
@@ -78,18 +82,24 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         private async Task<JsonParseDto> SelfParseOldAsync(string cloudType, string cloudUser,
             string cloudIdOrName, string cloudModel)
         {
+            _logger.LogInformation("OldParse,{cloudType},{cloudUser},{cloudIdOrName},{cloudModel}",
+                cloudType,
+                cloudUser,
+                cloudIdOrName,
+                cloudModel);
             var businessFlag = CacheKeyConst.ToBusinessFlag(cloudType);
             var cachePrefix = $"{CacheKeyConst.BusinessFlagToDownCachePrefix(businessFlag)}:";
             KdyResult<CommonParseDto> parseResult;
+            var isName = cloudModel != "2";
             if (CloudParseCookieType.IsNeedServerCookie(businessFlag))
             {
                 parseResult = await _diskParseService.CommonParseWithServerCookieAsync(cachePrefix, businessFlag,
-                    cloudUser, cloudIdOrName, false, cloudModel == "6");
+                    cloudUser, cloudIdOrName, false, isName);
             }
             else
             {
                 parseResult = await _diskParseService.CommonParseAsync(cachePrefix, businessFlag,
-                    cloudUser, cloudIdOrName, false, cloudModel == "6");
+                    cloudUser, cloudIdOrName, false, isName);
             }
 
             if (parseResult.IsSuccess)

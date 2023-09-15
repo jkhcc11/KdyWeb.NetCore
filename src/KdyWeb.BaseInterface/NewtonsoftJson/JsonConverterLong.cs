@@ -8,7 +8,7 @@ namespace KdyWeb.BaseInterface
     /// </summary>
     public class JsonConverterLong : JsonConverter
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             if (value == null)
             {
@@ -19,7 +19,7 @@ namespace KdyWeb.BaseInterface
             writer.WriteValue(value + "");
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.ValueType == null ||
                 reader.Value == null ||

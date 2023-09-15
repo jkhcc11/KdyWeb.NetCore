@@ -63,8 +63,10 @@ namespace KdyWeb.Service.CloudParse
                     return KdyResult.Error(KdyResultCode.Error, "修改失败,暂无信息");
                 }
 
-                dbEntity.ShowText = input.ShowText;
-                dbEntity.BusinessFlag = input.BusinessFlag;
+                dbEntity.SetShowText(input.ShowText);
+                dbEntity.SetBusinessFlag(input.BusinessFlag);
+                //dbEntity.ShowText = input.ShowText;
+                //dbEntity.BusinessFlag = input.BusinessFlag;
                 _cloudParseCookieTypeRepository.Update(dbEntity);
             }
             else
@@ -75,11 +77,7 @@ namespace KdyWeb.Service.CloudParse
                 }
 
                 //新增
-                var dbEntity = new CloudParseCookieType()
-                {
-                    ShowText = input.ShowText,
-                    BusinessFlag = input.BusinessFlag
-                };
+                var dbEntity = new CloudParseCookieType(input.ShowText, input.BusinessFlag);
                 await _cloudParseCookieTypeRepository.CreateAsync(dbEntity);
             }
 

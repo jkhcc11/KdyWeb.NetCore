@@ -28,9 +28,8 @@ namespace KdyWeb.Test
         public async Task TestRollback()
         {
             //第一步成功
-            var dbDouBan = new DouBanInfo()
+            var dbDouBan = new DouBanInfo("null")
             {
-                VideoTitle = "null",
                 VideoImg = "",
                 VideoDetailId = ""
             };
@@ -39,9 +38,8 @@ namespace KdyWeb.Test
             await _service.SaveChangesAsync();
 
             //第二步异常
-            dbDouBan = new DouBanInfo()
+            dbDouBan = new DouBanInfo(null)
             {
-                VideoTitle = null,
                 VideoImg = "",
                 VideoDetailId = ""
             };
@@ -62,9 +60,8 @@ namespace KdyWeb.Test
         public async Task TestSubmit()
         {
             //第一步正常
-            var dbDouBan = new DouBanInfo()
+            var dbDouBan = new DouBanInfo("测试标题")
             {
-                VideoTitle = "测试标题",
                 VideoImg = "https://www.baidu.com",
                 VideoDetailId = "123456"
             };

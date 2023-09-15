@@ -11,6 +11,7 @@ using KdyWeb.Dto.CloudParse;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.Utility;
 using System;
+using System.Collections.Generic;
 using KdyWeb.BaseInterface;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using Microsoft.AspNetCore.Http;
@@ -268,12 +269,24 @@ namespace KdyWeb.Service.CloudParse
             string cachePrefix, CloudParseUserChildrenCacheItem subAccountCache)
         {
             //文件信息
-            var tempStr = fileInfo.HexToStr();
-            var tempArray = tempStr.Split('|');
-
-            var fileId = tempArray.First();
+            //todo:兼容旧版 如果旧版tyPerson没有
+            string fileId;
             var fileName = string.Empty;
+            var tempStr = string.Empty;
+            string[] tempArray={ tempStr };
             var downUrlSearchType = DownUrlSearchType.FileId;
+            if (long.TryParse(fileInfo, out long tyFileId))
+            {
+                fileId = tyFileId + "";
+                tempStr = fileInfo;
+            }
+            else
+            {
+                tempStr = fileInfo.HexToStr();
+                tempArray = tempStr.Split('|');
+                fileId = tempArray.First();
+            }
+
             if (isName)
             {
                 fileName = tempArray.First();
@@ -321,6 +334,12 @@ namespace KdyWeb.Service.CloudParse
             //特殊下载参数
             switch (cloudParseType)
             {
+                case CloudParseCookieType.Ali:
+                    {
+                        //强制切片
+                        downReqInput.IsTs = true;
+                        break;
+                    }
                 case CloudParseCookieType.BitQiu:
                     {
                         #region st

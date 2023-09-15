@@ -178,7 +178,7 @@ namespace KdyWeb.Service.HttpCapture
             newConfig.ModifyUserId = null;
             newConfig.CreatedUserId = null;
             newConfig.CreatedTime = DateTime.Now;
-            newConfig.HostName = $"{newConfig.HostName} 副本";
+            //newConfig.HostName = $"{newConfig.HostName} 副本";
             await _pageSearchConfigRepository.CreateAsync(newConfig);
 
             await UnitOfWork.SaveChangesAsync();

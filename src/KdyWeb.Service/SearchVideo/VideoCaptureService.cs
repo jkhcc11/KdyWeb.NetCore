@@ -113,7 +113,8 @@ namespace KdyWeb.Service.SearchVideo
             var dbDouBan = await _douBanInfoRepository
                 .GetQuery()
                 .FirstOrDefaultAsync(a => a.Id == douBanInfo.Data.Id);
-            dbDouBan.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
+            dbDouBan.SetSearchEnd();
+            //dbDouBan.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
             _douBanInfoRepository.Update(dbDouBan);
 
             //生成影片信息

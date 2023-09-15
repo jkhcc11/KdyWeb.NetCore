@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -317,7 +316,8 @@ namespace KdyWeb.Utility
             if (string.IsNullOrEmpty(strSource))
                 return string.Empty;
             strSource += solt;
-            var md5 = new MD5CryptoServiceProvider();
+            //var md5 = new MD5CryptoServiceProvider();
+            var md5 = MD5.Create();
             var data = Encoding.Default.GetBytes(strSource); //将字符编码为一个字节序列
             var md5Data = md5.ComputeHash(data); //计算data字节数组的哈希值
             md5.Clear(); //释放资源
@@ -333,10 +333,11 @@ namespace KdyWeb.Utility
         {
             if (string.IsNullOrEmpty(strSource))
                 return string.Empty;
-            var md5 = new SHA1CryptoServiceProvider();
+            //var md5 = new SHA1CryptoServiceProvider();
+            var sha1 = SHA1.Create();
             var data = Encoding.Default.GetBytes(strSource); //将字符编码为一个字节序列
-            var md5Data = md5.ComputeHash(data); //计算data字节数组的哈希值
-            md5.Clear(); //释放资源
+            var md5Data = sha1.ComputeHash(data); //计算data字节数组的哈希值
+            sha1.Clear(); //释放资源
             return md5Data.Aggregate("", (current, t) => current + t.ToString("x").PadLeft(2, '0'));
         }
 
@@ -397,7 +398,8 @@ namespace KdyWeb.Utility
                 //rgbIV与rgbKey可以不一样
                 //var rgbIv = keys;
                 var inputByteArray = Encoding.UTF8.GetBytes(str);
-                var desCryptoService = new DESCryptoServiceProvider();
+                //var desCryptoService = new DESCryptoServiceProvider();
+                var desCryptoService = DES.Create();
                 var mStream = new MemoryStream();
                 var cStream = new CryptoStream(mStream, desCryptoService.CreateEncryptor(rgbKey, rgbIv), CryptoStreamMode.Write);
                 cStream.Write(inputByteArray, 0, inputByteArray.Length);
@@ -430,7 +432,8 @@ namespace KdyWeb.Utility
                     inputByteArray = Convert.FromBase64String(str);
                 }
 
-                var desCryptoService = new DESCryptoServiceProvider();
+                //var desCryptoService = new DESCryptoServiceProvider();
+                var desCryptoService = DES.Create();
                 var mStream = new MemoryStream();
                 var cStream = new CryptoStream(mStream, desCryptoService.CreateDecryptor(rgbKey, rgbIv), CryptoStreamMode.Write);
                 cStream.Write(inputByteArray, 0, inputByteArray.Length);
@@ -488,7 +491,7 @@ namespace KdyWeb.Utility
         /// <returns></returns>
         public static string ByteToHexStr(this byte[] vByte)
         {
-            if (vByte == null || vByte.Length < 1)
+            if (vByte.Length < 1)
             {
                 return null;
             }

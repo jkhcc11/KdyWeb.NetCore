@@ -4,16 +4,9 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-	<ItemGroup>
-	  <Compile Remove="OldVideo\**" />
-	  <EmbeddedResource Remove="OldVideo\**" />
-	  <None Remove="OldVideo\**" />
-	</ItemGroup>
 
   <ItemGroup>
     <Compile Remove="CloudParse\Enum\CloudParseCookieType.cs" />
-    <Compile Remove="KdyUser\KdyRole.cs" />
-    <Compile Remove="KdyUser\KdyUser.cs" />
   </ItemGroup>
 
   <ItemGroup>

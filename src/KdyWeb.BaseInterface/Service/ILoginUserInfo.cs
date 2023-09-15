@@ -15,22 +15,22 @@ namespace KdyWeb.BaseInterface.Service
         /// <summary>
         /// 浏览器Agent
         /// </summary>
-        string UserAgent { get; set; }
+        string? UserAgent { get; set; }
 
         /// <summary>
         /// 昵称
         /// </summary>
-        string UserNick { get; set; }
+        string? UserNick { get; set; }
 
         /// <summary>
         /// 用户名
         /// </summary>
-        string UserName { get; set; }
+        string? UserName { get; set; }
 
         /// <summary>
         /// 用户邮箱
         /// </summary>
-        string UserEmail { get; set; }
+        string? UserEmail { get; set; }
 
         /// <summary>
         /// 用户Id
@@ -51,12 +51,12 @@ namespace KdyWeb.BaseInterface.Service
         /// <summary>
         /// 登录Token
         /// </summary>
-        string LoginToken { get; set; }
+        string? LoginToken { get; set; }
 
         /// <summary>
         /// 角色名
         /// </summary>
-        string RoleName { get; set; }
+        string? RoleName { get; set; }
 
         /// <summary>
         /// 是否资源管理

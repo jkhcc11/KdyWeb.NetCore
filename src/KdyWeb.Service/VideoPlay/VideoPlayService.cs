@@ -51,7 +51,7 @@ namespace KdyWeb.Service
 
             var cloudParsePrefix = new[]
             {
-                "/Cloud/Down", "/self-api-v2",
+                "/Cloud/Down", "/player-v2","/api-v2"
             };
             var epUrl = epInfo.Data.EpisodeUrl;
             var cloudDiskParseHost = _configuration.GetValue<string>(KdyWebServiceConst.CloudDiskParseHost);
@@ -75,8 +75,10 @@ namespace KdyWeb.Service
                     .Replace("http://", "")
                     .Replace("https://", "");
 
-                if (cloudDiskParseHostNew.IsEmptyExt())
+                if (cloudDiskParseHostNew.IsEmptyExt() ||
+                    epInfo.Data.EpisodeUrl.Contains("/IndexV4/"))
                 {
+                    //todo:天翼家庭暂时不走新版
                     outModel.ExtensionParseHost = $"//{cloudDiskParseHost}";
                 }
                 else

@@ -37,6 +37,6 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 集合
         /// </summary>
-        public ICollection<TDto> Data { get; set; }
+        public ICollection<TDto>? Data { get; set; }
     }
 }

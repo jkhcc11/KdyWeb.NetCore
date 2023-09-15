@@ -151,7 +151,8 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error<GetDouBanInfoForIdDto>(KdyResultCode.Error, "状态已完成，不能更改");
             }
 
-            dbDouBanInfo.DouBanInfoStatus = input.DouBanInfoStatus;
+            dbDouBanInfo.SetStatus(input.DouBanInfoStatus);
+            //dbDouBanInfo.DouBanInfoStatus = input.DouBanInfoStatus;
             _douBanInfoRepository.Update(dbDouBanInfo);
             await UnitOfWork.SaveChangesAsync();
 

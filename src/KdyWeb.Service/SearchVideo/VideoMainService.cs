@@ -104,7 +104,8 @@ namespace KdyWeb.Service.SearchVideo
             dbVideoMain.IsEnd = true;
             await _videoMainRepository.CreateAsync(dbVideoMain);
 
-            douBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
+            douBanInfo.SetSearchEnd();
+            //douBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
             _douBanInfoRepository.Update(douBanInfo);
             await UnitOfWork.SaveChangesAsync();
 
@@ -383,7 +384,8 @@ namespace KdyWeb.Service.SearchVideo
 
             _videoMainRepository.Update(dbMain);
 
-            dbDouBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
+            dbDouBanInfo.SetSearchEnd();
+            //dbDouBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
             _douBanInfoRepository.Update(dbDouBanInfo);
 
             await UnitOfWork.SaveChangesAsync();

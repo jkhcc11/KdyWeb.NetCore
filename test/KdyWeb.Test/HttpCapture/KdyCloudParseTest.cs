@@ -11,7 +11,6 @@ using KdyWeb.IService.CloudParse.DiskCloudParse;
 using KdyWeb.IService.FileStore;
 using KdyWeb.Service.CloudParse.DiskCloudParse;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Secp256k1Net;
 
 namespace KdyWeb.Test.HttpCapture
 {
@@ -177,34 +176,34 @@ namespace KdyWeb.Test.HttpCapture
             Assert.IsTrue(downInfo.IsSuccess);
         }
 
-        [TestMethod]
-        public void TestSecp256k1()
-        {
-            using (var secp256K1 = new Secp256k1())
-            {
-                // 创建私钥
-                var privateKey = new byte[Secp256k1.PRIVKEY_LENGTH];
-                new Random().NextBytes(privateKey);
+        //[TestMethod]
+        //public void TestSecp256k1()
+        //{
+        //    using (var secp256K1 = new Secp256k1())
+        //    {
+        //        // 创建私钥
+        //        var privateKey = new byte[Secp256k1.PRIVKEY_LENGTH];
+        //        new Random().NextBytes(privateKey);
 
-                // 获取公钥
-                var publicKey = new byte[Secp256k1.PUBKEY_LENGTH];
-                secp256K1.PublicKeyCreate(publicKey, privateKey);
+        //        // 获取公钥
+        //        var publicKey = new byte[Secp256k1.PUBKEY_LENGTH];
+        //        secp256K1.PublicKeyCreate(publicKey, privateKey);
 
-                // 创建消息
-                byte[] message = Encoding.UTF8.GetBytes("Hello, world!");
+        //        // 创建消息
+        //        byte[] message = Encoding.UTF8.GetBytes("Hello, world!");
 
-                var sha256 = SHA256.Create();
-                var msgHash = sha256.ComputeHash(message);
+        //        var sha256 = SHA256.Create();
+        //        var msgHash = sha256.ComputeHash(message);
 
-                // 使用私钥对消息进行签名
-                var signature = new byte[Secp256k1.SIGNATURE_LENGTH];
-                secp256K1.Sign(signature, msgHash, privateKey);
+        //        // 使用私钥对消息进行签名
+        //        var signature = new byte[Secp256k1.SIGNATURE_LENGTH];
+        //        secp256K1.Sign(signature, msgHash, privateKey);
 
-                // 使用公钥验证签名
-                bool isVerified = secp256K1.Verify(signature, msgHash, publicKey);
+        //        // 使用公钥验证签名
+        //        bool isVerified = secp256K1.Verify(signature, msgHash, publicKey);
 
-                Console.WriteLine($"Signature is verified: {isVerified}");
-            }
-        }
+        //        Console.WriteLine($"Signature is verified: {isVerified}");
+        //    }
+        //}
     }
 }

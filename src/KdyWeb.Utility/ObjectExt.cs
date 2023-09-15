@@ -16,7 +16,7 @@ namespace KdyWeb.Utility
         /// 转Json字符串
         /// </summary>
         /// <returns></returns>
-        public static string ToJsonStr(this object obj)
+        public static string ToJsonStr(this object? obj)
         {
             if (obj == null)
             {
@@ -75,6 +75,11 @@ namespace KdyWeb.Utility
         /// <param name="value">属性值</param>
         public static void UpdateModelField<T>(this T model, string propertyName, object value)
         {
+            if (model == null)
+            {
+                return;
+            }
+
             var type = model.GetType();
             var property = type.GetProperty(propertyName);
             if (property == null)
@@ -85,7 +90,7 @@ namespace KdyWeb.Utility
             if (typeof(Enum).IsAssignableFrom(property.PropertyType))
             {
                 //枚举特殊处理
-                var temp = Enum.Parse(property.PropertyType, value.ToString());
+                var temp = Enum.Parse(property.PropertyType, value + "");
                 value = temp;
             }
 
@@ -98,7 +103,7 @@ namespace KdyWeb.Utility
         /// 随机一项
         /// </summary>
         /// <returns></returns>
-        public static TItem RandomItem<TItem>(this IReadOnlyList<TItem> list)
+        public static TItem? RandomItem<TItem>(this IReadOnlyList<TItem>? list)
         {
             if (list == null ||
                 list.Any() == false)

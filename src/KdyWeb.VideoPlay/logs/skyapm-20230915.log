@@ -1,0 +1,61 @@
+2023-09-15 23:38:17.086 +08:00 [Dev_VideoPlay] [Information] SkyApm.InstrumentStartup : Initializing ...
+2023-09-15 23:38:17.168 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.RegisterService : Loaded instrument service [SkyApm.Service.RegisterService].
+2023-09-15 23:38:17.169 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.LogReportService : Loaded instrument service [SkyApm.Service.LogReportService].
+2023-09-15 23:38:17.169 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.PingService : Loaded instrument service [SkyApm.Service.PingService].
+2023-09-15 23:38:17.170 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.SegmentReportService : Loaded instrument service [SkyApm.Service.SegmentReportService].
+2023-09-15 23:38:17.170 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.CLRStatsService : Loaded instrument service [SkyApm.Service.CLRStatsService].
+2023-09-15 23:38:17.171 +08:00 [Dev_VideoPlay] [Information] SkyApm.Sampling.SimpleCountSamplingInterceptor : Loaded instrument service [SkyApm.Sampling.SimpleCountSamplingInterceptor].
+2023-09-15 23:38:17.171 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectService : Loaded instrument service [SkyApm.Transport.Grpc.ConnectService].
+2023-09-15 23:38:17.482 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Connected server[121.89.211.254:8004].
+2023-09-15 23:38:17.487 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [Microsoft.AspNetCore].
+2023-09-15 23:38:17.490 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [HttpHandlerDiagnosticListener].
+2023-09-15 23:38:17.490 +08:00 [Dev_VideoPlay] [Information] SkyApm.InstrumentStartup : Started SkyAPM .NET Core Agent.
+2023-09-15 23:38:18.271 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [Grpc.Net.Client].
+2023-09-15 23:38:28.357 +08:00 [Dev_VideoPlay] [Error] SkyApm.Transport.Grpc.V8.ServiceRegister : Report service instance properties fail.
+Grpc.Core.RpcException: Status(StatusCode="DeadlineExceeded", Detail="")
+   at SkyApm.Transport.Grpc.V8.ServiceRegister.<>c__DisplayClass9_0.<<ReportInstancePropertiesAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at SkyApm.Transport.Grpc.Common.Call.Execute[T](Func`1 task, Func`1 errCallback, Func`1 errMessage)
+2023-09-15 23:38:28.361 +08:00 [Dev_VideoPlay] [Warning] SkyApm.Transport.Grpc.ConnectionManager : Connection state changed. Status(StatusCode="DeadlineExceeded", Detail="")
+2023-09-15 23:38:32.181 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Shutdown connection[121.89.211.254:8004].
+2023-09-15 23:38:32.181 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Connected server[121.89.211.254:8004].
+2023-09-15 23:38:57.202 +08:00 [Dev_VideoPlay] [Error] SkyApm.Transport.Grpc.V8.ServiceRegister : Report service instance properties fail.
+Grpc.Core.RpcException: Status(StatusCode="DeadlineExceeded", Detail="")
+   at SkyApm.Transport.Grpc.V8.ServiceRegister.<>c__DisplayClass9_0.<<ReportInstancePropertiesAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at SkyApm.Transport.Grpc.Common.Call.Execute[T](Func`1 task, Func`1 errCallback, Func`1 errMessage)
+2023-09-15 23:38:57.202 +08:00 [Dev_VideoPlay] [Warning] SkyApm.Transport.Grpc.ConnectionManager : Connection state changed. Status(StatusCode="DeadlineExceeded", Detail="")
+2023-09-15 23:39:02.177 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Shutdown connection[121.89.211.254:8004].
+2023-09-15 23:39:02.186 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Connected server[121.89.211.254:8004].
+2023-09-15 23:39:26.343 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [Microsoft.EntityFrameworkCore].
+2023-09-15 23:39:27.201 +08:00 [Dev_VideoPlay] [Error] SkyApm.Transport.Grpc.V8.ServiceRegister : Report service instance properties fail.
+Grpc.Core.RpcException: Status(StatusCode="DeadlineExceeded", Detail="")
+   at SkyApm.Transport.Grpc.V8.ServiceRegister.<>c__DisplayClass9_0.<<ReportInstancePropertiesAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at SkyApm.Transport.Grpc.Common.Call.Execute[T](Func`1 task, Func`1 errCallback, Func`1 errMessage)
+2023-09-15 23:39:27.201 +08:00 [Dev_VideoPlay] [Warning] SkyApm.Transport.Grpc.ConnectionManager : Connection state changed. Status(StatusCode="DeadlineExceeded", Detail="")
+2023-09-15 23:39:32.193 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Shutdown connection[121.89.211.254:8004].
+2023-09-15 23:39:32.194 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Connected server[121.89.211.254:8004].
+2023-09-15 23:39:34.394 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [SqlClientDiagnosticListener].
+2023-09-15 23:39:34.439 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [SqlClientDiagnosticListener].
+2023-09-15 23:39:57.216 +08:00 [Dev_VideoPlay] [Error] SkyApm.Transport.Grpc.V8.ServiceRegister : Report service instance properties fail.
+Grpc.Core.RpcException: Status(StatusCode="DeadlineExceeded", Detail="")
+   at SkyApm.Transport.Grpc.V8.ServiceRegister.<>c__DisplayClass9_0.<<ReportInstancePropertiesAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at SkyApm.Transport.Grpc.Common.Call.Execute[T](Func`1 task, Func`1 errCallback, Func`1 errMessage)
+2023-09-15 23:39:57.216 +08:00 [Dev_VideoPlay] [Warning] SkyApm.Transport.Grpc.ConnectionManager : Connection state changed. Status(StatusCode="DeadlineExceeded", Detail="")
+2023-09-15 23:40:02.181 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Shutdown connection[121.89.211.254:8004].
+2023-09-15 23:40:02.181 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Connected server[121.89.211.254:8004].
+2023-09-15 23:53:31.104 +08:00 [Dev_VideoPlay] [Information] SkyApm.InstrumentStartup : Initializing ...
+2023-09-15 23:53:31.248 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.RegisterService : Loaded instrument service [SkyApm.Service.RegisterService].
+2023-09-15 23:53:31.252 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.LogReportService : Loaded instrument service [SkyApm.Service.LogReportService].
+2023-09-15 23:53:31.253 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.PingService : Loaded instrument service [SkyApm.Service.PingService].
+2023-09-15 23:53:31.254 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.SegmentReportService : Loaded instrument service [SkyApm.Service.SegmentReportService].
+2023-09-15 23:53:31.255 +08:00 [Dev_VideoPlay] [Information] SkyApm.Service.CLRStatsService : Loaded instrument service [SkyApm.Service.CLRStatsService].
+2023-09-15 23:53:31.257 +08:00 [Dev_VideoPlay] [Information] SkyApm.Sampling.SimpleCountSamplingInterceptor : Loaded instrument service [SkyApm.Sampling.SimpleCountSamplingInterceptor].
+2023-09-15 23:53:31.263 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectService : Loaded instrument service [SkyApm.Transport.Grpc.ConnectService].
+2023-09-15 23:53:31.413 +08:00 [Dev_VideoPlay] [Information] SkyApm.Transport.Grpc.ConnectionManager : Connected server[121.89.211.254:8004].
+2023-09-15 23:53:31.417 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [Microsoft.AspNetCore].
+2023-09-15 23:53:31.419 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [HttpHandlerDiagnosticListener].
+2023-09-15 23:53:31.419 +08:00 [Dev_VideoPlay] [Information] SkyApm.InstrumentStartup : Started SkyAPM .NET Core Agent.
+2023-09-15 23:53:32.244 +08:00 [Dev_VideoPlay] [Information] SkyApm.Diagnostics.TracingDiagnosticProcessorObserver : Loaded diagnostic listener [Grpc.Net.Client].

@@ -64,5 +64,15 @@ namespace KdyWeb.Entity.CloudParse
                     }
             }
         }
+
+        public void SetShowText(string showText)
+        {
+            ShowText = showText;
+        }
+
+        public void SetBusinessFlag(string businessFlag)
+        {
+            BusinessFlag = businessFlag;
+        }
     }
 }

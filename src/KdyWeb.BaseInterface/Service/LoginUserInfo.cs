@@ -11,7 +11,7 @@ namespace KdyWeb.BaseInterface.Service
     {
         public LoginUserInfo(IHttpContextAccessor httpContextAccessor)
         {
-            if (httpContextAccessor?.HttpContext == null)
+            if (httpContextAccessor.HttpContext == null)
             {
                 return;
             }
@@ -21,13 +21,13 @@ namespace KdyWeb.BaseInterface.Service
 
         public bool IsLogin { get; set; }
 
-        public string UserAgent { get; set; }
+        public string? UserAgent { get; set; }
 
-        public string UserNick { get; set; }
+        public string? UserNick { get; set; }
 
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
-        public string UserEmail { get; set; }
+        public string? UserEmail { get; set; }
 
         public long? UserId { get; set; }
 
@@ -43,8 +43,8 @@ namespace KdyWeb.BaseInterface.Service
             return UserId.Value;
         }
 
-        public string LoginToken { get; set; }
-        public string RoleName { get; set; }
+        public string? LoginToken { get; set; }
+        public string? RoleName { get; set; }
 
         /// <summary>
         /// 是否资源管理
@@ -62,12 +62,7 @@ namespace KdyWeb.BaseInterface.Service
         internal void InitUserInfo(HttpContext httpContext)
         {
             var user = httpContext.User;
-            if (user == null)
-            {
-                return;
-            }
-
-            if (httpContext.User.Identity.IsAuthenticated == false)
+            if (user.Identity?.IsAuthenticated == false)
             {
                 return;
             }
@@ -94,55 +89,14 @@ namespace KdyWeb.BaseInterface.Service
             UserNick = user.Claims.FirstOrDefault(a => a.Type == JwtClaimTypes.NickName)?.Value;
             IsSuperAdmin = user.HasClaim(a => a.Type == JwtClaimTypes.Role &&
                                               a.Value == AuthorizationConst.NormalRoleName.SuperAdmin);
-            LoginToken = httpContext.Request.Headers["Authorization"];
+            httpContext.Request.Headers.TryGetValue("Authorization", out var loginToken);
+            LoginToken = loginToken + "";
             RoleName = roleName;
             IsVodAdmin = user.HasClaim(a => a.Type == JwtClaimTypes.Role &&
                                             a.Value == AuthorizationConst.NormalRoleName.VodAdmin);
 
             IsNormal = IsSuperAdmin == false &&
                         IsVodAdmin == false;
-
-            #region old
-
-            ////old
-            ////var request = httpContext.Request;
-            ////if (request.Headers.ContainsKey(KdyBaseConst.OldApiAuthKey) == false)
-            ////{
-            ////    //无登录cookie
-            ////    return;
-            ////}
-
-            ////var authKey = request.Headers[KdyBaseConst.OldApiAuthKey];
-            ////if (string.IsNullOrEmpty(authKey))
-            ////{
-            ////    //cookie为空
-            ////    return;
-            ////}
-
-            ////if (_kdyRedisCache == null)
-            ////{
-            ////    throw new Exception($"{nameof(LoginUserInfo)} IKdyRedisCache为空");
-            ////}
-
-            ////var value = (string)_kdyRedisCache.GetDb(1).StringGet($"parse:{authKey}");
-            ////if (string.IsNullOrEmpty(value))
-            ////{
-            ////    return;
-            ////}
-
-            ////var temp = JsonConvert.DeserializeObject<LoginUserInfo>(value);
-            ////UserId = temp.UserId;
-            ////UserName = temp.UserName;
-            ////UserEmail = temp.UserEmail;
-            ////UserNick = temp.UserNick;
-            ////IsSuperAdmin = temp.IsSuperAdmin;
-            //////long.TryParse(cookie.Split('@')[1], out long userId);
-            //////if (userId > 0)
-            //////{
-            //////    UserId = userId;
-            //////}
-
-            #endregion
         }
     }
 }

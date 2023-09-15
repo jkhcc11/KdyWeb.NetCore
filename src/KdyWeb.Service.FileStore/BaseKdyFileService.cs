@@ -136,7 +136,8 @@ namespace KdyWeb.Service.FileStore
         /// <returns></returns>
         protected string GetFileMd5(byte[] fileBytes)
         {
-            using var md5 = new MD5CryptoServiceProvider();
+            //using var md5 = new MD5CryptoServiceProvider();
+            using var md5 = MD5.Create();
             //计算data字节数组的哈希值
             var md5Data = md5.ComputeHash(fileBytes);
             return md5Data.Aggregate("", (current, t) => current + t.ToString("x").PadLeft(2, '0'));

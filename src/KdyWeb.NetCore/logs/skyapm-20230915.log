@@ -1,0 +1,9 @@
+2023-09-15 23:36:27.809 +08:00 [KdyWeb.NetCore.Pro] [Error] SkyApm.Transport.Grpc.SegmentReporter : Report trace segment fail.
+Grpc.Core.RpcException: Status(StatusCode="Unavailable", Detail="Error connecting to subchannel.", DebugException="System.Net.Sockets.SocketException (10060): 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|281_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at Grpc.Net.Client.Balancer.Internal.SocketConnectivitySubchannelTransport.TryConnectAsync(CancellationToken cancellationToken)")
+   at Grpc.Net.Client.Internal.HttpContentClientStreamWriter`2.WriteAsyncCore[TState](Func`5 writeFunc, TState state)
+   at Grpc.Net.Client.Internal.HttpContentClientStreamWriter`2.WriteCoreAsync(TRequest message, CancellationToken cancellationToken)
+   at SkyApm.Transport.Grpc.LoggerReporter.ReportAsync(IReadOnlyCollection`1 loggerRequests, CancellationToken cancellationToken)

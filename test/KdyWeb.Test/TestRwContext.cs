@@ -34,9 +34,8 @@ namespace KdyWeb.Test
 
             var guid = Guid.NewGuid().ToString("N");
             //写库
-            var dbDouBan = new DouBanInfo()
+            var dbDouBan = new DouBanInfo(guid)
             {
-                VideoTitle = guid ,
                 VideoImg = "https://www.baidu.com",
                 VideoDetailId = "123456"
             };

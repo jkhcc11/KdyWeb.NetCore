@@ -182,5 +182,20 @@ namespace KdyWeb.Entity.SearchVideo
         {
             DouBanInfoStatus = douBanInfoStatus;
         }
+
+        public void SetSearchEnd()
+        {
+            DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
+        }
+
+        public void SetSearchFail()
+        {
+            DouBanInfoStatus = DouBanInfoStatus.SearchFail;
+        }
+
+        public void SetSearching()
+        {
+            DouBanInfoStatus = DouBanInfoStatus.Searching;
+        }
     }
 }
