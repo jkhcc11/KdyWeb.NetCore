@@ -67,7 +67,7 @@ namespace KdyWeb.BaseInterface
             //    await _next(context);
             //    return;
             //}
-            var includeApiPrefix = new[] { "/api/", "/api-v2/", "/player-v2/", "self-api-v2" };
+            var includeApiPrefix = new[] { "/api/", "/api-v2/", "/player-v2/", "/self-api-v2/" };
 
             if (includeApiPrefix.Any(request.Path.Value.StartsWith) == false)
             {
@@ -86,6 +86,7 @@ namespace KdyWeb.BaseInterface
             }
 
             _stopwatch.Restart();
+            var currentFlag = Guid.NewGuid();
 
             var data = new ConcurrentDictionary<string, object>();
             data.TryAdd("request.url", request.Path.ToString());
@@ -137,12 +138,22 @@ namespace KdyWeb.BaseInterface
                 data.TryAdd("time", _stopwatch.ElapsedMilliseconds + "ms");
                 if (request.Method.ToLower() != "get")
                 {
-                    _logger.LogInformation("用户请求{url}结束.时间：{time}ms,扩展:{exData}", request.Path.Value, _stopwatch.ElapsedMilliseconds, JsonConvert.SerializeObject(data));
+                    _logger.LogInformation("用户请求{url}结束.Flag:{flag},时间：{time}ms,扩展:{exData}",
+                        request.Path.Value,
+                        currentFlag,
+                        _stopwatch.ElapsedMilliseconds,
+                        JsonConvert.SerializeObject(data));
+                    _logger.LogInformation("Flag:{flag},扩展:{exData}",
+                        currentFlag,
+                        JsonConvert.SerializeObject(data));
                 }
                 else
                 {
                     //记录日志
-                    _logger.LogTrace("用户请求{url}结束.时间：{time}ms,扩展:{exData}", request.Path.Value, _stopwatch.ElapsedMilliseconds, JsonConvert.SerializeObject(data));
+                    _logger.LogTrace("用户请求{url}结束.时间：{time}ms,扩展:{exData}",
+                        request.Path.Value,
+                        _stopwatch.ElapsedMilliseconds,
+                        JsonConvert.SerializeObject(data));
                 }
             }
             catch (Exception ex) when (ex is KdyCustomException customException)

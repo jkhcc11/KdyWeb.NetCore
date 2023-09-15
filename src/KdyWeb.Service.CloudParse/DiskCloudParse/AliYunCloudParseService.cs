@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
@@ -22,7 +21,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Secp256k1Net;
+using Org.BouncyCastle.Asn1.Sec;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto.Signers;
 
 namespace KdyWeb.Service.CloudParse.DiskCloudParse
 {
@@ -32,6 +35,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     public class AliYunCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         IAliYunCloudParseService
     {
+        private const string SignErrorStr = "SignError";
         /// <summary>
         /// 刷新Token Api old：https://websv.aliyundrive.com/token/refresh
         /// </summary>
@@ -50,7 +54,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             {
                 UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0",
                 TimeOut = 5000,
-                ExtData = new KdyRequestCommonExtInput()
+                ExtData = new KdyRequestCommonExtInput(),
             };
         }
 
@@ -272,7 +276,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             if (isTs)
             {
                 ts = TimeSpan.FromSeconds(14000);
-                downUrl = await GetTsUrlByFileIdAsync(fileId, token.Data.DriveId, "FHD");
+                downUrl = await GetTsUrlByFileIdAsync(fileId, token.Data.DriveId, 14000);
             }
             else
             {
@@ -384,12 +388,13 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 throw new KdyCustomException("获取Sign失败");
             }
 
+            //清空
             KdyRequestCommonInput.ExtData.HeardDic = new Dictionary<string, string>()
             {
-                {"Authorization",$"Bearer {token.Data.Token}"},
                 {"x-signature",sign},
                 {"x-device-id",token.Data.DeviceId},
-                {"x-request-id",Guid.NewGuid().ToString("n")}
+                {"x-request-id",Guid.NewGuid().ToString("n")},
+                {"Authorization",$"Bearer {token.Data.Token}"},
             };
         }
 
@@ -506,16 +511,17 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         /// </summary>
         /// <param name="fileId">文件Id</param>
         /// <param name="driveId">网盘Id</param>
-        /// <param name="templateId">转码模板Id 只要FHD|HD 优先FHD</param>
+        /// <param name="expireSec">过期时间 秒</param>
         /// <returns></returns>
-        internal async Task<string> GetTsUrlByFileIdAsync(string fileId, string driveId, string templateId)
+        internal async Task<string> GetTsUrlByFileIdAsync(string fileId, string driveId, int expireSec)
         {
             var reqData = new
             {
                 drive_id = driveId,
                 file_id = fileId,
                 category = "live_transcoding",
-                template_id = templateId
+                //template_id = templateId
+                url_expire_sec = expireSec
             };
             var postJson = JsonConvert.SerializeObject(reqData);
             await SetAuthHeaderAsync();
@@ -527,16 +533,29 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 return string.Empty;
             }
 
-            var jObject = JObject.Parse(reqResult.Data);
-            var downUrl = jObject.GetValueExt("video_preview_play_info.live_transcoding_task_list[0].url");
-            if (string.IsNullOrEmpty(downUrl) &&
-                templateId != "HD")
+            var previewResponse = JsonConvert.DeserializeObject<AliYunVideoPreviewPlayInfoResponse>(reqResult.Data);
+            if (previewResponse is { PlayInfo: { } } &&
+                previewResponse.PlayInfo.TaskList.Any())
             {
-                //只循环两次
-                return await GetTsUrlByFileIdAsync(fileId, driveId, "HD");
+                return previewResponse.PlayInfo.TaskList
+                    .Where(a => string.IsNullOrEmpty(a.Url) == false)
+                    .OrderByDescending(a => a.OrderBy)
+                    .FirstOrDefault()
+                    ?.Url;
             }
 
-            return downUrl;
+            return string.Empty;
+
+            //var jObject = JObject.Parse(reqResult.Data);
+            //var downUrl = jObject.GetValueExt("video_preview_play_info.live_transcoding_task_list[0].url");
+            //if (string.IsNullOrEmpty(downUrl) &&
+            //    templateId != "HD")
+            //{
+            //    //只循环两次
+            //    return await GetTsUrlByFileIdAsync(fileId, driveId, "HD");
+            //}
+
+            //return downUrl;
         }
 
         /// <summary>
@@ -575,27 +594,39 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             var cacheValue = await KdyRedisCache.GetCache().GetStringAsync(cacheKey);
             if (string.IsNullOrEmpty(cacheValue) == false)
             {
+                if (cacheValue == SignErrorStr)
+                {
+                    //sign error
+                    KdyLog.LogWarning("{userInfo},Sign异常", CloudConfig.ReqUserInfo);
+                    return string.Empty;
+                }
+
                 return cacheValue;
             }
 
             var token = await GetLoginInfoAsync();
             var general = GeneralPrivateAndPubKey();
-            var publicStr = $"04{general.publickKeyBytes.ToHexStr()}";
+            //var publicStr = $"04{general.publickKeyBytes.ToHexStr()}";
+            var publicStr = $"04{general.publickKeyBytes.ByteToHexStr().ToLower()}";
             var signStr = GetSignByPrivateKeyAndUserInfo(general.privateKeyBytes,
+                general.publickKeyBytes,
                 token.Data.DeviceId,
                 token.Data.UserId,
                 "0");
 
             var status = await RequestCreateSessionAsync(publicStr, signStr);
+            var ts = TimeSpan.FromSeconds(5 * 60);
             if (status == false)
             {
-                return string.Empty;
+                //错误缓存30s
+                ts = TimeSpan.FromSeconds(30);
+                signStr = SignErrorStr;
             }
 
             await KdyRedisCache.GetCache().SetAsync(cacheKey, Encoding.UTF8.GetBytes(signStr),
                 new DistributedCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(100)
+                    AbsoluteExpirationRelativeToNow = ts
                 });
             return signStr;
         }
@@ -619,10 +650,10 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             var postJson = JsonConvert.SerializeObject(reqData);
             var hc = new Dictionary<string, string>()
             {
-                {"Authorization",$"Bearer {token.Data.Token}"},
                 {"x-signature",signStr},
                 {"x-device-id",token.Data.DeviceId},
                 {"x-request-id",Guid.NewGuid().ToString("n")},
+                {"Authorization",$"Bearer {token.Data.Token}"},
             };
 
             KdyRequestCommonInput.ExtData.HeardDic = hc;
@@ -647,44 +678,155 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         /// 根据私钥和用户信息创建Sign
         /// </summary>
         /// <param name="privateKeyBytes">私钥bytes</param>
+        /// <param name="publicKeyBytes">公钥Bytes</param>
         /// <param name="deviceId">设备Id</param>
         /// <param name="userId">用户Id</param>
         /// <param name="nonce">凭证编号</param>
         /// <returns></returns>
         private string GetSignByPrivateKeyAndUserInfo(byte[] privateKeyBytes,
+            byte[] publicKeyBytes,
             string deviceId, string userId, string nonce)
         {
             var msg = $"{AppId}:{deviceId}:{userId}:{nonce}";
             var msgBytes = Encoding.UTF8.GetBytes(msg);
 
-            var sha256 = SHA256.Create();
-            var msgHash = sha256.ComputeHash(msgBytes);
+            var curve = SecNamedCurves.GetByName("secp256k1");
+            var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N, curve.H, curve.GetSeed());
+            var privateKeyParameters = new ECPrivateKeyParameters(new Org.BouncyCastle.Math.BigInteger(1, privateKeyBytes), domainParams);
+            var signer = new ECDsaSigner();
+            signer.Init(true, privateKeyParameters);
+            var signature = signer.GenerateSignature(msgBytes);
 
-            // 使用私钥对消息进行签名
-            using var secp256K1 = new Secp256k1();
-            var signature = new byte[Secp256k1.SIGNATURE_LENGTH];
-            secp256K1.Sign(signature, msgHash, privateKeyBytes);
+            // Concatenate r and s to get the signature.
+            byte[] r = signature[0].ToByteArrayUnsigned();
+            byte[] s = signature[1].ToByteArrayUnsigned();
+            byte[] rs = new byte[r.Length + s.Length];
+            Buffer.BlockCopy(r, 0, rs, 0, r.Length);
+            Buffer.BlockCopy(s, 0, rs, r.Length, s.Length);
 
-            //var signBytes = Secp256k1Helper.Sign(privateKeyBytes, msgBytes);
-            var signStr = $"{signature.ToHexStr()}01";
-            return signStr;
+            var signStr = rs.ToHexStr();
+            return $"{signStr}01";
+
+            #region old secp256k1.net
+            //var sha256 = SHA256.Create();
+            //var msgHash = sha256.ComputeHash(msgBytes);
+
+            //// 使用私钥对消息进行签名
+            //using var secp256K1 = new Secp256k1();
+            //var signature = new byte[Secp256k1.SIGNATURE_LENGTH];
+            //secp256K1.Sign(signature, msgHash, privateKeyBytes);
+
+            ////var signBytes = Secp256k1Helper.Sign(privateKeyBytes, msgBytes);
+            ////var signStr = $"{signature.ToHexStr()}01";
+            //var signStr = $"{signature.ByteToHexStr().ToLower()}01";
+
+            //var selfVerify = secp256K1.Verify(signature, msgHash, publicKeyBytes);
+            //KdyLog.LogInformation("UserInfo:{userInfo}，Sign:{signStr},校验结果：{verify}",
+            //    CloudConfig.ReqUserInfo, signStr, selfVerify);
+
+            //return signStr; 
+            #endregion
         }
 
         private (byte[] privateKeyBytes, byte[] publickKeyBytes) GeneralPrivateAndPubKey()
         {
-            using var secp256K1 = new Secp256k1();
-            // 创建私钥
-            var privateKey = new byte[Secp256k1.PRIVKEY_LENGTH];
-            new Random().NextBytes(privateKey);
+            var curve = SecNamedCurves.GetByName("secp256k1");
+            var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N, curve.H, curve.GetSeed());
 
-            // 获取公钥
-            var publicKey = new byte[Secp256k1.PUBKEY_LENGTH];
-            secp256K1.PublicKeyCreate(publicKey, privateKey);
+            var generator = new ECKeyPairGenerator();
+            var keygenParams = new ECKeyGenerationParameters(domainParams, new SecureRandom());
+            generator.Init(keygenParams);
 
-            return (privateKey, publicKey);
+            var keypair = generator.GenerateKeyPair();
+
+            var privateKeyParams = (ECPrivateKeyParameters)keypair.Private;
+            var publicKeyParams = (ECPublicKeyParameters)keypair.Public;
+
+            //string privateKey = BitConverter.ToString(privateKeyParams.D.ToByteArrayUnsigned()).Replace("-", "");
+            //string publicKey = BitConverter.ToString(publicKeyParams.Q.GetEncoded()).Replace("-", "");
+            return (privateKeyParams.D.ToByteArrayUnsigned(), publicKeyParams.Q.GetEncoded());
+
+
+            #region old secp256k1.net
+            //using var secp256K1 = new Secp256k1();
+            //// 创建私钥
+            //var privateKey = new byte[Secp256k1.PRIVKEY_LENGTH];
+            //new Random().NextBytes(privateKey);
+
+            //// 获取公钥
+            //var publicKey = new byte[Secp256k1.PUBKEY_LENGTH];
+            //secp256K1.PublicKeyCreate(publicKey, privateKey);
+
+            //return (privateKey, publicKey); 
+            #endregion
         }
         #endregion
         #endregion
 
     }
+
+    #region 预览返回
+    public class AliYunVideoPreviewPlayInfoItem
+    {
+        /// <summary>
+        /// 转码模板Id FHD|HD|SD
+        /// </summary>
+        [JsonProperty("template_id")]
+        public string TemplateId { get; set; }
+
+        /// <summary>
+        /// 状态  finished
+        /// </summary>
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        /// <summary>
+        /// 预览Url
+        /// </summary>
+        [JsonProperty("url")]
+        public string Url { get; set; }
+
+        [JsonIgnore]
+        public int OrderBy
+        {
+            get
+            {
+                switch (TemplateId)
+                {
+                    case "FHD":
+                        {
+                            return 4;
+                        }
+                    case "HD":
+                        {
+                            return 3;
+                        }
+                    case "SD":
+                        {
+                            return 2;
+                        }
+                    default: return 1;
+                }
+            }
+        }
+    }
+
+    public class AliYunVideoPreviewPlayInfo
+    {
+        [JsonProperty("category")]
+        public string Category { get; set; }
+
+        [JsonProperty("live_transcoding_task_list")]
+        public List<AliYunVideoPreviewPlayInfoItem> TaskList { get; set; }
+    }
+
+    public class AliYunVideoPreviewPlayInfoResponse
+    {
+        [JsonProperty("file_id")]
+        public string FileId { get; set; }
+
+        [JsonProperty("video_preview_play_info")]
+        public AliYunVideoPreviewPlayInfo PlayInfo { get; set; }
+    }
+    #endregion
 }

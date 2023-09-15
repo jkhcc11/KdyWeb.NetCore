@@ -97,6 +97,7 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         protected virtual async Task<TResult> GetResult(HttpClient httpClient, HttpRequestMessage request, TResult result, TInput input)
         {
+            var currentFlag = Guid.NewGuid();
             var watch = new Stopwatch();
             watch.Start();
             try
@@ -148,7 +149,9 @@ namespace KdyWeb.BaseInterface.HttpBase
                 result.HttpCode = response.StatusCode;
                 if (response.IsSuccessStatusCode == false)
                 {
-                    KdyLog.LogWarning("Http请求异常,{msg}", await response.Content.ReadAsStringAsync());
+                    KdyLog.LogWarning("Http请求异常,{flag},原始返回：{msg}",
+                        currentFlag,
+                        await response.Content.ReadAsStringAsync());
                     result.IsSuccess = false;
                     return result;
                 }
@@ -196,7 +199,14 @@ namespace KdyWeb.BaseInterface.HttpBase
             finally
             {
                 watch.Stop();
-                KdyLog.LogTrace("Http请求结束.耗时:{time}ms\r\n入参:{input}\r\n返回:{result}", watch.ElapsedMilliseconds, JsonConvert.SerializeObject(input), JsonConvert.SerializeObject(result));
+                KdyLog.LogTrace("Http请求结束01.耗时:{time}ms,Flag:{flag},入参:{input}",
+                    watch.ElapsedMilliseconds
+                    , currentFlag
+                    , JsonConvert.SerializeObject(input));
+                KdyLog.LogTrace("Http请求结束02.Flag:{flag},返回:{result}",
+                   currentFlag,
+                   JsonConvert.SerializeObject(result));
+
                 //KdyLog.Info($"Http请求结束,Url:{input.Url},耗时：{watch.ElapsedMilliseconds}ms", new Dictionary<string, object>()
                 //{
                 //    {"HttpResult",result},

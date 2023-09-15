@@ -235,8 +235,14 @@ InitVideoPlay.prototype = {
             data: pd,
             type: 'POST',
             success: function (json) {
-                if (json.success==false) {
-                    $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">异常,请重试或联系管理</div>");
+                var isSuccess = json.success;
+                if (json.isSuccess != null) {
+                    isSuccess = json.isSuccess
+                }
+
+                if (isSuccess == false) {
+                    //success 定制通用  isSuccess为全局通用
+                    $("#play-content").html("<div style=\"font-size: 25px;color:red;text-align: center\">请稍后重试或联系管理</div>");
                     return;
                 }
                 var v = that.jie(json.url);

@@ -225,6 +225,7 @@ namespace KdyWeb.IService.CloudParse
             //NSt|St=>St
             switch (oldCloudType)
             {
+                case "IndexV2":
                 case "Index":
                     {
                         return CloudParseCookieType.TyPerson;
