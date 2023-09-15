@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\common.props" />
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+	</PropertyGroup>
 
-  <PropertyGroup>
-	  <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\KdyWeb.IService.CloudParse\KdyWeb.IService.CloudParse.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\KdyWeb.IService.CloudParse\KdyWeb.IService.CloudParse.csproj" />
+	</ItemGroup>
 
 </Project>

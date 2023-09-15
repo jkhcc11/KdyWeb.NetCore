@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\common.props" />
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+	</PropertyGroup>
 
-  <PropertyGroup>
-	  <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\KdyWeb.ICommonService\KdyWeb.ICommonService.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\KdyWeb.ICommonService\KdyWeb.ICommonService.csproj" />
+	</ItemGroup>
 
 </Project>
