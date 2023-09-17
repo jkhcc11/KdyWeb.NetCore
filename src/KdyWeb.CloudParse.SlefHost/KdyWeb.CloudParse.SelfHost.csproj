@@ -27,6 +27,11 @@
 	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 	    <CopyToPublishDirectory>Never</CopyToPublishDirectory>
 	  </None>
+		
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="wwwroot\js\player\index.js" CopyToPublishDirectory="Never" />
 	</ItemGroup>
 
 </Project>
