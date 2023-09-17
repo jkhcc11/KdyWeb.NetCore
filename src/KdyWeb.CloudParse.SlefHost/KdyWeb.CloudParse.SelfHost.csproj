@@ -2,6 +2,7 @@
 	<Import Project="..\common.props" />
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -11,6 +12,21 @@
 
 	<ItemGroup>
 		<Folder Include="wwwroot\lib\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Deploy\pro-parse-zxzj.pubxml">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+	  </None>
+	  <None Update="Deploy\pro-parse-self.pubxml">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>
