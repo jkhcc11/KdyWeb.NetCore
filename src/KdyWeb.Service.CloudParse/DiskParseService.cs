@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using KdyWeb.BaseInterface;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using Microsoft.AspNetCore.Http;
+using static KdyWeb.IService.CloudParse.CacheKeyConst;
 
 namespace KdyWeb.Service.CloudParse
 {
@@ -273,7 +274,7 @@ namespace KdyWeb.Service.CloudParse
             string fileId;
             var fileName = string.Empty;
             var tempStr = string.Empty;
-            string[] tempArray={ tempStr };
+            string[] tempArray = { tempStr };
             var downUrlSearchType = DownUrlSearchType.FileId;
             if (long.TryParse(fileInfo, out long tyFileId))
             {
@@ -282,8 +283,20 @@ namespace KdyWeb.Service.CloudParse
             }
             else
             {
-                tempStr = fileInfo.HexToStr();
-                tempArray = tempStr.Split('|');
+                var tryDesJie = fileInfo.DesHexToStr(KdyCloudParseConst.TyCorpDesKey);
+                if (tryDesJie == fileInfo)
+                {
+                    //todo:des解析失败(旧版兼容)，使用新版
+                    tempStr = fileInfo.HexToStr();
+                    tempArray = tempStr.Split('|');
+                }
+                else
+                {
+                    //todo:旧版 businessId,fileId
+                    var oldTempArray = tryDesJie.Split(',');
+                    tempArray = new[] { oldTempArray[1], oldTempArray[0] };
+                }
+
                 fileId = tempArray.First();
             }
 

@@ -11,6 +11,17 @@ namespace KdyWeb.IService.CloudParse
         public const string FileNameCache = "Common:FileName";
 
         /// <summary>
+        /// 解析常量
+        /// </summary>
+        public class KdyCloudParseConst
+        {
+            /// <summary>
+            /// 天翼企业云|家庭云加密参数
+            /// </summary>
+            public const string TyCorpDesKey = "parse202";
+        }
+
+        /// <summary>
         /// 阿里云盘Cache
         /// </summary>
         public class AliYunCacheKey
