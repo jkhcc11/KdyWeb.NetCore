@@ -190,14 +190,19 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
             KdyRequestCommonInput.Referer = $"{KdyRequestCommonInput.BaseHost}/video?fileUid={fileId}&resourceId={fileId}";
             var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
-            if (reqResult.IsSuccess == false ||
-                reqResult.Data.Contains("success") == false)
+            if (reqResult.IsSuccess == false)
             {
                 KdyLog.LogWarning("{userNick}胜天文件下载异常,Req:{input},ErrInfo:{msg}", CloudConfig.ReqUserInfo, input, reqResult.ErrMsg);
                 throw new KdyCustomException(reqResult.ErrMsg);
             }
 
             var jObject = JObject.Parse(reqResult.Data);
+            if (jObject["code"] + "" != "10200")
+            {
+                KdyLog.LogWarning("{userNick}胜天文件下载异常,Req:{input},Response:{msg}", CloudConfig.ReqUserInfo, input, reqResult.Data);
+                return KdyResult.Error<string>(KdyResultCode.Error, "登录已过期或转码异常");
+            }
+
             var mainM3U8Url = jObject["data"]?["m3u8Url"] + "";
             if (mainM3U8Url.IsEmptyExt())
             {

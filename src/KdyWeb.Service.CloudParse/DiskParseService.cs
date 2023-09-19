@@ -293,6 +293,7 @@ namespace KdyWeb.Service.CloudParse
                 else
                 {
                     //todo:旧版 businessId,fileId
+                    tempStr = tryDesJie;
                     var oldTempArray = tryDesJie.Split(',');
                     tempArray = new[] { oldTempArray[1], oldTempArray[0] };
                 }
