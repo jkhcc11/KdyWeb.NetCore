@@ -43,7 +43,7 @@ namespace KdyWeb.Entity.CloudParse
         /// <summary>
         /// 防盗链Host
         /// </summary>
-        public string[] HoldLinkHost { get; set; }
+        public string[]? HoldLinkHost { get; set; }
 
         /// <summary>
         /// 用户状态
