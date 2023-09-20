@@ -72,6 +72,14 @@ namespace KdyWeb.Service.CloudParse
                 query = query.Where(a => a.UserId == userId);
             }
 
+            if (input.KeyWord.IsEmptyExt() == false &&
+                long.TryParse(input.KeyWord, out long tempId))
+            {
+                //清掉原来的值
+                input.KeyWord = string.Empty;
+                query = query.Where(a => a.Id == tempId);
+            }
+
             var result = await query.GetDtoPageListAsync<CloudParseUserChildren, QueryParseUserSubAccountDto>(input);
             if (result.DataCount == 0)
             {
