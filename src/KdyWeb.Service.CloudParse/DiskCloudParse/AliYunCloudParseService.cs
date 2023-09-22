@@ -249,8 +249,13 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         /// <returns></returns>
         public override async Task<bool> ClearCacheAsync()
         {
+            //刷新Token
             var refreshCacheKey = GetCacheKeyWithRefreshToken();
             await KdyRedisCache.GetCache().RemoveAsync(refreshCacheKey);
+
+            //请求token
+            var reqCacheKey = $"{CacheKeyConst.AliYunCacheKey.AliReqToken}:{CloudConfig.ChildUserId}";
+            await KdyRedisCache.GetCache().RemoveAsync(reqCacheKey);
             return await base.ClearCacheAsync();
         }
 
