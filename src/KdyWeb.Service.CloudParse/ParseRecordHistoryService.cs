@@ -55,6 +55,12 @@ namespace KdyWeb.Service.CloudParse
                 query = query.Where(a => a.RecordHistoryType == input.RecordHistoryType);
             }
 
+            var userId = LoginUserInfo.GetUserId();
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                query = query.Where(a => a.UserId == userId);
+            }
+
             if (input.SubAccountId.HasValue)
             {
                 query = query.Where(a => a.SubAccountId == input.SubAccountId);
@@ -77,6 +83,12 @@ namespace KdyWeb.Service.CloudParse
             if (input.RecordHistoryType.HasValue)
             {
                 query = query.Where(a => a.RecordHistoryType == input.RecordHistoryType);
+            }
+
+            var userId = LoginUserInfo.GetUserId();
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                query = query.Where(a => a.UserId == userId);
             }
 
             var group = await
@@ -110,6 +122,12 @@ namespace KdyWeb.Service.CloudParse
             if (input.RecordHistoryType.HasValue)
             {
                 query = query.Where(a => a.RecordHistoryType == input.RecordHistoryType);
+            }
+
+            var userId = LoginUserInfo.GetUserId();
+            if (LoginUserInfo.IsSuperAdmin == false)
+            {
+                query = query.Where(a => a.UserId == userId);
             }
 
             var group = await
