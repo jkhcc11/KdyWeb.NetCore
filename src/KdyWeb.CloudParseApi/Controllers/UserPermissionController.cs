@@ -127,18 +127,10 @@ namespace KdyWeb.CloudParseApi.Controllers
                             LocalFilePath = "/system/serverCookie/server-cookie-list",
                             MenuName = "服务器Cookie",
                             Cacheable = true
-                        },
-                        new()
-                        {
-                            ParentPath = "/system",
-                            RouteName="ParseRecordHistory",
-                            MenuUrl = "/system/record-history-list",
-                            LocalFilePath = "/system/parseRecordHistory/list",
-                            MenuName = "访问记录",
-                            Cacheable = true
-                        },
+                        }
                     }
                 },
+                BuildDataStatisticsMenu(),
             };
 
             return result;
@@ -212,17 +204,9 @@ namespace KdyWeb.CloudParseApi.Controllers
                             MenuName = "用户列表",
                             Cacheable = true
                         },
-                        new()
-                        {
-                            ParentPath = "/system",
-                            RouteName="ParseRecordHistory",
-                            MenuUrl = "/system/record-history-list",
-                            LocalFilePath = "/system/parseRecordHistory/list",
-                            MenuName = "访问记录",
-                            Cacheable = true
-                        },
                     }
                 },
+                BuildDataStatisticsMenu(),
             };
 
             return result;
@@ -298,6 +282,48 @@ namespace KdyWeb.CloudParseApi.Controllers
                                 Cacheable = true
                             },
                         }
+                    },
+                }
+            };
+        }
+
+        private GetVueMenuWithWorkVueDto BuildDataStatisticsMenu()
+        {
+            return new GetVueMenuWithWorkVueDto()
+            {
+                MenuUrl = "/data-statistics",
+                MenuName = "数据统计",
+                IconPrefix = "iconfont",
+                Icon = "detail",
+                RouteName = "DataStatistics",
+                Children = new List<GetVueMenuWithWorkVueDto>()
+                {
+                    new()
+                    {
+                        ParentPath = "/data-statistics",
+                        MenuUrl = "/data-statistics/record-history",
+                        RouteName = "RecordHistory",
+                        LocalFilePath = "/system/parseRecordHistory/list",
+                        MenuName = "访问记录",
+                        Cacheable = true,
+                    },
+                    new()
+                    {
+                        ParentPath = "/data-statistics",
+                        MenuUrl = "/data-statistics/top-list",
+                        MenuName = "热门",
+                        RouteName = "HistoryTop",
+                        LocalFilePath = "/system/parseRecordHistory/top-list",
+                        Cacheable = true
+                    },
+                    new()
+                    {
+                        ParentPath = "/data-statistics",
+                        MenuUrl = "/data-statistics/date-sum-list",
+                        MenuName = "天汇总",
+                        RouteName = "DateSumList",
+                        LocalFilePath = "/system/parseRecordHistory/date-sum-list",
+                        Cacheable = true
                     },
                 }
             };

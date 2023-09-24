@@ -91,6 +91,17 @@ namespace KdyWeb.Service.CloudParse
                 query = query.Where(a => a.UserId == userId);
             }
 
+            if (input.SubAccountId.HasValue)
+            {
+                query = query.Where(a => a.SubAccountId == input.SubAccountId);
+            }
+
+            if (input.Top > 100 ||
+                input.Top <= 0)
+            {
+                input.Top = 10;
+            }
+
             var group = await
                 query.GroupBy(a => a.FileIdOrFileName)
                     .Select(a => new
@@ -122,6 +133,11 @@ namespace KdyWeb.Service.CloudParse
             if (input.RecordHistoryType.HasValue)
             {
                 query = query.Where(a => a.RecordHistoryType == input.RecordHistoryType);
+            }
+
+            if (input.SubAccountId.HasValue)
+            {
+                query = query.Where(a => a.SubAccountId == input.SubAccountId);
             }
 
             var userId = LoginUserInfo.GetUserId();

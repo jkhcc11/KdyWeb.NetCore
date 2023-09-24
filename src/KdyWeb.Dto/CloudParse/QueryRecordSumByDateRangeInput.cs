@@ -14,5 +14,10 @@ namespace KdyWeb.Dto.CloudParse
         /// </summary>
         [EnumDataType(typeof(RecordHistoryType), ErrorMessage = "类型错误")]
         public RecordHistoryType? RecordHistoryType { get; set; }
+
+        /// <summary>
+        /// 子账号Id
+        /// </summary>
+        public long? SubAccountId { get; set; }
     }
 }

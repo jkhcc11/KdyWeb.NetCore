@@ -16,6 +16,11 @@ namespace KdyWeb.Dto.CloudParse
         public RecordHistoryType? RecordHistoryType { get; set; }
 
         /// <summary>
+        /// 子账号Id
+        /// </summary>
+        public long? SubAccountId { get; set; }
+
+        /// <summary>
         /// 前N
         /// </summary>
         public int Top { get; set; } = 10;

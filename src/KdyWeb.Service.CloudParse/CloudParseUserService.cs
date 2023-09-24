@@ -67,6 +67,19 @@ namespace KdyWeb.Service.CloudParse
 
         public async Task<KdyResult<PageList<QueryParseUserSubAccountDto>>> QueryParseUserSubAccountAsync(QueryParseUserSubAccountInput input)
         {
+            if (input.OrderBy == null ||
+                input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new ()
+                    {
+                        Key = nameof(CloudParseUser.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
             var query = _cloudParseUserChildrenRepository.GetQuery();
             var userId = LoginUserInfo.GetUserId();
             if (LoginUserInfo.IsSuperAdmin == false)

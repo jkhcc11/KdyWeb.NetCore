@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
@@ -35,6 +37,19 @@ namespace KdyWeb.Service.CloudParse
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryServerCookieDto>>> QueryServerCookieAsync(QueryServerCookieInput input)
         {
+            if (input.OrderBy == null ||
+                input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new ()
+                    {
+                        Key = nameof(ServerCookie.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
             var userId = LoginUserInfo.GetUserId();
             var query = _serverCookieRepository.GetQuery();
             if (LoginUserInfo.IsSuperAdmin == false)
