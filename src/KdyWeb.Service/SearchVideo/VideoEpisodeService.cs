@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
@@ -14,7 +15,9 @@ using KdyWeb.Entity.VideoConverts.Enum;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.IService.VideoConverts;
 using KdyWeb.Service.Job;
+using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -197,6 +200,64 @@ namespace KdyWeb.Service.SearchVideo
 
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success("更新成功");
+        }
+
+        /// <summary>
+        /// 批量接收播放地址入库
+        /// </summary>
+        /// <remarks>
+        /// 必须是存在的影片
+        /// </remarks>
+        /// <returns></returns>
+        public async Task<KdyResult> BatchReceiveVodUrlAsync(BatchReceiveVodUrlInput input)
+        {
+            var sysToken = KdyConfiguration.GetValue<string>(KdyWebServiceConst.ReceiveToken);
+            if (sysToken != input.Token)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "Token密钥失败");
+            }
+
+            //主表信息
+            var mainInfos = await _videoMainRepository.GetAsNoTracking()
+                .Where(a => a.KeyWord == input.VodName &&
+                            a.VideoYear == input.Year)
+                .Select(a => new
+                {
+                    MainId = a.Id,
+                    Year = a.VideoYear
+                })
+                .ToListAsync();
+            if (mainInfos.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "入库失败,无效名称");
+            }
+
+            if (mainInfos.Count > 1)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "入库失败,匹配到多个名称");
+            }
+
+            var mainInfo = mainInfos.First();
+            var epItems = input.VodPlayUrls
+                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(a => new EditEpisodeItem()
+                {
+                    EpisodeName = a.Split('$').First()
+                        .GetNumber().IsEmptyExt() ?
+                        a.Split('$').First() : a.Split('$').First().GetNumber(),
+                    EpisodeUrl = a.Split('$').Last()
+                })
+                .ToList();
+
+            var saveResult = await SaveEpisodeInfo(mainInfo.MainId,
+                epItems);
+            if (saveResult.IsSuccess == false)
+            {
+                return KdyResult.Error(saveResult.Code, saveResult.Msg);
+            }
+
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success("剧集创建成功");
         }
 
         /// <summary>

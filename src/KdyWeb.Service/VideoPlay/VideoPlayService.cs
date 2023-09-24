@@ -75,10 +75,8 @@ namespace KdyWeb.Service
                     .Replace("http://", "")
                     .Replace("https://", "");
 
-                if (cloudDiskParseHostNew.IsEmptyExt() ||
-                    epInfo.Data.EpisodeUrl.Contains("/IndexV4/"))
+                if (cloudDiskParseHostNew.IsEmptyExt())
                 {
-                    //todo:天翼家庭暂时不走新版
                     outModel.ExtensionParseHost = $"//{cloudDiskParseHost}";
                 }
                 else

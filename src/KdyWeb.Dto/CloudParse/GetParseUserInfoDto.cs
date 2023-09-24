@@ -5,6 +5,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace KdyWeb.Dto.CloudParse
@@ -61,5 +62,13 @@ namespace KdyWeb.Dto.CloudParse
         /// Api使用
         /// </summary>
         public string ApiToken { get; set; }
+
+        /// <summary>
+        /// 过期时间
+        /// </summary>
+        /// <remarks>
+        /// 为空不限制
+        /// </remarks>
+        public DateTime? ExpirationDateTime { get; set; }
     }
 }

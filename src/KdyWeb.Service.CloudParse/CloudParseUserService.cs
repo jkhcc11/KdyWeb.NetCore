@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpApi.AuthCenter;
+using KdyWeb.Entity;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.ICommonService;
@@ -70,6 +72,16 @@ namespace KdyWeb.Service.CloudParse
             if (LoginUserInfo.IsSuperAdmin == false)
             {
                 query = query.Where(a => a.UserId == userId);
+            }
+
+            if (input.KeyWord.IsEmptyExt() == false &&
+                input.KeyWord.Length == 19 &&
+                long.TryParse(input.KeyWord, out long tempId))
+            {
+                //id搜索
+                //清掉原来的值
+                input.KeyWord = string.Empty;
+                query = query.Where(a => a.Id == tempId);
             }
 
             var result = await query.GetDtoPageListAsync<CloudParseUserChildren, QueryParseUserSubAccountDto>(input);
@@ -219,6 +231,19 @@ namespace KdyWeb.Service.CloudParse
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryParseUserDto>>> QueryParseUserAsync(QueryParseUserInput input)
         {
+            if (input.OrderBy == null ||
+                input.OrderBy.Any() == false)
+            {
+                input.OrderBy = new List<KdyEfOrderConditions>()
+                {
+                    new ()
+                    {
+                        Key = nameof(CloudParseUser.CreatedTime),
+                        OrderBy = KdyEfOrderBy.Desc
+                    }
+                };
+            }
+
             var query = _cloudParseUserRepository.GetQuery();
             var result = await query.GetDtoPageListAsync<CloudParseUser, QueryParseUserDto>(input);
             return KdyResult.Success(result);
@@ -234,6 +259,26 @@ namespace KdyWeb.Service.CloudParse
             var dbUser = await query.FirstOrDefaultAsync(a => a.UserId == userId);
             dbUser.UserStatus = ServerCookieStatus.Normal;
             _cloudParseUserRepository.Update(dbUser);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 延期用户使用时间
+        /// </summary>
+        /// <param name="parseUserId">解析用户Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult> DelayDateAsync(long parseUserId)
+        {
+            var parseUser =await _cloudParseUserRepository.FirstOrDefaultAsync(a => a.Id == parseUserId);
+            if (parseUser == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无效用户");
+            }
+
+            parseUser.DelayData();
+            _cloudParseUserRepository.Update(parseUser);
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success();

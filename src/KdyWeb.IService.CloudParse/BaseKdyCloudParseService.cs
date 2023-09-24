@@ -9,8 +9,10 @@ using KdyWeb.CloudParse;
 using KdyWeb.CloudParse.Input;
 using KdyWeb.CloudParse.Out;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.Entity.CloudParse;
 using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.Utility;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -48,11 +50,14 @@ namespace KdyWeb.IService.CloudParse
         /// </summary>
         protected readonly ILogger KdyLog;
 
+        protected readonly IHttpContextAccessor HttpContextAccessor;
+
         protected BaseKdyCloudParseService()
         {
             KdyRedisCache = KdyBaseServiceProvider.ServiceProvide.GetService<IKdyRedisCache>();
             KdyRequestClientCommon = KdyBaseServiceProvider.ServiceProvide.GetService<IKdyRequestClientCommon>();
             KdyLog = KdyBaseServiceProvider.ServiceProvide.GetService<ILoggerFactory>().CreateLogger(GetType());
+            HttpContextAccessor = KdyBaseServiceProvider.ServiceProvide.GetService<IHttpContextAccessor>();
         }
 
         protected BaseKdyCloudParseService(TConfigEntity cloudConfig) : this()
@@ -105,7 +110,7 @@ namespace KdyWeb.IService.CloudParse
             if (await CheckDownUrlAsync(cacheV))
             {
                 KdyLog.LogInformation("{userInfo},获取缓存地址成功,{cacheV}", CloudConfig.ReqUserInfo, cacheV);
-                return KdyResult.Success(cacheV, "get cache success");
+                return KdyResult.Success(cacheV, CloudParseUser.CacheMsg);
             }
 
             //无效重新获取

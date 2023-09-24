@@ -254,6 +254,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
         public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
+            var currentFlag = HttpContextAccessor.HttpContext?.TraceIdentifier;
+
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)
             {
@@ -275,7 +277,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
             if (reqResult.IsSuccess == false)
             {
-                KdyLog.LogWarning("{userNick}天翼云获取下载地址第一步异常,Req:{input},ErrInfo:{msg}", CloudConfig.ReqUserInfo, input, reqResult.ErrMsg);
+                KdyLog.LogWarning("{userNick}天翼云获取下载地址第一步异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
+                   CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
                 return KdyResult.Error<string>(KdyResultCode.Error, "获取地址异常01,请稍等1-2分钟后重试");
             }
 
@@ -299,7 +302,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             if (reqResult.IsSuccess == false &&
                 reqResult.LocationUrl.IsEmptyExt())
             {
-                KdyLog.LogWarning("{userNick}天翼云获取下载地址第二步异常,Req:{input},ErrInfo:{msg}", CloudConfig.ReqUserInfo, input, reqResult.ErrMsg);
+                KdyLog.LogWarning("{userNick}天翼云获取下载地址第二步异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
+                    CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
                 return KdyResult.Error<string>(KdyResultCode.Error, "获取地址异常02,请稍等1-2分钟后重试");
             }
 

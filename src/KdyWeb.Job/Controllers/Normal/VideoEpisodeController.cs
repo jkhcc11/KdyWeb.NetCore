@@ -30,5 +30,16 @@ namespace KdyWeb.Job.Controllers.Normal
             var result = await _videoEpisodeService.GetEpisodeInfoAsync(epId);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 批量接收播放地址入库
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("batch-receive-vod-url")]
+        public async Task<KdyResult> BatchReceiveVodUrlAsync(BatchReceiveVodUrlInput input)
+        {
+            var result = await _videoEpisodeService.BatchReceiveVodUrlAsync(input);
+            return result;
+        }
     }
 }

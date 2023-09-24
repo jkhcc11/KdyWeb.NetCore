@@ -65,5 +65,10 @@ namespace KdyWeb.Dto.CloudParse
         /// 苹果V8
         /// </summary>
         Mac8,
+
+        /// <summary>
+        /// 自有
+        /// </summary>
+        Self = 100
     }
 }

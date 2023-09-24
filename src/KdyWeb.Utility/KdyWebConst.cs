@@ -80,6 +80,11 @@
         public const string SelfHostKey = "SelfHostKey";
 
         /// <summary>
+        /// 接收Token
+        /// </summary>
+        public const string ReceiveToken = "ReceiveToken";
+
+        /// <summary>
         /// 解析配置节点
         /// </summary>
         public class KdyWebParseConfig

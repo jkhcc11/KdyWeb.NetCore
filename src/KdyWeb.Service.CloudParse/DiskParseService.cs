@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using KdyWeb.BaseInterface;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
+using KdyWeb.Entity.CloudParse.Enum;
 using Microsoft.AspNetCore.Http;
 using static KdyWeb.IService.CloudParse.CacheKeyConst;
 
@@ -28,15 +29,18 @@ namespace KdyWeb.Service.CloudParse
         private readonly IServerCookieService _serverCookieService;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IKdyRepository<ParseRecordHistory, long> _parseRecordHistoryRepository;
 
         public DiskParseService(IUnitOfWork unitOfWork, ISubAccountService subAccountService,
             IServerCookieService serverCookieService, IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor) : base(unitOfWork)
+            IHttpContextAccessor httpContextAccessor,
+            IKdyRepository<ParseRecordHistory, long> parseRecordHistoryRepository) : base(unitOfWork)
         {
             _subAccountService = subAccountService;
             _serverCookieService = serverCookieService;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
+            _parseRecordHistoryRepository = parseRecordHistoryRepository;
         }
 
         /// <summary>
@@ -102,6 +106,13 @@ namespace KdyWeb.Service.CloudParse
                     return KdyResult.Error<CommonParseDto>(KdyResultCode.Error, "无效Token");
                 }
                 #endregion
+            }
+
+            if (userInfoCache.ExpirationDateTime.HasValue &&
+                userInfoCache.ExpirationDateTime.Value.AddDays(CloudParseUser.OverDays) < DateTime.Now)
+            {
+                //超过7天 g
+                return KdyResult.Error<CommonParseDto>(KdyResultCode.Error, "已过期,停止使用");
             }
 
             var reqInput = BuildReqInfo(fileInfo, isName, cachePrefix, subAccountCache);
@@ -187,6 +198,13 @@ namespace KdyWeb.Service.CloudParse
                     return KdyResult.Error<CommonParseDto>(KdyResultCode.Error, "无效Token");
                 }
                 #endregion
+            }
+
+            if (userInfoCache.ExpirationDateTime.HasValue &&
+                userInfoCache.ExpirationDateTime.Value.AddDays(CloudParseUser.OverDays) < DateTime.Now)
+            {
+                //超过7天 g
+                return KdyResult.Error<CommonParseDto>(KdyResultCode.Error, "已过期,停止使用");
             }
 
             var serverCookieCache = await GetServerCookieCacheAsync(subAccountCache.Id);
@@ -337,7 +355,8 @@ namespace KdyWeb.Service.CloudParse
         /// <param name="downReqInput">DownInput</param>
         /// <returns></returns>
         private async Task<KdyResult<string>> GetDownUrlAsync(string cloudParseType, bool isTs,
-            CloudParseUserChildrenCacheItem subAccountCacheItem, BaseDownInput<string> downReqInput)
+            CloudParseUserChildrenCacheItem subAccountCacheItem,
+            BaseDownInput<string> downReqInput)
         {
             var cloudConfig = new BaseConfigInput(subAccountCacheItem.ShowName,
                 subAccountCacheItem.CookieInfo, subAccountCacheItem.Id);
@@ -345,6 +364,7 @@ namespace KdyWeb.Service.CloudParse
             downReqInput.IsTs = isTs;
             var cloudParseService = DiskCloudParseFactory.CreateKdyCloudParseService(cloudParseType, cloudConfig);
 
+            KdyResult<string> downResult = null;
             //特殊下载参数
             switch (cloudParseType)
             {
@@ -371,12 +391,42 @@ namespace KdyWeb.Service.CloudParse
                             }
                         };
 
-                        return await cloudParseService.GetDownUrlAsync(tempDownReqInput);
+
                         #endregion
+
+                        downResult = await cloudParseService.GetDownUrlAsync(tempDownReqInput);
+                        break;
                     }
             }
 
-            var downResult = await cloudParseService.GetDownUrlAsync(downReqInput);
+            //为空则通用请求
+            downResult ??= await cloudParseService.GetDownUrlAsync(downReqInput);
+
+            #region 历史记录
+            ParseRecordHistory historyEntity;
+            if (downResult.Msg == CloudParseUser.CacheMsg)
+            {
+                //缓存
+                historyEntity = new ParseRecordHistory(RecordHistoryType.Visit,
+                    subAccountCacheItem.UserId,
+                    subAccountCacheItem.Id);
+            }
+            else
+            {
+                historyEntity = new ParseRecordHistory(RecordHistoryType.Request,
+                    subAccountCacheItem.UserId,
+                    subAccountCacheItem.Id);
+            }
+
+            historyEntity.Alias = subAccountCacheItem.Alias;
+            historyEntity.FileIdOrFileName =
+                string.IsNullOrEmpty(downReqInput.FileName) ?
+                    downReqInput.FileId : downReqInput.FileName;
+
+            await _parseRecordHistoryRepository.CreateAsync(historyEntity);
+            await UnitOfWork.SaveChangesAsync();
+            #endregion
+
             return downResult;
         }
 

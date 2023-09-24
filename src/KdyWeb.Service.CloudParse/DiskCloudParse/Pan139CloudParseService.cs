@@ -251,6 +251,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
         public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
+            var currentFlag = HttpContextAccessor.HttpContext?.TraceIdentifier;
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)
             {
@@ -282,7 +283,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 reqResult.LocationUrl.IsEmptyExt() == false)
             {
                 //有跳转说明失效了
-                KdyLog.LogWarning("{userNick},139盘文件下载异常,Req:{input},ErrInfo:{msg}", CloudConfig.ReqUserInfo, input, reqResult.ErrMsg);
+                KdyLog.LogWarning("{userNick},139盘文件下载异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
+                    CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
                 throw new KdyCustomException(reqResult.ErrMsg);
             }
 

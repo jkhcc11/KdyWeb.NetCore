@@ -10,6 +10,13 @@ namespace KdyWeb.Entity.CloudParse
     /// </summary>
     public class CloudParseUser : BaseEntity<long>
     {
+        public const string CacheMsg = "get url by cache";
+
+        /// <summary>
+        /// 允许最迟过期天数
+        /// </summary>
+        public const int OverDays = 7;
+
         /// <summary>
         /// 自有api地址长度
         /// </summary>
@@ -57,11 +64,27 @@ namespace KdyWeb.Entity.CloudParse
         public string? ApiToken { get; protected set; }
 
         /// <summary>
+        /// 过期时间
+        /// </summary>
+        /// <remarks>
+        /// 为空不限制
+        /// </remarks>
+        public DateTime? ExpirationDateTime { get; protected set; }
+
+        /// <summary>
         /// 初始化token
         /// </summary>
         public void InitToken()
         {
             ApiToken = $"parse-v2-{Guid.NewGuid():N}";
+        }
+
+        /// <summary>
+        /// 延期 默认延期一个月
+        /// </summary>
+        public void DelayData()
+        {
+            ExpirationDateTime = ExpirationDateTime?.AddDays(30) ?? DateTime.Now;
         }
     }
 }

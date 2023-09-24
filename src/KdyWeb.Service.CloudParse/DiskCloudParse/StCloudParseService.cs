@@ -75,6 +75,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
         public override async Task<KdyResult<List<BaseResultOut>>> QueryFileAsync(BaseQueryInput<string> input)
         {
+            var currentFlag = HttpContextAccessor.HttpContext?.TraceIdentifier;
             var resultList = new List<BaseResultOut>();
             if (CloudConfig.ParseCookie.IsEmptyExt())
             {
@@ -115,7 +116,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
             if (reqResult.IsSuccess == false)
             {
-                KdyLog.LogWarning("{userNick}搜索文件异常,Req:{input},ErrInfo:{msg}", CloudConfig.ReqUserInfo, input, reqResult.ErrMsg);
+                KdyLog.LogWarning("{userNick}搜索文件异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
+                    CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
                 return KdyResult.Success(resultList);
             }
 
@@ -123,7 +125,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             var jObject = JObject.Parse(reqResult.Data);
             if (jObject["code"] + "" != "10200")
             {
-                KdyLog.LogWarning("{userNick}搜索文件异常,Req:{input},Response:{msg}", CloudConfig.ReqUserInfo, input, reqResult.Data);
+                KdyLog.LogWarning("{userNick}搜索文件异常,Flag:{flag},Req:{input},Response:{msg}",
+                    CloudConfig.ReqUserInfo, currentFlag, input, reqResult.Data);
                 return KdyResult.Success(resultList);
             }
 
