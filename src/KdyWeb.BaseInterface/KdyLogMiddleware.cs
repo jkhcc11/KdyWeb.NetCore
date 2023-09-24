@@ -89,7 +89,7 @@ namespace KdyWeb.BaseInterface
             }
 
             _stopwatch.Restart();
-            var currentFlag = Guid.NewGuid();
+            var currentFlag = context.TraceIdentifier;
 
             var data = new ConcurrentDictionary<string, object>();
             data.TryAdd("request.url", request.Path.ToString());
@@ -153,8 +153,9 @@ namespace KdyWeb.BaseInterface
                 else
                 {
                     //记录日志
-                    _logger.LogTrace("用户请求{url}结束.时间：{time}ms,扩展:{exData}",
+                    _logger.LogTrace("用户请求{url}结束.Flag:{flag},时间：{time}ms,扩展:{exData}",
                         request.Path.Value,
+                        currentFlag,
                         _stopwatch.ElapsedMilliseconds,
                         JsonConvert.SerializeObject(data));
                 }

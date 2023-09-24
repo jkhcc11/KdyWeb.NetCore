@@ -64,5 +64,12 @@ namespace KdyWeb.IService.CloudParse
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> AuditAsync(long userId);
+
+        /// <summary>
+        /// 延期用户使用时间
+        /// </summary>
+        /// <param name="parseUserId">解析用户Id</param>
+        /// <returns></returns>
+        Task<KdyResult> DelayDateAsync(long parseUserId);
     }
 }

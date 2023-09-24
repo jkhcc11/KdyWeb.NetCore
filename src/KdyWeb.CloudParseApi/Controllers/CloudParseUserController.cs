@@ -77,5 +77,17 @@ namespace KdyWeb.CloudParseApi.Controllers
             var result = await _cloudParseUserService.QueryParseUserAsync(input);
             return result;
         }
+
+        /// <summary>
+        /// 延期
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("delay-data/{id}")]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public async Task<KdyResult> DelayDateAsync(long id)
+        {
+            var result = await _cloudParseUserService.DelayDateAsync(id);
+            return result;
+        }
     }
 }

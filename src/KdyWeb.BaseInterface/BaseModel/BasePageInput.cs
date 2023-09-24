@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace KdyWeb.BaseInterface.BaseModel
@@ -51,5 +52,35 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// 排序
         /// </summary>
         IList<KdyEfOrderConditions>? OrderBy { get; set; }
+    }
+
+    public abstract class BaseDateRangeInput
+    {
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        public DateTime? StartTime { get; set; }
+
+        /// <summary>
+        /// 结束时间
+        /// </summary>
+        public DateTime? EndTime { get; set; }
+
+        public virtual (DateTime startTime, DateTime endTime) GetRange()
+        {
+            var startTime = StartTime.HasValue == false ?
+                DateTime.Now.Date.AddDays(-7) : StartTime.Value;
+
+            var endTime = EndTime.HasValue == false ?
+                DateTime.Now.Date.AddDays(1) :
+                EndTime.Value.AddDays(1);
+            if ((endTime - startTime).TotalDays > 366)
+            {
+                //最多一年
+                endTime = startTime.AddDays(366);
+            }
+
+            return (startTime, endTime);
+        }
     }
 }

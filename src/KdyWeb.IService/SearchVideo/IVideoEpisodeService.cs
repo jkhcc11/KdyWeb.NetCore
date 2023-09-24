@@ -45,5 +45,14 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> UpdateNotEndVideoAsync(UpdateNotEndVideoInput input);
+
+        /// <summary>
+        /// 批量接收播放地址入库
+        /// </summary>
+        /// <remarks>
+        /// 必须是存在的影片
+        /// </remarks>
+        /// <returns></returns>
+        Task<KdyResult> BatchReceiveVodUrlAsync(BatchReceiveVodUrlInput input);
     }
 }

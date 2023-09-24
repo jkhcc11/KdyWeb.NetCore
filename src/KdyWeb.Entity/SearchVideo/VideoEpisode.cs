@@ -12,6 +12,10 @@ namespace KdyWeb.Entity.SearchVideo
         /// 剧集名长度
         /// </summary>
         public const int EpisodeNameLength = 80;
+        /// <summary>
+        /// 剧集Url长度
+        /// </summary>
+        public const int EpisodeUrlLength = 500;
 
         /// <summary>
         /// 构造
@@ -27,7 +31,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 剧集Url
         /// </summary>
-        [StringLength(VideoMain.UrlLength)]
+        [StringLength(EpisodeUrlLength)]
         [Required]
         public string EpisodeUrl { get; set; }
 

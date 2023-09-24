@@ -128,6 +128,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                             MenuName = "服务器Cookie",
                             Cacheable = true
                         },
+                        new()
+                        {
+                            ParentPath = "/system",
+                            RouteName="ParseRecordHistory",
+                            MenuUrl = "/system/record-history-list",
+                            LocalFilePath = "/system/parseRecordHistory/list",
+                            MenuName = "访问记录",
+                            Cacheable = true
+                        },
                     }
                 },
             };
@@ -201,6 +210,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                             MenuUrl = "/system/user-list",
                             LocalFilePath = "/system/user/user-list",
                             MenuName = "用户列表",
+                            Cacheable = true
+                        },
+                        new()
+                        {
+                            ParentPath = "/system",
+                            RouteName="ParseRecordHistory",
+                            MenuUrl = "/system/record-history-list",
+                            LocalFilePath = "/system/parseRecordHistory/list",
+                            MenuName = "访问记录",
                             Cacheable = true
                         },
                     }

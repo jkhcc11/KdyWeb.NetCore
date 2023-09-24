@@ -45,6 +45,11 @@ namespace KdyWeb.Service.CloudParse
                         tempData = BuildMac10PostData(input);
                         break;
                     }
+                case CmsSendType.Self:
+                    {
+                        tempData = BuildSelfPostData(input);
+                        break;
+                    }
                 default:
                     {
                         throw new KdyCustomException("未知类型");
@@ -76,6 +81,20 @@ namespace KdyWeb.Service.CloudParse
             dynamicDict.vod_name = input.VodName;
             dynamicDict.vod_play_from = input.PlayFrom;
             dynamicDict.vod_play_url = tempStr;
+            return dynamicDict;
+        }
+
+        /// <summary>
+        /// 生成自有入库
+        /// </summary>
+        /// <returns></returns>
+        public dynamic BuildSelfPostData(ParseVodSendInput input)
+        {
+            dynamic dynamicDict = new System.Dynamic.ExpandoObject();
+            dynamicDict.token = input.SendPassWord;
+            dynamicDict.year = input.VodTypeName;
+            dynamicDict.vodName = input.VodName;
+            dynamicDict.vodPlayUrls = input.PlayUrl;
             return dynamicDict;
         }
     }

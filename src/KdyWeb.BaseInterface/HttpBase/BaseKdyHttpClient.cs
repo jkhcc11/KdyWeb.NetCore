@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,11 +34,14 @@ namespace KdyWeb.BaseInterface.HttpBase
         protected readonly IConfiguration KdyConfiguration;
 
         protected readonly IHttpClientFactory HttpClientFactory;
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
         protected BaseKdyHttpClient(IHttpClientFactory httpClientFactory)
         {
             HttpClientFactory = httpClientFactory;
             KdyLog = KdyBaseServiceProvider.ServiceProvide.GetService<ILoggerFactory>().CreateLogger(GetType());
             KdyConfiguration = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IConfiguration>();
+            _httpContextAccessor = KdyBaseServiceProvider.ServiceProvide.GetRequiredService<IHttpContextAccessor>();
         }
 
         /// <summary>
@@ -97,7 +101,7 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         protected virtual async Task<TResult> GetResult(HttpClient httpClient, HttpRequestMessage request, TResult result, TInput input)
         {
-            var currentFlag = Guid.NewGuid();
+            var currentFlag = _httpContextAccessor.HttpContext?.TraceIdentifier;
             var watch = new Stopwatch();
             watch.Start();
             try
@@ -185,7 +189,7 @@ namespace KdyWeb.BaseInterface.HttpBase
                 result.IsSuccess = false;
                 result.ErrMsg = $"Http网站异常：{ex.Message}";
                 //ex.ToExceptionless().Submit();
-                KdyLog.LogError(ex, "Http网站异常.信息:{msg}", ex.Message);
+                KdyLog.LogError(ex, "Http网站异常.Flag:{flag}.信息:{msg}", currentFlag, ex.Message);
                 return result;
             }
             catch (Exception ex)
@@ -193,7 +197,8 @@ namespace KdyWeb.BaseInterface.HttpBase
                 result.IsSuccess = false;
                 result.ErrMsg = $"Http程序异常：{ex.Message}";
                 // ex.ToExceptionless().Submit();
-                KdyLog.LogError(ex, "Http程序异常.信息:{msg}", ex.Message);
+                KdyLog.LogError(ex, "Http程序异常.Flag:{flag}.信息:{msg}",
+                    currentFlag, ex.Message);
                 return result;
             }
             finally

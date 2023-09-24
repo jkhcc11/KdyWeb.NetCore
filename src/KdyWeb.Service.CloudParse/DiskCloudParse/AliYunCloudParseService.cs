@@ -261,6 +261,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
         public override async Task<KdyResult<string>> GetDownUrlForNoCacheAsync<TDownEntity>(BaseDownInput<TDownEntity> input)
         {
+            var currentFlag = HttpContextAccessor.HttpContext?.TraceIdentifier;
             var token = await GetLoginInfoAsync();
             var fileId = input.FileId;
             var isTs = input.IsTs;
@@ -300,7 +301,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
                 if (reqResult.IsSuccess == false)
                 {
-                    KdyLog.LogWarning("{userNick}获取文件下载异常,Req:{input},ErrInfo:{msg}", CloudConfig.ReqUserInfo, input, reqResult.ErrMsg);
+                    KdyLog.LogWarning("{userNick}获取文件下载异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
+                        CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
                     return KdyResult.Error<string>(KdyResultCode.HttpError, reqResult.ErrMsg);
                 }
 

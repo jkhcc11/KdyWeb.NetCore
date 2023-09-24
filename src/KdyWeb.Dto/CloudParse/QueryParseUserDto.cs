@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -39,5 +40,13 @@ namespace KdyWeb.Dto.CloudParse
         /// 用户状态
         /// </summary>
         public ServerCookieStatus UserStatus { get; set; }
+
+        /// <summary>
+        /// 过期时间
+        /// </summary>
+        /// <remarks>
+        /// 为空不限制
+        /// </remarks>
+        public DateTime? ExpirationDateTime { get; set; }
     }
 }
