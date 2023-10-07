@@ -40,19 +40,21 @@ namespace KdyWeb.Service.CloudParse
         /// <returns></returns>
         public async Task<CloudParseUserChildrenCacheItem> GetSubAccountCacheAsync(string oldSubAccountInfo)
         {
-            var cacheKey = GetSubAccountCacheKey(oldSubAccountInfo);
-            var cacheValue = await GetCacheValueAsync(cacheKey, async () =>
+            //todo:如果旧信息不存在会一直请求db
+            var dbSubAccount = await _cloudParseUserChildrenRepository
+                  .FirstOrDefaultAsync(a => a.OldSubAccountInfo.Contains(oldSubAccountInfo));
+            var result = dbSubAccount.MapToExt<CloudParseUserChildrenCacheItem>();
+            if (result == null)
             {
-                var dbSubAccount = await _cloudParseUserChildrenRepository
-                    .FirstOrDefaultAsync(a => a.OldSubAccountInfo.Contains(oldSubAccountInfo));
-                var result = dbSubAccount.MapToExt<CloudParseUserChildrenCacheItem>();
-                if (result != null)
-                {
-                    result.ShowName = result.Alias.IsEmptyExt() ?
-                        $"{LoginUserInfo.UserName}-{result.Id.ToString().Substring(0, 3)}" : result.Alias;
-                }
+                return default;
+            }
 
-                return result;
+            result.ShowName = result.Alias.IsEmptyExt() ?
+                  $"{LoginUserInfo.UserName}-{result.Id.ToString().Substring(0, 3)}" : result.Alias;
+            var cacheKey = GetSubAccountCacheKey(dbSubAccount.Id);
+            var cacheValue = await GetCacheValueAsync(cacheKey, () =>
+            {
+                return Task.FromResult(result);
             }, TimeSpan.FromHours(12));
 
             return cacheValue;
@@ -203,7 +205,7 @@ namespace KdyWeb.Service.CloudParse
         /// 类型二：xxxx_Id 旧版 合并一起
         /// </param>
         /// <returns></returns>
-        private string GetSubAccountCacheKey(object subAccountId)
+        private string GetSubAccountCacheKey(long subAccountId)
         {
             return $"{CacheKeyConst.KdyCacheName.SubAccountCookieKey}:{subAccountId}";
         }
