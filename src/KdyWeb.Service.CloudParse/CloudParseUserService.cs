@@ -115,6 +115,11 @@ namespace KdyWeb.Service.CloudParse
 
         public async Task<KdyResult> CreateAndUpdateSubAccountAsync(CreateAndUpdateSubAccountInput input)
         {
+            input.BusinessId = input.BusinessId.TrimExt();
+            input.Cookie = input.Cookie.TrimExt();
+            input.Alias = input.Alias.TrimExt();
+            input.OldSubAccountInfo = input.OldSubAccountInfo.TrimExt();
+
             var allCookieTypeCache = await _subAccountService.GetAllCookieTypeCacheAsync();
             var cookieTypeCache = allCookieTypeCache.FirstOrDefault(a => a.Id == input.SubAccountTypeId);
             if (cookieTypeCache == null)
@@ -284,7 +289,7 @@ namespace KdyWeb.Service.CloudParse
         /// <returns></returns>
         public async Task<KdyResult> DelayDateAsync(long parseUserId)
         {
-            var parseUser =await _cloudParseUserRepository.FirstOrDefaultAsync(a => a.Id == parseUserId);
+            var parseUser = await _cloudParseUserRepository.FirstOrDefaultAsync(a => a.Id == parseUserId);
             if (parseUser == null)
             {
                 return KdyResult.Error(KdyResultCode.Error, "无效用户");

@@ -12,7 +12,7 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 页数
         /// </summary>
-        [Range(1, 10000, ErrorMessage = "分页错误")]
+        [Range(1, int.MaxValue, ErrorMessage = "分页错误")]
         public int Page { get; set; } = 1;
 
         /// <summary>

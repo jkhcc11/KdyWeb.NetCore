@@ -12,6 +12,7 @@ using KdyWeb.Dto.CloudParse;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.IService.CloudParse;
+using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
 
 namespace KdyWeb.Service.CloudParse
@@ -78,6 +79,9 @@ namespace KdyWeb.Service.CloudParse
         /// <returns></returns>
         public async Task<KdyResult> CreateAndUpdateServerCookieAsync(CreateAndUpdateServerCookieInput input)
         {
+            input.ServerIp = input.ServerIp.TrimExt();
+            input.CookieInfo = input.CookieInfo.TrimExt();
+
             var userId = LoginUserInfo.GetUserId();
             var serverCookieQuery = _serverCookieRepository.GetQuery();
             serverCookieQuery = serverCookieQuery.Where(a => a.SubAccountId == input.SubAccountId &&

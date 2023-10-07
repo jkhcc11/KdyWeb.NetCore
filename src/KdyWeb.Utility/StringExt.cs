@@ -14,6 +14,20 @@ namespace KdyWeb.Utility
     public static class StringExt
     {
         /// <summary>
+        /// 移除前后空格
+        /// </summary>
+        /// <returns></returns>
+        public static string? TrimExt(this string? str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
+            return str.Trim();
+        }
+
+        /// <summary>
         /// 为空校验
         /// </summary>
         /// <returns></returns>
