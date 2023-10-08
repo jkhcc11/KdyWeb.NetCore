@@ -325,7 +325,11 @@ namespace KdyWeb.Service.CloudParse
                 downUrlSearchType = DownUrlSearchType.Name;
             }
 
-            var cacheKey = $"{cachePrefix}:{subAccountCache.Id}:{tempStr.Md5Ext()}";
+            //如果子账号变更后，这里缓存不会实时失效，如果批量删除得用*匹配，避免此清空，在每次变更子账号时，
+            //根据修改时间戳加上前缀
+            var onlyFlag = subAccountCache.ModifyTime.HasValue ?
+                $":{subAccountCache.ModifyTime.Value.ToSecondTimestamp()}" : "";
+            var cacheKey = $"{cachePrefix}:{subAccountCache.Id}{onlyFlag}:{tempStr.Md5Ext()}";
             var reqInput = new BaseDownInput<string>(cacheKey, fileId, downUrlSearchType)
             {
                 FileName = fileName,

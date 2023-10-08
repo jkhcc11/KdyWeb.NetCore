@@ -2,6 +2,7 @@
 using AutoMapper.Configuration.Annotations;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
+using System;
 
 namespace KdyWeb.Dto.CloudParse.CacheItem
 {
@@ -55,6 +56,15 @@ namespace KdyWeb.Dto.CloudParse.CacheItem
         /// 有些下载需要固定带上附加ID，如 分组ID等，这种不支持跨云盘切换，所以手动指定
         /// </remarks>
         public string BusinessId { get; set; }
+
+
+        /// <summary>
+        /// 修改时间
+        /// </summary>
+        /// <remarks>
+        ///  每次变更后，使用时间前缀作为缓存区分
+        /// </remarks>
+        public DateTime? ModifyTime { get; set; }
 
     }
 }

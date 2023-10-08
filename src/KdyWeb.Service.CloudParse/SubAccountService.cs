@@ -201,8 +201,7 @@ namespace KdyWeb.Service.CloudParse
         /// 获取子账号缓存Key
         /// </summary>
         /// <param name="subAccountId">
-        /// 类型一：子账号Id 新版 <br/>
-        /// 类型二：xxxx_Id 旧版 合并一起
+        /// 子账号Id <br/>
         /// </param>
         /// <returns></returns>
         private string GetSubAccountCacheKey(long subAccountId)

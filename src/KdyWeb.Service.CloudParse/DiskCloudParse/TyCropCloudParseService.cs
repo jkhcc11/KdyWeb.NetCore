@@ -394,7 +394,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         /// <returns></returns>
         private string GetUserCropInfoCacheKey()
         {
-            return $"{CacheKeyConst.TyCacheKey.UserCropInfoCache}:{CloudConfig.ReqUserInfo}";
+            return $"{CacheKeyConst.TyCacheKey.UserCropInfoCache}:{CloudConfig.ChildUserId}";
         }
     }
 }
