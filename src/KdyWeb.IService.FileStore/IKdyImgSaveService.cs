@@ -40,7 +40,7 @@ namespace KdyWeb.IService.FileStore
         /// </summary>
         /// <param name="imgId">图片Id</param>
         /// <returns></returns>
-        Task<string> GetImageByImgId(long imgId);
+        Task<string?> GetImageByImgId(long imgId);
 
         /// <summary>
         /// 通过Byte上传
