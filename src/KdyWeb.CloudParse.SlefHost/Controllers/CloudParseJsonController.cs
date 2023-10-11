@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.CloudParse.SelfHost.Models;
 using KdyWeb.Dto.CloudParse;
@@ -61,98 +60,45 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
             return ToJsonParseDto(parseResult);
         }
 
-        #region remove
-        ///// <summary>
-        ///// 胜天
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet("st/{userInfo}/{fileInfo}")]
-        //public async Task<JsonParseDto> StCloudParseAsync([FromRoute] CloudParsePlayerInput input)
-        //{
-        //    var cachePrefix = $"{CacheKeyConst.StCacheKey.DownCacheKey}:";
-        //    var parseResult = await _diskParseService.CommonParseAsync(cachePrefix,
-        //        input.Token, CloudParseCookieType.BitQiu,
-        //        input.UserInfo, input.FileInfo, false,
-        //        input.ParseModel == ParseModel.Name);
-        //    return ToJsonParseDto(parseResult);
-        //}
-
-        ///// <summary>
-        ///// 阿里
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet("ali/{userInfo}/{fileInfo}")]
-        //public async Task<JsonParseDto> AliCloudParseAsync([FromRoute] CloudParsePlayerInput input)
-        //{
-        //    var cachePrefix = $"{CacheKeyConst.AliYunCacheKey.DownCacheKey}:";
-        //    var parseResult = await _diskParseService.CommonParseAsync(cachePrefix,
-        //        input.Token, CloudParseCookieType.Ali,
-        //        input.UserInfo, input.FileInfo, true,
-        //        input.ParseModel == ParseModel.Name);
-        //    return ToJsonParseDto(parseResult);
-        //}
-
-        ///// <summary>
-        ///// 天翼云 个人
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet("ty-person/{userInfo}/{fileInfo}")]
-        //public async Task<JsonParseDto> TyPersonCloudParseAsync([FromRoute] CloudParsePlayerInput input)
-        //{
-        //    var cachePrefix = $"{CacheKeyConst.TyCacheKey.DownCacheKey}:";
-        //    var parseResult = await _diskParseService.CommonParseWithServerCookieAsync(cachePrefix,
-        //        input.Token, CloudParseCookieType.TyPerson,
-        //        input.UserInfo, input.FileInfo, false,
-        //        input.ParseModel == ParseModel.Name);
-        //    return ToJsonParseDto(parseResult);
-        //}
-
-        ///// <summary>
-        ///// 天翼云 家庭
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet("ty-family/{userInfo}/{fileInfo}")]
-        //public async Task<JsonParseDto> TyFamilyCloudParseAsync([FromRoute] CloudParsePlayerInput input)
-        //{
-        //    var cachePrefix = $"{CacheKeyConst.TyCacheKey.FamilyDownCacheKey}:";
-        //    var parseResult = await _diskParseService.CommonParseWithServerCookieAsync(cachePrefix,
-        //        input.Token, CloudParseCookieType.TyFamily,
-        //        input.UserInfo, input.FileInfo, false,
-        //        input.ParseModel == ParseModel.Name);
-        //    return ToJsonParseDto(parseResult);
-        //}
-
         /// <summary>
-        /// 天翼云 企业
+        /// 301跳转直链
         /// </summary>
         /// <returns></returns>
-        [HttpGet("ty-crop/{userInfo}/{fileInfo}")]
-        [Obsolete("待移除")]
-        public async Task<JsonParseDto> TyCropCloudParseAsync([FromRoute] CloudParsePlayerInput input)
+        [HttpGet("jump/{userInfo}/{fileInfo}")]
+        public async Task<IActionResult> CommonCloudParseWithJump301Async([FromRoute] CloudParsePlayerInput input)
         {
-            var cachePrefix = $"{CacheKeyConst.TyCacheKey.CropDownCacheKey}:";
-            var parseResult = await _diskParseService.CommonParseWithServerCookieAsync(cachePrefix,
-                input.Token, CloudParseCookieType.TyCrop,
-                input.UserInfo, input.FileInfo, false,
-                input.ParseModel == ParseModel.Name);
-            return ToJsonParseDto(parseResult);
-        }
+            var newBusinessFlag = await _subAccountService.GetBusinessFlagByUserIdAsync(input.UserInfo
+                , input.IsOldUserInfo == false);
+            if (string.IsNullOrEmpty(newBusinessFlag))
+            {
+                return Content("未知用户信息");
+            }
 
-        ///// <summary>
-        ///// 盘139
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet("hc/{userInfo}/{fileInfo}")]
-        //public async Task<JsonParseDto> Pan139CloudParseAsync([FromRoute] CloudParsePlayerInput input)
-        //{
-        //    var cachePrefix = $"{CacheKeyConst.Pan139CacheKey.DownCacheKey}:";
-        //    var parseResult = await _diskParseService.CommonParseAsync(cachePrefix,
-        //        input.Token, CloudParseCookieType.Pan139,
-        //        input.UserInfo, input.FileInfo, true,
-        //        input.ParseModel == ParseModel.Name);
-        //    return ToJsonParseDto(parseResult);
-        //} 
-        #endregion
+            var cachePrefix = $"{CacheKeyConst.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
+            var isNeedSerCookie = CloudParseCookieType.IsNeedServerCookie(newBusinessFlag);
+            KdyResult<CommonParseDto> parseResult;
+            if (isNeedSerCookie)
+            {
+                parseResult = await _diskParseService.CommonParseWithServerCookieAsync(cachePrefix,
+                    input.Token, newBusinessFlag,
+                    input.UserInfo, input.FileInfo, false,
+                    input.ParseModel == ParseModel.Name);
+            }
+            else
+            {
+                parseResult = await _diskParseService.CommonParseAsync(cachePrefix,
+                    input.Token, newBusinessFlag,
+                    input.UserInfo, input.FileInfo, false,
+                    input.ParseModel == ParseModel.Name);
+            }
+
+            if (parseResult.IsSuccess == false)
+            {
+                return Content(parseResult.Msg);
+            }
+
+            return Redirect(parseResult.Data.DownLink);
+        }
 
         private JsonParseDto ToJsonParseDto(KdyResult<CommonParseDto> parseResult)
         {
