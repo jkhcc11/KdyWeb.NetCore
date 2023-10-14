@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using KdyWeb.HttpApi;
+using KdyWeb.IService.Selenium;
+using KdyWeb.Service.Selenium;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -23,6 +25,7 @@ namespace KdyWeb.CloudParseApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<ISeleniumLoginService, SeleniumLoginService>();
             services.AddKdyDefaultExt(Configuration);
 
             //Swagger

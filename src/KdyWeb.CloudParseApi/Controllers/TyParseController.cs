@@ -8,8 +8,10 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.CloudParse.Input;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
+using KdyWeb.Dto.Selenium;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
+using KdyWeb.IService.Selenium;
 using KdyWeb.Service.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Mvc;
@@ -24,14 +26,38 @@ namespace KdyWeb.CloudParseApi.Controllers
     {
         private readonly ISubAccountService _subAccountService;
         private readonly ILoginUserInfo _loginUserInfo;
+        private readonly ISeleniumLoginService _seleniumLoginService;
 
-        public TyParseController(ISubAccountService subAccountService, ILoginUserInfo loginUserInfo)
+        public TyParseController(ISubAccountService subAccountService, ILoginUserInfo loginUserInfo,
+            ISeleniumLoginService seleniumLoginService)
         {
             _subAccountService = subAccountService;
             _loginUserInfo = loginUserInfo;
+            _seleniumLoginService = seleniumLoginService;
         }
 
         #region 个人
+        /// <summary>
+        /// 天翼H5
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("login-with-ty-h5")]
+        public async Task<KdyResult<string>> LoginWithTyH5Async(LoginBySeleniumInput input)
+        {
+            return await _seleniumLoginService.LoginWithTyH5Async(input);
+        }
+
+        /// <summary>
+        /// 天翼个人
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("login-with-ty-person")]
+        public async Task<KdyResult<string>> LoginWithTyPersonAsync(LoginBySeleniumInput input)
+        {
+            return await _seleniumLoginService.LoginWithTyPersonAsync(input);
+        }
+
+
         /// <summary>
         /// 查询文件列表
         /// </summary>

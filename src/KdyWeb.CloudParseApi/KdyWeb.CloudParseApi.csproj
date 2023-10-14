@@ -11,7 +11,9 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
+		<ProjectReference Include="..\KdyWeb.IService.Selenium\KdyWeb.IService.Selenium.csproj" />
 		<ProjectReference Include="..\KdyWeb.Service.CloudParse\KdyWeb.Service.CloudParse.csproj" />
+		<ProjectReference Include="..\KdyWeb.Service.Selenium\KdyWeb.Service.Selenium.csproj" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

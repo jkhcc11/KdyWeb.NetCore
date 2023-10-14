@@ -2,8 +2,10 @@
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.CloudParse.SelfHost.Models;
 using KdyWeb.Dto.CloudParse;
+using KdyWeb.Dto.Selenium;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
+using KdyWeb.IService.Selenium;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.CloudParse.SelfHost.Controllers
@@ -17,11 +19,13 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
     {
         private readonly IDiskParseService _diskParseService;
         private readonly ISubAccountService _subAccountService;
+        private readonly ISeleniumLoginService _seleniumLoginService;
         public CloudParseJsonController(IDiskParseService diskParseService,
-            ISubAccountService subAccountService)
+            ISubAccountService subAccountService, ISeleniumLoginService seleniumLoginService)
         {
             _diskParseService = diskParseService;
             _subAccountService = subAccountService;
+            _seleniumLoginService = seleniumLoginService;
         }
 
         /// <summary>
@@ -58,6 +62,26 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
 
 
             return ToJsonParseDto(parseResult);
+        }
+
+        /// <summary>
+        /// 天翼个人
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("login-with-ty-person")]
+        public async Task<KdyResult<string>> LoginWithTyPersonAsync(LoginBySeleniumInput input)
+        {
+            return await _seleniumLoginService.LoginWithTyPersonAsync(input);
+        }
+
+        /// <summary>
+        /// 天翼H5
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("login-with-ty-h5")]
+        public async Task<KdyResult<string>> LoginWithTyH5Async(LoginBySeleniumInput input)
+        {
+            return await _seleniumLoginService.LoginWithTyH5Async(input);
         }
 
         /// <summary>

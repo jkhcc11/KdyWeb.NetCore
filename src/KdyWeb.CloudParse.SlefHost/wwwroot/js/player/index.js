@@ -123,7 +123,7 @@ InitPlay.prototype = {
         return o + i;
     }
 };
-if (result_v2.isSuccess===false) {
+if (result_v2.isSuccess === false) {
     document.getElementById('div_player').innerHTML = '解析失败,请稍后重试或联系管理员';
 } else {
     var c = {
@@ -131,5 +131,12 @@ if (result_v2.isSuccess===false) {
         elem: 'div_player',
         dmId: ''
     };
-    var play = new InitPlay(c);
+    if (window.navigator.webdriver ||
+        window.callPhantom ||
+        window._phantom ||
+        window.webdriver) {
+        console.log('403');
+    } else {
+        var play = new InitPlay(c);
+    }
 }
