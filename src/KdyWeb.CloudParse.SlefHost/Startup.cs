@@ -1,5 +1,7 @@
 using KdyWeb.BaseInterface.Filter;
 using KdyWeb.HttpApi;
+using KdyWeb.IService.Selenium;
+using KdyWeb.Service.Selenium;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,7 @@ namespace KdyWeb.CloudParse.SelfHost
             //自定义模型校验
             services.AddControllersWithViews(options => { options.Filters.Add<ModelStateValidFilter>(); });
 
+            services.AddTransient<ISeleniumLoginService, SeleniumLoginService>();
             services.AddKdyDefaultExt(Configuration);
             //services.AddRazorPages();
         }

@@ -2,6 +2,7 @@
 	<Import Project="..\common.props" />
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,12 +17,17 @@
 
 	<ItemGroup>
 		<PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
 		<PackageReference Include="SkyAPM.Agent.AspNetCore" Version="2.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\KdyWeb.CommonService\KdyWeb.CommonService.csproj" />
 		<ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="wwwroot\js\videoPlay\index.js" CopyToPublishDirectory="Never" />
 	</ItemGroup>
 
 </Project>

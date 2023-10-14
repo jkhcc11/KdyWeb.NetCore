@@ -27,6 +27,7 @@ namespace KdyWeb.Service.FileStore
     /// <summary>
     /// 图床关联 服务实现
     /// todo:迁移完新增七牛、阿里云oss等对象存储
+    /// 在imgupdate分支改为，只传miniIo,然后通过job方式上传备用通道
     /// </summary>
     public class KdyImgSaveService : BaseKdyService, IKdyImgSaveService
     {
@@ -40,7 +41,7 @@ namespace KdyWeb.Service.FileStore
         /// </summary>
         private const string bucketName = "kdyimg";
         private static readonly Dictionary<string, List<byte[]>> FileSignature =
-            new Dictionary<string, List<byte[]>>
+            new()
             {
                 { ".jpeg", new List<byte[]>
                     {
@@ -190,13 +191,13 @@ namespace KdyWeb.Service.FileStore
         /// </remarks>
         /// <param name="imgId">图片Id</param>
         /// <returns></returns>
-        public async Task<string> GetImageByImgId(long imgId)
+        public async Task<string?> GetImageByImgId(long imgId)
         {
-            string cacheKey = $"ImgId_{imgId}",
+            string? cacheKey = $"ImgId_{imgId}",
                 value = _memoryCache.Get<string>(cacheKey);
             if (value.IsEmptyExt() == false)
             {
-                return value;
+                return default;
             }
 
             //todo:后期定时校验
@@ -249,7 +250,7 @@ namespace KdyWeb.Service.FileStore
         /// 数据库图片处理
         /// </summary>
         /// <returns></returns>
-        private string GetImageForImgHandler(KdyImgSave dbImg)
+        private string GetImageForImgHandler(KdyImgSave? dbImg)
         {
             var defaultUrl = $"{_kdySelfHostOption.ImgHost}{KdyWebServiceConst.DefaultImgUrl}";
 
@@ -262,7 +263,8 @@ namespace KdyWeb.Service.FileStore
             if (dbImg.MainUrl.IsEmptyExt() &&
                 dbImg.TwoUrl.IsEmptyExt() &&
                 dbImg.OneUrl.IsEmptyExt() &&
-                dbImg.Urls.Any() == false)
+                (dbImg.Urls == null ||
+                 dbImg.Urls.Any() == false))
             {
                 return defaultUrl;
             }
@@ -282,7 +284,8 @@ namespace KdyWeb.Service.FileStore
                 return ResultUrlHandler(dbImg.TwoUrl);
             }
 
-            if (dbImg.Urls.Any())
+            if (dbImg.Urls != null &&
+                dbImg.Urls.Any())
             {
                 return $"{_kdySelfHostOption.ImgHost}/{dbImg.Urls.First().TrimStart('/')}";
             }
@@ -297,7 +300,6 @@ namespace KdyWeb.Service.FileStore
         private string ResultUrlHandler(string originalUrl)
         {
             var proxyHost = _kdySelfHostOption.ProxyHost;
-
             if (originalUrl.StartsWith($"/{bucketName}"))
             {
                 return $"{_kdySelfHostOption.ImgHost}{originalUrl}";
@@ -510,12 +512,12 @@ namespace KdyWeb.Service.FileStore
                 throw new KdyCustomException("BackSina上传失败，未配置bjhCookie");
             }
 
-            var normalInput = new NormalFileInput("https://baijiahao.baidu.com/builderinner/api/content/file/upload",
+            var normalInput = new NormalFileInput("https://baijiahao.baidu.com/pcui/picture/upload",
                 "media",
                 "ret.bos_url", kdyFileInput.FileName)
             {
                 Cookie = cookie,
-                Referer = "https://baijiahao.baidu.com/builder/rc/material/imgs?app_id=1754196805771497"
+                Referer = "https://baijiahao.baidu.com/builder/?app_id=1754196805771497"
             };
             if (kdyFileInput.FileBytes != null && kdyFileInput.FileBytes.Any())
             {
@@ -532,9 +534,9 @@ namespace KdyWeb.Service.FileStore
 
             normalInput.PostParDic = new Dictionary<string, string>()
             {
-                {"id", "WU_FILE_0"},
-                {"is_avatar", "0"},
-                {"no_compress", "1"}
+                {"app_id", "1754196805771497"},
+                {"type", "image"},
+                {"article_type", ""}
             };
 
             return await _normalFileService.PostFile(normalInput);

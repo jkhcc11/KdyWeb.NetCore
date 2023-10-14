@@ -6,8 +6,7 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["KdyWeb.CloudParse.SlefHost/KdyWeb.CloudParse.SelfHost.csproj", "KdyWeb.CloudParse.SlefHost/"]
-COPY ["KdyWeb.HttpApi/KdyWeb.HttpApi.csproj", "KdyWeb.HttpApi/"]
+COPY ["KdyWeb.NetCore/KdyWeb.NetCore.csproj", "KdyWeb.NetCore/"]
 COPY ["KdyWeb.CommonService/KdyWeb.CommonService.csproj", "KdyWeb.CommonService/"]
 COPY ["KdyWeb.ICommonService/KdyWeb.ICommonService.csproj", "KdyWeb.ICommonService/"]
 COPY ["KdyWeb.Dto/KdyWeb.Dto.csproj", "KdyWeb.Dto/"]
@@ -18,6 +17,7 @@ COPY ["KdyWeb.Utility/KdyWeb.Utility.csproj", "KdyWeb.Utility/"]
 COPY ["KdyWeb.PageParse/KdyWeb.PageParse.csproj", "KdyWeb.PageParse/"]
 COPY ["KdyWeb.WebParse/KdyWeb.WebParse.csproj", "KdyWeb.WebParse/"]
 COPY ["KdyWeb.IRepository/KdyWeb.IRepository.csproj", "KdyWeb.IRepository/"]
+COPY ["KdyWeb.HttpApi/KdyWeb.HttpApi.csproj", "KdyWeb.HttpApi/"]
 COPY ["KdyWeb.MiniProfiler/KdyWeb.MiniProfiler.csproj", "KdyWeb.MiniProfiler/"]
 COPY ["KdyWeb.Repository/KdyWeb.Repository.csproj", "KdyWeb.Repository/"]
 COPY ["KdyWeb.EntityFramework/KdyWeb.EntityFramework.csproj", "KdyWeb.EntityFramework/"]
@@ -26,19 +26,15 @@ COPY ["KdyWeb.IService.FileStore/KdyWeb.IService.FileStore.csproj", "KdyWeb.ISer
 COPY ["KdyWeb.Service/KdyWeb.Service.csproj", "KdyWeb.Service/"]
 COPY ["Kdy.StandardJob/Kdy.StandardJob.csproj", "Kdy.StandardJob/"]
 COPY ["KdyWeb.IService/KdyWeb.IService.csproj", "KdyWeb.IService/"]
-COPY ["KdyWeb.IService.Selenium/KdyWeb.IService.Selenium.csproj", "KdyWeb.IService.Selenium/"]
-COPY ["KdyWeb.Service.CloudParse/KdyWeb.Service.CloudParse.csproj", "KdyWeb.Service.CloudParse/"]
-COPY ["KdyWeb.IService.CloudParse/KdyWeb.IService.CloudParse.csproj", "KdyWeb.IService.CloudParse/"]
-COPY ["KdyWeb.Service.Selenium/KdyWeb.Service.Selenium.csproj", "KdyWeb.Service.Selenium/"]
-RUN dotnet restore "KdyWeb.CloudParse.SlefHost/KdyWeb.CloudParse.SelfHost.csproj"
+RUN dotnet restore "KdyWeb.NetCore/KdyWeb.NetCore.csproj"
 COPY . .
-WORKDIR "/src/KdyWeb.CloudParse.SlefHost"
-RUN dotnet build "KdyWeb.CloudParse.SelfHost.csproj" -c Release -o /app/build
+WORKDIR "/src/KdyWeb.NetCore"
+RUN dotnet build "KdyWeb.NetCore.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "KdyWeb.CloudParse.SelfHost.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "KdyWeb.NetCore.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "KdyWeb.CloudParse.SelfHost.dll"]
+ENTRYPOINT ["dotnet", "KdyWeb.NetCore.dll"]

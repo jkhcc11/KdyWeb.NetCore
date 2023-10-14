@@ -73,11 +73,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.CommonService", "Kdy
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.2 FileStore", "3.2 FileStore", "{C4CBA3A7-5374-48F1-BBA2-5AC6A898C0C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.IService.FileStore", "KdyWeb.IService.FileStore\KdyWeb.IService.FileStore.csproj", "{C3DF9608-9A10-4AC9-8943-0A09B67D1671}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.IService.FileStore", "KdyWeb.IService.FileStore\KdyWeb.IService.FileStore.csproj", "{C3DF9608-9A10-4AC9-8943-0A09B67D1671}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.Service.FileStore", "KdyWeb.Service.FileStore\KdyWeb.Service.FileStore.csproj", "{A6DFB7E1-1A85-458F-BF0F-1118955A0CC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.Service.FileStore", "KdyWeb.Service.FileStore\KdyWeb.Service.FileStore.csproj", "{A6DFB7E1-1A85-458F-BF0F-1118955A0CC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.CloudParse.SelfHost", "KdyWeb.CloudParse.SlefHost\KdyWeb.CloudParse.SelfHost.csproj", "{0F5764E6-D08F-4D74-B741-D40DC9DC0EB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KdyWeb.CloudParse.SelfHost", "KdyWeb.CloudParse.SlefHost\KdyWeb.CloudParse.SelfHost.csproj", "{0F5764E6-D08F-4D74-B741-D40DC9DC0EB0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.4 Selenium", "3.4 Selenium", "{9F5DFE6B-153C-48E4-B367-775FC894AB77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.IService.Selenium", "KdyWeb.IService.Selenium\KdyWeb.IService.Selenium.csproj", "{E40CFE4D-A3D6-4C45-AA27-B2A1425D2A75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KdyWeb.Service.Selenium", "KdyWeb.Service.Selenium\KdyWeb.Service.Selenium.csproj", "{1CA8C23A-AF56-4561-A407-3D11649F0642}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -193,6 +199,14 @@ Global
 		{0F5764E6-D08F-4D74-B741-D40DC9DC0EB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F5764E6-D08F-4D74-B741-D40DC9DC0EB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F5764E6-D08F-4D74-B741-D40DC9DC0EB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E40CFE4D-A3D6-4C45-AA27-B2A1425D2A75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E40CFE4D-A3D6-4C45-AA27-B2A1425D2A75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E40CFE4D-A3D6-4C45-AA27-B2A1425D2A75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E40CFE4D-A3D6-4C45-AA27-B2A1425D2A75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CA8C23A-AF56-4561-A407-3D11649F0642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CA8C23A-AF56-4561-A407-3D11649F0642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CA8C23A-AF56-4561-A407-3D11649F0642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CA8C23A-AF56-4561-A407-3D11649F0642}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -227,6 +241,9 @@ Global
 		{C3DF9608-9A10-4AC9-8943-0A09B67D1671} = {C4CBA3A7-5374-48F1-BBA2-5AC6A898C0C1}
 		{A6DFB7E1-1A85-458F-BF0F-1118955A0CC7} = {C4CBA3A7-5374-48F1-BBA2-5AC6A898C0C1}
 		{0F5764E6-D08F-4D74-B741-D40DC9DC0EB0} = {3F234AA6-2960-4971-B811-3EED82B423DC}
+		{9F5DFE6B-153C-48E4-B367-775FC894AB77} = {477E0FF4-E622-4E13-BE93-AE6C2D89EAB4}
+		{E40CFE4D-A3D6-4C45-AA27-B2A1425D2A75} = {9F5DFE6B-153C-48E4-B367-775FC894AB77}
+		{1CA8C23A-AF56-4561-A407-3D11649F0642} = {9F5DFE6B-153C-48E4-B367-775FC894AB77}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9CD405AE-02EF-4F3C-B7B2-3325ECA265D3}
