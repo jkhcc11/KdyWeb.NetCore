@@ -26,6 +26,7 @@ namespace KdyWeb.CloudParseApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<ISeleniumLoginService, SeleniumLoginService>();
+            services.AddTransient<ILoginByQrService, LoginByQrService>();
             services.AddKdyDefaultExt(Configuration);
 
             //Swagger

@@ -34,8 +34,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
+    <ProjectReference Include="..\..\src\KdyWeb.IService.Selenium\KdyWeb.IService.Selenium.csproj" />
     <ProjectReference Include="..\..\src\KdyWeb.MiniProfiler\KdyWeb.MiniProfiler.csproj" />
     <ProjectReference Include="..\..\src\KdyWeb.Service.CloudParse\KdyWeb.Service.CloudParse.csproj" />
+    <ProjectReference Include="..\..\src\KdyWeb.Service.Selenium\KdyWeb.Service.Selenium.csproj" />
   </ItemGroup>
 
 </Project>
