@@ -8,8 +8,10 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.CloudParse.Input;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
+using KdyWeb.Dto.Selenium;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
+using KdyWeb.IService.Selenium;
 using KdyWeb.Service.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Mvc;
@@ -24,11 +26,14 @@ namespace KdyWeb.CloudParseApi.Controllers
     {
         private readonly ISubAccountService _subAccountService;
         private readonly ILoginUserInfo _loginUserInfo;
+        private readonly ILoginByQrService _loginByQrService;
 
-        public AliParseController(ISubAccountService subAccountService, ILoginUserInfo loginUserInfo)
+        public AliParseController(ISubAccountService subAccountService, ILoginUserInfo loginUserInfo,
+            ILoginByQrService loginByQrService)
         {
             _subAccountService = subAccountService;
             _loginUserInfo = loginUserInfo;
+            _loginByQrService = loginByQrService;
         }
 
         /// <summary>
@@ -107,6 +112,28 @@ namespace KdyWeb.CloudParseApi.Controllers
             }
 
             return KdyResult.Success<string>(aliCookieType.Id + "");
+        }
+
+        /// <summary>
+        /// 获取Qr
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-qr")]
+        public async Task<KdyResult<QrLoginInitWithAliOut>> QrLoginInitWithAliAsync()
+        {
+            var result = await _loginByQrService.QrLoginInitWithAliAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// 获取Token
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-token")]
+        public async Task<KdyResult<string>> QrLoginGetTokenWithAliAsync([FromQuery] QrLoginGetTokenInput input)
+        {
+            var result = await _loginByQrService.QrLoginGetTokenWithAliAsync(input);
+            return result;
         }
     }
 }
