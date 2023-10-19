@@ -35,9 +35,12 @@ namespace KdyWeb.Service.Selenium
                 var cookieKeys = input.CookieKey.Split(',');
 
                 var options = BuildChromeOptions(Enum.Parse<PageLoadStrategy>(input.PageLoadType.ToString()),
-                    isIncognito: true);
+                    isIncognito: true,
+                    isDisableImg: true);
                 webDriver = BuildRemoteWebDriver(options,
                     _configuration.GetValue<string>(WebDriverUrl));
+                //最大化
+                webDriver.Manage().Window.Maximize();
                 webDriver.Navigate().GoToUrl(input.LoginUrl);
 
                 //延迟2秒 为了后面的xpath定位
@@ -144,7 +147,7 @@ namespace KdyWeb.Service.Selenium
             IWebDriver? webDriver = null;
             try
             {
-                
+
                 var options = BuildChromeOptions(Enum.Parse<PageLoadStrategy>(input.PageLoadType.ToString()),
                     isIncognito: true);
                 SetMobileModel(options, userAgent);
