@@ -17,6 +17,8 @@ namespace KdyWeb.VideoPlay.Controllers
             ViewData["Title"] = "看电影";
 
             ViewBag.EpId = id;
+
+            Response.Headers.Add("Content-Security-Policy", "frame-ancestors 'self' http://*.kdy666.pro");
             return View();
         }
     }

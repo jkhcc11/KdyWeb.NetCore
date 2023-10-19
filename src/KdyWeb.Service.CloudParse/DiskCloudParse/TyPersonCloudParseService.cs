@@ -256,6 +256,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         {
             var currentFlag = HttpContextAccessor.HttpContext?.TraceIdentifier;
 
+            var isVideoExt = false;
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)
             {
@@ -266,13 +267,23 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                     return KdyResult.Error<string>(fileInfo.Code, fileInfo.Msg);
                 }
 
+                if (fileInfo.Data.ResultName.EndsWith(".mp4") ||
+                    fileInfo.Data.ResultName.EndsWith(".mkv"))
+                {
+                    isVideoExt = true;
+                }
+
                 fileId = fileInfo.Data.ResultId;
             }
 
             //1、获取实际下载地址
             //  /api/portal/getNewVlcVideoPlayUrl.action
             //  /api/open/file/getFileDownloadUrl.action
-            KdyRequestCommonInput.SetGetRequest($"/api/portal/getNewVlcVideoPlayUrl.action?noCache=0.{DateTime.Now.ToSecondTimestamp()}&fileId={fileId}&type=2");
+            //兼容下载和播放
+            KdyRequestCommonInput.SetGetRequest(isVideoExt
+                ? $"/api/portal/getNewVlcVideoPlayUrl.action?noCache=0.{DateTime.Now.ToSecondTimestamp()}&fileId={fileId}&type=2"
+                : $"/api/open/file/getFileDownloadUrl.action?noCache=0.{DateTime.Now.ToSecondTimestamp()}&fileId={fileId}");
+
             KdyRequestCommonInput.Referer = $"{KdyRequestCommonInput.BaseHost}/web/main";
             var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
             if (reqResult.IsSuccess == false)
