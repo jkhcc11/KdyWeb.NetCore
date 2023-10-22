@@ -193,19 +193,17 @@ namespace KdyWeb.Service.FileStore
         /// <returns></returns>
         public async Task<string?> GetImageByImgId(long imgId)
         {
-            string? cacheKey = $"ImgId_{imgId}",
-                value = _memoryCache.Get<string>(cacheKey);
-            if (value.IsEmptyExt() == false)
-            {
-                return default;
-            }
-
             //todo:后期定时校验
-            var dbImg = await _kdyImgSaveRepository.FirstOrDefaultAsync(a => a.Id == imgId);
-            var url = GetImageForImgHandler(dbImg);
-            _memoryCache.Set(cacheKey, url, TimeSpan.FromDays(1));
+            var cacheKey = $"ImgId_{imgId}";
+            var value = await _memoryCache.GetOrCreateAsync(cacheKey, async (entry) =>
+            {
+                var dbImg = await _kdyImgSaveRepository.FirstOrDefaultAsync(a => a.Id == imgId);
+                var url = GetImageForImgHandler(dbImg);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
+                return url;
+            });
 
-            return url;
+            return value;
         }
 
         /// <summary>

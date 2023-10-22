@@ -24,6 +24,11 @@ namespace KdyWeb.NetCore.Controllers
         public async Task<IActionResult> GetImgAsync(long id)
         {
             var url = await _kdyImgSaveService.GetImageByImgId(id);
+            if (string.IsNullOrEmpty(url))
+            {
+                return Content("data is empty");
+            }
+
             return Redirect(url);
         }
     }
