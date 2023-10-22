@@ -59,6 +59,7 @@ namespace KdyWeb.Service.FileStore
                     .WithBucket(input.BucketName)
                     .WithObject(input.FileName)
                     .WithStreamData(memoryStream)
+                    .WithObjectSize(memoryStream.Length)
                     .WithContentType(contentType);
                 await minIoClient.PutObjectAsync(putObjectArgs);
 
@@ -95,8 +96,7 @@ namespace KdyWeb.Service.FileStore
             var client = new MinioClient()
                 .WithEndpoint(config.ServerUrl)
                 .WithCredentials(config.AccessKey, config.SecretKey)
-                .WithSSL(config.IsSSL)
-                .WithRegion("cn-249");
+                .WithSSL(config.IsSSL);
 
             return client.Build();
             //old
