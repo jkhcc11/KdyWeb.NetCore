@@ -6,6 +6,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Content Remove="bundleconfig.json" />
 		<Content Remove="Views\Home\Privacy.cshtml" />
 		<Content Remove="Views\Shared\_Layout - 复制.cshtml" />
 		<Content Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
