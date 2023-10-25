@@ -74,7 +74,8 @@ namespace KdyWeb.Service.SearchVideo
             KdyLog.LogInformation("豆瓣Id:{subjectId}.图片上传返回:{imgResult}", subjectId, imgResult);
 
             //保存数据库
-            dbDouBanInfo = douBanWebResult.Data.MapToExt<DouBanInfo>();
+            dbDouBanInfo = new DouBanInfo(douBanWebResult.Data.Title);
+            douBanWebResult.Data.MapToPartExt(dbDouBanInfo);
             await _douBanInfoRepository.CreateAsync(dbDouBanInfo);
             await UnitOfWork.SaveChangesAsync();
 
