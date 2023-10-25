@@ -37,7 +37,6 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         public string VodImgUrl => VideoImg;
 
-        [SourceMember(nameof(VideoHistory.VodImgUrl))]
-        public string VideoImg { get; set; }
+        public string VideoImg { get; set; } = "";
     }
 }
