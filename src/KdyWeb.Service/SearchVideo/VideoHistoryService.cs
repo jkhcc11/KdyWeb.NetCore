@@ -21,12 +21,14 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<VideoHistory, long> _videoHistoryRepository;
         private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
+        private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
 
         public VideoHistoryService(IUnitOfWork unitOfWork, IKdyRepository<VideoHistory, long> videoHistoryRepository,
-            IKdyRepository<VideoEpisode, long> videoEpisodeRepository) : base(unitOfWork)
+            IKdyRepository<VideoEpisode, long> videoEpisodeRepository, IKdyRepository<VideoMain, long> videoMainRepository) : base(unitOfWork)
         {
             _videoHistoryRepository = videoHistoryRepository;
             _videoEpisodeRepository = videoEpisodeRepository;
+            _videoMainRepository = videoMainRepository;
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace KdyWeb.Service.SearchVideo
             var mainInfo = dbEpInfo.VideoEpisodeGroup.VideoMain;
 
             var videoHistory = new VideoHistory(mainInfo.Id, dbEpInfo.Id);
-            videoHistory.SetVideoInfo(dbEpInfo.EpisodeName, mainInfo.KeyWord, mainInfo.VideoImg);
+            videoHistory.SetVideoInfo(dbEpInfo.EpisodeName, mainInfo.KeyWord);
             await _videoHistoryRepository.CreateAsync(videoHistory);
             await UnitOfWork.SaveChangesAsync();
 
@@ -86,11 +88,32 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = await query
                 .GetDtoPageListAsync<VideoHistory, QueryVideoHistoryDto>(input);
-
-            foreach (var item in result.Data)
+            if (result.Data != null &&
+                result.Data.Any())
             {
-                item.ImgHandler();
+                //图片获取
+                var mainIds = result.Data.Select(a => a.KeyId)
+                    .Distinct()
+                    .ToList();
+                var mainInfoListQuery = _videoMainRepository.GetQuery();
+                mainInfoListQuery = mainInfoListQuery.Where(a => mainIds.Contains(a.Id));
+                var mainInfoList = await mainInfoListQuery
+                    .Select(a => new
+                    {
+                        KeyId = a.Id,
+                        Covert = a.VideoImg
+                    })
+                    .ToListAsync();
+
+                foreach (var item in result.Data)
+                {
+                    item.VideoImg =
+                        mainInfoList.FirstOrDefault(a => a.KeyId == item.KeyId)?.Covert ?? "";
+                    item.ImgHandler();
+                }
             }
+
+
 
             return KdyResult.Success(result);
         }

@@ -54,28 +54,29 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 剧集名
         /// </summary>
+        [StringLength(VideoEpisode.EpisodeNameLength)]
         public string? EpName { get; set; }
 
         /// <summary>
         /// 影片名
         /// </summary>
+        [StringLength(DouBanInfo.VideoTitleLength)]
         public string? VodName { get; set; }
 
-        /// <summary>
-        /// 海报
-        /// </summary>
-        [StringLength(DouBanInfo.VideoImgLength)]
-        public string? VodImgUrl { get; set; }
+        ///// <summary>
+        ///// 海报 移除
+        ///// </summary>
+        //[StringLength(DouBanInfo.VideoImgLength)]
+        //public string? VodImgUrl { get; set; }
         #endregion
 
         /// <summary>
         /// 设置冗余数据
         /// </summary>
-        public void SetVideoInfo(string epName, string vodName, string vodImgUrl)
+        public void SetVideoInfo(string epName, string vodName)
         {
             EpName = epName;
             VodName = vodName;
-            VodImgUrl = vodImgUrl;
         }
     }
 }
