@@ -1,7 +1,9 @@
 ﻿using Exceptionless;
+using Exceptionless.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.BaseInterface.Extensions
 {
@@ -10,6 +12,9 @@ namespace KdyWeb.BaseInterface.Extensions
     /// </summary>
     public static class ExceptionLessExt
     {
+        public const string ExceptionLessConfigApiKey = "Exceptionless:ApiKey";
+        public const string ExceptionLessConfigApiUrl = "Exceptionless:ServerUrl";
+
         /// <summary>
         /// 配置ExceptionLess日志
         /// </summary>
@@ -20,15 +25,22 @@ namespace KdyWeb.BaseInterface.Extensions
             {
                 collection.AddLogging(builder =>
                 {
-                    var exceptionLessSection = context.Configuration.GetSection("Exceptionless");
-                    string apiKey = exceptionLessSection.GetValue<string>("ApiKey"),
-                        serverUrl = exceptionLessSection.GetValue<string>("ServerUrl");
+                    if (context.HostingEnvironment.IsProduction())
+                    {
+                        builder.ClearProviders();
+                    }
+
+                    builder.AddFilter(level => level >= LogLevel.Error);
+
+                    string? apiKey = context.Configuration.GetValue<string>(ExceptionLessConfigApiKey),
+                        serverUrl = context.Configuration.GetValue<string>(ExceptionLessConfigApiUrl);
                     if (string.IsNullOrEmpty(apiKey) ||
                         string.IsNullOrEmpty(serverUrl))
                     {
                         throw new KdyCustomException($"启动ExceptionLess异常，未配置Exceptionless节点信息。In:{nameof(ConfigureExceptionLessLogging)}");
                     }
-                    builder.AddExceptionless(apiKey, serverUrl);
+                    builder.AddExceptionless(apiKey, serverUrl)
+                        .AddFilter<ExceptionlessLoggerProvider>(level => level >= LogLevel.Trace); ;
                     //var client = new ExceptionlessClient(configure =>
                     //{
                     //    configure.ApiKey = apiKey;
