@@ -31,6 +31,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         [HttpGet("common/{userInfo}/{fileInfo}")]
         public async Task<ActionResult> CommonCloudParseAsync(CloudParsePlayerInput input)
         {
+            Response.Headers.Add("Power By", "Tg:zcy2023");
             var referrer = HttpContext.Request.Headers["Referer"] + "";
             var newBusinessFlag = await _subAccountService.GetBusinessFlagByUserIdAsync(input.UserInfo
                 , input.IsOldUserInfo == false);

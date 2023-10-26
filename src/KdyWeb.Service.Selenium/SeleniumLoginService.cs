@@ -35,16 +35,20 @@ namespace KdyWeb.Service.Selenium
                 var cookieKeys = input.CookieKey.Split(',');
 
                 var options = BuildChromeOptions(Enum.Parse<PageLoadStrategy>(input.PageLoadType.ToString()),
-                    isIncognito: true,
-                    isDisableImg: true);
+                    isIncognito: true);
                 webDriver = BuildRemoteWebDriver(options,
                     _configuration.GetValue<string>(WebDriverUrl));
-                //最大化
+                //全屏
                 webDriver.Manage().Window.Maximize();
                 webDriver.Navigate().GoToUrl(input.LoginUrl);
 
                 //延迟2秒 为了后面的xpath定位
                 webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(2000);
+                await Task.Delay(Random.Shared.Next(2, 8) * 1000);
+
+                //移除掉导航 遮挡了
+                var js = (IJavaScriptExecutor)webDriver;
+                js.ExecuteScript("var element = document.getElementById('J_narBar');element.parentNode.removeChild(element);");
 
                 #region 定位Iframe
                 //默认第一层 有可能嵌套了iframe
@@ -93,14 +97,18 @@ namespace KdyWeb.Service.Selenium
                 var pwdElement = WaitForElement(iWebDriver, By.XPath("//*[@id='password']"));
                 var loginElement = WaitForElement(iWebDriver, By.XPath("//*[@id='j-login']"));
                 var agreementElement = WaitForElement(iWebDriver, By.XPath("//*[@id='j-agreement-box']"));
+                var autoLoginElement = WaitForElement(iWebDriver, By.XPath("//*[@id='j-auto-login']"));
 
                 userElement?.SendKeys(input.UserName);
                 await Task.Delay(1500);
                 pwdElement?.SendKeys(input.Pwd);
+                await Task.Delay(1500);
                 agreementElement?.Click();
                 await Task.Delay(1500);
+                autoLoginElement?.Click();
+                await Task.Delay(1500);
                 loginElement?.Click();
-
+                
                 //延迟
                 await Task.Delay(1900);
 
