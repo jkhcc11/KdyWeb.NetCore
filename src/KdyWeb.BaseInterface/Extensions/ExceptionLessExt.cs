@@ -1,4 +1,5 @@
 ﻿using Exceptionless;
+using Exceptionless.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,8 @@ namespace KdyWeb.BaseInterface.Extensions
                         builder.ClearProviders();
                     }
 
+                    builder.AddFilter(level => level >= LogLevel.Error);
+
                     string? apiKey = context.Configuration.GetValue<string>(ExceptionLessConfigApiKey),
                         serverUrl = context.Configuration.GetValue<string>(ExceptionLessConfigApiUrl);
                     if (string.IsNullOrEmpty(apiKey) ||
@@ -36,7 +39,8 @@ namespace KdyWeb.BaseInterface.Extensions
                     {
                         throw new KdyCustomException($"启动ExceptionLess异常，未配置Exceptionless节点信息。In:{nameof(ConfigureExceptionLessLogging)}");
                     }
-                    builder.AddExceptionless(apiKey, serverUrl);
+                    builder.AddExceptionless(apiKey, serverUrl)
+                        .AddFilter<ExceptionlessLoggerProvider>(level => level >= LogLevel.Trace); ;
                     //var client = new ExceptionlessClient(configure =>
                     //{
                     //    configure.ApiKey = apiKey;
