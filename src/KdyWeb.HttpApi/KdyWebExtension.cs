@@ -85,6 +85,7 @@ namespace KdyWeb.HttpApi
                     })
                     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                     {
+                        options.ClaimsIssuer = authServer.AuthHost;
                         options.Authority = authServer.AuthHost;
                         options.RequireHttpsMetadata = authServer.IsRequireHttps;
                         options.Audience = authServer.Scope;

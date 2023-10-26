@@ -25,6 +25,9 @@ namespace KdyWeb.Dto.CloudParse
         /// <summary>
         /// 路由名
         /// </summary>
+        /// <remarks>
+        ///  这里的名程序需要跟前端页面中的RouteName 一致，否则Cacheable 会失效
+        /// </remarks>
         public string RouteName { get; set; }
 
         /// <summary>
