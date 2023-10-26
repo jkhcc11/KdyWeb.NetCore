@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,8 +8,10 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Exceptionless;
+using Exceptionless.Plugins;
 using KdyWeb.BaseInterface.BaseModel;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -45,7 +48,7 @@ namespace KdyWeb.BaseInterface
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ILogger<KdyLogMiddleware> _logger;
 
-        public KdyLogMiddleware(RequestDelegate next, ILogger<KdyLogMiddleware> logger, 
+        public KdyLogMiddleware(RequestDelegate next, ILogger<KdyLogMiddleware> logger,
             IWebHostEnvironment webHostEnvironment)
         {
             _next = next;
@@ -57,47 +60,72 @@ namespace KdyWeb.BaseInterface
 
         public async Task Invoke(HttpContext context)
         {
+            var currentFlag = context.TraceIdentifier;
             var request = context.Request;
-            // var response = context.Response;
-            if (request == null)
+            var reqPath = request.Path.Value;
+            if (string.IsNullOrEmpty(reqPath))
             {
                 return;
             }
+            // var response = context.Response;
 
-            //var kdyLog = (IKdyLog)context.RequestServices.GetService(typeof(IKdyLog));
-            //if (kdyLog == null)
-            //{
-            //    await _next(context);
-            //    return;
-            //}
+            var isSkipLog = false;
             var includeApiPrefix = new[] { "/api/", "/api-v2/", "/self-api-v2/" };
 
-            if (includeApiPrefix.Any(request.Path.Value.StartsWith) == false)
+            if (includeApiPrefix.Any(reqPath.StartsWith) == false)
             {
-                //非api不用记录
-                await _next(context);
-                return;
+                isSkipLog = true;
+            }
+            else
+            {
+                //跳过记录 通过EndPoint获取Controller特性
+                var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
+                var anonymous = endpoint?.Metadata?.GetMetadata<DisableKdyLogAttribute>();
+                if (anonymous != null)
+                {
+                    isSkipLog = true;
+                }
             }
 
-            //跳过记录 通过EndPoint获取Controller特性
-            var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
-            var anonymous = endpoint?.Metadata?.GetMetadata<DisableKdyLogAttribute>();
-            if (anonymous != null)
+            if (isSkipLog)
             {
-                await _next(context);
+                //跳过的只记录异常
+                try
+                {
+                    await _next(context);
+                }
+                catch (Exception ex)
+                {
+                    ex.ToExceptionless()
+                        .AddObject(new
+                        {
+                            ReqHost = request.Host,
+                            ReqPath = reqPath,
+                            Referer = request.Headers.Referer + "",
+                            Ua = request.Headers.UserAgent + ""
+                        }, "ReqInfo")
+                        .Submit();
+
+                    context.Response.Clear();
+                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                    context.Response.ContentType = "text/json;charset=utf-8;";
+                    await context.Response.WriteAsJsonAsync(KdyResult.Error(KdyResultCode.SystemError, "系统异常"));
+                }
+
                 return;
             }
 
             _stopwatch.Restart();
-            var currentFlag = context.TraceIdentifier;
-
             var data = new ConcurrentDictionary<string, object>();
             data.TryAdd("request.url", request.Path.ToString());
             data.TryAdd("request.method", request.Method);
             data.TryAdd("request.executeStartTime", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-            if (request.Headers.ContainsKey("Authorization"))
+            if (request.Headers.TryGetValue("Authorization", out var token))
             {
-                data.TryAdd("request.token", request.Headers["Authorization"]);
+                _logger.LogInformation("Flag:{flag},请求Token:{token}",
+                    currentFlag,
+                    token);
+                //data.TryAdd("request.token", request.Headers["Authorization"]);
             }
 
             if (request.Method.ToLower() == "get")
@@ -183,7 +211,7 @@ namespace KdyWeb.BaseInterface
                     errResult.Msg = ex.Message;
                 }
 
-                _logger.LogError(ex, "系统异常：{ex.Message}", ex.Message);
+                _logger.LogError(ex, "系统异常：{ex.Message}.Flag:{flag}", ex.Message, currentFlag);
                 var str = JsonConvert.SerializeObject(errResult, new JsonSerializerSettings
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver()

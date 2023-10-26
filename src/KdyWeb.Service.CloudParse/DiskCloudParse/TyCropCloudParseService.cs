@@ -301,9 +301,13 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             }
 
             var fileInfo = await GetFileInfoAsync(fileId, CorpId);
+            if (fileInfo.IsSuccess == false)
+            {
+                return KdyResult.Error<string>(fileInfo.Code, fileInfo.Msg);
+            }
 
             //1、获取下载
-            var reqInput = new KdyRequestCommonInput(fileInfo.TempDownUrl, HttpMethod.Get)
+            var reqInput = new KdyRequestCommonInput(fileInfo.Data.TempDownUrl, HttpMethod.Get)
             {
                 Cookie = KdyRequestCommonInput.Cookie,
                 Referer = KdyRequestCommonInput.Referer,
@@ -348,20 +352,21 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         /// <param name="fileId">文件Id</param>
         /// <param name="corpId">企业云Id</param>
         /// <returns></returns>
-        internal async Task<TyCropFileInfoCache> GetFileInfoAsync(string fileId, string corpId)
+        internal async Task<KdyResult<TyCropFileInfoCache>> GetFileInfoAsync(string fileId, string corpId)
         {
             var cacheKey = $"{CacheKeyConst.TyCacheKey.UserCropFileInfoCache}_{corpId}:{fileId}";
             var cacheV = await KdyRedisCache.GetCache().GetValueAsync<TyCropFileInfoCache>(cacheKey);
             if (cacheV != null)
             {
-                return cacheV;
+                return KdyResult.Success(cacheV);
             }
 
             KdyRequestCommonInput.SetGetRequest($"/user/listHisVersion.action?corpId={corpId}&curFileId={fileId}&noCache=0.{DateTime.Now.ToMillisecondTimestamp()}");
             var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
             if (reqResult.IsSuccess == false)
             {
-                throw new KdyCustomException($"{CloudConfig.ReqUserInfo},天翼企业云获取文件异常.{reqResult.ErrMsg}");
+                KdyLog.LogWarning($"{CloudConfig.ReqUserInfo},天翼企业云获取文件异常.{reqResult.ErrMsg}");
+                return KdyResult.Error<TyCropFileInfoCache>(KdyResultCode.Error, "请求资源异常,请联系管理员");
             }
 
             var jObject = JObject.Parse(reqResult.Data);
@@ -384,7 +389,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
             //大概有效期是1天左右 2019-03-26新增  这个地址获取的下载有效期长
             await KdyRedisCache.GetCache().SetValueAsync(cacheKey, fileModel, TimeSpan.FromDays(1));
-            return fileModel;
+            return KdyResult.Success(fileModel);
         }
 
 
