@@ -41,6 +41,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         [HttpPost("parse")]
         public async Task<JsonParseDto> SelfParseAsync([FromForm]SelfParseInput input)
         {
+            Response.Headers.Add("Power By", "Tg:zcy2023");
             var desKey = _configuration.GetValue<string>(KdyWebServiceConst.DesKey, "hcc11com");
             var decodeUrl = input.EncodeUrl.DesHexToStr(desKey);
             var tempArray = decodeUrl.Split('/', StringSplitOptions.RemoveEmptyEntries);
