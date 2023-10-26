@@ -35,7 +35,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         [HttpGet("common/{userInfo}/{fileInfo}")]
         public async Task<JsonParseDto> CommonCloudParseAsync([FromRoute] CloudParsePlayerInput input)
         {
-            Response.Headers.Add("Power By", "Tg:zcy2023");
+            Response.Headers.Add("PowerBy", "VGdfemN5MjAyMw==");
             var newBusinessFlag = await _subAccountService.GetBusinessFlagByUserIdAsync(input.UserInfo
                 , input.IsOldUserInfo == false);
             if (string.IsNullOrEmpty(newBusinessFlag))
@@ -91,7 +91,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         [HttpGet("jump/{userInfo}/{fileInfo}")]
         public async Task<IActionResult> CommonCloudParseWithJump301Async([FromRoute] CloudParsePlayerInput input)
         {
-            Response.Headers.Add("Power By", "Tg:zcy2023");
+            Response.Headers.Add("PowerBy", "VGdfemN5MjAyMw==");
             var newBusinessFlag = await _subAccountService.GetBusinessFlagByUserIdAsync(input.UserInfo
                 , input.IsOldUserInfo == false);
             if (string.IsNullOrEmpty(newBusinessFlag))
