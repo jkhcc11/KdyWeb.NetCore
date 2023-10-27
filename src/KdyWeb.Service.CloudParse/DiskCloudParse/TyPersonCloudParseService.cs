@@ -256,7 +256,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         {
             var currentFlag = HttpContextAccessor.HttpContext?.TraceIdentifier;
 
-            var isVideoExt = false;
+            var isVideoExt = true;
             var fileId = input.FileId;
             if (input.DownUrlSearchType == DownUrlSearchType.Name)
             {
@@ -267,10 +267,10 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                     return KdyResult.Error<string>(fileInfo.Code, fileInfo.Msg);
                 }
 
-                if (fileInfo.Data.ResultName.EndsWith(".mp4") ||
-                    fileInfo.Data.ResultName.EndsWith(".mkv"))
+                if (fileInfo.Data.ResultName.EndsWith(".mp4") == false &&
+                    fileInfo.Data.ResultName.EndsWith(".mkv") == false)
                 {
-                    isVideoExt = true;
+                    isVideoExt = false;
                 }
 
                 fileId = fileInfo.Data.ResultId;
