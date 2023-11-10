@@ -287,6 +287,13 @@ namespace KdyWeb.Service.CloudParse
         private BaseDownInput<string> BuildReqInfo(string fileInfo, bool isName,
             string cachePrefix, CloudParseUserChildrenCacheItem subAccountCache)
         {
+            //42414249323032332E6D7034&xxx=ssss
+            if (fileInfo.Contains("&"))
+            {
+                //错误的格式 兼容
+                fileInfo = fileInfo.Split('&').First();
+            }
+
             //文件信息
             //todo:兼容旧版 如果旧版tyPerson没有
             string fileId;
