@@ -184,7 +184,11 @@ namespace KdyWeb.CommonService
                 return KdyResult.Error<TResponse>(KdyResultCode.Error, response.Content);
             }
 
-            KdyLog.LogError(response.ErrorException, "请求授权中心异常,Input:{0},Response:{1}", request.Resource, response.Content);
+            KdyLog.LogError(response.ErrorException,
+                "请求授权中心异常,Input:{0},Response:{1},Request:{2}",
+                request.Resource,
+                response.Content,
+                request.Parameters);
             throw new KdyCustomException("请求授权异常01");
         }
 
@@ -201,7 +205,10 @@ namespace KdyWeb.CommonService
                 return KdyResult.Success();
             }
 
-            KdyLog.LogError(response.ErrorException, "请求授权中心异常,Input:{0},Response:{1}", request.Resource, response.Content);
+            KdyLog.LogError(response.ErrorException, "请求授权中心异常,Input:{0},Response:{1},Request:{2}",
+                request.Resource,
+                response.Content,
+                request.Parameters);
             //400需要返回
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
@@ -223,6 +230,10 @@ namespace KdyWeb.CommonService
             {
                 Authenticator = new JwtAuthenticator(mgrToken.AccessToken)
             };
+
+            KdyLog.LogInformation("MgrApi:{api},Token:{token}",
+                _kdyAuthServerOption.AuthMgrApiHost,
+                mgrToken.AccessToken);
             return new RestClient(options);
 
             //old
