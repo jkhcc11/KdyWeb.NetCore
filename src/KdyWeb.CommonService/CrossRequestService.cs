@@ -52,6 +52,11 @@ namespace KdyWeb.CommonService
             tokenRequest.Parameters.Add("scope", $"kdy_cross_auth {_kdyAuthServerOption.Scope}");
 
             var tokenResponse = await SendToken(tokenRequest);
+            if (string.IsNullOrEmpty(tokenResponse.AccessToken))
+            {
+                return default;
+            }
+
             var tokenCache = new CrossTokenCacheItem()
             {
                 AccessToken = tokenResponse.AccessToken,
