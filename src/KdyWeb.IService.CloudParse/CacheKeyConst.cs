@@ -90,6 +90,27 @@ namespace KdyWeb.IService.CloudParse
         }
 
         /// <summary>
+        /// TxShareCacheKey
+        /// </summary>
+        public class TxShareCacheKey
+        {
+            /// <summary>
+            /// 前缀 
+            /// </summary>
+            private const string Prefix = "TxShareCache:";
+
+            /// <summary>
+            /// 用户信息CacheKey
+            /// </summary>
+            public const string UserInfoCache = Prefix + "UserInfoCache";
+
+            /// <summary>
+            /// 下载缓存
+            /// </summary>
+            public const string DownCacheKey = Prefix + "M3u8Url";
+        }
+
+        /// <summary>
         /// 天翼CacheKey
         /// </summary>
         public class TyCacheKey
@@ -210,7 +231,6 @@ namespace KdyWeb.IService.CloudParse
                     {
                         return AliYunCacheKey.DownCacheKey;
                     }
-
                 case CloudParseCookieType.BitQiu:
                     {
                         return StCacheKey.DownCacheKey;
@@ -218,6 +238,10 @@ namespace KdyWeb.IService.CloudParse
                 case CloudParseCookieType.Pan139:
                     {
                         return Pan139CacheKey.DownCacheKey;
+                    }
+                case CloudParseCookieType.TxShare:
+                    {
+                        return TxShareCacheKey.DownCacheKey;
                     }
             }
 

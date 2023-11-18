@@ -41,6 +41,10 @@ namespace KdyWeb.Service.CloudParse
                     {
                         return new Pan139CloudParseService(childUserId);
                     }
+                case CloudParseCookieType.TxShare:
+                    {
+                        return new TShareCloudParseService(childUserId);
+                    }
                 default:
                     {
                         throw new KdyCustomException($"{nameof(CreateKdyCloudParseService)},未知业务标识,");
@@ -77,6 +81,10 @@ namespace KdyWeb.Service.CloudParse
                 case CloudParseCookieType.Pan139:
                     {
                         return new Pan139CloudParseService(baseConfigInput);
+                    }
+                case CloudParseCookieType.TxShare:
+                    {
+                        return new TShareCloudParseService(baseConfigInput);
                     }
                 default:
                     {

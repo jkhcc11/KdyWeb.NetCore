@@ -253,6 +253,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                     new()
                     {
                         ParentPath = "/cloud-disk",
+                        MenuUrl = "/cloud-disk/tx-share",
+                        MenuName = "腾讯云分享Beta",
+                        RouteName = "TxShareList",
+                        LocalFilePath = "/cloudDisk/tx-share",
+                        Cacheable = true
+                    },
+                    new()
+                    {
+                        ParentPath = "/cloud-disk",
                         MenuUrl = "/cloud-disk/ty",
                         MenuName = "天翼",
                         Children = new List<GetVueMenuWithWorkVueDto>()

@@ -83,7 +83,9 @@ namespace KdyWeb.BaseInterface.HttpBase
 
             if (string.IsNullOrEmpty(input.UserAgent) == false)
             {
-                request.Headers.Add("User-Agent", input.UserAgent);
+                //不用校验UserAgent,有些特殊的  可能无法识别
+                request.Headers.TryAddWithoutValidation("User-Agent", input.UserAgent);
+                //request.Headers.Add("User-Agent", input.UserAgent);
             }
 
             var result = new TResult() { IsSuccess = true };
