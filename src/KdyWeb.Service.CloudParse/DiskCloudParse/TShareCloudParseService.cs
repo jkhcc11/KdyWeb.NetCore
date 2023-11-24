@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
@@ -278,37 +279,85 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         /// <returns></returns>
         public async Task<KdyResult> BatchUpdateNameAsync(List<BatchUpdateNameInput> input)
         {
-            //var nameCacheKey = GetCacheKeyWithFileName();
-            //var nameCacheDb = GetNameCacheDb();
-            //var result = false;
-            //foreach (var inputItem in input)
-            //{
-            //    if (string.IsNullOrEmpty(inputItem.FileId) ||
-            //        string.IsNullOrEmpty(inputItem.NewName) ||
-            //        string.IsNullOrEmpty(inputItem.OldName))
-            //    {
-            //        continue;
-            //    }
+            var baseInfo = await GetRootDirAsync();
+            if (baseInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "用户信息失效");
+            }
 
-            //    KdyRequestCommonInput.SetPostData("/resource/rename", $"resourceId={inputItem.FileId}&name={inputItem.NewName}&type=2&org_channel=default%7Cdefault%7Cdefault", "application/x-www-form-urlencoded", true);
-            //    var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
-            //    if (reqResult.IsSuccess)
-            //    {
-            //        var fileNameMd5 = inputItem.OldName.Md5Ext();
-            //        result = true;
-            //        await nameCacheDb.DeleteHashSetAsync(nameCacheKey, fileNameMd5);
-            //    }
+            var nameCacheKey = GetCacheKeyWithFileName();
+            var nameCacheDb = GetNameCacheDb();
+            var result = false;
+            var successCount = 0;
+            foreach (var inputItem in input)
+            {
+                if (string.IsNullOrEmpty(inputItem.FileId) ||
+                    string.IsNullOrEmpty(inputItem.NewName) ||
+                    string.IsNullOrEmpty(inputItem.OldName))
+                {
+                    continue;
+                }
 
-            //    await Task.Delay(100);
-            //}
+                var postJsonData = new
+                {
+                    Owner = new
+                    {
+                        Type = "PERSON",
+                        Id = baseInfo.UserId,
+                    },
+                    MaterialId = inputItem.FileId,
+                    Name = inputItem.NewName
+                };
+                KdyRequestCommonInput.SetPostData("/PaaS/Material/ModifyMaterial",
+                    postJsonData.ToJsonStr());
+                SetReqAuth();
 
-            //if (result)
-            //{
-            //    return KdyResult.Success();
-            //}
-            //todo:未实现
-            await Task.CompletedTask;
-            return KdyResult.Error(KdyResultCode.Error, "改名失败");
+                var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
+                if (reqResult.IsSuccess)
+                {
+                    var fileNameMd5 = inputItem.OldName.Md5Ext();
+                    result = true;
+                    await nameCacheDb.DeleteHashSetAsync(nameCacheKey, fileNameMd5);
+                    successCount++;
+                }
+
+                await Task.Delay(100);
+            }
+
+            if (result)
+            {
+                return KdyResult.Success("修改成功,数量：" + successCount);
+            }
+
+            return KdyResult.Error(KdyResultCode.Error, "修改失败");
+        }
+
+        /// <summary>
+        /// 同步名称和Id映射
+        /// </summary>
+        /// <remarks>
+        /// 没有搜索功能,只能映射
+        /// </remarks>
+        /// <returns></returns>
+        public async Task<KdyResult> SyncNameIdMapAsync(List<BatchUpdateNameInput> input)
+        {
+            var nameCacheKey = GetCacheKeyWithFileName();
+            var nameDb = GetNameCacheDb();
+
+            var result = new List<bool>();
+            foreach (var inputItem in input)
+            {
+                var fileNameMd5 = inputItem.OldName.Md5Ext();
+                var setResult = await nameDb.SetHashSetAsync<BaseResultOut>(nameCacheKey, fileNameMd5,
+                    new BaseResultOut()
+                    {
+                        ResultId = inputItem.FileId,
+                        ResultName = inputItem.OldName
+                    });
+                result.Add(setResult);
+            }
+
+            return KdyResult.Success($"成功数量：{result.Count(a => a)}");
         }
 
         /// <summary>

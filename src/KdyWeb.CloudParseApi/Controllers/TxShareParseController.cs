@@ -106,5 +106,30 @@ namespace KdyWeb.CloudParseApi.Controllers
 
             return KdyResult.Success<string>(aliCookieType.Id + "");
         }
+
+        /// <summary>
+        /// 同步映射--家庭
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("sync")]
+        public async Task<KdyResult> SyncNameIdMapAsync(BaseBatchUpdateNameInput input)
+        {
+            var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubInfo);
+            CheckSubAccountAuth(_loginUserInfo, subAccount);
+
+            var parseService = new TShareCloudParseService(new BaseConfigInput(subAccount.ShowName,
+                subAccount.CookieInfo, subAccount.Id));
+            var request = input.FileItems
+                .Where(a => a != null &&
+                            a.OldName.IsEmptyExt() == false)
+                .Select(a => new BatchUpdateNameInput()
+                {
+                    FileId = a.FileId,
+                    OldName = a.OldName,
+                })
+                .ToList();
+            var result = await parseService.SyncNameIdMapAsync(request);
+            return result;
+        }
     }
 }

@@ -18,5 +18,14 @@ namespace KdyWeb.IService.CloudParse.DiskCloudParse
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> BatchUpdateNameAsync(List<BatchUpdateNameInput> input);
+
+        /// <summary>
+        /// 同步名称和Id映射
+        /// </summary>
+        /// <remarks>
+        /// 没有搜索功能,只能映射
+        /// </remarks>
+        /// <returns></returns>
+        Task<KdyResult> SyncNameIdMapAsync(List<BatchUpdateNameInput> input);
     }
 }
