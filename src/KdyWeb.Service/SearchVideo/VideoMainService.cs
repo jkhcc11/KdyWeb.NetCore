@@ -845,6 +845,10 @@ namespace KdyWeb.Service.SearchVideo
                 var isEnd = (DateTime.Now.Year - douBanInfo.VideoYear) >= 1;
                 dbVideoMain.SetSysInput(isEnd);
             }
+            else
+            {
+                dbVideoMain.SetSysInput(true);
+            }
             #endregion
 
             #region 更新剧集
@@ -855,9 +859,11 @@ namespace KdyWeb.Service.SearchVideo
                 .ToList();
             if (notExist.Any())
             {
-                foreach (var notItem in notExist)
+                //软删
+                var notExistIds = notExist.Select(a => a.Id).ToArray();
+                foreach (var notItem in epGroup.Episodes.Where(a=>notExistIds.Contains(a.Id)))
                 {
-                    epGroup.Episodes.Remove(notItem);
+                    notItem.IsDelete = true;
                 }
             }
 
