@@ -37,6 +37,7 @@ namespace KdyWeb.CloudParseApi.Controllers
             var loginInfo = await _cloudParseUserService.GetParseUserInfoAsync();
             var isFirst = loginInfo.Data.UserStatus == ServerCookieStatus.Init;
             var isRoot = _loginUserInfo.IsSuperAdmin;
+
             if (isFirst)
             {
                 return KdyResult.Success(BuildFirst());
@@ -45,6 +46,11 @@ namespace KdyWeb.CloudParseApi.Controllers
             if (isRoot)
             {
                 return KdyResult.Success(BuildAdmin());
+            }
+
+            if (_loginUserInfo.IsVodAdmin)
+            {
+                return KdyResult.Success(BuildVodAdmin());
             }
 
             return KdyResult.Success(BuildNormal());
@@ -203,10 +209,40 @@ namespace KdyWeb.CloudParseApi.Controllers
                             LocalFilePath = "/system/user/user-list",
                             MenuName = "用户列表",
                             Cacheable = true
-                        },
+                        }
                     }
                 },
                 BuildDataStatisticsMenu(),
+                BuildVodManagerMenu()
+            };
+
+            return result;
+        }
+
+        private List<GetVueMenuWithWorkVueDto> BuildVodAdmin()
+        {
+            var result = new List<GetVueMenuWithWorkVueDto>()
+            {
+                new()
+                {
+                    MenuUrl = "/index",
+                    MenuName = "Dashboard",
+                    RouteName = "dashboard",
+                    Icon = "icon-dashboard",
+                    Children=new List<GetVueMenuWithWorkVueDto>()
+                    {
+                        new()
+                        {
+                            ParentPath = "/index",
+                            MenuUrl = "/index/work-place-vod",
+                            MenuName ="工作台",
+                            RouteName = "WorkPlaceVod",
+                            LocalFilePath = "/index/work-place-vod",
+                            IsRootPath = true
+                        }
+                    }
+                },
+                BuildVodManagerMenu()
             };
 
             return result;
@@ -333,6 +369,31 @@ namespace KdyWeb.CloudParseApi.Controllers
                         RouteName = "DateSumList",
                         LocalFilePath = "/system/parseRecordHistory/date-sum-list",
                         Cacheable = true
+                    },
+                }
+            };
+        }
+
+        private GetVueMenuWithWorkVueDto BuildVodManagerMenu()
+        {
+            var parentPath = "/resource-manager";
+            return new GetVueMenuWithWorkVueDto()
+            {
+                MenuUrl = parentPath,
+                MenuName = "资源管理",
+                IconPrefix = "iconfont",
+                Icon = "detail",
+                RouteName = "ResourceManager",
+                Children = new List<GetVueMenuWithWorkVueDto>()
+                {
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/fast-update-vod",
+                        RouteName = "FastUpdateVod",
+                        LocalFilePath = "/vod/vod-update",
+                        MenuName = "影片录入",
+                        Cacheable = true,
                     },
                 }
             };

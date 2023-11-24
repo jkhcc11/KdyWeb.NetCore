@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
@@ -16,6 +17,7 @@ namespace KdyWeb.IService.SearchVideo
         /// 通过豆瓣信息创建影片信息
         /// </summary>
         /// <returns></returns>
+        [Obsolete("旧版，完全替换后。可以使用新版CreateForDouBanInfoNewAsync")]
         Task<KdyResult<CreateForDouBanInfoDto>> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input);
 
         /// <summary>
@@ -90,5 +92,17 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> DownVodAsync(long mainId);
+
+        /// <summary>
+        /// 通过豆瓣信息创建影片信息（新版）
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CreateForDouBanInfoNewAsync(CreateForDouBanInfoNewInput input);
+
+        /// <summary>
+        /// 通过豆瓣信息更新影片信息
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> UpdateVodForDouBanInfoAsync(UpdateVodForDouBanInfoInput input);
     }
 }

@@ -6,9 +6,9 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.CloudParse;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpApi.AuthCenter;
-using KdyWeb.Entity;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.ICommonService;
@@ -27,15 +27,18 @@ namespace KdyWeb.Service.CloudParse
         private readonly IKdyRepository<CloudParseUser, long> _cloudParseUserRepository;
         private readonly IKdyRepository<CloudParseUserChildren, long> _cloudParseUserChildrenRepository;
         private readonly ISubAccountService _subAccountService;
+        private readonly IKdyRepository<ServerCookie, long> _serverCookieRepository;
 
         public CloudParseUserService(IUnitOfWork unitOfWork, IKdyRepository<CloudParseUser, long> cloudParseUserRepository,
             IKdyRepository<CloudParseUserChildren, long> cloudParseUserChildrenRepository,
-            IAuthCenterHttpApi authCenterHttpApi, ISubAccountService subAccountService) : base(unitOfWork)
+            IAuthCenterHttpApi authCenterHttpApi, ISubAccountService subAccountService,
+            IKdyRepository<ServerCookie, long> serverCookieRepository) : base(unitOfWork)
         {
             _cloudParseUserRepository = cloudParseUserRepository;
             _cloudParseUserChildrenRepository = cloudParseUserChildrenRepository;
             _authCenterHttpApi = authCenterHttpApi;
             _subAccountService = subAccountService;
+            _serverCookieRepository = serverCookieRepository;
         }
 
         public async Task<KdyResult<GetParseUserInfoDto>> GetParseUserInfoAsync()
@@ -133,6 +136,9 @@ namespace KdyWeb.Service.CloudParse
                                                          (a.Alias == input.Alias ||
                                                           a.CookieInfo == input.Cookie));
 
+            bool isClearCache = false;
+            IKdyCloudParseService kdyCloudParseService = null;
+            CloudParseUserChildren dbChildren;
             if (input.SubAccountId.HasValue)
             {
                 subAccountQuery = subAccountQuery.Where(a => a.Id != input.SubAccountId);
@@ -142,7 +148,7 @@ namespace KdyWeb.Service.CloudParse
                 }
 
                 //修改
-                var dbChildren =
+                dbChildren =
                     await _cloudParseUserChildrenRepository.FirstOrDefaultAsync(a => a.Id == input.SubAccountId);
                 if (dbChildren == null)
                 {
@@ -153,10 +159,10 @@ namespace KdyWeb.Service.CloudParse
                 await _subAccountService.ClearSubAccountCacheAsync(dbChildren.Id);
 
                 var oldCookieTypeCache = allCookieTypeCache.First(a => a.Id == dbChildren.CloudParseCookieTypeId);
-                var kdyCloudParseService =
-                    DiskCloudParseFactory.CreateKdyCloudParseService(oldCookieTypeCache.BusinessFlag,
+                kdyCloudParseService = DiskCloudParseFactory.CreateKdyCloudParseService(oldCookieTypeCache.BusinessFlag,
                         dbChildren.Id);
                 await kdyCloudParseService.ClearCacheAsync();
+                isClearCache = true;
                 #endregion
 
                 dbChildren.Alias = input.Alias;
@@ -165,6 +171,20 @@ namespace KdyWeb.Service.CloudParse
                 dbChildren.BusinessId = input.BusinessId;
                 dbChildren.OldSubAccountInfo = input.OldSubAccountInfo;
                 _cloudParseUserChildrenRepository.Update(dbChildren);
+
+                if (input.IsSyncServerCookie)
+                {
+                    #region 同步更新服务器Cookie
+                    var dbEntity = await _serverCookieRepository.FirstOrDefaultAsync(a => a.SubAccountId == dbChildren.Id);
+                    if (dbEntity != null)
+                    {
+                        var cacheKey = GetServerCookieCacheKey(dbEntity.SubAccountId);
+                        dbEntity.CookieInfo = input.Cookie;
+                        _serverCookieRepository.Update(dbEntity);
+                        await ClearCacheValueAsync(cacheKey);
+                    } 
+                    #endregion
+                }
             }
             else
             {
@@ -174,7 +194,7 @@ namespace KdyWeb.Service.CloudParse
                 }
 
                 //新增
-                var dbChildren = new CloudParseUserChildren(userId, input.SubAccountTypeId, input.Cookie)
+                dbChildren = new CloudParseUserChildren(userId, input.SubAccountTypeId, input.Cookie)
                 {
                     Alias = input.Alias,
                     BusinessId = input.BusinessId,
@@ -184,6 +204,15 @@ namespace KdyWeb.Service.CloudParse
             }
 
             await UnitOfWork.SaveChangesAsync();
+
+            if (isClearCache)
+            {
+                //双清
+                await Task.Delay(2500);
+                await _subAccountService.ClearSubAccountCacheAsync(dbChildren.Id);
+                await kdyCloudParseService.ClearCacheAsync();
+            }
+
             return KdyResult.Success();
         }
 
@@ -264,6 +293,17 @@ namespace KdyWeb.Service.CloudParse
 
             var query = _cloudParseUserRepository.GetQuery();
             var result = await query.GetDtoPageListAsync<CloudParseUser, QueryParseUserDto>(input);
+            if (LoginUserInfo.IsSuperAdmin == false &&
+                result.Data != null &&
+                result.Data.Any())
+            {
+                //非管理不限制
+                foreach (var dtoItem in result.Data)
+                {
+                    dtoItem.Remark = string.Empty;
+                }
+            }
+
             return KdyResult.Success(result);
         }
 
@@ -297,6 +337,26 @@ namespace KdyWeb.Service.CloudParse
 
             parseUser.DelayData();
             _cloudParseUserRepository.Update(parseUser);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 更新用户备注
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> UpdateUserRemarkAsync(UpdateUserRemarkInput input)
+        {
+            var dbUserInfo = await _cloudParseUserRepository.GetQuery()
+                .FirstOrDefaultAsync(a => a.UserId == input.UserId);
+            if (dbUserInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "用户不存在");
+            }
+
+            dbUserInfo.Remark = input.Remark;
+            _cloudParseUserRepository.Update(dbUserInfo);
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success();
@@ -352,6 +412,15 @@ namespace KdyWeb.Service.CloudParse
 
             //修改
             return await _authCenterHttpApi.UpdateUserClaimsAsync(userId, currentClaim.ClaimId, claimType, claimValue);
+        }
+
+        /// <summary>
+        /// 获取服务器缓存Key
+        /// </summary>
+        /// <returns></returns>
+        private string GetServerCookieCacheKey(long subAccountId)
+        {
+            return $"{CacheKeyConst.KdyCacheName.ServerCookieKey}:{subAccountId}";
         }
     }
 }

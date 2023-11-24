@@ -24,6 +24,8 @@ namespace KdyWeb.Entity.CloudParse
 
         public const int ApiTokenLength = 50;
 
+        public const int RemarkLength = 20;
+
         public CloudParseUser(long userId)
         {
             UserId = userId;
@@ -70,6 +72,12 @@ namespace KdyWeb.Entity.CloudParse
         /// 为空不限制
         /// </remarks>
         public DateTime? ExpirationDateTime { get; protected set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [StringLength(RemarkLength)]
+        public string  Remark  { get; set; }
 
         /// <summary>
         /// 初始化token

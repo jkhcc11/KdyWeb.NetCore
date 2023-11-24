@@ -45,5 +45,10 @@ namespace KdyWeb.Dto.CloudParse
         /// </summary>
         [StringLength(CloudParseUserChildren.OldSubAccountInfoLength)]
         public string OldSubAccountInfo { get; set; }
+
+        /// <summary>
+        /// 是否同步至服务器Cookie
+        /// </summary>
+        public bool IsSyncServerCookie { get; set; }
     }
 }

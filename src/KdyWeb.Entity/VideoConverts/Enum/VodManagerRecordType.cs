@@ -79,7 +79,8 @@ namespace KdyWeb.Entity.VideoConverts.Enum
                     }
                 case VodManagerRecordType.SaveTv:
                     {
-                        return 0.5m;
+                        //新版调整未一致
+                        return 0.25m;
                     }
                 case VodManagerRecordType.CreateTask:
                     {
@@ -91,7 +92,8 @@ namespace KdyWeb.Entity.VideoConverts.Enum
                     }
                 case VodManagerRecordType.UpdateMainInfoSelf:
                     {
-                        return 0.5m;
+                        //新版调整未一致
+                        return 0.25m;
                     }
                 case VodManagerRecordType.InputAndFeedBack:
                     {
