@@ -19,6 +19,7 @@ using KdyWeb.IService.SearchVideo;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 
 namespace KdyWeb.Service.SearchVideo
@@ -712,6 +713,176 @@ namespace KdyWeb.Service.SearchVideo
                 LoginUserName = LoginUserInfo.UserName
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 通过豆瓣信息创建影片信息（新版）
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> CreateForDouBanInfoNewAsync(CreateForDouBanInfoNewInput input)
+        {
+            if (input.EpItems.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "剧集不能为空");
+            }
+
+            //获取豆瓣信息
+            var douBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanInfoId);
+            if (douBanInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息Id错误");
+            }
+
+            //是否存在
+            var anyVideoMain = await _videoMainRepository
+                .GetAsNoTracking()
+                .AnyAsync(a => a.VideoInfoUrl != null &&
+                            a.VideoInfoUrl.Contains(douBanInfo.VideoDetailId));
+            if (anyVideoMain)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "影片已存在 创建失败");
+            }
+
+            //生成影片信息
+            var dbVideoMain = new VideoMain(douBanInfo.Subtype,
+                douBanInfo.VideoTitle, douBanInfo.VideoImg,
+                VideoMain.SystemInput, VideoMain.SystemInput);
+            dbVideoMain.ToVideoMain(douBanInfo);
+            dbVideoMain.EpisodeGroup = new List<VideoEpisodeGroup>()
+            {
+                new(input.EpisodeGroupType,"默认组")
+                {
+                    Episodes = input.EpItems.Select(item => new VideoEpisode(item.EpisodeName,item.EpisodeUrl)
+                    {
+                        OrderBy = item.OrderBy
+                    }).ToList()
+                }
+            };
+            dbVideoMain.IsMatchInfo = true;
+            dbVideoMain.IsEnd = true;
+            await _videoMainRepository.CreateAsync(dbVideoMain);
+
+            douBanInfo.SetSearchEnd();
+            _douBanInfoRepository.Update(douBanInfo);
+            await UnitOfWork.SaveChangesAsync();
+
+            #region 用户行为记录
+            var recordType = VodManagerRecordType.SaveMove;
+            if (input.EpItems.Count > 10)
+            {
+                recordType = VodManagerRecordType.SaveTv;
+            }
+            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), recordType)
+            {
+                BusinessId = dbVideoMain.Id,
+                Remark = $"影片名：{dbVideoMain.KeyWord}。剧集更新数量：{input.EpItems.Count}",
+                LoginUserName = LoginUserInfo.UserName
+            };
+            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
+
+            await CreateVodManagerRecordAsync(dbVideoMain, douBanInfo);
+            #endregion
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 通过豆瓣信息更新影片信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> UpdateVodForDouBanInfoAsync(UpdateVodForDouBanInfoInput input)
+        {
+            #region 校验
+            if (input.EpItems.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "剧集不能为空");
+            }
+
+            //获取豆瓣信息
+            var douBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanInfoId);
+            if (douBanInfo == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息Id错误");
+            }
+
+            if (douBanInfo.VideoCountries.IsEmptyExt())
+            {
+                return KdyResult.Error(KdyResultCode.Error, "豆瓣信息缺少国家，匹配信息");
+            }
+
+            //影片信息
+            var dbVideoMain = await _videoMainRepository.GetQuery()
+                .Include(a => a.VideoMainInfo)
+                .Include(a => a.EpisodeGroup)
+                .ThenInclude(a => a.Episodes)
+                .Where(a => a.Id == input.VodId)
+                .FirstOrDefaultAsync();
+            if (dbVideoMain == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "影片不存在，更新失败");
+            }
+
+            //分组剧集
+            var epGroup = dbVideoMain.EpisodeGroup?.FirstOrDefault(a => a.Id == input.EpGroupId);
+            if (epGroup == null ||
+                epGroup.Episodes == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "分组不存在，更新失败");
+            } 
+            #endregion
+
+            #region 豆瓣信息匹配
+            dbVideoMain.ToVideoMain(douBanInfo);
+            if (douBanInfo.VideoCountries.IsEmptyExt() == false &&
+                douBanInfo.VideoDirectors.IsEmptyExt() == false)
+            {
+                dbVideoMain.SetMatchDouBanInfo();
+            }
+
+            if (dbVideoMain.IsEnd == false)
+            {
+                //间隔大于1年 直接完结
+                var isEnd = (DateTime.Now.Year - douBanInfo.VideoYear) >= 1;
+                dbVideoMain.SetSysInput(isEnd);
+            }
+            #endregion
+
+            #region 更新剧集
+            var inputEpIds = input.EpItems.Select(a => a.Id).ToArray();
+            //先移除不存在的
+            var notExist = epGroup.Episodes
+                .Where(a => inputEpIds.Contains(a.Id) == false)
+                .ToList();
+            if (notExist.Any())
+            {
+                foreach (var notItem in notExist)
+                {
+                    epGroup.Episodes.Remove(notItem);
+                }
+            }
+
+            //更新
+            foreach (var epItem in epGroup.Episodes)
+            {
+                var currentInput = input.EpItems.FirstOrDefault(a => a.Id == epItem.Id);
+                if (currentInput == null)
+                {
+                    //todo:暂时不考虑 新增剧集
+                    continue;
+                }
+
+                epItem.EpisodeName = currentInput.EpisodeName;
+                epItem.OrderBy = currentInput.OrderBy;
+                epItem.EpisodeUrl = currentInput.EpisodeUrl;
+            }
+            #endregion
+
+            douBanInfo.SetSearchEnd();
+            _douBanInfoRepository.Update(douBanInfo);
+            _videoMainRepository.Update(dbVideoMain);
+
+            await UnitOfWork.SaveChangesAsync();
+            await CreateVodManagerRecordAsync(dbVideoMain, douBanInfo);
             return KdyResult.Success();
         }
 

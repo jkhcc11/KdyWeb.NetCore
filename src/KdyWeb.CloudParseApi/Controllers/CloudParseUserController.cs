@@ -89,5 +89,17 @@ namespace KdyWeb.CloudParseApi.Controllers
             var result = await _cloudParseUserService.DelayDateAsync(id);
             return result;
         }
+
+        /// <summary>
+        /// 更新用户信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("update-user-remark")]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public async Task<KdyResult> UpdateUserRemarkAsync(UpdateUserRemarkInput input)
+        {
+            var result = await _cloudParseUserService.UpdateUserRemarkAsync(input);
+            return result;
+        }
     }
 }

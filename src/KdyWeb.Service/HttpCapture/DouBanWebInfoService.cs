@@ -167,11 +167,6 @@ namespace KdyWeb.Service.HttpCapture
             };
 
             var tempHnc = reqResult.Data.GetNodeCollection("//*[@id='info']/span[@class='pl']");
-            if (tempHnc == null)
-            {
-                return KdyResult.Success(result);
-            }
-
             //遍历获取国家和又名
             foreach (var item in tempHnc)
             {

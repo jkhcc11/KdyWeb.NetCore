@@ -107,5 +107,27 @@ namespace KdyWeb.Job.Controllers.Manager
             var result = await _videoMainService.DownVodAsync(mainId);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 通过豆瓣信息创建影片信息(新版)
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("create-by-douban")]
+        public async Task<KdyResult> CreateForDouBanInfoNewAsync(CreateForDouBanInfoNewInput input)
+        {
+            var result = await _videoMainService.CreateForDouBanInfoNewAsync(input);
+            return result;
+        }
+
+        /// <summary>
+        /// 通过豆瓣信息更新影片信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("update-by-douban")]
+        public async Task<KdyResult> UpdateVodForDouBanInfoAsync(UpdateVodForDouBanInfoInput input)
+        {
+            var result = await _videoMainService.UpdateVodForDouBanInfoAsync(input);
+            return result;
+        }
     }
 }

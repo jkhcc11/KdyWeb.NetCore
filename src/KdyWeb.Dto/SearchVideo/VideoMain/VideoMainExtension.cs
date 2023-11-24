@@ -11,6 +11,7 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         public static void ToVideoMain(this VideoMain videoMain, DouBanInfo douBanInfo)
         {
+            videoMain.VideoImg = douBanInfo.VideoImg;
             videoMain.Aka = douBanInfo.Aka;
             videoMain.VideoDouBan = douBanInfo.VideoRating;
             videoMain.VideoYear = douBanInfo.VideoYear;

@@ -48,5 +48,10 @@ namespace KdyWeb.Dto.CloudParse
         /// 为空不限制
         /// </remarks>
         public DateTime? ExpirationDateTime { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
     }
 }

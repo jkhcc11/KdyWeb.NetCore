@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using KdyWeb.Entity.CloudParse;
 
 namespace KdyWeb.Dto.CloudParse
 {
@@ -29,5 +30,11 @@ namespace KdyWeb.Dto.CloudParse
         /// 防盗链Host
         /// </summary>
         public string[] HoldLinkHost { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [StringLength(CloudParseUser.RemarkLength)]
+        public string Remark { get; set; }
     }
 }

@@ -71,5 +71,12 @@ namespace KdyWeb.IService.CloudParse
         /// <param name="parseUserId">解析用户Id</param>
         /// <returns></returns>
         Task<KdyResult> DelayDateAsync(long parseUserId);
+
+        /// <summary>
+        /// 更新用户备注
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> UpdateUserRemarkAsync(UpdateUserRemarkInput input);
+
     }
 }

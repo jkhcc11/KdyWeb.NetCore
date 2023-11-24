@@ -64,9 +64,14 @@ namespace KdyWeb.Service.FileStore
                 },
                 { ".gif", new List<byte[]>
                     {
-                        new byte[] { 0x47,0x49,0x46,0x38 }
+                        "GIF8"u8.ToArray()
                     }
                 },
+                { ".webp", new List<byte[]>
+                    {
+                        "RIFFWEBP"u8.ToArray()
+                    }
+                }
             };
 
         public KdyImgSaveService(IKdyImgSaveRepository kdyImgSaveRepository, IMemoryCache memoryCache, IMinIoFileService minIoFileService,
