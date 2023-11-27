@@ -143,8 +143,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 Limit = input.PageSize,
                 Sort = new
                 {
-                    Field = "UpdateTime",
-                    Order = "Desc"
+                    Field = "Name",
+                    Order = "Asc"
                 },
                 SearchScopes = new List<object>
                 {

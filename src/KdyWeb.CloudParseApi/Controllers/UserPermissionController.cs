@@ -242,7 +242,38 @@ namespace KdyWeb.CloudParseApi.Controllers
                         }
                     }
                 },
-                BuildVodManagerMenu()
+                BuildVodManagerMenu(),
+                BuildCloudParseMenu(),
+                new ()
+                {
+                    MenuUrl = "/system",
+                    MenuName = "系统设置",
+                    IconPrefix = "iconfont",
+                    Icon = "setting",
+                    RouteName="System",
+                    Children = new List<GetVueMenuWithWorkVueDto>()
+                    {
+                        new()
+                        {
+                            ParentPath = "/system", //得跟上级MenuUrl 一致 当前munuUrl前缀必须跟当前一直 否则刷新后无法选中
+                            RouteName="SubAccount",
+                            MenuUrl = "/system/sub-account-list",
+                            LocalFilePath = "/system/subAccount/subAccount-list",
+                            MenuName = "子账号",
+                            Cacheable = true
+                        },
+                        new()
+                        {
+                            ParentPath = "/system",
+                            RouteName="ServerCookie",
+                            MenuUrl = "/system/server-cookie-list",
+                            LocalFilePath = "/system/serverCookie/server-cookie-list",
+                            MenuName = "服务器Cookie",
+                            Cacheable = true
+                        }
+                    }
+                },
+                BuildDataStatisticsMenu(),
             };
 
             return result;

@@ -54,6 +54,12 @@ namespace KdyWeb.CloudParseApi.Controllers
                 return KdyResult.Error<IList<BaseCloudQueryFileDto>>(KdyResultCode.Error, response.Msg);
             }
 
+            var allNameMap = await parseService.GetAllFileInfoMapAsync();
+            foreach (var tempDto in response.Data)
+            {
+                tempDto.IsCacheMap = allNameMap.ContainsKey(tempDto.ResultName.Md5Ext());
+            }
+
             var result = response.Data.MapToListExt<BaseCloudQueryFileDto>();
             foreach (var itemDto in result)
             {
