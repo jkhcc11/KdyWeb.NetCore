@@ -56,6 +56,9 @@ namespace KdyWeb.BaseInterface.Service
         /// <summary>
         /// 角色名
         /// </summary>
+        /// <remarks>
+        ///  多用角色 , 逗号
+        /// </remarks>
         string? RoleName { get; set; }
 
         /// <summary>

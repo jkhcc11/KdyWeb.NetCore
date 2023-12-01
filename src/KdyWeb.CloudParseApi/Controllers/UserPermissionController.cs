@@ -7,6 +7,7 @@ using KdyWeb.Dto.CloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.IService.CloudParse;
 using Microsoft.AspNetCore.Mvc;
+using static KdyWeb.BaseInterface.AuthorizationConst;
 
 namespace KdyWeb.CloudParseApi.Controllers
 {
@@ -213,7 +214,8 @@ namespace KdyWeb.CloudParseApi.Controllers
                     }
                 },
                 BuildDataStatisticsMenu(),
-                BuildVodManagerMenu()
+                BuildVodManagerMenu(),
+                BuildTaskMenu()
             };
 
             return result;
@@ -274,6 +276,7 @@ namespace KdyWeb.CloudParseApi.Controllers
                     }
                 },
                 BuildDataStatisticsMenu(),
+                BuildTaskMenu(),
             };
 
             return result;
@@ -435,8 +438,98 @@ namespace KdyWeb.CloudParseApi.Controllers
                         MenuName = "录资源",
                         Cacheable = true,
                     },
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/vod-manager-record",
+                        RouteName = "VodManagerRecord",
+                        LocalFilePath = "/vod/vod-manager-record",
+                        MenuName = "管理记录",
+                        Cacheable = true,
+                    },
                 }
             };
+        }
+
+        private GetVueMenuWithWorkVueDto BuildTaskMenu()
+        {
+            var parentPath = "/task-center";
+            var normalTaskUserMenu = BuildNormalTaskUserMenu();
+            if (_loginUserInfo.IsSuperAdmin ||
+                _loginUserInfo.IsVodAdmin)
+            {
+                normalTaskUserMenu.AddRange(new List<GetVueMenuWithWorkVueDto>()
+                {
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/task-list-manager",
+                        RouteName = "TaskListManager",
+                        LocalFilePath = "/taskCenter/task-list-manager",
+                        MenuName = "管理任务",
+                        Cacheable = true,
+                    },
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/convert-order-list",
+                        RouteName = "ConvertOrderList",
+                        LocalFilePath = "/taskCenter/convert-order-list",
+                        MenuName = "管理订单",
+                        Cacheable = true,
+                    },
+                });
+            }
+            return new GetVueMenuWithWorkVueDto()
+            {
+                MenuUrl = parentPath,
+                MenuName = "任务中心",
+                IconPrefix = "iconfont",
+                Icon = "detail",
+                RouteName = "TaskCenter",
+                Children = normalTaskUserMenu
+            };
+        }
+
+        /// <summary>
+        /// 接单用户菜单
+        /// </summary>
+        /// <returns></returns>
+        private List<GetVueMenuWithWorkVueDto> BuildNormalTaskUserMenu()
+        {
+            var parentPath = "/task-center";
+            var normalMenu = new List<GetVueMenuWithWorkVueDto>()
+            {
+                new()
+                {
+                    ParentPath = parentPath,
+                    MenuUrl = $"{parentPath}/waiting-task-list",
+                    RouteName = "WaitingTaskList",
+                    LocalFilePath = "/taskCenter/waiting-task-list",
+                    MenuName = "待接单",
+                    Cacheable = true,
+                },
+                new()
+                {
+                    ParentPath = parentPath,
+                    MenuUrl = $"{parentPath}/me-task-list",
+                    RouteName = "MeTaskList",
+                    LocalFilePath = "/taskCenter/me-task-list",
+                    MenuName = "我的任务",
+                    Cacheable = true,
+                },
+                new()
+                {
+                    ParentPath = parentPath,
+                    MenuUrl = $"{parentPath}/me-order-list",
+                    RouteName = "MeConvertOrderList",
+                    LocalFilePath = "/taskCenter/me-convert-order-list",
+                    MenuName = "我的订单",
+                    Cacheable = true,
+                },
+            };
+
+            return normalMenu;
         }
     }
 }

@@ -11,6 +11,7 @@ using KdyWeb.CloudParse.Input;
 using KdyWeb.CloudParse.Out;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.IService.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
@@ -23,6 +24,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 天翼家庭网盘解析 实现
     /// </summary>
+    [CloudParseService(CloudParseCookieType.TyFamily, DownCachePrefix = CacheKeyConst.TyCacheKey.FamilyDownCacheKey)]
     public class TyFamilyCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         ITyFamilyCloudParseService
     {
@@ -219,7 +221,6 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                     continue;
                 }
 
-                //todo:待测试
                 var time = DateTime.Now.ToMillisecondTimestamp() + "";
                 var url = $"AccessToken={CloudConfig.ParseCookie}&Timestamp={time}&destFileName={inputItem.NewName}&familyId={familyId}&fileId={inputItem.FileId}";
                 BuilderReqHeadSign(url, time);

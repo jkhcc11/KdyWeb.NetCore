@@ -23,6 +23,16 @@
         /// <summary>
         /// 其他
         /// </summary>
-        Other
+        Other,
+
+        /// <summary>
+        /// 迅雷
+        /// </summary>
+        XunLei,
+
+        /// <summary>
+        /// 夸克
+        /// </summary>
+        Quick
     }
 }

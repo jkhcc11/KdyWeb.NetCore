@@ -25,6 +25,11 @@
             /// 影片管理员
             /// </summary>
             public const string VodAdmin = "vodAdmin";
+
+            /// <summary>
+            /// 可接单用户角色
+            /// </summary>
+            public const string CovertTaskUser = "video-covert-task";
         }
 
         /// <summary>

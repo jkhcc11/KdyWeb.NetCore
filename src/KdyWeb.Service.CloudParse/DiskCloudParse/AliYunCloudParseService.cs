@@ -26,12 +26,14 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Crypto.Signers;
+using KdyWeb.Entity.CloudParse;
 
 namespace KdyWeb.Service.CloudParse.DiskCloudParse
 {
     /// <summary>
     /// 阿里云盘解析 实现
     /// </summary>
+    [CloudParseService(CloudParseCookieType.Ali, DownCachePrefix = CacheKeyConst.AliYunCacheKey.DownCacheKey)]
     public class AliYunCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         IAliYunCloudParseService
     {

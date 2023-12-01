@@ -207,48 +207,6 @@ namespace KdyWeb.IService.CloudParse
         }
 
         /// <summary>
-        /// 业务标识转下载缓存前缀
-        /// </summary>
-        /// <returns></returns>
-        public static string BusinessFlagToDownCachePrefix(string businessFlag)
-        {
-            //todo:新增业务类型这里
-            switch (businessFlag)
-            {
-                case CloudParseCookieType.TyPerson:
-                    {
-                        return TyCacheKey.DownCacheKey;
-                    }
-                case CloudParseCookieType.TyCrop:
-                    {
-                        return TyCacheKey.CropDownCacheKey;
-                    }
-                case CloudParseCookieType.TyFamily:
-                    {
-                        return TyCacheKey.FamilyDownCacheKey;
-                    }
-                case CloudParseCookieType.Ali:
-                    {
-                        return AliYunCacheKey.DownCacheKey;
-                    }
-                case CloudParseCookieType.BitQiu:
-                    {
-                        return StCacheKey.DownCacheKey;
-                    }
-                case CloudParseCookieType.Pan139:
-                    {
-                        return Pan139CacheKey.DownCacheKey;
-                    }
-                case CloudParseCookieType.TxShare:
-                    {
-                        return TxShareCacheKey.DownCacheKey;
-                    }
-            }
-
-            throw new KdyCustomException("BusinessFlagToDownCachePrefix未知业务类型");
-        }
-
-        /// <summary>
         /// 旧网盘类型 转  业务标识
         /// </summary>
         /// <returns></returns>

@@ -12,6 +12,7 @@ using KdyWeb.CloudParse.Input;
 using KdyWeb.CloudParse.Out;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.IService.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
@@ -24,6 +25,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 腾讯云分享解析 实现
     /// </summary>
+    [CloudParseService(CloudParseCookieType.TxShare, DownCachePrefix = CacheKeyConst.TxShareCacheKey.DownCacheKey)]
     public class TShareCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         ITShareCloudParseService
     {

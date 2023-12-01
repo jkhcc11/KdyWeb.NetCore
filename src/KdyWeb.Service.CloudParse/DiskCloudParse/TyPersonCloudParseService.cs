@@ -13,6 +13,7 @@ using KdyWeb.CloudParse.Out;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse.Cache;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.IService.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
@@ -25,6 +26,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 天翼个人网盘解析 实现
     /// </summary>
+    [CloudParseService(CloudParseCookieType.TyPerson, DownCachePrefix = CacheKeyConst.TyCacheKey.DownCacheKey)]
     public class TyPersonCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         ITyPersonCloudParseService
     {

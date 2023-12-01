@@ -4,6 +4,7 @@ using KdyWeb.CloudParse.SelfHost.Models;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
+using KdyWeb.Service.CloudParse;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +42,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
                 return View("Index");
             }
 
-            var cachePrefix = $"{CacheKeyConst.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
+            var cachePrefix = $"{DiskCloudParseFactory.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
             var isNeedSerCookie = CloudParseCookieType.IsNeedServerCookie(newBusinessFlag);
             KdyResult<CommonParseDto> parseResult;
             if (isNeedSerCookie)
