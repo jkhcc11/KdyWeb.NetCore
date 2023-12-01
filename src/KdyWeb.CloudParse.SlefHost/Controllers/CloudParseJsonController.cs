@@ -6,6 +6,7 @@ using KdyWeb.Dto.Selenium;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.IService.Selenium;
+using KdyWeb.Service.CloudParse;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.CloudParse.SelfHost.Controllers
@@ -43,7 +44,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
                 return JsonParseDto.SetFail("未知用户信息");
             }
 
-            var cachePrefix = $"{CacheKeyConst.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
+            var cachePrefix = $"{DiskCloudParseFactory.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
             var isNeedSerCookie = CloudParseCookieType.IsNeedServerCookie(newBusinessFlag);
             KdyResult<CommonParseDto> parseResult;
             if (isNeedSerCookie)
@@ -99,7 +100,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
                 return Content("未知用户信息");
             }
 
-            var cachePrefix = $"{CacheKeyConst.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
+            var cachePrefix = $"{DiskCloudParseFactory.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
             var isNeedSerCookie = CloudParseCookieType.IsNeedServerCookie(newBusinessFlag);
             KdyResult<CommonParseDto> parseResult;
             if (isNeedSerCookie)

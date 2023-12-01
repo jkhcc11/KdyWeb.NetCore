@@ -1,8 +1,11 @@
 ﻿using KdyWeb.BaseInterface;
 using KdyWeb.CloudParse;
 using KdyWeb.CloudParse.Input;
-using KdyWeb.Entity.CloudParse;
-using KdyWeb.Service.CloudParse.DiskCloudParse;
+using System.Collections.Generic;
+using System.Reflection;
+using System;
+using System.Linq;
+using KdyWeb.IService.CloudParse.DiskCloudParse;
 
 namespace KdyWeb.Service.CloudParse
 {
@@ -11,86 +14,58 @@ namespace KdyWeb.Service.CloudParse
     /// </summary>
     public class DiskCloudParseFactory
     {
+        private static readonly Dictionary<string, Type> AllParseServiceTypes;
+        private static readonly Dictionary<string, string> AllParseServiceDownCacheKeyDic;
+        static DiskCloudParseFactory()
+        {
+            // 寻找所有带有CloudParseServiceAttribute的类
+            AllParseServiceTypes = Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => t.GetCustomAttributes<CloudParseServiceAttribute>().Any())
+                .ToDictionary(t => t.GetCustomAttribute<CloudParseServiceAttribute>()?.BusinessFlag,
+                    t => t);
+
+            AllParseServiceDownCacheKeyDic = Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => t.GetCustomAttributes<CloudParseServiceAttribute>().Any())
+                .ToDictionary(
+                    t => t.GetCustomAttribute<CloudParseServiceAttribute>()?.BusinessFlag,
+                    t => t.GetCustomAttribute<CloudParseServiceAttribute>()?.DownCachePrefix);
+        }
+
         public static IKdyCloudParseService CreateKdyCloudParseService(string businessFlag, long childUserId)
         {
             //一般用于清缓存
-            //todo:新增业务类型这里
-            switch (businessFlag)
+            if (AllParseServiceTypes.TryGetValue(businessFlag, out var serviceType))
             {
-                case CloudParseCookieType.Ali:
-                    {
-                        return new AliYunCloudParseService(childUserId);
-                    }
-                case CloudParseCookieType.TyPerson:
-                    {
-                        return new TyPersonCloudParseService(childUserId);
-                    }
-                case CloudParseCookieType.TyFamily:
-                    {
-                        return new TyFamilyCloudParseService(childUserId);
-                    }
-                case CloudParseCookieType.TyCrop:
-                    {
-                        return new TyCropCloudParseService(childUserId);
-                    }
-                case CloudParseCookieType.BitQiu:
-                    {
-                        return new StCloudParseService(childUserId);
-                    }
-                case CloudParseCookieType.Pan139:
-                    {
-                        return new Pan139CloudParseService(childUserId);
-                    }
-                case CloudParseCookieType.TxShare:
-                    {
-                        return new TShareCloudParseService(childUserId);
-                    }
-                default:
-                    {
-                        throw new KdyCustomException($"{nameof(CreateKdyCloudParseService)},未知业务标识,");
-                    }
+                return (IKdyCloudParseService)Activator.CreateInstance(serviceType, childUserId);
             }
+
+            throw new KdyCustomException($"{nameof(CreateKdyCloudParseService)},未知业务标识: {businessFlag}");
         }
 
-        public static IKdyCloudParseService CreateKdyCloudParseService(string businessFlag, BaseConfigInput baseConfigInput)
+        public static IKdyCloudParseService CreateKdyCloudParseService(string businessFlag,
+            BaseConfigInput baseConfigInput)
         {
             //实际调用
-            //todo:新增业务类型这里
-            switch (businessFlag)
+            if (AllParseServiceTypes.TryGetValue(businessFlag, out var serviceType))
             {
-                case CloudParseCookieType.Ali:
-                    {
-                        return new AliYunCloudParseService(baseConfigInput);
-                    }
-                case CloudParseCookieType.TyPerson:
-                    {
-                        return new TyPersonCloudParseService(baseConfigInput);
-                    }
-                case CloudParseCookieType.TyFamily:
-                    {
-                        return new TyFamilyCloudParseService(baseConfigInput);
-                    }
-                case CloudParseCookieType.TyCrop:
-                    {
-                        return new TyCropCloudParseService(baseConfigInput);
-                    }
-                case CloudParseCookieType.BitQiu:
-                    {
-                        return new StCloudParseService(baseConfigInput);
-                    }
-                case CloudParseCookieType.Pan139:
-                    {
-                        return new Pan139CloudParseService(baseConfigInput);
-                    }
-                case CloudParseCookieType.TxShare:
-                    {
-                        return new TShareCloudParseService(baseConfigInput);
-                    }
-                default:
-                    {
-                        throw new KdyCustomException($"{nameof(CreateKdyCloudParseService)},未知业务标识,");
-                    }
+                return (IKdyCloudParseService)Activator.CreateInstance(serviceType, baseConfigInput);
             }
+
+            throw new KdyCustomException($"{nameof(CreateKdyCloudParseService)},未知业务标识: {businessFlag}");
+        }
+
+        /// <summary>
+        /// 业务标识转下载缓存前缀
+        /// </summary>
+        /// <returns></returns>
+        public static string BusinessFlagToDownCachePrefix(string businessFlag)
+        {
+            if (AllParseServiceDownCacheKeyDic.TryGetValue(businessFlag, out var cachePrefix))
+            {
+                return cachePrefix;
+            }
+
+            throw new KdyCustomException("BusinessFlagToDownCachePrefix未知业务类型");
         }
     }
 }

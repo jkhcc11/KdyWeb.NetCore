@@ -77,7 +77,7 @@ namespace KdyWeb.Entity.CloudParse
         /// 备注
         /// </summary>
         [StringLength(RemarkLength)]
-        public string  Remark  { get; set; }
+        public string?  Remark  { get; set; }
 
         /// <summary>
         /// 初始化token

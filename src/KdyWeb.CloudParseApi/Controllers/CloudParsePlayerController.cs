@@ -6,6 +6,7 @@ using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
+using KdyWeb.Service.CloudParse;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,7 +51,7 @@ namespace KdyWeb.CloudParseApi.Controllers
                 return KdyResult.Error<string>(KdyResultCode.Error, "未知用户信息");
             }
 
-            var cachePrefix = $"{CacheKeyConst.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
+            var cachePrefix = $"{DiskCloudParseFactory.BusinessFlagToDownCachePrefix(newBusinessFlag)}:";
             //var isNeedSerCookie = CloudParseCookieType.IsNeedServerCookie(newBusinessFlag);
             //播放器 不需要服务器cookie
             var parseResult = await _diskParseService.CommonParseAsync(cachePrefix, newBusinessFlag,

@@ -13,6 +13,7 @@ using KdyWeb.CloudParse.Out;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse.Cache;
 using KdyWeb.Dto.KdyHttp;
+using KdyWeb.Entity.CloudParse;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.IService.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
@@ -25,6 +26,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     /// <summary>
     /// 天翼企业云网盘解析 实现
     /// </summary>
+    [CloudParseService(CloudParseCookieType.TyCrop, DownCachePrefix = CacheKeyConst.TyCacheKey.CropDownCacheKey)]
     public class TyCropCloudParseService : BaseKdyCloudParseService<BaseConfigInput, string, BaseResultOut>,
         ITyCropCloudParseService
     {
@@ -256,7 +258,6 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                     continue;
                 }
 
-                //todo:待测试
                 KdyRequestCommonInput
                     .SetGetRequest($"/user/renameCompanyFile.action?fileId={inputItem.FileId}&fileName={inputItem.NewName}&corpId={corpId}&noCache=0.{DateTime.Now.ToMillisecondTimestamp()}");
                 var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
