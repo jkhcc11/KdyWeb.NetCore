@@ -116,7 +116,6 @@ namespace KdyWeb.Service.FileStore
         {
             var guid = Guid.NewGuid().ToString("N");
             var httpClient = _httpClientFactory.CreateClient(guid);
-            httpClient.DefaultRequestHeaders.Referrer = new Uri(url);
             return httpClient.GetByteArrayAsync(url);
         }
 

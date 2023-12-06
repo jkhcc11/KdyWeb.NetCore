@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
@@ -245,14 +246,19 @@ namespace KdyWeb.CloudParseApi.Controllers
                     }
                 },
                 BuildVodManagerMenu(),
-                BuildCloudParseMenu(),
-                new ()
+                BuildTaskMenu(),
+            };
+
+            if (_loginUserInfo.UserName == ShareUserName)
+            {
+                result.Add(BuildCloudParseMenu());
+                result.Add(new GetVueMenuWithWorkVueDto()
                 {
                     MenuUrl = "/system",
                     MenuName = "系统设置",
                     IconPrefix = "iconfont",
                     Icon = "setting",
-                    RouteName="System",
+                    RouteName = "System",
                     Children = new List<GetVueMenuWithWorkVueDto>()
                     {
                         new()
@@ -274,10 +280,8 @@ namespace KdyWeb.CloudParseApi.Controllers
                             Cacheable = true
                         }
                     }
-                },
-                BuildDataStatisticsMenu(),
-                BuildTaskMenu(),
-            };
+                });
+            }
 
             return result;
         }
@@ -342,6 +346,7 @@ namespace KdyWeb.CloudParseApi.Controllers
                                 MenuUrl = "/cloud-disk/ty/person-list",
                                 LocalFilePath = "/cloudDisk/ty/person-list",
                                 MenuName = "个人",
+                                RouteName = "TyPersonList",
                                 Cacheable = true
                             },
                             new()
@@ -350,6 +355,7 @@ namespace KdyWeb.CloudParseApi.Controllers
                                 MenuUrl = "/cloud-disk/ty/family-list",
                                 LocalFilePath = "/cloudDisk/ty/family-list",
                                 MenuName = "家庭",
+                                RouteName = "TyFamilyList",
                                 Cacheable = true
                             },
                             new()
@@ -358,6 +364,7 @@ namespace KdyWeb.CloudParseApi.Controllers
                                 MenuUrl = "/cloud-disk/ty/crop-list",
                                 LocalFilePath = "/cloudDisk/ty/crop-list",
                                 MenuName = "企业",
+                                RouteName = "TyCropList",
                                 Cacheable = true
                             },
                         }

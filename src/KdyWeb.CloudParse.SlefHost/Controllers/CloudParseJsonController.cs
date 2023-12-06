@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Filter;
 using KdyWeb.CloudParse.SelfHost.Models;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.Selenium;
@@ -16,6 +17,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
     /// </summary>
     [Route("api-v2")]
     [ApiController]
+    [AddPowerByHeaderFilter]
     public class CloudParseJsonController : BaseController
     {
         private readonly IDiskParseService _diskParseService;
@@ -36,7 +38,6 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         [HttpGet("common/{userInfo}/{fileInfo}")]
         public async Task<JsonParseDto> CommonCloudParseAsync([FromRoute] CloudParsePlayerInput input)
         {
-            Response.Headers.Add("PowerBy", "VGdfemN5MjAyMw==");
             var newBusinessFlag = await _subAccountService.GetBusinessFlagByUserIdAsync(input.UserInfo
                 , input.IsOldUserInfo == false);
             if (string.IsNullOrEmpty(newBusinessFlag))
@@ -92,7 +93,6 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         [HttpGet("jump/{userInfo}/{fileInfo}")]
         public async Task<IActionResult> CommonCloudParseWithJump301Async([FromRoute] CloudParsePlayerInput input)
         {
-            Response.Headers.Add("PowerBy", "VGdfemN5MjAyMw==");
             var newBusinessFlag = await _subAccountService.GetBusinessFlagByUserIdAsync(input.UserInfo
                 , input.IsOldUserInfo == false);
             if (string.IsNullOrEmpty(newBusinessFlag))

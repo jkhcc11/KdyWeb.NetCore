@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.Filter;
 using KdyWeb.CloudParse.SelfHost.Models;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Entity.CloudParse;
@@ -19,6 +20,7 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
     /// </summary>
     [Route("self-api-v2")]
     [ApiController]
+    [AddPowerByHeaderFilter]
     public class CloudParseSelfJsonController : BaseController
     {
         private readonly IDiskParseService _diskParseService;
@@ -42,7 +44,6 @@ namespace KdyWeb.CloudParse.SelfHost.Controllers
         [HttpPost("parse")]
         public async Task<JsonParseDto> SelfParseAsync([FromForm]SelfParseInput input)
         {
-            Response.Headers.Add("PowerBy", "VGdfemN5MjAyMw==");
             var desKey = _configuration.GetValue<string>(KdyWebServiceConst.DesKey, "hcc11com");
             var decodeUrl = input.EncodeUrl.DesHexToStr(desKey);
             var tempArray = decodeUrl.Split('/', StringSplitOptions.RemoveEmptyEntries);

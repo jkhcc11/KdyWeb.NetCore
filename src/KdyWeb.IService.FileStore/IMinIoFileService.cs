@@ -13,6 +13,6 @@ namespace KdyWeb.IService.FileStore
         /// 获取MinIo实例化客户端
         /// </summary>
         /// <returns></returns>
-        MinioClient GetMinIoClient();
+        IMinioClient GetMinIoClient();
     }
 }
