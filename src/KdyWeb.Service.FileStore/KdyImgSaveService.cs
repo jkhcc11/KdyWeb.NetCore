@@ -343,7 +343,10 @@ namespace KdyWeb.Service.FileStore
             //自建tg图床 https://pro-img.kdy666.com/upload
             var tgImgHost = "https://pro-img.kdy666.com";
             var normalInput = new NormalFileInput($"{tgImgHost}/upload", "file",
-                "src", kdyFileInput.FileName);
+                "[0].src", kdyFileInput.FileName)
+            {
+                BaseHost = tgImgHost
+            };
             if (kdyFileInput.FileBytes != null && kdyFileInput.FileBytes.Any())
             {
                 normalInput.SetFileBytes(kdyFileInput.FileBytes);
@@ -365,7 +368,6 @@ namespace KdyWeb.Service.FileStore
             var result = await _normalFileService.PostFile(normalInput);
             if (result.IsSuccess)
             {
-                result.Data.Url = $"{tgImgHost}{result.Data.Url}";
                 return result;
             }
 
