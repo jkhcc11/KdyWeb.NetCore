@@ -112,11 +112,18 @@ namespace KdyWeb.Service.FileStore
         /// </summary>
         /// <param name="url">文件Url</param>
         /// <returns></returns>
-        protected virtual Task<byte[]> GetFileBytesByUrl(string url)
+        protected virtual async Task<byte[]> GetFileBytesByUrl(string url)
         {
-            var guid = Guid.NewGuid().ToString("N");
-            var httpClient = _httpClientFactory.CreateClient(guid);
-            return httpClient.GetByteArrayAsync(url);
+            // 创建 HttpRequestMessage 实例
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+            requestMessage.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36");
+            var httpClient = _httpClientFactory.CreateClient();
+            // 发送请求并获取响应
+            var response = await httpClient.SendAsync(requestMessage);
+            // 确保请求成功（这将抛出异常，如果状态码不是2xx）
+            response.EnsureSuccessStatusCode();
+            // 读取响应内容作为byte数组
+            return await response.Content.ReadAsByteArrayAsync();
         }
 
         /// <summary>
