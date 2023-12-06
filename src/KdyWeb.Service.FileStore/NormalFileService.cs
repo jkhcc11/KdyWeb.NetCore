@@ -68,8 +68,18 @@ namespace KdyWeb.Service.FileStore
             string resultImgUrl;
             try
             {
-                var jObject = JObject.Parse(jsonStr);
-                resultImgUrl = $"{jObject.SelectToken(input.JsonRule)}";
+                if (jsonStr.StartsWith("["))
+                {
+                    //数组开头
+                    var jObject = JArray.Parse(jsonStr);
+                    resultImgUrl = $"{jObject.SelectToken(input.JsonRule)}";
+                }
+                else
+                {
+                    var jObject = JObject.Parse(jsonStr);
+                    resultImgUrl = $"{jObject.SelectToken(input.JsonRule)}";
+                }
+
                 if (resultImgUrl.IsEmptyExt())
                 {
                     result.Msg = $"普通文件上传失败，提取Json失败";
@@ -92,7 +102,7 @@ namespace KdyWeb.Service.FileStore
                 return result;
             }
 
-            if (resultImgUrl.StartsWith("http://") == false && 
+            if (resultImgUrl.StartsWith("http://") == false &&
                 resultImgUrl.StartsWith("https://") == false)
             {
                 //自动url拼接
