@@ -7,6 +7,11 @@
     public class AuthorizationConst
     {
         /// <summary>
+        /// 资源管理共享用户名（特殊）
+        /// </summary>
+        public const string ShareUserName = "test";
+
+        /// <summary>
         /// 通用角色
         /// </summary>
         public class NormalRoleName

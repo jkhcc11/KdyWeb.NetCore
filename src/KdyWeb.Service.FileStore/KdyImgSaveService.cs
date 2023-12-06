@@ -340,6 +340,36 @@ namespace KdyWeb.Service.FileStore
         /// <returns></returns>
         private async Task<KdyResult<KdyFileDto>> NormalUploadAsync(BaseKdyFileInput kdyFileInput)
         {
+            //自建tg图床 https://pro-img.kdy666.com/upload
+            var tgImgHost = "https://pro-img.kdy666.com";
+            var normalInput = new NormalFileInput($"{tgImgHost}/upload", "file",
+                "src", kdyFileInput.FileName);
+            if (kdyFileInput.FileBytes != null && kdyFileInput.FileBytes.Any())
+            {
+                normalInput.SetFileBytes(kdyFileInput.FileBytes);
+            }
+            else if (string.IsNullOrEmpty(kdyFileInput.FileUrl) == false)
+            {
+                normalInput.SetFileUrl(kdyFileInput.FileUrl);
+            }
+            else
+            {
+                throw new KdyCustomException($"普通文件上传失败，无效上传数据。url和Bytes不能同时为空");
+            }
+
+            normalInput.PostParDic = new Dictionary<string, string>()
+            {
+                {"fileId", kdyFileInput.FileName},
+            };
+
+            var result = await _normalFileService.PostFile(normalInput);
+            if (result.IsSuccess)
+            {
+                result.Data.Url = $"{tgImgHost}{result.Data.Url}";
+                return result;
+            }
+
+            #region remove
             ////普通上传
             //var normalInput = new NormalFileInput("https://niupic.com/index/upload/process", "image_field",
             //    "data", kdyFileInput.FileName);
@@ -362,43 +392,43 @@ namespace KdyWeb.Service.FileStore
             //    return result;
             //}
 
-            //超星
-            var uid = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxPUid);
-            var token = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxToken);
-            if (string.IsNullOrEmpty(uid) ||
-                string.IsNullOrEmpty(token))
-            {
-                throw new KdyCustomException($"普通文件上传失败，未配置超星UID和Token");
-            }
+            ////超星
+            //var uid = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxPUid);
+            //var token = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigCxToken);
+            //if (string.IsNullOrEmpty(uid) ||
+            //    string.IsNullOrEmpty(token))
+            //{
+            //    throw new KdyCustomException($"普通文件上传失败，未配置超星UID和Token");
+            //}
 
-            var normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload?_from=mobilelearn", "file",
-                "data.previewUrl", kdyFileInput.FileName);
-            if (kdyFileInput.FileBytes != null && kdyFileInput.FileBytes.Any())
-            {
-                normalInput.SetFileBytes(kdyFileInput.FileBytes);
-            }
-            else if (string.IsNullOrEmpty(kdyFileInput.FileUrl) == false)
-            {
-                normalInput.SetFileUrl(kdyFileInput.FileUrl);
-            }
-            else
-            {
-                throw new KdyCustomException($"普通文件上传失败，无效上传数据。url和Bytes不能同时为空");
-            }
+            //var normalInput = new NormalFileInput("https://pan-yz.chaoxing.com/upload?_from=mobilelearn", "file",
+            //    "data.previewUrl", kdyFileInput.FileName);
+            //if (kdyFileInput.FileBytes != null && kdyFileInput.FileBytes.Any())
+            //{
+            //    normalInput.SetFileBytes(kdyFileInput.FileBytes);
+            //}
+            //else if (string.IsNullOrEmpty(kdyFileInput.FileUrl) == false)
+            //{
+            //    normalInput.SetFileUrl(kdyFileInput.FileUrl);
+            //}
+            //else
+            //{
+            //    throw new KdyCustomException($"普通文件上传失败，无效上传数据。url和Bytes不能同时为空");
+            //}
 
-            normalInput.PostParDic = new Dictionary<string, string>()
-            {
-                {"id", "WU_FILE_0"},
-                {"type", kdyFileInput.FileName.FileNameToContentType()},
-                {"puid", uid},
-                {"_token", token},
-            };
+            //normalInput.PostParDic = new Dictionary<string, string>()
+            //{
+            //    {"id", "WU_FILE_0"},
+            //    {"type", kdyFileInput.FileName.FileNameToContentType()},
+            //    {"puid", uid},
+            //    {"_token", token},
+            //};
 
-            var result = await _normalFileService.PostFile(normalInput);
-            if (result.IsSuccess)
-            {
-                return result;
-            }
+            //var result = await _normalFileService.PostFile(normalInput);
+            //if (result.IsSuccess)
+            //{
+            //    return result;
+            //}
 
             //腾讯文档 防盗 不能直接使用
             //var cookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.UploadConfig.UploadConfigTxDocCookie);
@@ -417,7 +447,8 @@ namespace KdyWeb.Service.FileStore
             //    {
             //        result.Data.Url = result.Data.Url.GetStrMathExt(":", "\\?w\\=");
             //    }
-            //}
+            //} 
+            #endregion
 
             return result;
         }

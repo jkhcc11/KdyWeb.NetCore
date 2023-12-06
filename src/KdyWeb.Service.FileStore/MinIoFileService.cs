@@ -10,6 +10,7 @@ using KdyWeb.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Minio;
+using Minio.DataModel.Args;
 using Minio.Exceptions;
 
 namespace KdyWeb.Service.FileStore
@@ -83,11 +84,11 @@ namespace KdyWeb.Service.FileStore
             return result;
         }
 
-        public MinioClient GetMinIoClient()
+        public IMinioClient GetMinIoClient()
         {
             var config = _configuration
                 .GetSection(KdyWebServiceConst.MinIoConfigKey)
-                .Get<MinioConfig>();
+                .Get<Dto.KdyFile.MinioConfig>();
             if (config == null)
             {
                 throw new ArgumentNullException($"{nameof(GetMinIoClient)} 未配置");

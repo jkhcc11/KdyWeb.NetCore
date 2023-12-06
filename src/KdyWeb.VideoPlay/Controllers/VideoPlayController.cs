@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using KdyWeb.BaseInterface.Filter;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.VideoPlay.Controllers
@@ -6,6 +6,7 @@ namespace KdyWeb.VideoPlay.Controllers
     /// <summary>
     /// 视频播放
     /// </summary>
+    [ValidateFetchHeaders]
     public class VideoPlayController : BaseController
     {
         /// <summary>
