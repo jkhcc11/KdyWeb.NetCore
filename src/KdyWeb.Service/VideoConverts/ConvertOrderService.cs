@@ -161,6 +161,11 @@ namespace KdyWeb.Service.VideoConverts
                                          a.CreatedUserId != userId);
             }
 
+            if (string.IsNullOrEmpty(input.KeyWord) == false)
+            {
+                query = query.Where(a => a.CreatedUserName == input.KeyWord);
+            }
+
             var pageList = await query
                 .Include(a => a.OrderDetails)
                 .GetDtoPageListAsync<ConvertOrder, QueryOrderListWithAdminDto>(input);

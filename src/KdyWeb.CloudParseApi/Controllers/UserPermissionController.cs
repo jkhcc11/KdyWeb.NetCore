@@ -454,6 +454,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                         MenuName = "管理记录",
                         Cacheable = true,
                     },
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/feed-back-list",
+                        RouteName = "FeedbackInfoManager",
+                        LocalFilePath = "/vod/feedback-info-manager",
+                        MenuName = "反馈列表",
+                        Cacheable = true,
+                    },
                 }
             };
         }
