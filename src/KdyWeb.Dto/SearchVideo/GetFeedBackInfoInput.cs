@@ -16,7 +16,7 @@ namespace KdyWeb.Dto.SearchVideo
         public UserDemandType? UserDemandType { get; set; }
 
         /// <summary>
-        /// 用户反馈类型
+        /// 用户反馈状态
         /// </summary>
         [KdyQuery(nameof(FeedBackInfo.FeedBackInfoStatus), KdyOperator.Equal)]
         public FeedBackInfoStatus? FeedBackInfoStatus { get; set; }
