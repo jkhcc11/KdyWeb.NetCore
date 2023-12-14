@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Consul;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Text.RegularExpressions;
 
 namespace KdyWeb.BaseInterface.Filter
 {
@@ -17,13 +19,23 @@ namespace KdyWeb.BaseInterface.Filter
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var secFetchDest = context.HttpContext.Request.Headers["Sec-Fetch-Dest"].ToString();
-            var secFetchMode = context.HttpContext.Request.Headers["Sec-Fetch-Mode"].ToString();
+            // 这个正则表达式可能需要根据实际情况进行调整
+            // 获取User-Agent头部
+            var userAgent = context.HttpContext.Request.Headers["User-Agent"].ToString();
+            var isAppleBrowser = Regex.IsMatch(userAgent, @"\(iP(hone|ad|od).+Version\/[\d\.]+ Mobile\/\S+ Safari\/[\d\.]+$");
 
-            if (secFetchDest != FetchDestValue || secFetchMode != FetchModeValue)
+            // 如果不是苹果浏览器，则检查Sec-Fetch-Dest和Sec-Fetch-Mode头部
+            if (!isAppleBrowser)
             {
-                //403
-                context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+                var secFetchDest = context.HttpContext.Request.Headers["Sec-Fetch-Dest"].ToString();
+                var secFetchMode = context.HttpContext.Request.Headers["Sec-Fetch-Mode"].ToString();
+
+                if (secFetchDest != FetchDestValue || secFetchMode != FetchModeValue)
+                {
+                    // 如果不符合预期，则返回403 Forbidden状态码
+                    context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+                    return; // 短路请求，不再继续执行后续动作
+                }
             }
 
             base.OnActionExecuting(context);
