@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 
 namespace KdyWeb.IService.SearchVideo
@@ -52,5 +53,17 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> CreateVideoSeriesListAsync(CreateVideoSeriesListInput input);
+
+        /// <summary>
+        /// 删除系列
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DeleteAsync(long seriesId);
+
+        /// <summary>
+        /// 删除系列影片列表
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DeleteVodListAsync(BatchDeleteForLongKeyInput input);
     }
 }
