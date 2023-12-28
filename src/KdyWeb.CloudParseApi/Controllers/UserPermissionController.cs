@@ -463,6 +463,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                         MenuName = "反馈列表",
                         Cacheable = true,
                     },
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/vod-series",
+                        RouteName = "VodSeries",
+                        LocalFilePath = "/vod/vod-series",
+                        MenuName = "影片系列",
+                        Cacheable = true,
+                    },
                 }
             };
         }

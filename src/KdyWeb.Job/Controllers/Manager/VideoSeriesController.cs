@@ -1,8 +1,11 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Dto;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers.Manager
@@ -53,6 +56,30 @@ namespace KdyWeb.Job.Controllers.Manager
         {
             var result = await _videoSeriesService.CreateVideoSeriesListAsync(input);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 删除影片系列
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("delete/{seriesId}")]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public async Task<KdyResult> DeleteAsync(long seriesId)
+        {
+            var result = await _videoSeriesService.DeleteAsync(seriesId);
+            return result;
+        }
+
+        /// <summary>
+        /// 删除系列影片列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("delete-vod-list")]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public async Task<KdyResult> DeleteVodListAsync(BatchDeleteForLongKeyInput input)
+        {
+            var result = await _videoSeriesService.DeleteVodListAsync(input);
+            return result;
         }
     }
 }
