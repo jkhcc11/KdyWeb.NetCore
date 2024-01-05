@@ -40,7 +40,7 @@ namespace KdyWeb.IService.SearchVideo
         /// 获取影片系列
         /// </summary>
         /// <returns></returns>
-        Task<List<SelectedItemOut>> GetVideoSeriesListAsync();
+        Task<KdyResult<List<SelectedItemOut>>> GetVideoSeriesListAsync();
 
         /// <summary>
         /// 获取影片系列详情

@@ -430,6 +430,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                     new()
                     {
                         ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/vod-main",
+                        RouteName = "VodMain",
+                        LocalFilePath = "/vod/vod-main",
+                        MenuName = "影视库",
+                        Cacheable = true,
+                    },
+                    new()
+                    {
+                        ParentPath = parentPath,
                         MenuUrl = $"{parentPath}/fast-update-vod",
                         RouteName = "FastUpdateVod",
                         LocalFilePath = "/vod/vod-update",
@@ -469,7 +478,25 @@ namespace KdyWeb.CloudParseApi.Controllers
                         MenuUrl = $"{parentPath}/vod-series",
                         RouteName = "VodSeries",
                         LocalFilePath = "/vod/vod-series",
-                        MenuName = "影片系列",
+                        MenuName = "系列列表",
+                        Cacheable = true,
+                    },
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/vod-series-list",
+                        RouteName = "VodSeriesList",
+                        LocalFilePath = "/vod/vod-series-list",
+                        MenuName = "系列影片",
+                        Cacheable = true,
+                    },
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/douban-list",
+                        RouteName = "DouBanList",
+                        LocalFilePath = "/vod/douban-list",
+                        MenuName = "豆瓣资源库",
                         Cacheable = true,
                     },
                 }

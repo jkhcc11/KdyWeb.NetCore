@@ -318,6 +318,17 @@ namespace KdyWeb.Utility
             return $"{proxyHost}/dbimg/{tempArray.Last()}";
         }
 
+        /// <summary>
+        /// 使用正则表达式替换掉所有非字母数字汉字的字符
+        /// </summary>
+        /// <param name="str">待处理字符串</param>
+        /// <returns>移除特殊字符后的字符串</returns>
+        public static string RemoveSpecialCharacters(this string str)
+        {
+            // 使用正则表达式替换掉所有非字母数字汉字的字符
+            return Regex.Replace(str, @"[^\w\u4E00-\u9FA5]", string.Empty).Trim();
+        }
+
         #region 加密相关
         /// <summary>
         /// Md5扩展

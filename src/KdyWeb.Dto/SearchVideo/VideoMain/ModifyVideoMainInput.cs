@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using KdyWeb.Entity.SearchVideo;
 
@@ -127,6 +129,7 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 下载地址 多个换行
         /// </summary>
+        [Obsolete("弃用，最新使用EpisodeGroup")]
         public string DownUrl { get; set; }
 
         /// <summary>
@@ -142,6 +145,32 @@ namespace KdyWeb.Dto.SearchVideo
         /// </remarks>
         [StringLength(VideoMain.UrlLength)]
         public string VideoInfoUrl { get; set; }
+
+        /// <summary>
+        /// 剧集组
+        /// </summary>
+        public List<ModifyVideoMainEpGroupItem> EpisodeGroup { get; set; }
+    }
+
+    /// <summary>
+    /// 剧集组
+    /// </summary>
+    public class ModifyVideoMainEpGroupItem
+    {
+        /// <summary>
+        /// 剧集组类型
+        /// </summary>
+        public EpisodeGroupType EpisodeGroupType { get; set; }
+
+        /// <summary>
+        /// 组名称
+        /// </summary>
+        public string GroupName { get; set; }
+
+        /// <summary>
+        /// 剧集列表
+        /// </summary>
+        public List<UpdateEpisodeInput> Episodes { get; set; }
     }
 
     public class ModifyVideoMainInputProfile : Profile
@@ -150,6 +179,7 @@ namespace KdyWeb.Dto.SearchVideo
         {
             CreateMap<ModifyVideoMainInput, VideoMain>()
                 .ForMember(a => a.Id, b => b.Ignore())
+                .ForMember(a => a.EpisodeGroup, b => b.Ignore())
                 .ForMember(a => a.Aka, opt =>
                 {
                     opt.PreCondition(a => string.IsNullOrEmpty(a.Aka) == false);
@@ -202,17 +232,17 @@ namespace KdyWeb.Dto.SearchVideo
                 })
                 .ForPath(a => a.VideoMainInfo.NarrateUrl, opt =>
                 {
-                    opt.Condition(a => string.IsNullOrEmpty(a.Source.NarrateUrl) == false);
+                    //opt.Condition(a => string.IsNullOrEmpty(a.Source.NarrateUrl) == false);
                     opt.MapFrom(c => c.NarrateUrl);
                 })
                 .ForPath(a => a.VideoMainInfo.VideoSummary, opt =>
                   {
-                      opt.Condition(a => string.IsNullOrEmpty(a.Source.VideoSummary) == false);
+                      //opt.Condition(a => string.IsNullOrEmpty(a.Source.VideoSummary) == false);
                       opt.MapFrom(c => c.VideoSummary);
                   })
                 .ForPath(a => a.VideoMainInfo.BanVideoJumpUrl, opt =>
                 {
-                    opt.Condition(a => string.IsNullOrEmpty(a.Source.BanVideoJumpUrl) == false);
+                    //opt.Condition(a => string.IsNullOrEmpty(a.Source.BanVideoJumpUrl) == false);
                     opt.MapFrom(c => c.BanVideoJumpUrl);
                 });
         }

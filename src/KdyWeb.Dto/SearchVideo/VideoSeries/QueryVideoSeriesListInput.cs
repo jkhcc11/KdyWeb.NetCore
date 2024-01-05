@@ -14,5 +14,10 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         [KdyQuery(nameof(VideoSeriesList.SeriesId), KdyOperator.Equal)]
         public long? SeriesId { get; set; }
+
+        /// <summary>
+        /// 关键字
+        /// </summary>
+        public string KeyWord { get; set; }
     }
 }

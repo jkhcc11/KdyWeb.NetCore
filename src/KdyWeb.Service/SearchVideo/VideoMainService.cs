@@ -7,7 +7,6 @@ using Kdy.StandardJob.JobInput;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
-using KdyWeb.BaseInterface.KdyOptions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
@@ -19,8 +18,7 @@ using KdyWeb.IService.SearchVideo;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Options;
+using Snowflake.Core;
 
 namespace KdyWeb.Service.SearchVideo
 {
@@ -31,28 +29,28 @@ namespace KdyWeb.Service.SearchVideo
     {
         private readonly IKdyRepository<VideoMain, long> _videoMainRepository;
         private readonly IKdyRepository<DouBanInfo> _douBanInfoRepository;
-        private readonly IKdyRepository<VideoEpisode, long> _videoEpisodeRepository;
-        private readonly IKdyRepository<VideoEpisodeGroup, long> _videoEpisodeGroupRepository;
         private readonly IKdyRepository<UserSubscribe, long> _userSubscribeRepository;
         private readonly IKdyRepository<VideoMainInfo, long> _videoMainInfoRepository;
         private readonly IKdyRepository<UserHistory, long> _userHistoryRepository;
         private readonly IKdyRepository<VideoSeriesList, long> _videoSeriesListRepository;
+        private readonly IKdyRepository<VideoSeries, long> _videoSeriesRepository;
+        private readonly IdWorker _idWorker;
 
         public VideoMainService(IKdyRepository<VideoMain, long> videoMainRepository, IKdyRepository<DouBanInfo> douBanInfoRepository,
-            IUnitOfWork unitOfWork, IKdyRepository<VideoEpisode, long> videoEpisodeRepository,
-            IKdyRepository<VideoEpisodeGroup, long> videoEpisodeGroupRepository, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
+            IUnitOfWork unitOfWork, IKdyRepository<UserSubscribe, long> userSubscribeRepository,
             IKdyRepository<VideoMainInfo, long> videoMainInfoRepository, IKdyRepository<UserHistory, long> userHistoryRepository,
-            IKdyRepository<VideoSeriesList, long> videoSeriesListRepository) :
+            IKdyRepository<VideoSeriesList, long> videoSeriesListRepository, IKdyRepository<VideoSeries, long> videoSeriesRepository,
+            IdWorker idWorker) :
             base(unitOfWork)
         {
             _videoMainRepository = videoMainRepository;
             _douBanInfoRepository = douBanInfoRepository;
-            _videoEpisodeRepository = videoEpisodeRepository;
-            _videoEpisodeGroupRepository = videoEpisodeGroupRepository;
             _userSubscribeRepository = userSubscribeRepository;
             _videoMainInfoRepository = videoMainInfoRepository;
             _userHistoryRepository = userHistoryRepository;
             _videoSeriesListRepository = videoSeriesListRepository;
+            _videoSeriesRepository = videoSeriesRepository;
+            _idWorker = idWorker;
 
             CanUpdateFieldList.AddRange(new[]
             {
@@ -234,22 +232,7 @@ namespace KdyWeb.Service.SearchVideo
             {
                 case SearchType.IsNoEnd:
                     {
-                        query = query.Where(a => a.IsEnd == false ||
-                                                 a.VideoContentFeature != VideoMain.SystemInput);
-                        //高分优先
-                        input.OrderBy = new List<KdyEfOrderConditions>()
-                        {
-                            new KdyEfOrderConditions()
-                            {
-                                Key = nameof(VideoMain.VideoDouBan),
-                                OrderBy = KdyEfOrderBy.Desc
-                            },
-                            new KdyEfOrderConditions()
-                            {
-                                Key = nameof(VideoMain.CreatedTime),
-                                OrderBy = KdyEfOrderBy.Desc
-                            }
-                        };
+                        query = query.Where(a => a.IsEnd == false);
                         break;
                     }
                 case SearchType.IsToday:
@@ -266,6 +249,33 @@ namespace KdyWeb.Service.SearchVideo
                 case SearchType.IsNarrateUrl:
                     {
                         query = query.Where(a => string.IsNullOrEmpty(a.VideoMainInfo.NarrateUrl) == false);
+                        break;
+                    }
+                case SearchType.LowScore:
+                    {
+                        query = query.Where(a => a.VideoDouBan <= VideoMain.LowScoreStandard &&
+                                                 (a.SourceUrl != VideoMain.SystemInput ||
+                                                 a.VideoContentFeature != VideoMain.SystemInput));
+                        //高分优先
+                        input.OrderBy = new List<KdyEfOrderConditions>()
+                        {
+                            new KdyEfOrderConditions()
+                            {
+                                Key = nameof(VideoMain.VideoDouBan),
+                                OrderBy = KdyEfOrderBy.Desc
+                            },
+                            new KdyEfOrderConditions()
+                            {
+                                Key = nameof(VideoMain.CreatedTime),
+                                OrderBy = KdyEfOrderBy.Desc
+                            }
+                        };
+                        break;
+                    }
+                case SearchType.ToBeMaintained:
+                    {
+                        query = query.Where(a => a.SourceUrl != VideoMain.SystemInput ||
+                                                 a.VideoContentFeature != VideoMain.SystemInput);
                         break;
                     }
             }
@@ -357,6 +367,11 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error(KdyResultCode.Error, "影片信息不存在");
             }
 
+            if (dbMain.IsMatchInfo)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "影片已匹配，匹配失败");
+            }
+
             var dbDouBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanId);
             if (dbDouBanInfo == null)
             {
@@ -401,9 +416,10 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult> ModifyVideoMainAsync(ModifyVideoMainInput input)
         {
-            var main = await _videoMainRepository.GetAsNoTracking()
+            var main = await _videoMainRepository.GetWriteQuery()
                 .Include(a => a.VideoMainInfo)
                 .Include(a => a.EpisodeGroup)
+                .ThenInclude(a => a.Episodes)
                 .Where(a => a.Id == input.Id)
                 .FirstOrDefaultAsync();
             if (main == null)
@@ -412,57 +428,85 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             input.MapToPartExt(main);
-
-            var downEpGroup = main.EpisodeGroup
-                // .Select(a => a.Id)
-                .FirstOrDefault(a => a.EpisodeGroupType == EpisodeGroupType.VideoDown);
-            if (string.IsNullOrEmpty(input.DownUrl) == false)
+            if (input.VideoCountries.IsEmptyExt() == false &&
+                input.VideoDirectors.IsEmptyExt() == false)
             {
-                #region 下载处理
-                //格式
-                //名称$下载地址
-                //名称2$下载地址2
-                //名称3$下载地址3
-                var downEp = new List<VideoEpisode>();
-                var tempDownArray = input.DownUrl.Split(new[] { '\r', '\n', '#' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var tempItem in tempDownArray)
+                main.SetMatchDouBanInfo();
+            }
+
+            main.EpisodeGroup ??= new List<VideoEpisodeGroup>();
+
+            #region 剧集下载更新
+            var dbDownEpGroup = main.EpisodeGroup.FirstOrDefault(a => a.EpisodeGroupType == EpisodeGroupType.VideoDown);
+            var epItemWithDown = input.EpisodeGroup
+                   .FirstOrDefault(a => a.EpisodeGroupType == EpisodeGroupType.VideoDown &&
+                               a.Episodes != null &&
+                               a.Episodes.Any());
+            var validItemWithDown = epItemWithDown?.Episodes
+                .Where(a => string.IsNullOrEmpty(a.EpisodeName) == false &&
+                            string.IsNullOrEmpty(a.EpisodeUrl) == false)
+                .ToList();
+            if (epItemWithDown != null && validItemWithDown.Any())
+            {
+                var groupId = _idWorker.NextId();
+                if (dbDownEpGroup == null)
                 {
-                    if (tempItem.Contains("$") == false)
+                    //剧集组为空新增
+                    dbDownEpGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoDown, epItemWithDown.GroupName)
                     {
-                        continue;
-                    }
-
-                    var nameArray = tempItem.Split('$');
-
-                    //剧集
-                    var tempEpisode = new VideoEpisode(nameArray[0], nameArray[1]);
-                    if (downEpGroup != null)
-                    {
-                        tempEpisode.SetEpisodeGroupId(downEpGroup.Id);
-                    }
-
-                    downEp.Add(tempEpisode);
-                }
-
-                if (downEpGroup != null)
-                {
-                    //删除旧的剧集 新增新的
-                    await _videoEpisodeRepository.Delete(a => a.EpisodeGroupId == downEpGroup.Id);
-                    await _videoEpisodeRepository.CreateAsync(downEp);
+                        Episodes = validItemWithDown.Select(item => new VideoEpisode(item.EpisodeName,
+                            item.EpisodeUrl)
+                        {
+                            EpisodeGroupId = groupId
+                        }).ToList(),
+                        Id = groupId
+                    };
+                    main.EpisodeGroup.Add(dbDownEpGroup);
                 }
                 else
                 {
-                    //创建新的组
-                    var downGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoDown, "默认下载")
-                    {
-                        Episodes = downEp,
-                        MainId = input.Id
-                    };
-                    await _videoEpisodeGroupRepository.CreateAsync(downGroup);
+                    //剧集组更新
+                    dbDownEpGroup.GroupName = epItemWithDown.GroupName;
+                    validItemWithDown.EpisodeUpdate(dbDownEpGroup.Episodes, dbDownEpGroup);
                 }
-
-                #endregion
             }
+            #endregion
+
+            #region 播放更新
+            var dbPlayEpGroup = main.EpisodeGroup.FirstOrDefault(a => a.EpisodeGroupType == EpisodeGroupType.VideoPlay);
+            var epItemWithPlay = input.EpisodeGroup
+                .FirstOrDefault(a => a.EpisodeGroupType == EpisodeGroupType.VideoPlay &&
+                                     a.Episodes != null &&
+                                     a.Episodes.Any());
+            var validItemWithPlay = epItemWithPlay?.Episodes
+                .Where(a => string.IsNullOrEmpty(a.EpisodeName) == false &&
+                            string.IsNullOrEmpty(a.EpisodeUrl) == false)
+                .ToList();
+            if (epItemWithPlay != null && validItemWithPlay.Any())
+            {
+                var groupId = _idWorker.NextId();
+                if (dbPlayEpGroup == null)
+                {
+                    //剧集组为空新增
+                    dbPlayEpGroup = new VideoEpisodeGroup(EpisodeGroupType.VideoPlay, epItemWithPlay.GroupName)
+                    {
+                        Episodes = validItemWithPlay.Select(item => new VideoEpisode(item.EpisodeName,
+                            item.EpisodeUrl)
+                        {
+                            EpisodeGroupId = groupId
+                        }).ToList(),
+                        Id = groupId
+                    };
+                    main.EpisodeGroup.Add(dbPlayEpGroup);
+                }
+                else
+                {
+                    //剧集组更新
+                    dbPlayEpGroup.GroupName = epItemWithPlay.GroupName;
+                    validItemWithPlay.EpisodeUpdate(dbPlayEpGroup.Episodes, dbPlayEpGroup);
+                }
+            }
+            #endregion
 
             _videoMainRepository.Update(main);
             await UnitOfWork.SaveChangesAsync();
@@ -765,6 +809,11 @@ namespace KdyWeb.Service.SearchVideo
 
             douBanInfo.SetSearchEnd();
             _douBanInfoRepository.Update(douBanInfo);
+
+            if (input.SeriesId.HasValue)
+            {
+                await CreateSeriesListAsync(dbVideoMain.Id, input.SeriesId.Value);
+            }
             await UnitOfWork.SaveChangesAsync();
 
             #region 用户行为记录
@@ -828,7 +877,7 @@ namespace KdyWeb.Service.SearchVideo
                 epGroup.Episodes == null)
             {
                 return KdyResult.Error(KdyResultCode.Error, "分组不存在，更新失败");
-            } 
+            }
             #endregion
 
             #region 豆瓣信息匹配
@@ -861,7 +910,7 @@ namespace KdyWeb.Service.SearchVideo
             {
                 //软删
                 var notExistIds = notExist.Select(a => a.Id).ToArray();
-                foreach (var notItem in epGroup.Episodes.Where(a=>notExistIds.Contains(a.Id)))
+                foreach (var notItem in epGroup.Episodes.Where(a => notExistIds.Contains(a.Id)))
                 {
                     notItem.IsDelete = true;
                 }
@@ -886,6 +935,10 @@ namespace KdyWeb.Service.SearchVideo
             douBanInfo.SetSearchEnd();
             _douBanInfoRepository.Update(douBanInfo);
             _videoMainRepository.Update(dbVideoMain);
+            if (input.SeriesId.HasValue)
+            {
+                await CreateSeriesListAsync(dbVideoMain.Id, input.SeriesId.Value);
+            }
 
             await UnitOfWork.SaveChangesAsync();
             await CreateVodManagerRecordAsync(dbVideoMain, douBanInfo);
@@ -898,6 +951,12 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         private async Task CreateVodManagerRecordAsync(VideoMain videoMain, DouBanInfo douBanInfo)
         {
+            if (LoginUserInfo.IsLogin == false)
+            {
+                //Job进来时，不需要
+                return;
+            }
+
             await Task.CompletedTask;
             var recordType = VodManagerRecordType.UpdateMainInfo;
             if (douBanInfo.CreatedUserId == LoginUserInfo.GetUserId())
@@ -927,6 +986,39 @@ namespace KdyWeb.Service.SearchVideo
 
             var tempArray = url.Split('$').ToArray();
             return new VideoEpisode(tempArray.First().GetNumber() + "", tempArray.Last());
+        }
+
+        /// <summary>
+        /// 创建系列影片
+        /// </summary>
+        /// <param name="keyId">影片Id</param>
+        /// <param name="seriesId">系列Id</param>
+        /// <returns></returns>
+        private async Task CreateSeriesListAsync(long keyId, long seriesId)
+        {
+            //系列
+            var series = await _videoSeriesRepository.GetAsNoTracking()
+                .Where(a => a.Id == seriesId)
+                .FirstOrDefaultAsync();
+            if (series == null)
+            {
+                return;
+            }
+
+            //查重
+            var dbAny = await _videoSeriesListRepository.GetAsNoTracking()
+                .AnyAsync(a => keyId == a.KeyId &&
+                               a.SeriesId == seriesId);
+            if (dbAny)
+            {
+                return;
+            }
+
+            await _videoSeriesListRepository.CreateAsync(new VideoSeriesList()
+            {
+                SeriesId = series.Id,
+                KeyId = keyId
+            });
         }
     }
 }

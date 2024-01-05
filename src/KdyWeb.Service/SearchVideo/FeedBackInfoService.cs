@@ -105,7 +105,7 @@ namespace KdyWeb.Service.SearchVideo
 
             foreach (var item in dbList)
             {
-                item.FeedBackInfoStatus = input.FeedBackInfoStatus;
+                item.ChangeStatus(input.FeedBackInfoStatus);
                 //  _kdyRepository.Update(item);
             }
 
@@ -203,10 +203,15 @@ namespace KdyWeb.Service.SearchVideo
 
             var url = $"//movie.douban.com/subject/{subjectId}/";
             //是否已存在
-            var exit = await _kdyRepository.GetQuery().CountAsync(a => a.OriginalUrl.Contains(subjectId));
-            if (exit > 0)
+            var feedBackInfo = await _kdyRepository.GetQuery()
+                .FirstOrDefaultAsync(a => a.OriginalUrl.Contains(subjectId));
+            if (feedBackInfo != null)
             {
-                return KdyResult.Error(KdyResultCode.Error, "该链接已反馈,请勿重复反馈");
+                feedBackInfo.InitStatus();
+                _kdyRepository.Update(feedBackInfo);
+                await UnitOfWork.SaveChangesAsync();
+
+                return KdyResult.Success();
             }
 
             var dbFeedBack = new FeedBackInfo(UserDemandType.Input, url)

@@ -7,10 +7,12 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
+using KdyWeb.Dto.HttpApi.DouBan;
 using KdyWeb.Dto.KdyImg;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.FileStore;
+using KdyWeb.IService.HttpApi;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;
@@ -27,13 +29,15 @@ namespace KdyWeb.Service.SearchVideo
         private readonly IDouBanWebInfoService _douBanWebInfoService;
         private readonly IKdyRepository<DouBanInfo, int> _douBanInfoRepository;
         private readonly IKdyImgSaveService _kdyImgSaveService;
+        private readonly IDouBanHttpApi _douBanHttpApi;
 
         public DouBanInfoService(IDouBanWebInfoService douBanWebInfoService, IKdyRepository<DouBanInfo, int> douBanInfoRepository,
-            IKdyImgSaveService kdyImgSaveService, IUnitOfWork unitOfWork) : base(unitOfWork)
+            IKdyImgSaveService kdyImgSaveService, IUnitOfWork unitOfWork, IDouBanHttpApi douBanHttpApi) : base(unitOfWork)
         {
             _douBanWebInfoService = douBanWebInfoService;
             _douBanInfoRepository = douBanInfoRepository;
             _kdyImgSaveService = kdyImgSaveService;
+            _douBanHttpApi = douBanHttpApi;
         }
 
         /// <summary>
@@ -287,6 +291,27 @@ namespace KdyWeb.Service.SearchVideo
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success("豆瓣信息删除成功");
+        }
+
+        /// <summary>
+        /// 豆瓣关键字搜索
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<SearchSuggestResponse>>> DouBanKeyWordSearchAsync(DouBanKeyWordSearchInput input)
+        {
+            if (string.IsNullOrEmpty(input.KeyWord))
+            {
+                return KdyResult.Success(new List<SearchSuggestResponse>());
+            }
+
+            var searchResult = await _douBanHttpApi.SearchSuggestAsync(input.KeyWord);
+            if (searchResult.IsSuccess)
+            {
+                return searchResult;
+            }
+
+            searchResult = await _douBanHttpApi.KeyWordSearchAsync(input.KeyWord, input.Page);
+            return searchResult;
         }
     }
 }

@@ -123,42 +123,47 @@ namespace KdyWeb.Entity.VideoConverts.Enum
         /// <returns></returns>
         public static decimal GetSaveInfoCheckoutAmount(this VodManagerRecordType recordType, int year, int epCount)
         {
-            if (epCount < 10)
-            {
-                //最低10 影片按10计算
-                epCount = 10;
-            }
+            //todo:2024 全部为一键保存，不在区分计算
+            return recordType.GetCheckoutAmount();
 
-            //5年之内(不含5)  0.5积分/10集  封顶3积分
-            //5年前   1积分/10集  封顶3积分
-            switch (recordType)
-            {
-                case VodManagerRecordType.SaveMove:
-                case VodManagerRecordType.SaveTv:
-                    {
-                        break;
-                    }
-                default:
-                    {
-                        return 0;
-                    }
-            }
+            #region 旧版
+            //if (epCount < 10)
+            //{
+            //    //最低10 影片按10计算
+            //    epCount = 10;
+            //}
 
-            if (year <= 0)
-            {
-                year = DateTime.Now.Year;
-            }
+            ////5年之内(不含5)  0.5积分/10集  封顶3积分
+            ////5年前   1积分/10集  封顶3积分
+            //switch (recordType)
+            //{
+            //    case VodManagerRecordType.SaveMove:
+            //    case VodManagerRecordType.SaveTv:
+            //        {
+            //            break;
+            //        }
+            //    default:
+            //        {
+            //            return 0;
+            //        }
+            //}
 
-            var isOver5 = (DateTime.Now.Year - year) >= 5;
-            //四舍五入 加0.5
-            var ratio = Math.Round((epCount + 0.5) / 10.0, 0);
-            var amount = isOver5 ? Convert.ToDecimal(ratio) : Convert.ToDecimal(ratio * 0.5);
-            if (amount > 3)
-            {
-                return 3;
-            }
+            //if (year <= 0)
+            //{
+            //    year = DateTime.Now.Year;
+            //}
 
-            return amount;
+            //var isOver5 = (DateTime.Now.Year - year) >= 5;
+            ////四舍五入 加0.5
+            //var ratio = Math.Round((epCount + 0.5) / 10.0, 0);
+            //var amount = isOver5 ? Convert.ToDecimal(ratio) : Convert.ToDecimal(ratio * 0.5);
+            //if (amount > 3)
+            //{
+            //    return 3;
+            //}
+
+            //return amount; 
+            #endregion
         }
     }
 }

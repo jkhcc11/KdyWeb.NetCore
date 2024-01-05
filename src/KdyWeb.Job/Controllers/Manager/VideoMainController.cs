@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto;
+using KdyWeb.Dto.Job;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
+using KdyWeb.Service.Job;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -128,6 +132,34 @@ namespace KdyWeb.Job.Controllers.Manager
         {
             var result = await _videoMainService.UpdateVodForDouBanInfoAsync(input);
             return result;
+        }
+
+        /// <summary>
+        /// 批量匹配豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("batch-match-douban")]
+        public async Task<KdyResult> BatchMatchDouBanInfoAsync(List<BatchMatchDouBanInfoInput> input)
+        {
+            if (input == null ||
+                input.Any() == false)
+            {
+                return KdyResult.Error(KdyResultCode.ParError, "参数不能为空");
+            }
+
+            foreach (var item in input)
+            {
+                var matchInput = new AutoMatchDouBanInfoJobInput()
+                {
+                    MainId = item.KeyId,
+                    VodTitle = item.VodTitle,
+                    VodYear = item.VodYear
+                };
+                BackgroundJob.Enqueue<AutoMatchDouBanInfoJobService>(a => a.ExecuteAsync(matchInput));
+            }
+
+            await Task.CompletedTask;
+            return KdyResult.Success($"匹配数量：{input.Count},任务已提交");
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto;
+using KdyWeb.Dto.HttpApi.DouBan;
 using KdyWeb.Dto.SearchVideo;
 
 namespace KdyWeb.IService.SearchVideo
@@ -69,5 +70,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> DeleteAsync(BatchDeleteForIntKeyInput input);
+
+        /// <summary>
+        /// 豆瓣关键字搜索
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<List<SearchSuggestResponse>>> DouBanKeyWordSearchAsync(DouBanKeyWordSearchInput input);
     }
 }

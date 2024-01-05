@@ -77,5 +77,15 @@ namespace KdyWeb.Dto.SearchVideo
         /// 多个以 ，隔开
         /// </remarks>
         public string VideoCountries { get; set; }
+
+        /// <summary>
+        /// 评分
+        /// </summary>
+        public double VideoRating { get; set; }
+
+        /// <summary>
+        /// 评分人数
+        /// </summary>
+        public int? RatingsCount { get; set; }
     }
 }

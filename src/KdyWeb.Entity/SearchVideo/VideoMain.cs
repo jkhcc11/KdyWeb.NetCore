@@ -10,6 +10,11 @@ namespace KdyWeb.Entity.SearchVideo
     public class VideoMain : BaseEntity<long>
     {
         /// <summary>
+        /// 豆瓣低分线
+        /// </summary>
+        public const int LowScoreStandard = 5;
+
+        /// <summary>
         /// 手动修复标识
         /// </summary>
         public const string SystemInput = "systeminput";

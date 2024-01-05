@@ -477,29 +477,29 @@ namespace KdyWeb.Service.OldMigration
                         .Replace("https:", "");
                 }
 
-                switch (item.Status)
-                {
-                    case "已忽略":
-                        {
-                            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Ignore;
-                            break;
-                        }
-                    case "待审核":
-                        {
-                            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Pending;
-                            break;
-                        }
-                    case "正常":
-                        {
-                            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Processing;
-                            break;
-                        }
-                    case "资源录入完毕":
-                        {
-                            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Normal;
-                            break;
-                        }
-                }
+                //switch (item.Status)
+                //{
+                //    case "已忽略":
+                //        {
+                //            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Ignore;
+                //            break;
+                //        }
+                //    case "待审核":
+                //        {
+                //            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Pending;
+                //            break;
+                //        }
+                //    case "正常":
+                //        {
+                //            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Processing;
+                //            break;
+                //        }
+                //    case "资源录入完毕":
+                //        {
+                //            newItem.FeedBackInfoStatus = FeedBackInfoStatus.Normal;
+                //            break;
+                //        }
+                //}
 
                 newDb.Add(newItem);
             }

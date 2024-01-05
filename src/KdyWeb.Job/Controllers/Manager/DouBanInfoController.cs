@@ -1,11 +1,14 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto;
+using KdyWeb.Dto.HttpApi.DouBan;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers.Manager
@@ -94,6 +97,23 @@ namespace KdyWeb.Job.Controllers.Manager
         {
             var result = await _douBanInfoService.DeleteAsync(input);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 豆瓣关键字搜索
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("keyword-search")]
+        public async Task<KdyResult<PageList<SearchSuggestResponse>>> DouBanKeyWordSearchAsync([FromQuery] DouBanKeyWordSearchInput input)
+        {
+            var result = await _douBanInfoService.DouBanKeyWordSearchAsync(input);
+
+            var pageResult = new PageList<SearchSuggestResponse>(input.Page, input.PageSize)
+            {
+                DataCount = result.Data.Count > 0 ? 20 : 0,
+                Data = result.Data
+            };
+            return KdyResult.Success(pageResult);
         }
     }
 }

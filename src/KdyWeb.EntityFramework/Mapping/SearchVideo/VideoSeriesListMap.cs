@@ -18,8 +18,9 @@ namespace KdyWeb.EntityFramework.Mapping
         {
             //系列列表->影片主
             builder.HasOne(a => a.VideoMain)
-                .WithOne()
-                .HasForeignKey<VideoSeriesList>(a => a.KeyId);
+                .WithMany()
+                .HasForeignKey(a => a.KeyId)
+                .OnDelete(DeleteBehavior.Restrict); ;
         }
     }
 }

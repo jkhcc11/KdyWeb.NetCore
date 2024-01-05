@@ -57,6 +57,58 @@ namespace KdyWeb.Dto.SearchVideo
 
             return result;
         }
+
+        /// <summary>
+        /// 获取剧集编辑信息
+        /// </summary>
+        /// <remarks>
+        /// 录入Id    <br/>
+        ///    id > 0 不存在db时，db移除   <br/>
+        ///    id 小于 0 不存在db时，db新增  <br/>
+        /// 录入Id 存在db时，更新db
+        /// </remarks>
+        /// <param name="dbEpisode">现有数据库剧集信息</param>
+        /// <param name="inputEpInfo">录入剧集信息</param>
+        /// <param name="videoEpisodeGroup">剧集组Id</param>
+        /// <returns></returns>
+        public static void EpisodeUpdate(this List<UpdateEpisodeInput> inputEpInfo,
+            ICollection<VideoEpisode> dbEpisode, VideoEpisodeGroup videoEpisodeGroup)
+        {
+            var dbEpIds = dbEpisode.Select(a => a.Id).ToArray();
+            var inputEpIds = inputEpInfo.Where(a => a.Id > 0).Select(a => a.Id).ToArray();
+            //移除的
+            var removeIds = dbEpIds.Except(inputEpIds);
+            foreach (var removeId in removeIds)
+            {
+                var removeItem = dbEpisode.First(a => a.Id == removeId);
+                removeItem.IsDelete = true;
+            }
+
+            //新增的
+            if (inputEpInfo.Any(a => a.Id <= 0))
+            {
+                foreach (var addEpisode in inputEpInfo
+                             .Where(a => a.Id <= 0)
+                             .Select(item => new VideoEpisode(item.EpisodeName, item.EpisodeUrl)
+                             {
+                                 EpisodeGroupId = videoEpisodeGroup.Id,
+                                 OrderBy = item.OrderBy ?? 0
+                             }))
+                {
+                    dbEpisode.Add(addEpisode);
+                }
+            }
+
+            //更新的
+            var updateIds = dbEpIds.Intersect(inputEpIds).ToArray();
+            foreach (var dbEpItem in dbEpisode.Where(a => updateIds.Contains(a.Id)))
+            {
+                var inputEpItem = inputEpInfo.First(a => a.Id == dbEpItem.Id);
+                dbEpItem.EpisodeName = inputEpItem.EpisodeName;
+                dbEpItem.EpisodeUrl = inputEpItem.EpisodeUrl;
+                dbEpItem.OrderBy = inputEpItem.OrderBy ?? 0;
+            }
+        }
     }
 
     /// <summary>

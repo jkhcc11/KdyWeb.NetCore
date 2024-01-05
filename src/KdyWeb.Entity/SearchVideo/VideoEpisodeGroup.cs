@@ -9,6 +9,9 @@ namespace KdyWeb.Entity.SearchVideo
     /// </summary>
     public class VideoEpisodeGroup : BaseEntity<long>
     {
+        public const string DownGroupName = "默认下载";
+        public const string PlayGroupName = "默认播放";
+
         /// <summary>
         /// 剧集组名长度
         /// </summary>

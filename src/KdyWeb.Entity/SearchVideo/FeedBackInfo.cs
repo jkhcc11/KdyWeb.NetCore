@@ -45,7 +45,7 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 反馈类型
         /// </summary>
-        public FeedBackInfoStatus FeedBackInfoStatus { get; set; }
+        public FeedBackInfoStatus FeedBackInfoStatus { get; protected set; }
 
         /// <summary>
         /// 备注
@@ -82,5 +82,20 @@ namespace KdyWeb.Entity.SearchVideo
         public string? UserEmail { get; set; }
         #endregion
 
+        /// <summary>
+        /// 初始化状态
+        /// </summary>
+        public void InitStatus()
+        {
+            FeedBackInfoStatus = FeedBackInfoStatus.Pending;
+        }
+
+        /// <summary>
+        /// 变更状态
+        /// </summary>
+        public void ChangeStatus(FeedBackInfoStatus newStatus)
+        {
+            FeedBackInfoStatus = newStatus;
+        }
     }
 }

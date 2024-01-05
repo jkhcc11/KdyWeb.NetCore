@@ -49,11 +49,10 @@ namespace KdyWeb.Job.Controllers.Normal
         /// </summary>
         /// <returns></returns>
         [HttpGet("getSeriesList")]
-        [ProducesResponseType(typeof(List<SelectedItemOut>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetVideoSeriesListAsync()
+        public async Task<KdyResult<List<SelectedItemOut>>> GetVideoSeriesListAsync()
         {
             var result = await _videoSeriesService.GetVideoSeriesListAsync();
-            return Ok(result);
+            return result;
         }
 
         /// <summary>

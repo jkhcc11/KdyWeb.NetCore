@@ -64,6 +64,12 @@ namespace KdyWeb.Dto.SearchVideo
         /// 国家
         /// </summary>
         public VideoCountries? VideoCountries { get; set; }
+
+        /// <summary>
+        /// 状态
+        /// </summary>
+        [KdyQuery(nameof(VideoMain.VideoMainStatus), KdyOperator.Equal)]
+        public VideoMainStatus? VideoMainStatus { get; set; }
     }
 
     /// <summary>
@@ -74,7 +80,7 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 未完结
         /// </summary>
-        IsNoEnd,
+        IsNoEnd = 1,
 
         /// <summary>
         /// 当天更新
@@ -89,7 +95,17 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 已关联解说
         /// </summary>
-        IsNarrateUrl
+        IsNarrateUrl,
+
+        /// <summary>
+        /// 低分影片
+        /// </summary>
+        LowScore,
+
+        /// <summary>
+        /// 待维护资源
+        /// </summary>
+        ToBeMaintained
     }
 
     /// <summary>

@@ -94,10 +94,18 @@ namespace KdyWeb.Service.SearchVideo
                 };
             }
 
-            var pageList = await _videoSeriesListRepository.GetQuery()
+            var videoSeriesListQuery = _videoSeriesListRepository.GetQuery()
                 .Include(a => a.VideoSeries)
                 .Include(a => a.VideoMain)
                 .ThenInclude(a => a.VideoMainInfo)
+                .Where(a => a.VideoMain != null);
+            if (string.IsNullOrEmpty(input.KeyWord) == false)
+            {
+                videoSeriesListQuery = videoSeriesListQuery.Where(a => a.VideoMain.KeyWord.Contains(input.KeyWord));
+            }
+
+
+            var pageList = await videoSeriesListQuery
                 .GetDtoPageListAsync<VideoSeriesList, QueryVideoSeriesListDto>(input);
             return KdyResult.Success(pageList);
         }
@@ -134,17 +142,18 @@ namespace KdyWeb.Service.SearchVideo
         /// 获取影片系列
         /// </summary>
         /// <returns></returns>
-        public async Task<List<SelectedItemOut>> GetVideoSeriesListAsync()
+        public async Task<KdyResult<List<SelectedItemOut>>> GetVideoSeriesListAsync()
         {
-            var result = await _videoSeriesRepository.GetAsNoTracking()
+            var dataList = await _videoSeriesRepository.GetAsNoTracking()
                 .ToListAsync();
-            if (result.Any() == false)
+
+            if (dataList.Any() == false)
             {
-                return new List<SelectedItemOut>();
+                return KdyResult.Success(new List<SelectedItemOut>());
             }
 
-            return result.Select(a => new SelectedItemOut(a.SeriesName, a.Id + ""))
-                .ToList();
+            return KdyResult.Success(dataList
+                .Select(a => new SelectedItemOut(a.SeriesName, a.Id + "")).ToList());
         }
 
         /// <summary>
@@ -239,7 +248,7 @@ namespace KdyWeb.Service.SearchVideo
         public async Task<KdyResult> DeleteVodListAsync(BatchDeleteForLongKeyInput input)
         {
             var keyIds = input.Ids.ToArray();
-            await _videoSeriesListRepository.Delete(a => keyIds.Contains(a.KeyId));
+            await _videoSeriesListRepository.Delete(a => keyIds.Contains(a.Id));
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using KdyWeb.Entity.SearchVideo;
 
 namespace KdyWeb.Dto.SearchVideo
 {
@@ -9,6 +8,11 @@ namespace KdyWeb.Dto.SearchVideo
     /// </summary>
     public class UpdateVodForDouBanInfoInput
     {
+        /// <summary>
+        /// 系列Id
+        /// </summary>
+        public long? SeriesId { get; set; }
+
         /// <summary>
         /// 豆瓣信息Id
         /// </summary>

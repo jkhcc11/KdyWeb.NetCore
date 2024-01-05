@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -150,8 +151,8 @@ namespace KdyWeb.Service.HttpCapture
             var tempJObject = JObject.Parse(jsonStr);
             var id = tempJObject.GetValueExt("url").RemoveStrExt("subject").Trim('/');
             Enum.TryParse(tempJObject.GetValueExt("@type").Replace("TVSeries", "Tv"), out Subtype subtype);
-           // var tempName = tempJObject.GetValueExt("name");
-           var title = reqResult.Data.GetHtmlNodeByXpath("//title").InnerText.RemoveStrExt("(豆瓣)");
+            // var tempName = tempJObject.GetValueExt("name");
+            var title = reqResult.Data.GetHtmlNodeByXpath("//title").InnerText.RemoveStrExt("(豆瓣)");
 
             var result = new GetDouBanOut(title, year, pic, id)
             {
@@ -225,7 +226,7 @@ namespace KdyWeb.Service.HttpCapture
 
             //开始解析搜索结果
             var hnc = reqResult.Data.GetNodeCollection("//ul[@class='search_results_subjects']/li/a//span[@class='subject-title']");
-            if (hnc == null || hnc.Count <= 0)
+            if (hnc.Any() == false)
             {
                 return KdyResult.Error<List<GetDouBanInfoByKeyWordOut>>(KdyResultCode.Error, $"搜索失败 Xpath解析失败");
             }

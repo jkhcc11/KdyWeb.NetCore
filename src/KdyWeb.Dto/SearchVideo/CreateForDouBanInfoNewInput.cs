@@ -10,6 +10,11 @@ namespace KdyWeb.Dto.SearchVideo
     public class CreateForDouBanInfoNewInput
     {
         /// <summary>
+        /// 系列Id
+        /// </summary>
+        public long? SeriesId { get; set; }
+
+        /// <summary>
         /// 豆瓣信息Id
         /// </summary>
         [Range(minimum: 1, maximum: 9999999)]
