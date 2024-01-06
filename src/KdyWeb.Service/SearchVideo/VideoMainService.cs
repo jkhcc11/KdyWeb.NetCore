@@ -177,9 +177,22 @@ namespace KdyWeb.Service.SearchVideo
 
             if (LoginUserInfo.IsSuperAdmin == false)
             {
-                //非超管隐藏来源
-                result.SourceUrl = string.Empty;
+                //非超管
+                result.SourceUrl = result.SourceUrl.StrToHex();
             }
+
+            #region 自动匹配豆瓣
+            if (main.IsMatchInfo == false)
+            {
+                var autoMatchInput = new AutoMatchDouBanInfoJobInput()
+                {
+                    MainId = main.Id,
+                    VodTitle = main.KeyWord,
+                    VodYear = main.VideoYear
+                };
+                BackgroundJob.Enqueue<AutoMatchDouBanInfoJobService>(a => a.ExecuteAsync(autoMatchInput));
+            }
+            #endregion
 
             if (result.IsEnd)
             {
@@ -396,6 +409,21 @@ namespace KdyWeb.Service.SearchVideo
                 //间隔大于1年 直接完结
                 var isEnd = (DateTime.Now.Year - dbDouBanInfo.VideoYear) >= 1;
                 dbMain.SetSysInput(isEnd);
+            }
+
+            switch (dbMain.VideoDouBan)
+            {
+                case 0:
+                    //todo:2024匹配豆瓣时 评分为0自动删除
+                    dbMain.IsDelete = true;
+                    break;
+                case <= 3:
+                case <= 5 when
+                    dbDouBanInfo.RatingsCount is < 1000:
+                    {
+                        dbMain.SetDown();
+                        break;
+                    }
             }
 
             _videoMainRepository.Update(dbMain);

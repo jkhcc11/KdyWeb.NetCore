@@ -48,6 +48,7 @@ namespace KdyWeb.Service.Job
             }
 
             //开始匹配
+            bool isMatchSuccess = false;
             foreach (var searchItem in searchResult.Data)
             {
                 var douBanTitle = searchItem.Title;
@@ -73,6 +74,7 @@ namespace KdyWeb.Service.Job
                 }
                 else
                 {
+                    isMatchSuccess = true;
                     //豆瓣信息保存成功，开始绑定影片
                     var bindInput = new BindVodDouBanInfoJobInput()
                     {
@@ -83,7 +85,15 @@ namespace KdyWeb.Service.Job
                     BackgroundJob.Enqueue<BindVodDouBanInfoJobService>(a => a.ExecuteAsync(bindInput));
                 }
 
-                return;
+                break;
+            }
+
+            if (isMatchSuccess == false)
+            {
+                KdyLog.LogError("影片关键字：{0}，匹配豆瓣失败，无法匹配到。影片Id:{1},豆瓣数量：{2}"
+                    , input.VodTitle
+                    , input.MainId
+                    , searchResult.Data.Count);
             }
         }
     }

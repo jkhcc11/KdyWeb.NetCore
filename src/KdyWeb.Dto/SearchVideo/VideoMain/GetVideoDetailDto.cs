@@ -76,11 +76,6 @@ namespace KdyWeb.Dto.SearchVideo
         public string VideoContentFeature { get; set; }
 
         /// <summary>
-        /// 豆瓣评分
-        /// </summary>
-        public double VideoDouBan { get; set; }
-
-        /// <summary>
         /// 年份
         /// </summary>
         public int VideoYear { get; set; }
@@ -107,6 +102,11 @@ namespace KdyWeb.Dto.SearchVideo
         /// 是否订阅
         /// </summary>
         public bool IsSubscribe { get; set; }
+
+        /// <summary>
+        /// 豆瓣评分
+        /// </summary>
+        public double VideoDouBan { get; set; }
 
         /// <summary>
         /// 影片所属系列

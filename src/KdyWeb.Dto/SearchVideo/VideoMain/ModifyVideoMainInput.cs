@@ -150,6 +150,11 @@ namespace KdyWeb.Dto.SearchVideo
         /// 剧集组
         /// </summary>
         public List<ModifyVideoMainEpGroupItem> EpisodeGroup { get; set; }
+
+        /// <summary>
+        /// 豆瓣评分
+        /// </summary>
+        public double VideoDouBan { get; set; }
     }
 
     /// <summary>
