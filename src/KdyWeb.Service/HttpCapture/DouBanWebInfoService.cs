@@ -13,6 +13,8 @@ using KdyWeb.Entity.SearchVideo;
 using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.Utility;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace KdyWeb.Service.HttpCapture
@@ -22,6 +24,10 @@ namespace KdyWeb.Service.HttpCapture
     /// </summary>
     public class DouBanWebInfoService : BaseKdyService, IDouBanWebInfoService
     {
+        /// <summary>
+        /// www Host
+        /// </summary>
+        private const string WwwHostUrl = "https://www.douban.com";
         /// <summary>
         /// 移动端Host
         /// </summary>
@@ -54,16 +60,16 @@ namespace KdyWeb.Service.HttpCapture
             }
 
             var reqResult = new KdyRequestCommonResult();
+            var url = $"{MobileHostUrl}/rexxar/api/v2/movie/{subjectId}?ck=HtDV&for_mobile=1";
 
             #region 匹配正确Url
-            var type = "movie";
-            var subtype = Subtype.Movie;
+
             int i = 2;
             while (i-- > 0)
             {
-                var reqInput = new KdyRequestCommonInput($"{MobileHostUrl}/rexxar/api/v2/{type}/{subjectId}?ck=&for_mobile=1", HttpMethod.Get)
+                var reqInput = new KdyRequestCommonInput(url, HttpMethod.Get)
                 {
-                    Referer = $"{MobileHostUrl}/movie/subject/{subjectId}/?event_source=movie_showing",
+                    Referer = $"{MobileHostUrl}/movie/subject/{subjectId}/",
                     UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
                     ExtData = new KdyRequestCommonExtInput()
                     {
@@ -71,25 +77,29 @@ namespace KdyWeb.Service.HttpCapture
                     }
                 };
 
-                //请求豆瓣
-                reqResult = await _kdyRequestClientCommon.SendAsync(reqInput);
-                if (reqResult.IsSuccess == false)
+                var cookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.DouBanCookieKey);
+                if (string.IsNullOrEmpty(cookie) == false)
                 {
-                    if (reqResult.HttpCode == HttpStatusCode.NotFound ||
-                        reqResult.HttpCode == HttpStatusCode.Moved)
-                    {
-                        //默认是movie 不行就换tv
-                        type = "tv";
-                        subtype = Subtype.Tv;
-                        continue;
-                    }
-
-                    //todo:这里有可能是403 就是需要cookie才能访问呢 后期加上
+                    reqInput.Cookie = cookie;
                 }
 
+                //请求豆瓣
+                reqResult = await _kdyRequestClientCommon.SendAsync(reqInput);
+                if (reqResult.HttpCode == HttpStatusCode.Moved)
+                {
+                    url = reqResult.LocationUrl;
+                    continue;
+                }
+
+                if (reqResult.IsSuccess == false ||
+                    reqResult.Data.IndexOf("\\u672a\\u77e5\\u7535\\u89c6\\u5267", StringComparison.Ordinal) != -1)
+                {
+                    KdyLog.LogError("豆瓣获取异常，Cookie可能已过期。SubjectId:{0}", subjectId);
+                }
                 break;
             }
             #endregion
+
 
             if (reqResult.IsSuccess == false)
             {
@@ -98,6 +108,10 @@ namespace KdyWeb.Service.HttpCapture
 
             //成功肯定为json
             var tempJObject = JObject.Parse(reqResult.Data);
+            //Enum.TryParse(, out Subtype subtype);
+            Enum.TryParse(tempJObject.GetValueExt("type").Replace("TVSeries", "Tv"),
+                true,
+                out Subtype subtype);
             var result = new GetDouBanOut(tempJObject.GetValueExt("title"), tempJObject.GetValueExt("year").ToInt32(),
                 tempJObject.GetValueExt("pic.normal"), tempJObject.GetValueExt("id"))
             {
@@ -134,8 +148,14 @@ namespace KdyWeb.Service.HttpCapture
 
             var reqInput = new KdyRequestCommonInput($"{PcHostUrl}/subject/{subjectId}/", HttpMethod.Get)
             {
-                UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0"
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36 SE 2.X MetaSr 1.0",
             };
+
+            var cookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.DouBanCookieKey);
+            if (string.IsNullOrEmpty(cookie) == false)
+            {
+                reqInput.Cookie = cookie;
+            }
 
             //请求豆瓣
             var reqResult = await _kdyRequestClientCommon.SendAsync(reqInput);
@@ -144,13 +164,14 @@ namespace KdyWeb.Service.HttpCapture
                 return KdyResult.Error<GetDouBanOut>(KdyResultCode.Error, $"获取豆瓣信息异常，信息：{reqResult.ErrMsg}");
             }
 
+            //https://www.douban.com/doubanapp//h5/movie/1898121/desc 可以绕过登录 但是只能获取名称 没有图片
             //开始解析Html
             var year = reqResult.Data.GetValueByXpath("//*[@id='content']/h1/span[@class='year']", "text").RemoveStrExt("(", ")").ToInt32();
             var pic = reqResult.Data.GetValueByXpath("//*[@id='mainpic']/a/img", "src");
             var jsonStr = reqResult.Data.GetValueByXpath("//script[@type='application/ld+json']", "text");
             var tempJObject = JObject.Parse(jsonStr);
             var id = tempJObject.GetValueExt("url").RemoveStrExt("subject").Trim('/');
-            Enum.TryParse(tempJObject.GetValueExt("@type").Replace("TVSeries", "Tv"), out Subtype subtype);
+            Enum.TryParse(tempJObject.GetValueExt("@type").Replace("TVSeries", "Tv"), true, out Subtype subtype);
             // var tempName = tempJObject.GetValueExt("name");
             var title = reqResult.Data.GetHtmlNodeByXpath("//title").InnerText.RemoveStrExt("(豆瓣)");
 

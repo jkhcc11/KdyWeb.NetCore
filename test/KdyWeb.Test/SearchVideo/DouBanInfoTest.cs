@@ -31,6 +31,7 @@ namespace KdyWeb.Test.SearchVideo
         {
             var result = await _service.CreateForSubjectIdAsync("35155748");
             Assert.IsTrue(result.IsSuccess);
+
         }
 
         [TestMethod]
@@ -50,7 +51,10 @@ namespace KdyWeb.Test.SearchVideo
         [TestMethod]
         public async Task GetInfoBySubjectIdForPcWeb()
         {
-            var result = await _douBanWebInfoService.GetInfoBySubjectIdForPcWeb("11504572");
+            var result1 = await _douBanWebInfoService.GetInfoBySubjectId("1898121");
+            Assert.IsTrue(result1.IsSuccess);
+
+            var result = await _douBanWebInfoService.GetInfoBySubjectIdForPcWeb("20452294");
             Assert.IsTrue(result.IsSuccess);
         }
 

@@ -22,9 +22,9 @@
     public class KdyWebServiceConst
     {
         ///// <summary>
-        ///// 豆瓣图片代理Url
+        ///// 豆瓣CookieKey 有些是登录后访问
         ///// </summary>
-        //public const string DouBanProxyUrl = "DouBanProxyUrl";
+        public const string DouBanCookieKey = "UploadConfig:DouBanCookieKey";
 
         /// <summary>
         /// Minio配置文件节点
