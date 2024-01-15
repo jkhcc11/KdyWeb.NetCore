@@ -37,7 +37,7 @@ namespace KdyWeb.Service.VideoConverts
         /// 创建任务
         /// </summary>
         /// <returns></returns>
-        public async Task<KdyResult> CreateTaskAsync(CreateTaskInput input)
+        public async Task<KdyResult<string>> CreateTaskAsync(CreateTaskInput input)
         {
             var dbTask = new VideoConvertTask(input.TaskName, input.TaskType, input.GiftPoints,
                 input.SourceLinkType, input.SourceLink)
@@ -50,7 +50,7 @@ namespace KdyWeb.Service.VideoConverts
                 .AnyAsync(a => a.TaskName == dbTask.TaskName);
             if (any)
             {
-                return KdyResult.Error(KdyResultCode.Error, "操作失败,当前任务名已存在");
+                return KdyResult.Error<string>(KdyResultCode.Error, "操作失败,当前任务名已存在");
             }
 
             await _videoConvertTaskRepository.CreateAsync(dbTask);
@@ -63,7 +63,7 @@ namespace KdyWeb.Service.VideoConverts
                 LoginUserName = LoginUserInfo.UserName
             };
             BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
-            return KdyResult.Success();
+            return KdyResult.Success(dbTask.Id.ToString(), "操作成功");
         }
 
         /// <summary>
@@ -101,8 +101,10 @@ namespace KdyWeb.Service.VideoConverts
                 }
             };
 
+            //发布资源 不用接单 用户主动提交
             var pageList = await _videoConvertTaskRepository.GetQuery()
-                .Where(a => a.TaskStatus == VideoConvertTaskStatus.Waiting)
+                .Where(a => a.TaskStatus == VideoConvertTaskStatus.Waiting &&
+                            a.TaskType != ConvertTaskType.PublishVod)
                 .GetDtoPageListAsync<VideoConvertTask, QueryConvertTaskWithNormalDto>(input);
             return KdyResult.Success(pageList);
         }
@@ -117,7 +119,7 @@ namespace KdyWeb.Service.VideoConverts
                 .GetQuery()
                 .Where(a => taskIds.Contains(a.Id))
                 .ToListAsync();
-            if (dbTask == null)
+            if (dbTask.Any() == false)
             {
                 return KdyResult.Error(KdyResultCode.Error, "错误id");
             }
@@ -270,6 +272,63 @@ namespace KdyWeb.Service.VideoConverts
             }
 
             _videoConvertTaskRepository.Delete(taskInfo);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 自主发布资源
+        /// </summary>
+        /// <remarks>
+        /// 1、创建任务 并 接单
+        /// 2、创建审核订单
+        /// </remarks>
+        /// <returns></returns>
+        public async Task<KdyResult> PublishVodAsync(PublishVodInput input)
+        {
+            var gift = 0.8M;
+            if (input.PersonCount <= 2000)
+            {
+                gift = 1.8M;
+            }
+            else if (input.PersonCount <= 5000)
+            {
+                gift = 1.2M;
+            }
+
+            #region 1、创建任务 并 接单
+            var dbTask = new VideoConvertTask(input.VodName, ConvertTaskType.PublishVod, gift,
+                  SourceLinkType.Other, input.SourceLink);
+            var any = await _videoConvertTaskRepository
+                .GetAsNoTracking()
+                .AnyAsync(a => a.TaskName == dbTask.TaskName);
+            if (any)
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "操作失败,当前任务名已存在");
+            }
+
+            dbTask.TakeTask(LoginUserInfo.GetUserId(), LoginUserInfo.UserName);
+            #endregion
+
+            #region 2、创建审核订单
+
+            dbTask.SetAuditing();
+            await _videoConvertTaskRepository.CreateAsync(dbTask);
+            var dbOrder = new ConvertOrder(gift, input.SourceInfo)
+            {
+                OrderRemark = $"{input.VodName} 提交资源",
+                OrderDetails = new List<ConvertOrderDetail>()
+                {
+                    new()
+                    {
+                        TaskId = dbTask.Id,
+                        TaskName = dbTask.TaskName
+                    }
+                }
+            };
+            #endregion
+
+            await _convertOrderRepository.CreateAsync(dbOrder);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }

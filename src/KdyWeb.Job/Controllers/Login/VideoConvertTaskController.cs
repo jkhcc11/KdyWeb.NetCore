@@ -81,5 +81,16 @@ namespace KdyWeb.Job.Controllers.Login
             var result = await _videoConvertTaskService.CancelTaskAsync(input);
             return Ok(result);
         }
+
+        /// <summary>
+        /// 提交资源
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("publish-vod")]
+        public async Task<KdyResult> PublishVodAsync(PublishVodInput input)
+        {
+            var result = await _videoConvertTaskService.PublishVodAsync(input);
+            return result;
+        }
     }
 }

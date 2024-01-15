@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
@@ -11,6 +13,8 @@ using KdyWeb.Dto.KdyHttp;
 using KdyWeb.ICommonService.KdyHttp;
 using KdyWeb.IService.HttpApi;
 using KdyWeb.Utility;
+using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 
 namespace KdyWeb.Service.HttpApi
@@ -20,6 +24,7 @@ namespace KdyWeb.Service.HttpApi
     /// </summary>
     public class DouBanHttpApi : BaseKdyService, IDouBanHttpApi
     {
+        private const string PcBaseHost = "https://www.douban.com";
         private const string PcSearchHost = "https://movie.douban.com";
         private const string MobileWebHost = "https://m.douban.com";
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
@@ -87,19 +92,27 @@ namespace KdyWeb.Service.HttpApi
         /// <returns></returns>
         public async Task<KdyResult<List<SearchSuggestResponse>>> KeyWordSearchAsync(string keyWord, int page)
         {
+            //不要这个 没有年份 不好自动匹配
+            //https://www.douban.com/search?cat=1002&q=%E6%96%B0%E7%99%BD%E5%A8%98%E5%AD%90
             if (page <= 0)
             {
                 page = 1;
             }
 
             page -= 1;
-            var request = new KdyRequestCommonInput($"{MobileWebHost}/j/search/?q={keyWord.ToUrlCodeExt().ToUpper()}&t=1002&p={page}", HttpMethod.Get)
+            var request = new KdyRequestCommonInput($"{PcBaseHost}/j/search?q={keyWord.ToUrlCodeExt().ToUpper()}&cat=1002&start={page * 20}", HttpMethod.Get)
             {
                 TimeOut = 5000,
-                Referer = MobileWebHost,
+                Referer = PcBaseHost,
                 ExtData = new KdyRequestCommonExtInput(),
-                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/119.0.0.0"
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36"
             };
+            var cookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.DouBanCookieKey);
+            if (string.IsNullOrEmpty(cookie) == false)
+            {
+                request.Cookie = cookie;
+            }
+
             var response = await _kdyRequestClientCommon.SendAsync(request);
             if (response.IsSuccess == false)
             {
@@ -107,28 +120,40 @@ namespace KdyWeb.Service.HttpApi
             }
 
             var jObject = JObject.Parse(response.Data);
-            var tempHtml = jObject.Value<string>("html");
-            if (string.IsNullOrEmpty(tempHtml))
+            var code = jObject.Value<int>("code");
+            if (code > 0)
             {
                 return KdyResult.Error<List<SearchSuggestResponse>>(KdyResultCode.Error, "无内容");
             }
 
-            var hnc = tempHtml.GetNodeCollection("//li/a");
-            if (hnc.Any() == false)
+            var jArray = jObject.Value<JArray>("items");
+            if (jArray.Any() == false)
             {
                 return KdyResult.Error<List<SearchSuggestResponse>>(KdyResultCode.Error, "html解析失败");
             }
 
             var result = new List<SearchSuggestResponse>();
-            foreach (var nodeItem in hnc)
+            foreach (var jItem in jArray)
             {
-                string href = nodeItem.GetAttributeValue("href", "");
+                var doc = new HtmlDocument();
+                doc.LoadHtml(jItem.Value<string>());
+
+                var subjectCastContent = doc.DocumentNode.SelectSingleNode("//span[@class='subject-cast']").InnerText;
+                var yearMatch = Regex.Match(subjectCastContent, @"\d{4}");
+                var year = yearMatch.Success ? yearMatch.Value : null;
+
+                var aHref = doc.DocumentNode.SelectSingleNode("//div[@class='title']/h3/a").GetAttributeValue("href", "");
+                var idMatch = Regex.Match(aHref, @"subject%2F(\d+)");
+                var subjectId = idMatch.Success ? idMatch.Groups[1].Value : null;
+
                 var temp = new SearchSuggestResponse()
                 {
-                    Title = nodeItem.SelectSingleNode("div[@class='subject-info']/span[@class='subject-title']").InnerText.Trim(),
-                    VideoImg = nodeItem.SelectSingleNode("img").GetAttributeValue("src", ""),
-                    DouBanUrl = $"{PcSearchHost}{nodeItem.GetAttributeValue("href", "").Replace("/movie", "")}",
-                    SubjectId = href.GetNumber()
+                    Title = doc.DocumentNode.SelectSingleNode("//div[@class='title']/h3//a").InnerText.Trim(),
+                    VideoImg = doc.DocumentNode.SelectSingleNode("//div[@class='pic']/a/img").GetAttributeValue("src", ""),
+                    Year = year?.ToInt32() ?? 0,
+                    DouBanUrl = $"{PcSearchHost}/subject/{subjectId}/",
+                    SubjectId = subjectId,
+                    Subtitle = doc.DocumentNode.SelectSingleNode("//div[@class='content']/p").InnerText.Trim()
                 };
                 temp.ImgHandler();
                 result.Add(temp);

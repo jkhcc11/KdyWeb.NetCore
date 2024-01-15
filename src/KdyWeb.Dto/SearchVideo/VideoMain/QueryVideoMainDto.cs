@@ -78,6 +78,14 @@ namespace KdyWeb.Dto.SearchVideo
         public string SourceUrl { get; set; }
 
         /// <summary>
+        /// 影片信息Url
+        /// </summary>
+        /// <remarks>
+        /// 豆瓣Url或其他影片介绍地址
+        /// </remarks>
+        public string VideoInfoUrl { get; set; }
+
+        /// <summary>
         /// 影片主表 扩展信息
         /// </summary>
         public VideoMainInfoDto VideoMainInfo { get; set; }

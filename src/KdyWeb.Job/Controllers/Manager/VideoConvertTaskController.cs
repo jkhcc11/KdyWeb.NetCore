@@ -25,11 +25,10 @@ namespace KdyWeb.Job.Controllers.Manager
         /// </summary>
         /// <returns></returns>
         [HttpPut("create")]
-        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CreateTaskAsync(CreateTaskInput input)
+        public async Task<KdyResult<string>> CreateTaskAsync(CreateTaskInput input)
         {
             var result = await _videoConvertTaskService.CreateTaskAsync(input);
-            return Ok(result);
+            return result;
         }
 
         /// <summary>

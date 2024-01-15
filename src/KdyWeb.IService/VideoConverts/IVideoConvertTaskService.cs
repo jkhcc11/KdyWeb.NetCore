@@ -16,7 +16,7 @@ namespace KdyWeb.IService.VideoConverts
         /// 创建任务
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> CreateTaskAsync(CreateTaskInput input);
+        Task<KdyResult<string>> CreateTaskAsync(CreateTaskInput input);
 
         /// <summary>
         /// 查询任务列表(admin)
@@ -59,5 +59,15 @@ namespace KdyWeb.IService.VideoConverts
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> DeleteTaskAsync(long taskId);
+
+        /// <summary>
+        /// 自主发布资源
+        /// </summary>
+        /// <remarks>
+        /// 1、创建任务 并 接单
+        /// 2、创建审核订单
+        /// </remarks>
+        /// <returns></returns>
+        Task<KdyResult> PublishVodAsync(PublishVodInput input);
     }
 }
