@@ -245,6 +245,7 @@ namespace KdyWeb.CloudParseApi.Controllers
                         }
                     }
                 },
+
                 BuildVodManagerMenu(),
                 BuildTaskMenu(),
             };
@@ -281,6 +282,11 @@ namespace KdyWeb.CloudParseApi.Controllers
                         }
                     }
                 });
+            }
+            else
+            {
+                //管理普通用户，只能看 不能管理 用于共享子账号信息录入
+                result.Add(BuildCloudParseMenu());
             }
 
             return result;

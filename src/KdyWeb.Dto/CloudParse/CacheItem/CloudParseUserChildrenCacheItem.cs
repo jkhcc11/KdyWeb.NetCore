@@ -57,7 +57,6 @@ namespace KdyWeb.Dto.CloudParse.CacheItem
         /// </remarks>
         public string BusinessId { get; set; }
 
-
         /// <summary>
         /// 修改时间
         /// </summary>
@@ -66,5 +65,12 @@ namespace KdyWeb.Dto.CloudParse.CacheItem
         /// </remarks>
         public DateTime? ModifyTime { get; set; }
 
+        /// <summary>
+        /// 关联用户Ids 多个逗号隔开,
+        /// </summary>
+        /// <remarks>
+        /// 多个用户共用子账号信息
+        /// </remarks>
+        public string RelationalUserIds { get; set; }
     }
 }

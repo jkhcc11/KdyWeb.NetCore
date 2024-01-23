@@ -29,6 +29,14 @@ namespace KdyWeb.CloudParseApi.Controllers
             if (loginUserInfo.IsSuperAdmin == false &&
                 subAccountCacheItem.UserId != loginUserInfo.GetUserId())
             {
+                var userIdStr = loginUserInfo.GetUserId().ToString();
+                if (string.IsNullOrEmpty(subAccountCacheItem.RelationalUserIds) == false &&
+                    subAccountCacheItem.RelationalUserIds.Contains(userIdStr))
+                {
+                    //该用户关联了子账号
+                    return;
+                }
+
                 throw new KdyCustomException("参数错误,无效请求02");
             }
 

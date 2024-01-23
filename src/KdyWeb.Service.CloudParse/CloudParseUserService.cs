@@ -182,7 +182,7 @@ namespace KdyWeb.Service.CloudParse
                         dbEntity.CookieInfo = input.Cookie;
                         _serverCookieRepository.Update(dbEntity);
                         await ClearCacheValueAsync(cacheKey);
-                    } 
+                    }
                     #endregion
                 }
             }
@@ -242,7 +242,11 @@ namespace KdyWeb.Service.CloudParse
             var query = _cloudParseUserChildrenRepository.GetQuery();
             if (LoginUserInfo.IsSuperAdmin == false)
             {
-                query = query.Where(a => a.CreatedUserId == userId);
+                var userIdStr = userId.ToString();
+                //自己创建或共享的子账号信息
+                query = query.Where(a => a.CreatedUserId == userId ||
+                                         (string.IsNullOrEmpty(a.RelationalUserIds) == false
+                                          && a.RelationalUserIds.Contains(userIdStr)));
             }
 
             var dbEntities = await query.ToListAsync();
