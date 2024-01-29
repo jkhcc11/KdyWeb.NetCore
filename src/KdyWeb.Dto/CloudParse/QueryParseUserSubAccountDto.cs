@@ -1,10 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using AutoMapper;
 using AutoMapper.Configuration.Annotations;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
 using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 
 namespace KdyWeb.Dto.CloudParse
 {
@@ -53,5 +54,18 @@ namespace KdyWeb.Dto.CloudParse
         /// 有些下载需要固定带上附加ID，如 分组ID等，这种不支持跨云盘切换，所以手动指定
         /// </remarks>
         public string BusinessId { get; set; }
+
+        /// <summary>
+        /// 关联用户Ids 多个逗号隔开,
+        /// </summary>
+        /// <remarks>
+        /// 多个用户共用子账号信息
+        /// </remarks>
+        public string RelationalUserIds { get; set; }
+
+        public string[] RelationalUserArray =>
+            string.IsNullOrEmpty(RelationalUserIds)
+                ? null
+                : RelationalUserIds.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray();
     }
 }

@@ -101,14 +101,14 @@ namespace KdyWeb.Job.Controllers.Manager
         }
 
         /// <summary>
-        /// 下架影片
+        /// 上|下架影片
         /// </summary>
         /// <returns></returns>
-        [HttpDelete("down/{mainId}")]
+        [HttpPost("upAndDown/{mainId}")]
         [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> DownVodAsync(long mainId)
+        public async Task<IActionResult> UpAndDownVodAsync(long mainId)
         {
-            var result = await _videoMainService.DownVodAsync(mainId);
+            var result = await _videoMainService.UpAndDownVodAsync(mainId);
             return Ok(result);
         }
 

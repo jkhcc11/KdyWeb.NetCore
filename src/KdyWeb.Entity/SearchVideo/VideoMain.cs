@@ -170,6 +170,14 @@ namespace KdyWeb.Entity.SearchVideo
         }
 
         /// <summary>
+        /// 设置上架
+        /// </summary>
+        public void SetUp()
+        {
+            VideoMainStatus = VideoMainStatus.Normal;
+        }
+
+        /// <summary>
         /// 设置系统录入
         /// </summary>
         public void SetSysInput(bool isEnd)

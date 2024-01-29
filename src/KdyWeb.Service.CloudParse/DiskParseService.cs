@@ -385,6 +385,7 @@ namespace KdyWeb.Service.CloudParse
                         downReqInput.IsTs = true;
                         break;
                     }
+                case CloudParseCookieType.Pan115:
                 case CloudParseCookieType.BitQiu:
                     {
                         #region st

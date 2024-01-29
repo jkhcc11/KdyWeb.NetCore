@@ -211,6 +211,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                             LocalFilePath = "/system/user/user-list",
                             MenuName = "用户列表",
                             Cacheable = true
+                        },
+                        new()
+                        {
+                            ParentPath = "/system",
+                            RouteName="ImgList",
+                            MenuUrl = "/system/img-list",
+                            LocalFilePath = "/img/index",
+                            MenuName = "图床列表",
+                            Cacheable = true
                         }
                     }
                 },
@@ -337,6 +346,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                         MenuName = "腾讯云分享Beta",
                         RouteName = "TxShareList",
                         LocalFilePath = "/cloudDisk/tx-share",
+                        Cacheable = true
+                    },
+                    new()
+                    {
+                        ParentPath = "/cloud-disk",
+                        MenuUrl = "/cloud-disk/115-list",
+                        MenuName = "115盘",
+                        RouteName = "115List",
+                        LocalFilePath = "/cloudDisk/115-list",
                         Cacheable = true
                     },
                     new()

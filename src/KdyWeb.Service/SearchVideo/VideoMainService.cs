@@ -753,10 +753,10 @@ namespace KdyWeb.Service.SearchVideo
         }
 
         /// <summary>
-        /// 下架影片
+        /// 上|下架影片
         /// </summary>
         /// <returns></returns>
-        public async Task<KdyResult> DownVodAsync(long mainId)
+        public async Task<KdyResult> UpAndDownVodAsync(long mainId)
         {
             if (LoginUserInfo.IsNormal)
             {
@@ -771,10 +771,13 @@ namespace KdyWeb.Service.SearchVideo
 
             if (main.VideoMainStatus == VideoMainStatus.Down)
             {
-                return KdyResult.Error<GetVideoDetailDto>(KdyResultCode.Error, "已操作,无需重复操作");
+                main.SetUp();
+            }
+            else
+            {
+                main.SetDown();
             }
 
-            main.SetDown();
             _videoMainRepository.Update(main);
             await UnitOfWork.SaveChangesAsync();
 

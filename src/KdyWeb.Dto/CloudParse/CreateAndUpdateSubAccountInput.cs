@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.CloudParse;
 
@@ -50,5 +51,13 @@ namespace KdyWeb.Dto.CloudParse
         /// 是否同步至服务器Cookie
         /// </summary>
         public bool IsSyncServerCookie { get; set; }
+
+        /// <summary>
+        /// 关联用户Id
+        /// </summary>
+        /// <remarks>
+        /// 多个用户共用子账号信息
+        /// </remarks>
+        public List<string> RelationalUserArray { get; set; } = new();
     }
 }

@@ -207,6 +207,22 @@ namespace KdyWeb.IService.CloudParse
         }
 
         /// <summary>
+        /// 115盘CacheKey
+        /// </summary>
+        public class Pan115CacheKey
+        {
+            /// <summary>
+            /// 前缀 
+            /// </summary>
+            private const string Prefix = "Pan115Cloud:";
+
+            /// <summary>
+            /// 下载缓存
+            /// </summary>
+            public const string DownCacheKey = Prefix + "M3u8Url";
+        }
+
+        /// <summary>
         /// 旧网盘类型 转  业务标识
         /// </summary>
         /// <returns></returns>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
@@ -170,6 +171,17 @@ namespace KdyWeb.Service.CloudParse
                 dbChildren.CloudParseCookieTypeId = input.SubAccountTypeId;
                 dbChildren.BusinessId = input.BusinessId;
                 dbChildren.OldSubAccountInfo = input.OldSubAccountInfo;
+
+                if (input.RelationalUserArray != null &&
+                        input.RelationalUserArray.Any())
+                {
+                    dbChildren.RelationalUserIds = string.Join(',', input.RelationalUserArray);
+                }
+                else
+                {
+                    dbChildren.RelationalUserIds = string.Empty;
+                }
+
                 _cloudParseUserChildrenRepository.Update(dbChildren);
 
                 if (input.IsSyncServerCookie)
@@ -198,8 +210,18 @@ namespace KdyWeb.Service.CloudParse
                 {
                     Alias = input.Alias,
                     BusinessId = input.BusinessId,
-                    OldSubAccountInfo = input.OldSubAccountInfo
+                    OldSubAccountInfo = input.OldSubAccountInfo,
                 };
+                if (input.RelationalUserArray != null &&
+                    input.RelationalUserArray.Any())
+                {
+                    dbChildren.RelationalUserIds = string.Join(',', input.RelationalUserArray);
+                }
+                else
+                {
+                    dbChildren.RelationalUserIds = string.Empty;
+                }
+
                 await _cloudParseUserChildrenRepository.CreateAsync(dbChildren);
             }
 

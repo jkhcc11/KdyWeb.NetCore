@@ -96,6 +96,10 @@ namespace KdyWeb.Dto.KdyHttp
         {
             Url = url;
             Method = HttpMethod.Get;
+            if (ExtData == null)
+            {
+                ExtData = new KdyRequestCommonExtInput();
+            }
 
             ExtData.IsAjax = false;
             ExtData.PostData = string.Empty;

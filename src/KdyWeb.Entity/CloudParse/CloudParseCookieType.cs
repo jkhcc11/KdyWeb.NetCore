@@ -17,6 +17,7 @@ namespace KdyWeb.Entity.CloudParse
         public const string TyCrop = "TyCrop";
         public const string Pan139 = "Pan139";
         public const string TxShare = "TxShare";
+        public const string Pan115 = "Pan115";
 
         /// <summary>
         /// 云盘Cookie类型
