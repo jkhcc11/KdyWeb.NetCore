@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -32,7 +33,8 @@ namespace KdyWeb.Service.CloudParse
         public async Task<KdyResult> ParseVodSendAsync(ParseVodSendInput input)
         {
             var baseUrl = new Uri(input.ApiUrl);
-            var reqInput = new KdyRequestCommonInput($"{baseUrl.Scheme}://{baseUrl.Host}")
+            //有端口的  http://guanlu21.tpddns.cn:45654/api.php/receive/vod
+            var reqInput = new KdyRequestCommonInput($"{baseUrl.Scheme}://{baseUrl.Authority}")
             {
                 TimeOut = 5000,
                 UserAgent = "cloud parse agent",
