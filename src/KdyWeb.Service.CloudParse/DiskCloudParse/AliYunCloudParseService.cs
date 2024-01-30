@@ -542,14 +542,16 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 return string.Empty;
             }
 
+            var waitingFlag = "https://pdsapi";
             var previewResponse = JsonConvert.DeserializeObject<AliYunVideoPreviewPlayInfoResponse>(reqResult.Data);
             if (previewResponse is { PlayInfo: { } } &&
                 previewResponse.PlayInfo.TaskList.Any())
             {
+                //未转码的那种 不要返回
                 return previewResponse.PlayInfo.TaskList
-                    .Where(a => string.IsNullOrEmpty(a.Url) == false)
-                    .OrderByDescending(a => a.OrderBy)
-                    .FirstOrDefault()
+                    .Where(a => string.IsNullOrEmpty(a.Url) == false &&
+                                a.Url.StartsWith(waitingFlag) == false)
+                    .MaxBy(a => a.OrderBy)
                     ?.Url;
             }
 
