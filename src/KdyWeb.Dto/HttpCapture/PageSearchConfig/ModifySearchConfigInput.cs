@@ -19,11 +19,11 @@ namespace KdyWeb.Dto.HttpCapture
         public static void ToDbConfig(PageSearchConfig dbConfig, BaseSearchConfigInput input)
         {
             dbConfig.ServiceFullName = input.ServiceFullName;
-            //dbConfig.HostName = input.HostName;
-           // dbConfig.BaseHost = input.BaseHost;
+            dbConfig.SetHostName(input.HostName);
+            dbConfig.SetBaseHost(input.BaseHost);
             dbConfig.OtherHost = input.OtherHost;
             dbConfig.UserAgent = input.UserAgent;
-            //dbConfig.ConfigHttpMethod = input.ConfigHttpMethod;
+            dbConfig.SetConfigHttpMethod(input.ConfigHttpMethod);
             dbConfig.SearchPath = input.SearchPath;
             dbConfig.SearchData = input.SearchData;
             dbConfig.SearchXpath = input.SearchXpath;
@@ -43,10 +43,13 @@ namespace KdyWeb.Dto.HttpCapture
             dbConfig.CaptureDetailNameSplit = input.CaptureDetailNameSplit;
 
             dbConfig.YearXpath = input.YearXpath;
-            //dbConfig.SearchConfigStatus = input.SearchConfigStatus;
             if (input.SearchConfigStatus == SearchConfigStatus.Ban)
             {
                 dbConfig.Ban();
+            }
+            else
+            {
+                dbConfig.Open();
             }
         }
     }

@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
-using KdyWeb.PageParse;
 
 namespace KdyWeb.IService.HttpCapture
 {
@@ -47,5 +47,17 @@ namespace KdyWeb.IService.HttpCapture
         /// <param name="oldKeyId">旧Id</param>
         /// <returns></returns>
         Task<KdyResult> OneCopyAsync(long oldKeyId);
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> BanAsync(long id);
+
+        /// <summary>
+        /// 查询前端可搜索配置
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<List<QueryShowPageConfigDto>>> QueryShowPageConfigAsync(SearchConfigInput input);
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.IService.HttpCapture;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers.Manager
@@ -10,6 +12,7 @@ namespace KdyWeb.Job.Controllers.Manager
     /// <summary>
     /// 站点页面搜索配置 相关
     /// </summary>
+    [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
     public class PageSearchConfigController : BaseManagerController
     {
         private readonly IPageSearchConfigService _pageSearchConfigService;
@@ -77,6 +80,17 @@ namespace KdyWeb.Job.Controllers.Manager
         {
             var result = await _pageSearchConfigService.OneCopyAsync(configId);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 禁用配置
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("ban/{configId}")]
+        public async Task<KdyResult> BanAsync(long configId)
+        {
+            var result = await _pageSearchConfigService.BanAsync(configId);
+            return result;
         }
     }
 }

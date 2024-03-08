@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Dto;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.IService.HttpCapture;
 using Microsoft.AspNetCore.Authorization;
@@ -23,15 +24,25 @@ namespace KdyWeb.Job.Controllers.Manager
         }
 
         /// <summary>
+        /// 查询循环Job
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("query")]
+        public async Task<KdyResult<PageList<QueryRecurrentUrlConfigDto>>> QueryRecurrentUrlConfigAsync([FromQuery] QueryRecurrentUrlConfigInput input)
+        {
+            var result = await _recurrentUrlConfigService.QueryRecurrentUrlConfigAsync(input);
+            return result;
+        }
+
+        /// <summary>
         /// 创建循环Url配置
         /// </summary>
         /// <returns></returns>
         [HttpPut("create")]
-        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CreateRecurrentUrlConfigAsync(CreateRecurrentUrlConfigInput input)
+        public async Task<KdyResult> CreateRecurrentUrlConfigAsync(CreateRecurrentUrlConfigInput input)
         {
             var result = await _recurrentUrlConfigService.CreateRecurrentUrlConfigAsync(input);
-            return Ok(result);
+            return result;
         }
 
         /// <summary>
@@ -39,11 +50,21 @@ namespace KdyWeb.Job.Controllers.Manager
         /// </summary>
         /// <returns></returns>
         [HttpPost("modify")]
-        [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> ModifyRecurrentUrlConfigAsync(ModifyRecurrentUrlConfigInput input)
+        public async Task<KdyResult> ModifyRecurrentUrlConfigAsync(ModifyRecurrentUrlConfigInput input)
         {
             var result = await _recurrentUrlConfigService.ModifyRecurrentUrlConfigAsync(input);
-            return Ok(result);
+            return result;
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("batchDelete")]
+        public async Task<KdyResult> BatchDeleteAsync(BatchDeleteForLongKeyInput input)
+        {
+            var result = await _recurrentUrlConfigService.JobBatchDelAsync(input);
+            return result;
         }
     }
 }

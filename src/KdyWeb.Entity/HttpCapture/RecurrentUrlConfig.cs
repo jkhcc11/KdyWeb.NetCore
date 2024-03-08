@@ -100,5 +100,23 @@ namespace KdyWeb.Entity.HttpCapture
         {
             SearchConfigStatus = SearchConfigStatus.Ban;
         }
+
+        /// <summary>
+        /// 获取任务唯一JobId
+        /// </summary>
+        /// <returns></returns>
+        public string GetJobId()
+        {
+            return $"recurrent_{Id}";
+        }
+
+        /// <summary>
+        /// 获取任务唯一JobId
+        /// </summary>
+        /// <returns></returns>
+        public static string GetJobId(long id)
+        {
+            return $"recurrent_{id}";
+        }
     }
 }

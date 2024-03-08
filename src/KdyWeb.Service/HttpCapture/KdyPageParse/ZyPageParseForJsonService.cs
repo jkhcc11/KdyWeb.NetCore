@@ -163,11 +163,13 @@ namespace KdyWeb.Service.HttpCapture
 
         public override KdyResult<NormalPageParseOut> DetailHandler(KdyWebPageSearchOutItem searchItem, List<KdyWebPagePageOut> detailResult)
         {
+            //详情地址处理
+            var detailUrl = $"{BaseConfig.BaseHost}{BaseConfig.PageConfig.DetailXpath}{searchItem.DetailUrl.GetNumber()}";
             var result = new NormalPageParseOut()
             {
                 PageMd5 = detailResult.First().PageMd5,
                 VideoYear = detailResult.First().VideoYear,
-                DetailUrl = searchItem.DetailUrl,
+                DetailUrl = detailUrl,
                 IsEnd = searchItem.IsEnd ?? false,
                 ResultName = NameHandler(searchItem.ResultName),
                 ImgUrl = ImgHandler(searchItem.ImgUrl),
@@ -178,7 +180,7 @@ namespace KdyWeb.Service.HttpCapture
 
         public override async Task<KdyResult<KdyRequestCommonResult>> SendDetailAsync(KdyWebPageSearchOutItem searchOut, KdyWebPagePageInput input)
         {
-            //BaseConfig.PageConfig.DetailXpath 拼接想起地址
+            //BaseConfig.PageConfig.DetailXpath 拼接详情地址
             var detailUrl = $"{BaseConfig.BaseHost}{BaseConfig.PageConfig.DetailXpath}{input.DetailUrl.GetNumber()}";
             var reqInput = new KdyRequestCommonInput(detailUrl, HttpMethod.Get)
             {

@@ -31,4 +31,16 @@ namespace KdyWeb.Entity.SearchVideo
         [Display(Name = "下架")]
         Down = 10
     }
+
+    public static class VideoMainStatusExt
+    {
+        /// <summary>
+        /// 是否正常状态
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsNormal(this VideoMainStatus status)
+        {
+            return status == VideoMainStatus.Normal;
+        }
+    }
 }

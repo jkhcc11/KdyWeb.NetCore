@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
@@ -178,11 +179,43 @@ namespace KdyWeb.Service.HttpCapture
             newConfig.ModifyUserId = null;
             newConfig.CreatedUserId = null;
             newConfig.CreatedTime = DateTime.Now;
+            newConfig.SetHostName($"{newConfig.HostName} 副本");
             //newConfig.HostName = $"{newConfig.HostName} 副本";
             await _pageSearchConfigRepository.CreateAsync(newConfig);
 
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> BanAsync(long id)
+        {
+            var dbConfig = await _pageSearchConfigRepository.FirstOrDefaultAsync(a => a.Id == id);
+            if (dbConfig == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "配置错误");
+            }
+
+            dbConfig.Ban();
+            _pageSearchConfigRepository.Update(dbConfig);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 查询前端可搜索配置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<QueryShowPageConfigDto>>> QueryShowPageConfigAsync(SearchConfigInput input)
+        {
+            var tempQuery = _pageSearchConfigRepository.GetAsNoTracking();
+            tempQuery = tempQuery.Where(a => a.SearchConfigStatus == SearchConfigStatus.Normal);
+
+            var result = await tempQuery.GetDtoPageListAsync<PageSearchConfig, QueryShowPageConfigDto>(input);
+            return KdyResult.Success(result.Data?.ToList());
         }
 
         /// <summary>
@@ -197,10 +230,10 @@ namespace KdyWeb.Service.HttpCapture
                 return KdyResult.Error(KdyResultCode.Error, "搜索站点非https、http开头");
             }
 
-            if (string.IsNullOrEmpty(input.OtherHost))
-            {
-                input.OtherHost = new Uri(input.BaseHost).Host;
-            }
+            //if (string.IsNullOrEmpty(input.OtherHost))
+            //{
+            //    input.OtherHost = new Uri(input.BaseHost).Host;
+            //}
 
             return KdyResult.Success();
         }

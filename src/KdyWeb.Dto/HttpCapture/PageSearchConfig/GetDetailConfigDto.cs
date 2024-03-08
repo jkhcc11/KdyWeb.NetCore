@@ -164,9 +164,9 @@ namespace KdyWeb.Dto.HttpCapture
         /// </summary>
         public SearchConfigStatus SearchConfigStatus { get; set; }
 
-        /// <summary>
-        /// 配置状态Str
-        /// </summary>
-        public string SearchConfigStatusStr => SearchConfigStatus.GetDisplayName();
+        ///// <summary>
+        ///// 配置状态Str
+        ///// </summary>
+        //public string SearchConfigStatusStr => SearchConfigStatus.GetDisplayName();
     }
 }

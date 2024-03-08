@@ -79,6 +79,7 @@ namespace KdyWeb.Service.Job
         /// 初始化循环UrlJob
         /// </summary>
         /// <returns></returns>
+        [Obsolete("废弃，以使用RecurrentUrlConfigService更新并创建")]
         public async Task<KdyResult> InitRecurrentUrlJobAsync()
         {
             var recurrentUrlConfig = await _recurrentUrlConfigRepository.GetAsNoTracking()

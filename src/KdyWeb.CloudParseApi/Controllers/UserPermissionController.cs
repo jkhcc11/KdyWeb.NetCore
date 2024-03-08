@@ -220,6 +220,24 @@ namespace KdyWeb.CloudParseApi.Controllers
                             LocalFilePath = "/img/index",
                             MenuName = "图床列表",
                             Cacheable = true
+                        },
+                        new()
+                        {
+                            ParentPath = "/system",
+                            RouteName="JobList",
+                            MenuUrl = "/system/job-list",
+                            LocalFilePath = "/system/jobmgr/job-list",
+                            MenuName = "Job列表",
+                            Cacheable = true
+                        },
+                        new()
+                        {
+                            ParentPath = "/system",
+                            RouteName="PageSearchConfigList",
+                            MenuUrl = "/system/page-search-config",
+                            LocalFilePath = "/system/pageSearchConfig/page-search-config-list",
+                            MenuName = "站点搜索配置",
+                            Cacheable = true
                         }
                     }
                 },
@@ -521,6 +539,15 @@ namespace KdyWeb.CloudParseApi.Controllers
                         RouteName = "DouBanList",
                         LocalFilePath = "/vod/douban-list",
                         MenuName = "豆瓣资源库",
+                        Cacheable = true,
+                    },
+                    new()
+                    {
+                        ParentPath = parentPath,
+                        MenuUrl = $"{parentPath}/vod-danmu",
+                        RouteName = "DanMuList",
+                        LocalFilePath = "/vod/vod-danmu",
+                        MenuName = "弹幕列表",
                         Cacheable = true,
                     },
                 }

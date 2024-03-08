@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 
@@ -19,6 +20,7 @@ namespace KdyWeb.IService.Job
         /// 初始化循环UrlJob
         /// </summary>
         /// <returns></returns>
+        [Obsolete("废弃，以使用RecurrentUrlConfigService更新并创建")]
         Task<KdyResult> InitRecurrentUrlJobAsync();
     }
 }

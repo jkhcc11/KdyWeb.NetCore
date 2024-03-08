@@ -240,5 +240,25 @@ namespace KdyWeb.Entity.HttpCapture
         {
             SearchConfigStatus = SearchConfigStatus.Ban;
         }
+
+        public void Open()
+        {
+            SearchConfigStatus = SearchConfigStatus.Normal;
+        }
+
+        public void SetConfigHttpMethod(ConfigHttpMethod method)
+        {
+            ConfigHttpMethod = method;
+        }
+
+        public void SetHostName(string hostName)
+        {
+            HostName = hostName;
+        }
+
+        public void SetBaseHost(string baseHost)
+        {
+            BaseHost = baseHost;
+        }
     }
 }

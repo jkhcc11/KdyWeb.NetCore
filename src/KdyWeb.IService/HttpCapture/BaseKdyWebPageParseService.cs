@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
@@ -88,6 +89,7 @@ namespace KdyWeb.IService.HttpCapture
             {
                 UserAgent = BaseConfig.UserAgent,
                 TimeOut = 3000,
+                Referer = searchUrl,
                 ExtData = new KdyRequestCommonExtInput()
                 {
                     PostData = postData
@@ -214,6 +216,12 @@ namespace KdyWeb.IService.HttpCapture
             if (first.IsSuccess == false)
             {
                 return KdyResult.Error<TPageParseOut>(first.Code, first.Msg);
+            }
+
+            if (first.Data.Items == null ||
+                first.Data.Items.Any() == false)
+            {
+                return KdyResult.Error<TPageParseOut>(first.Code, "无搜索结果，请检查配置或更换关键字");
             }
 
             return await KeyWordHandler(first.Data.Items);
