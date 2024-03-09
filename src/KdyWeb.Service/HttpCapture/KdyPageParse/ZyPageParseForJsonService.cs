@@ -28,6 +28,44 @@ namespace KdyWeb.Service.HttpCapture
             _pageSearchConfigRepository = pageSearchConfigRepository;
         }
 
+        /// <summary>
+        /// 搜索获取源Html
+        /// </summary>
+        /// <returns></returns>
+        public override async Task<KdyResult<KdyRequestCommonResult>> SendSearchAsync(KdyWebPageSearchInput input)
+        {
+            var postData = string.Empty;
+            var searchUrl = $"{BaseConfig.BaseHost}{BaseConfig.SearchConfig.SearchPath}";
+            if (BaseConfig.SearchConfig.Method == HttpMethod.Get)
+            {
+                //Get直接格式化
+                searchUrl = string.Format(searchUrl, input.KeyWord);
+            }
+            else
+            {
+                postData = string.Format(BaseConfig.SearchConfig.SearchData, input.KeyWord);
+            }
+
+            var reqInput = new KdyRequestCommonInput(searchUrl, BaseConfig.SearchConfig.Method)
+            {
+                UserAgent = BaseConfig.UserAgent,
+                TimeOut = 5000,
+                ExtData = new KdyRequestCommonExtInput()
+                {
+                    PostData = postData
+                }
+            };
+
+            //请求
+            var reqResult = await KdyRequestClientCommon.SendAsync(reqInput);
+            if (reqResult.IsSuccess == false)
+            {
+                return KdyResult.Error<KdyRequestCommonResult>(KdyResultCode.Error, $"解析失败，搜索失败.{reqResult.ErrMsg}");
+            }
+
+            return KdyResult.Success(reqResult);
+        }
+
         public override KdyResult<KdyWebPageSearchOut> SearchResultHandler(KdyRequestCommonResult searchResult)
         {
             var result = new KdyWebPageSearchOut()
