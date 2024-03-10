@@ -105,7 +105,12 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 待维护资源
         /// </summary>
-        ToBeMaintained
+        ToBeMaintained,
+
+        /// <summary>
+        /// 资源站资源
+        /// </summary>
+        ZyFlag
     }
 
     /// <summary>

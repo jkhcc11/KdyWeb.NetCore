@@ -306,6 +306,11 @@ namespace KdyWeb.Service.SearchVideo
                                                  a.SourceUrl.Contains(VideoMain.ZyFlag) == false);
                         break;
                     }
+                case SearchType.ZyFlag:
+                    {
+                        query = query.Where(a => a.SourceUrl.Contains(VideoMain.ZyFlag));
+                        break;
+                    }
             }
 
             var count = await query.CountAsync();

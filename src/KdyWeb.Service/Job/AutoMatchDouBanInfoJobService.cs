@@ -53,7 +53,7 @@ namespace KdyWeb.Service.Job
             {
                 var douBanTitle = searchItem.Title;
                 var vodTitle = input.VodTitle;
-                if (douBanTitle.RemoveSpecialCharacters() != vodTitle.RemoveSpecialCharacters() &&
+                if (douBanTitle.RemoveSpecialCharacters() != vodTitle.RemoveSpecialCharacters() ||
                     searchItem.Year != input.VodYear)
                 {
                     continue;

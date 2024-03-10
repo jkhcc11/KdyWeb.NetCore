@@ -77,7 +77,7 @@ namespace KdyWeb.Service.Job
                 return;
             }
 
-            if (result.Data.ResultName.RemoveSpecialCharacters() != input.VodTitle.RemoveSpecialCharacters() &&
+            if (result.Data.ResultName.RemoveSpecialCharacters() != input.VodTitle.RemoveSpecialCharacters() ||
                 result.Data.VideoYear != input.VodYear)
             {
                 KdyLog.LogWarning("影片关键字：{0}，KeyId:{1},匹配资源失败，资源站匹配资源失败。",
@@ -88,15 +88,21 @@ namespace KdyWeb.Service.Job
             #endregion
 
             //更新资源
+            var tempEpItems = result.Data.Results
+                .Select(a => new EditEpisodeItem()
+                {
+                    EpisodeName = a.ResultName,
+                    EpisodeUrl = a.ResultUrl
+                }).ToList();
+            if (tempEpItems.Count == 1)
+            {
+                result.Data.Results.First().ResultName = "备用";
+            }
+
             var updateNotEndInput = new UpdateNotEndVideoInput(input.MainId,
                 result.Data.PageMd5,
                 result.Data.IsEnd,
-                result.Data.Results
-                    .Select(a => new EditEpisodeItem()
-                    {
-                        EpisodeName = a.ResultName,
-                        EpisodeUrl = a.ResultUrl
-                    }).ToList())
+                tempEpItems)
             {
                 SourceUrl = result.Data.DetailUrl
             };
