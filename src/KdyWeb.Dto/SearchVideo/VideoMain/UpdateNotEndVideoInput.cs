@@ -41,6 +41,14 @@ namespace KdyWeb.Dto.SearchVideo
         public long MainId { get; set; }
 
         /// <summary>
+        /// 源Url
+        /// </summary>
+        /// <remarks>
+        /// 影片来源url
+        /// </remarks>
+        public string SourceUrl { get; set; }
+
+        /// <summary>
         /// 剧集信息
         /// </summary>
         public List<EditEpisodeItem> EpItems { get; set; }

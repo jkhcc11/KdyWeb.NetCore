@@ -194,6 +194,19 @@ namespace KdyWeb.Service.SearchVideo
             }
             #endregion
 
+            #region 自动匹配资源
+            if (main.IsMatchZy())
+            {
+                var autoMatchInput = new AutoMatchDouBanInfoJobInput()
+                {
+                    MainId = main.Id,
+                    VodTitle = main.KeyWord,
+                    VodYear = main.VideoYear
+                };
+                BackgroundJob.Enqueue<AutoMatchMovieInfoByZyJobService>(a => a.ExecuteAsync(autoMatchInput));
+            }
+            #endregion
+
             if (result.IsEnd)
             {
                 //已完结 不用更新
@@ -268,7 +281,8 @@ namespace KdyWeb.Service.SearchVideo
                     {
                         query = query.Where(a => a.VideoDouBan <= VideoMain.LowScoreStandard &&
                                                  (a.SourceUrl != VideoMain.SystemInput ||
-                                                 a.VideoContentFeature != VideoMain.SystemInput));
+                                                 a.VideoContentFeature != VideoMain.SystemInput) &&
+                                                 a.SourceUrl.Contains(VideoMain.ZyFlag) == false);
                         //高分优先
                         input.OrderBy = new List<KdyEfOrderConditions>()
                         {
@@ -287,8 +301,9 @@ namespace KdyWeb.Service.SearchVideo
                     }
                 case SearchType.ToBeMaintained:
                     {
-                        query = query.Where(a => a.SourceUrl != VideoMain.SystemInput ||
-                                                 a.VideoContentFeature != VideoMain.SystemInput);
+                        query = query.Where(a => (a.SourceUrl != VideoMain.SystemInput ||
+                                                 a.VideoContentFeature != VideoMain.SystemInput) &&
+                                                 a.SourceUrl.Contains(VideoMain.ZyFlag) == false);
                         break;
                     }
             }

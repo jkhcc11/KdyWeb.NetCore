@@ -20,6 +20,11 @@ namespace KdyWeb.Entity.SearchVideo
         public const string SystemInput = "systeminput";
 
         /// <summary>
+        /// 资源站标识
+        /// </summary>
+        public const string ZyFlag = "zcyai.com";
+
+        /// <summary>
         /// Url统一长度
         /// </summary>
         public const int UrlLength = 280;
@@ -185,6 +190,28 @@ namespace KdyWeb.Entity.SearchVideo
             VideoContentFeature = SystemInput;
             SourceUrl = SystemInput;
             IsEnd = isEnd;
+        }
+
+        /// <summary>
+        /// 是否需要匹配资源
+        /// </summary>
+        /// <remarks>
+        ///  不是人工并且非最新资源站则匹配
+        /// </remarks>
+        /// <returns></returns>
+        public bool IsMatchZy()
+        {
+            if (VideoContentFeature == SystemInput)
+            {
+                return false;
+            }
+
+            if (SourceUrl.Contains(ZyFlag))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

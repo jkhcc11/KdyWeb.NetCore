@@ -189,6 +189,11 @@ namespace KdyWeb.Service.SearchVideo
             //更新主表
             dbMain.IsEnd = input.IsEnd;
             dbMain.VideoContentFeature = input.VideoContentFeature;
+            if (string.IsNullOrEmpty(input.SourceUrl) == false)
+            {
+                dbMain.SourceUrl= input.SourceUrl;
+            }
+
             _videoMainRepository.Update(dbMain);
 
             var saveResult = await SaveEpisodeInfo(input.MainId, input.EpItems);

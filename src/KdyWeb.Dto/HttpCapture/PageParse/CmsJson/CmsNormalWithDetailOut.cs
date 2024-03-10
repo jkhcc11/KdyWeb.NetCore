@@ -73,7 +73,9 @@ namespace KdyWeb.Dto.HttpCapture.PageParse.CmsJson
                     return false;
                 }
 
-                return VodRemark.Contains("完") || VodRemark.Contains("全");
+                return VodRemark.Contains("完") ||
+                       VodRemark.Contains("全") ||
+                       VodRemark.Contains("HD");
             }
         }
 
