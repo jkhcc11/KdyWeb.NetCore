@@ -145,8 +145,8 @@ InitVideoPlay.prototype = {
 
         //默认加载一次
         loadDandu();
-        //然后1分钟在请求一次
-        var timer = setInterval(loadDandu, 30000);
+        //90s一次
+        var timer = setInterval(loadDandu, 90000);
 
         function loadDandu() {
             var url = that._getDanmuApi + '/' + epId + '?timestamp=' + Math.round(new Date() / 1000);

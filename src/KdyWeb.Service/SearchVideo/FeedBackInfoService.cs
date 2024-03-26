@@ -63,6 +63,17 @@ namespace KdyWeb.Service.SearchVideo
             var dbPage = await query
                 .GetDtoPageListAsync<FeedBackInfo, GetFeedBackInfoDto>(input);
 
+            if (dbPage.Data != null &&
+                dbPage.Data.Any() &&
+                LoginUserInfo.IsSuperAdmin == false &&
+                LoginUserInfo.IsVodAdmin == false)
+            {
+                //非管理隐藏邮箱
+                foreach (var itemDto in dbPage.Data)
+                {
+                    itemDto.UserEmail = string.Empty;
+                }
+            }
             return KdyResult.Success(dbPage);
         }
 
