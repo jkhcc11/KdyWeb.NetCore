@@ -4,6 +4,7 @@ using KdyWeb.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KdyWeb.EntityFramework.Migrations
 {
     [DbContext(typeof(ReadWriteContext))]
-    partial class ReadWriteContextModelSnapshot : ModelSnapshot
+    [Migration("20240326080535_role_menu")]
+    partial class role_menu
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -849,6 +852,85 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.ToTable("KdyRoleMenu");
                 });
 
+            modelBuilder.Entity("KdyWeb.Entity.KdyRoleMenuNew", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatedUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CreatedUserName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("IconPrefix")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActivate")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCache")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsRootPath")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LocalFilePath")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("MenuName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MenuUrl")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime?>("ModifyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ModifyUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ModifyUserName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("ParentMenuId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RouteName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("KdyBase_KdyRoleMenu", (string)null);
+                });
+
             modelBuilder.Entity("KdyWeb.Entity.KdyUser", b =>
                 {
                     b.Property<long>("Id")
@@ -917,176 +999,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.HasIndex("KdyRoleId");
 
                     b.ToTable("KdyUser");
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.KdyUserNew.KdyMenuNew", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatedUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CreatedUserName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Icon")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("IconPrefix")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsCache")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("IsRootPath")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LocalFilePath")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("MenuName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("MenuUrl")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<DateTime?>("ModifyTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("ModifyUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("OrderBy")
-                        .HasColumnType("int");
-
-                    b.Property<long>("ParentMenuId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("RouteName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("KdyBase_KdyMenu", (string)null);
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.KdyUserNew.KdyRoleMenuNew", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatedUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CreatedUserName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("IsActivate")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<long>("MenuId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("ModifyTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("ModifyUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MenuId");
-
-                    b.ToTable("KdyBase_KdyRoleMenu", (string)null);
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.KdyUserNew.KdyRoleNew", b =>
-                {
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatedUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CreatedUserName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifyTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("ModifyUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ModifyUserName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("RoleFlag")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("RoleRemark")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("KdyBase_KdyRole", (string)null);
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldFeedBackInfo", b =>
@@ -2739,17 +2651,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Navigation("KdyRole");
                 });
 
-            modelBuilder.Entity("KdyWeb.Entity.KdyUserNew.KdyRoleMenuNew", b =>
-                {
-                    b.HasOne("KdyWeb.Entity.KdyUserNew.KdyMenuNew", "KdyMenuNew")
-                        .WithMany("KdyRoleMenuNews")
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("KdyMenuNew");
-                });
-
             modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysEpisode", b =>
                 {
                     b.HasOne("KdyWeb.Entity.OldVideo.OldSearchSysMain", "Main")
@@ -2843,11 +2744,6 @@ namespace KdyWeb.EntityFramework.Migrations
                     b.Navigation("KdyRoleMenus");
 
                     b.Navigation("KdyUsers");
-                });
-
-            modelBuilder.Entity("KdyWeb.Entity.KdyUserNew.KdyMenuNew", b =>
-                {
-                    b.Navigation("KdyRoleMenuNews");
                 });
 
             modelBuilder.Entity("KdyWeb.Entity.OldVideo.OldSearchSysMain", b =>

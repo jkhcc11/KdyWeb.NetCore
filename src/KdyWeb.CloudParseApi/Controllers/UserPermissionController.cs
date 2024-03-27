@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
@@ -15,7 +16,7 @@ namespace KdyWeb.CloudParseApi.Controllers
     /// <summary>
     /// 用户权限
     /// </summary>
-    [CustomRoute("user-permission")]
+    [CustomRoute("user-permission-old")]
     public class UserPermissionController : BaseApiController
     {
         private readonly ICloudParseUserService _cloudParseUserService;
@@ -33,7 +34,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("get-menu")]
-        [ProducesResponseType(typeof(KdyResult<List<GetVueMenuWithWorkVueDto>>), (int)HttpStatusCode.OK)]
+        [Obsolete("新版上线可移除")]
         public async Task<KdyResult<List<GetVueMenuWithWorkVueDto>>> GetMenuAsync()
         {
             var loginInfo = await _cloudParseUserService.GetParseUserInfoAsync();
@@ -176,6 +177,24 @@ namespace KdyWeb.CloudParseApi.Controllers
                     RouteName="System",
                     Children = new List<GetVueMenuWithWorkVueDto>()
                     {
+                        new()
+                        {
+                            ParentPath = "/system",
+                            RouteName="MenuIndex",
+                            MenuUrl = "/system/menu-list",
+                            LocalFilePath = "/system/role-menu/menu-index",
+                            MenuName = "权限菜单",
+                            Cacheable = true
+                        },
+                        new()
+                        {
+                            ParentPath = "/system",
+                            RouteName="RoleIndex",
+                            MenuUrl = "/system/role-list",
+                            LocalFilePath = "/system/role-menu/role-list",
+                            MenuName = "角色列表",
+                            Cacheable = true
+                        },
                         new()
                         {
                             ParentPath = "/system",

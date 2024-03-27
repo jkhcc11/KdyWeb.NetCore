@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using AutoMapper.Configuration.Annotations;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.KdyUserNew;
 using Newtonsoft.Json;
@@ -9,28 +9,16 @@ using Newtonsoft.Json;
 namespace KdyWeb.Dto.CloudParse
 {
     /// <summary>
-    /// Admin work权限菜单
+    /// 查询菜单列表
     /// </summary>
     [AutoMap(typeof(KdyMenuNew))]
-    public class GetVueMenuWithWorkVueDto
+    public class QueryPageMenuDto : CreatedUserDto<long>
     {
-        /// <summary>
-        /// 菜单Id
-        /// </summary>
-        [JsonIgnore]
-        public long Id { get; set; }
-
         /// <summary>
         /// 父菜单Id
         /// </summary>
-        [JsonIgnore]
+        [JsonConverter(typeof(JsonConverterLong))]
         public long ParentMenuId { get; set; }
-
-        /// <summary>
-        /// 排序越大越靠前
-        /// </summary>
-        [JsonIgnore]
-        public int OrderBy { get; set; }
 
         /// <summary>
         /// 父节点路径
@@ -70,16 +58,10 @@ namespace KdyWeb.Dto.CloudParse
         /// </summary>
         public bool IsRootPath { get; set; }
 
-        ///// <summary>
-        ///// ??
-        ///// </summary>
-        //public string Badge { get; set; }
-
         /// <summary>
         /// 是否缓存
         /// </summary>
-        [SourceMember(nameof(KdyMenuNew.IsCache))]
-        public bool Cacheable { get; set; }
+        public bool IsCache { get; set; }
 
         /// <summary>
         /// 本地文件路径 不包含views
@@ -87,38 +69,35 @@ namespace KdyWeb.Dto.CloudParse
         public string LocalFilePath { get; set; }
 
         /// <summary>
-        /// 子菜单
+        /// 排序越大越靠前
         /// </summary>
-        public List<GetVueMenuWithWorkVueDto> Children { get; set; }
+        public int OrderBy { get; set; }
 
         /// <summary>
-        /// 生成菜单树并处理子节点的父路径
+        /// 子菜单
+        /// </summary>
+        public List<QueryPageMenuDto> Children { get; set; }
+
+        /// <summary>
+        /// 生成菜单树
         /// </summary>
         /// <param name="menuList">所有菜单</param>
         /// <param name="rootMenuId">根节点Id</param>
-        /// <param name="parentMenuUrl">父路径</param>
         /// <returns></returns>
-        public static List<GetVueMenuWithWorkVueDto> GenerateMenuTreeAndParentHandler(IList<GetVueMenuWithWorkVueDto> menuList,
-            long rootMenuId = 0, string parentMenuUrl = null)
+        public static List<QueryPageMenuDto> GenerateMenuTree(IList<QueryPageMenuDto> menuList,
+            long rootMenuId = 0)
         {
             var menuTree = menuList
-                .Where(menu => menu.ParentMenuId == rootMenuId) // 筛选出对应级别的菜单
+                .Where(menu => menu.ParentMenuId == rootMenuId) // 筛选出根级菜单（或者您想要开始的任何级别）
                 .Select(menu =>
                 {
-                    // 如果传递了父菜单的MenuUrl，则将其设置为当前菜单的ParentPath
-                    if (parentMenuUrl != null)
-                    {
-                        menu.ParentPath = parentMenuUrl;
-                    }
-
-                    // 递归处理子菜单，传递当前菜单的MenuUrl给子菜单
-                    menu.Children = GenerateMenuTreeAndParentHandler(menuList, menu.Id, menu.MenuUrl);
+                    menu.Children = GenerateMenuTree(menuList, menu.Id); // 递归地分配子项
                     return menu;
                 })
                 .OrderByDescending(a => a.OrderBy)
                 .ToList();
 
-            return menuTree.Any() ? menuTree : null; // 如果没有任何菜单，返回null
+            return menuTree.Any() == false ? null : menuTree;
         }
     }
 }
