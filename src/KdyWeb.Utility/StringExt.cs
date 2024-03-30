@@ -293,11 +293,12 @@ namespace KdyWeb.Utility
         }
 
         /// <summary>
-        /// 获取豆瓣图片名
-        /// 若不是豆瓣则源url返回
+        /// 获取豆瓣|新浪图片名
+        /// 若不是豆瓣|新浪则源url返回
         /// </summary>
         /// <remarks>
-        ///  https://img1.doubanio.com/view/photo/m/public/p2784394947.webp  => p2784394947.webp
+        ///  https://img1.doubanio.com/view/photo/m/public/p2784394947.webp  => p2784394947.webp <br/>
+        ///  http://tva2.sinaimg.cn/mw690/94062484gy1fy79ir4p2lj207i09v74i.jpg =>  94062484gy1fy79ir4p2lj207i09v74i.jpg
         /// </remarks>
         /// <param name="imgUrl">图片Url</param>
         /// <param name="proxyHost">代理host</param>
@@ -309,13 +310,19 @@ namespace KdyWeb.Utility
                 return string.Empty;
             }
 
-            if (imgUrl.Contains("doubanio.com") == false)
+            var tempArray = imgUrl.Split('/');
+
+            if (imgUrl.Contains("doubanio.com"))
             {
-                return imgUrl;
+                return $"{proxyHost}/dbimg/{tempArray.Last()}";
             }
 
-            var tempArray = imgUrl.Split('/');
-            return $"{proxyHost}/dbimg/{tempArray.Last()}";
+            if (imgUrl.Contains("sinaimg"))
+            {
+                return $"{proxyHost}/simg/{tempArray.Last()}";
+            }
+
+            return imgUrl;
         }
 
         /// <summary>
