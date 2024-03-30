@@ -321,7 +321,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             KdyRequestCommonInput.SetGetRequest(tempUrl);
             KdyRequestCommonInput.Cookie = "COOKIE_CTWAP_LOGOUT=COOKIE_CTWAP_LOGOUT; COOKIE_LOGIN_USER=null";
             reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
-            if (reqResult.IsSuccess == false &&
+            if (reqResult.IsSuccess == false ||
                 reqResult.LocationUrl.IsEmptyExt())
             {
                 KdyLog.LogWarning("{userNick}天翼家庭云获取下载地址第二步异常,Flag:{flag},Req:{input},ErrInfo:{msg}",

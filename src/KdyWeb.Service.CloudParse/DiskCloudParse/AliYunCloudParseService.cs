@@ -544,7 +544,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
             var waitingFlag = "https://pdsapi";
             var previewResponse = JsonConvert.DeserializeObject<AliYunVideoPreviewPlayInfoResponse>(reqResult.Data);
-            if (previewResponse is { PlayInfo: { } } &&
+            if (previewResponse is { PlayInfo.TaskList: not null } &&
                 previewResponse.PlayInfo.TaskList.Any())
             {
                 //未转码的那种 不要返回
