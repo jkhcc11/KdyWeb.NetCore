@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.BaseInterface.Filter
 {
@@ -19,6 +21,8 @@ namespace KdyWeb.BaseInterface.Filter
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
+            var kdyLog = context.HttpContext.RequestServices.GetService<ILogger>();
+
             // 这个正则表达式可能需要根据实际情况进行调整
             // 获取User-Agent头部
             var userAgent = context.HttpContext.Request.Headers["User-Agent"].ToString();
@@ -36,6 +40,29 @@ namespace KdyWeb.BaseInterface.Filter
                     context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
                     return; // 短路请求，不再继续执行后续动作
                 }
+            }
+
+            if (userAgent.Contains("okhttp"))
+            {
+                //屏蔽app模拟请求
+                context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+                return;
+            }
+
+            var xRequestedWith = context.HttpContext.Request.Headers["x-requested-with"] + "";
+            if (string.IsNullOrEmpty(xRequestedWith) == false &&
+                xRequestedWith.Contains("tvbox"))
+            {
+                //屏蔽tvbox特定
+                context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+                kdyLog?.LogWarning("检测到非法访问,RequestedWith:{with}", xRequestedWith);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(xRequestedWith) == false &&
+                xRequestedWith.Contains("XMLHttpRequest") == false)
+            {
+                kdyLog?.LogError("检测到异常头部请求,RequestedWith:{with}", xRequestedWith);
             }
 
             base.OnActionExecuting(context);
