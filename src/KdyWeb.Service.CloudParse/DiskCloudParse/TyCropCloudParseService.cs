@@ -315,8 +315,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 ExtData = new KdyRequestCommonExtInput()
             };
             var reqResult = await KdyRequestClientCommon.SendAsync(reqInput);
-            if (reqResult.IsSuccess == false ||
-                reqResult.LocationUrl.IsEmptyExt())
+            if (reqResult.LocationUrl.IsEmptyExt())
             {
                 KdyLog.LogWarning("{userNick}天翼获取企业云下载第一步异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
                     CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
@@ -326,8 +325,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             //2、获取最终地址
             reqInput.SetGetRequest(reqResult.LocationUrl);
             reqResult = await KdyRequestClientCommon.SendAsync(reqInput);
-            if (reqResult.IsSuccess == false ||
-                reqResult.LocationUrl.IsEmptyExt())
+            if (reqResult.LocationUrl.IsEmptyExt())
             {
                 KdyLog.LogWarning("{userNick}天翼获取企业云下载第二步异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
                     CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);

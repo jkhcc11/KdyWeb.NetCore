@@ -312,8 +312,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             KdyRequestCommonInput.ExtData.HeardDic = null;
             KdyRequestCommonInput.SetGetRequest(firstDownUrl);
             reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
-            if (reqResult.IsSuccess == false ||
-                reqResult.LocationUrl.IsEmptyExt())
+            if (reqResult.LocationUrl.IsEmptyExt())
             {
                 KdyLog.LogWarning("{userNick}天翼云获取下载地址第二步异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
                     CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
