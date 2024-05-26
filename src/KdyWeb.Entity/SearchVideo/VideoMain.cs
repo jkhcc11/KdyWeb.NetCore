@@ -9,6 +9,7 @@ namespace KdyWeb.Entity.SearchVideo
     /// </summary>
     public class VideoMain : BaseEntity<long>
     {
+        private const int MinYear = 1990;
         /// <summary>
         /// 豆瓣低分线
         /// </summary>
@@ -212,6 +213,25 @@ namespace KdyWeb.Entity.SearchVideo
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 是否需要登录查看
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLoginView()
+        {
+            if (VideoMainStatus.IsNormal() == false)
+            {
+                return true;
+            }
+
+            if (VideoYear > MinYear)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

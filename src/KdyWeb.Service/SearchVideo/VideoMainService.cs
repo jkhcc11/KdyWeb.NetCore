@@ -18,6 +18,7 @@ using KdyWeb.IService.SearchVideo;
 using KdyWeb.Service.Job;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Snowflake.Core;
 
 namespace KdyWeb.Service.SearchVideo
@@ -147,9 +148,14 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var result = main.MapToExt<GetVideoDetailDto>();
-            result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
-            result.ImgHandler();
 
+            if (LoginUserInfo.IsLogin ||
+                main.IsLoginView())
+            {
+                result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
+            }
+
+            result.ImgHandler();
             if (LoginUserInfo.IsLogin)
             {
                 //登录用户就获取最新历史记录
@@ -728,6 +734,12 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var data = await query.ToListAsync();
+            if (data.Any() == false &&
+                string.IsNullOrEmpty(input.KeyWord) == false)
+            {
+                KdyLog.LogWarning($"用户搜索关键字：{input.KeyWord},未搜索到。请留意");
+            }
+
             var result = new PageList<QueryVideoMainDto>(input.Page, input.PageSize)
             {
                 DataCount = count,

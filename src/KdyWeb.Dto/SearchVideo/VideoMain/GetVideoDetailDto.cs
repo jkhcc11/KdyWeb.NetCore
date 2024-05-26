@@ -96,7 +96,7 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 剧集信息组
         /// </summary>
-        public List<VideoEpisodeGroupDto> EpisodeGroup { get; set; }
+        public List<VideoEpisodeGroupDto> EpisodeGroup { get; set; } = new();
 
         /// <summary>
         /// 是否订阅
