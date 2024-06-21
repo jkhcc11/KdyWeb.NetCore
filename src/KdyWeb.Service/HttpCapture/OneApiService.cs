@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.HttpCapture;
@@ -24,12 +25,17 @@ namespace KdyWeb.Service.HttpCapture
         private const int BaseRemainQuota = 500000;
         private const string BaseHost = "https://pro-proxy-web.gpt-666.com";
         private readonly IKdyRequestClientCommon _kdyRequestClientCommon;
+        private int _oldRemainQuota;
+        private readonly IKdyRedisCache _redisCache;
+
         /// <summary>
         /// 
         /// </summary>
-        public OneApiService(IUnitOfWork unitOfWork, IKdyRequestClientCommon kdyRequestClientCommon) : base(unitOfWork)
+        public OneApiService(IUnitOfWork unitOfWork, IKdyRequestClientCommon kdyRequestClientCommon,
+            IKdyRedisCache redisCache) : base(unitOfWork)
         {
             _kdyRequestClientCommon = kdyRequestClientCommon;
+            _redisCache = redisCache;
         }
 
         /// <summary>
@@ -38,6 +44,14 @@ namespace KdyWeb.Service.HttpCapture
         /// <returns></returns>
         public async Task<KdyResult<List<BatchCreateOneApiTokenOut>>> BatchCreateOneApiTokenAsync(BatchCreateOneApiTokenInput input)
         {
+            var cacheKey = $"{input.TokenNamePrefix}";
+            var db = _redisCache.GetDb(2);
+            if (await db.StringIncrementAsync(cacheKey) > 1)
+            {
+                return KdyResult.Error<List<BatchCreateOneApiTokenOut>>(KdyResultCode.Error, "相同令牌前缀任务执行中");
+            }
+
+            _oldRemainQuota = input.RemainQuota;
             var errMsg = new StringBuilder();
             var result = new List<BatchCreateOneApiTokenOut>();
             for (var i = 1; i <= input.TokenCount; i++)
@@ -55,6 +69,7 @@ namespace KdyWeb.Service.HttpCapture
                 result.Add(send.Data);
             }
 
+            await db.KeyDeleteAsync(cacheKey);
             if (result.Any() == false)
             {
                 return KdyResult.Error<List<BatchCreateOneApiTokenOut>>(KdyResultCode.Error, errMsg.ToString());
@@ -78,7 +93,7 @@ namespace KdyWeb.Service.HttpCapture
                 }
             };
             input.ExpiredTimeExt = input.ExpiredTime.ToSecondTimestamp();
-            input.RemainQuota *= BaseRemainQuota;
+            input.RemainQuota = _oldRemainQuota * BaseRemainQuota;
             var reqJson = input.ToJsonStr();
             req.SetPostData("/api/token/", reqJson);
 

@@ -63,6 +63,7 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 国家
         /// </summary>
+        [EnumDataType(typeof(VideoCountries))]
         public VideoCountries? VideoCountries { get; set; }
 
         /// <summary>
@@ -122,37 +123,37 @@ namespace KdyWeb.Dto.SearchVideo
         /// 美剧
         /// </summary>
         [Display(Name = "美国")]
-        American = 1,
+        Am = 1,
 
         /// <summary>
         /// 英剧
         /// </summary>
         [Display(Name = "英国")]
-        EnglishDrama = 2,
+        Ed = 2,
 
         /// <summary>
         /// 韩剧
         /// </summary>
         [Display(Name = "韩国")]
-        KoreanDrama = 3,
+        Kd = 3,
 
         /// <summary>
         /// 日剧
         /// </summary>
         [Display(Name = "日本")]
-        JapaneseOpera = 4,
+        Jp = 4,
 
         /// <summary>
         /// 港剧
         /// </summary>
         [Display(Name = "中国香港")]
-        HK = 5,
+        Hk = 5,
 
         /// <summary>
         /// 泰剧
         /// </summary>
         [Display(Name = "泰国")]
-        ThaiOpera = 6,
+        To = 6,
 
         /// <summary>
         /// 国产剧
@@ -161,9 +162,15 @@ namespace KdyWeb.Dto.SearchVideo
         China = 7,
 
         /// <summary>
+        /// 台剧
+        /// </summary>
+        [Display(Name = "中国台湾")]
+        Tw = 8,
+
+        /// <summary>
         /// 其他
         /// </summary>
         [Display(Name = "其他")]
-        Other = 8
+        Other = 100
     }
 }

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SearchVideo;
 
@@ -10,6 +11,11 @@ namespace KdyWeb.Dto.SearchVideo
     [AutoMap(typeof(VideoEpisode))]
     public class GetEpisodeInfoDto : BaseEntityDto<long>
     {
+        /// <summary>
+        /// 播放器Host
+        /// </summary>
+        public string PlayerHost { get; set; } = "//kdy-play.kdy666.pro";
+
         /// <summary>
         /// 剧集Url
         /// </summary>
@@ -30,6 +36,21 @@ namespace KdyWeb.Dto.SearchVideo
         /// </summary>
         public VideoMainDto VideoMainInfo { get; set; }
 
+        /// <summary>
+        /// 请求清空EpUrl
+        /// </summary>
+        public void ClearEpUrl()
+        {
+            EpisodeUrl = string.Empty;
+            if (VideoEpisodeGroup != null &&
+                VideoEpisodeGroup.Episodes.Any())
+            {
+                VideoEpisodeGroup.Episodes.ForEach((item) =>
+                {
+                    item.EpisodeUrl = string.Empty;
+                });
+            }
+        }
     }
 
     /// <summary>
@@ -42,6 +63,8 @@ namespace KdyWeb.Dto.SearchVideo
         /// 影片类型
         /// </summary>
         public Subtype Subtype { get; set; }
+
+        public string SubtypeVal => Subtype.ToString().ToLower();
 
         /// <summary>
         /// 是否完结

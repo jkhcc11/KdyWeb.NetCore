@@ -24,7 +24,7 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 排序
         /// </summary>
-        public IList<KdyEfOrderConditions>? OrderBy { get; set; }
+        public List<KdyEfOrderConditions>? OrderBy { get; set; }
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// <summary>
         /// 排序
         /// </summary>
-        IList<KdyEfOrderConditions>? OrderBy { get; set; }
+        List<KdyEfOrderConditions>? OrderBy { get; set; }
     }
 
     public abstract class BaseDateRangeInput

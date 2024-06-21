@@ -24,6 +24,16 @@ namespace KdyWeb.Job.Controllers.Normal
         /// 获取影片信息
         /// </summary>
         /// <returns></returns>
+        [HttpGet("get-home")]
+        public async Task<KdyResult<List<HomeDataItem>>> GetHomeDataAsync()
+        {
+            return await _videoMainService.GetHomeDataAsync();
+        }
+
+        /// <summary>
+        /// 获取影片信息
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("detail/{keyId}")]
         [ProducesResponseType(typeof(KdyResult<GetVideoDetailDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetVideoDetailAsync(long keyId)

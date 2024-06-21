@@ -160,11 +160,24 @@ namespace KdyWeb.Service.SearchVideo
 
             //主表信息
             var dbMain = await _videoMainRepository.FirstOrDefaultAsync(a => a.Id == epInfo.VideoEpisodeGroup.MainId);
+            if (dbMain == null)
+            {
+                return KdyResult.Error<GetEpisodeInfoDto>(KdyResultCode.Error, "无效Id");
+            }
 
             var result = epInfo.MapToExt<GetEpisodeInfoDto>();
             result.VideoMainInfo = dbMain.MapToExt<VideoMainDto>();
-
-            result.VideoEpisodeGroup.OrderByExt();
+            if (dbMain.IsLoginView() && 
+                LoginUserInfo.IsLogin == false)
+            {
+                //未登录清空
+                result.VideoEpisodeGroup = new();
+            }
+            else
+            {
+                result.VideoEpisodeGroup.OrderByExt();
+                result.ClearEpUrl();
+            }
 
             return KdyResult.Success(result);
         }

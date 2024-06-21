@@ -148,11 +148,18 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var result = main.MapToExt<GetVideoDetailDto>();
-
-            if (LoginUserInfo.IsLogin ||
-                main.IsLoginView())
+            if (main.IsLoginView() &&
+                LoginUserInfo.IsLogin == false)
             {
-                result.EpisodeGroup = result.EpisodeGroup.OrderByExt();
+                //屏蔽分组
+                result.EpisodeGroup = new();
+            }
+            else
+            {
+                //普通用户clear
+                var isClear = LoginUserInfo.IsSuperAdmin == false &&
+                              LoginUserInfo.IsVodAdmin == false;
+                result.EpisodeGroup = result.EpisodeGroup.OrderByExt(isClear);
             }
 
             result.ImgHandler();
@@ -167,10 +174,15 @@ namespace KdyWeb.Service.SearchVideo
                 result.NewUserHistory = dbNewHistory?.MapToExt<QueryUserHistoryDto>();
 
                 //是否订阅
-                result.IsSubscribe = await _userSubscribeRepository.GetAsNoTracking()
-                    .AnyAsync(a => a.BusinessId == main.Id &&
-                                   a.UserSubscribeType == UserSubscribeType.Vod &&
-                                   a.CreatedUserId == LoginUserInfo.UserId);
+                var subscribeId = await _userSubscribeRepository.GetAsNoTracking()
+                    .Where(a => a.BusinessId == main.Id &&
+                                a.UserSubscribeType == UserSubscribeType.Vod &&
+                                a.CreatedUserId == LoginUserInfo.UserId)
+                    .Select(a => a.Id)
+                    .FirstOrDefaultAsync();
+
+                result.SubscribeId = subscribeId;
+                result.IsSubscribe = subscribeId != default;
             }
 
             //影片所属系列
@@ -691,6 +703,12 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryVideoMainDto>>> QueryVideoByNormalAsync(QueryVideoByNormalInput input)
         {
+            if (input.Genres.IsEmptyExt() == false &&
+                KdyBaseConst.GetAllowGenreArray().Contains(input.Genres) == false)
+            {
+                return KdyResult.Error<PageList<QueryVideoMainDto>>(KdyResultCode.ParError, "参数错误,genres");
+            }
+
             if (input.OrderBy == null || input.OrderBy.Any() == false)
             {
                 input.OrderBy = new List<KdyEfOrderConditions>()
@@ -706,17 +724,45 @@ namespace KdyWeb.Service.SearchVideo
                         OrderBy = KdyEfOrderBy.Desc
                     }
                 };
+            }else if (input.OrderBy.Any())
+            {
+                var allowFiled = new List<string>()
+                {
+                    nameof(VideoMain.OrderBy).ToLower(), 
+                    nameof(VideoMain.CreatedTime).ToLower(),
+                    nameof(VideoMain.VideoDouBan).ToLower(),
+                    nameof(VideoMain.VideoYear).ToLower(),
+                };
+                var inputKey = input.OrderBy.Select(a => a.Key.ToLower()).ToList();
+                if (allowFiled.Intersect(inputKey).Count() != inputKey.Count)
+                {
+                    return KdyResult.Error<PageList<QueryVideoMainDto>>(KdyResultCode.ParError, "参数错误,orderBy");
+                }
             }
 
             //生成条件和排序规则
             var query = _videoMainRepository.GetQuery()
-                .Include(a => a.VideoMainInfo)
                 .Where(a => a.VideoMainStatus != VideoMainStatus.Down)
                 .CreateConditions(input);
             if (input.VideoCountries.HasValue)
             {
                 var str = input.VideoCountries.Value.GetDisplayName();
                 query = query.Where(a => a.VideoMainInfo.VideoCountries.Contains(str));
+            }
+
+            var minYear = DateTime.Today.AddYears(-15).Year;
+            if (input.Year.HasValue)
+            {
+                if (input.Year is -1 ||
+                    minYear > input.Year)
+                {
+
+                    query = query.Where(a => a.VideoYear < minYear);
+                }
+                else
+                {
+                    query = query.Where(a => a.VideoYear == minYear);
+                }
             }
 
             var count = await query.CountAsync();
@@ -1006,6 +1052,91 @@ namespace KdyWeb.Service.SearchVideo
             await UnitOfWork.SaveChangesAsync();
             await CreateVodManagerRecordAsync(dbVideoMain, douBanInfo);
             return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 获取首页配置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<HomeDataItem>>> GetHomeDataAsync()
+        {
+            var dbMovie = await _videoMainRepository.GetAsNoTracking()
+                .Where(a => a.VideoMainStatus == VideoMainStatus.Normal &&
+                            a.Subtype == Subtype.Movie)
+                .OrderByDescending(a => a.OrderBy)
+                .ThenByDescending(a => a.ModifyTime)
+                .ThenByDescending(a => a.CreatedTime)
+                .Take(12)
+                .ToListAsync();
+
+            var dbTv = await _videoMainRepository.GetAsNoTracking()
+                .Where(a => a.VideoMainStatus == VideoMainStatus.Normal &&
+                            a.Subtype == Subtype.Tv)
+                .OrderByDescending(a => a.OrderBy)
+                .ThenByDescending(a => a.ModifyTime)
+                .ThenByDescending(a => a.CreatedTime)
+                .Take(12)
+                .ToListAsync();
+
+            var dbSeries = await _videoSeriesRepository.GetAsNoTracking()
+                .OrderByDescending(a => a.OrderBy)
+                .ThenByDescending(a => a.ModifyTime)
+                .ThenByDescending(a => a.CreatedTime)
+                .Take(12)
+                .ToListAsync();
+
+            var result = new List<HomeDataItem>()
+            {
+                new()
+                {
+                    TypeName = Subtype.Movie.GetDisplayName(),
+                    TypeValue = Subtype.Movie.ToString().ToLower(),
+                    TypeDataItems = dbMovie.Select(item=>new HomeTypeDataItem()
+                    {
+                        KeyWord = item.KeyWord,
+                        VideoYear = item.VideoYear,
+                        CreatedTime = item.CreatedTime,
+                        ModifyTime = item.ModifyTime,
+                        VideoDouBan = item.VideoDouBan,
+                        VideoImg = item.VideoImg,
+                        DetailUrl = $"/vod-detail/{item.Id}",
+                        Id = item.Id
+                    })
+                },
+                new()
+                {
+                    TypeName = Subtype.Tv.GetDisplayName(),
+                    TypeValue = Subtype.Tv.ToString().ToLower(),
+                    TypeDataItems = dbTv.Select(item=>new HomeTypeDataItem()
+                    {
+                        KeyWord = item.KeyWord,
+                        VideoYear = item.VideoYear,
+                        CreatedTime = item.CreatedTime,
+                        ModifyTime = item.ModifyTime,
+                        VideoDouBan = item.VideoDouBan,
+                        VideoImg = item.VideoImg,
+                        DetailUrl = $"/vod-detail/{item.Id}",
+                        Id = item.Id
+                    })
+                },
+                new()
+                {
+                    TypeName ="系列合集",
+                    TypeValue = "/vod-series",
+                    IsUrl = true,
+                    TypeDataItems = dbSeries.Select(item=>new HomeTypeDataItem()
+                    {
+                        KeyWord = item.SeriesName,
+                        CreatedTime = item.CreatedTime,
+                        ModifyTime = item.ModifyTime,
+                        VideoImg = item.SeriesImg,
+                        DetailUrl = $"/vod-series/{item.Id}",
+                        Id = item.Id
+                    })
+                },
+            };
+
+            return KdyResult.Success(result);
         }
 
         /// <summary>

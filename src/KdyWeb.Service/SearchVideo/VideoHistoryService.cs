@@ -113,8 +113,6 @@ namespace KdyWeb.Service.SearchVideo
                 }
             }
 
-
-
             return KdyResult.Success(result);
         }
     }
