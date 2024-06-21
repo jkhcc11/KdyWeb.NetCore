@@ -78,6 +78,49 @@ namespace KdyWeb.Service.SearchVideo
         }
 
         /// <summary>
+        /// 分页获取反馈信息(前端)
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoWithNormalAsync(GetFeedBackInfoInput input)
+        {
+            input.OrderBy ??=
+            [
+                new()
+                {
+                    Key = nameof(FeedBackInfo.CreatedTime),
+                    OrderBy = KdyEfOrderBy.Desc
+                }
+            ];
+
+            var query = _kdyRepository.GetAsNoTracking();
+            if (LoginUserInfo.IsLogin)
+            {
+                query = query.Where(a => a.CreatedUserId == LoginUserInfo.GetUserId());
+            }
+            else
+            {
+                //只显示10条 强制
+                input.PageSize = 10;
+                input.Page = 1;
+            }
+
+            var dbPage = await query
+                .GetDtoPageListAsync<FeedBackInfo, GetFeedBackInfoDto>(input);
+            if (LoginUserInfo.IsLogin == false &&
+                dbPage.Data != null &&
+                dbPage.Data.Any())
+            {
+                //匿名
+                foreach (var itemDto in dbPage.Data)
+                {
+                    itemDto.UserEmail = itemDto.UserEmail.DesensitizeEmail();
+                }
+            }
+
+            return KdyResult.Success(dbPage);
+        }
+
+        /// <summary>
         /// 创建反馈信息
         /// </summary>
         /// <returns></returns>

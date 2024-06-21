@@ -80,6 +80,11 @@ namespace KdyWeb.Service.Resource
                     Value = a.TargetUrl,
                     ShowName = a.ConfigName,
                 }).ToList();
+            if (navItems.Any() == false)
+            {
+                navItems = BuildDefaultNav();
+            }
+
             if (LoginUserInfo.IsLogin == false)
             {
                 navItems.Add(new NavItem()
@@ -111,10 +116,66 @@ namespace KdyWeb.Service.Resource
                 NavItems = navItems,
                 QueryFilterItems = new List<QueryFilterItem>()
             };
+            if (result.LinkItems.Any()==false)
+            {
+                result.LinkItems = BuildDefaultLink();
+            }
+
             result.QueryFilterItems.AddRange(subTypeFilter);
             result.QueryFilterItems.AddRange(genreFilter);
             result.QueryFilterItems.AddRange(countriesFilter);
             return KdyResult.Success(result);
+        }
+
+        private List<NavItem> BuildDefaultNav()
+        {
+            return
+            [
+                new()
+                {
+                    ShowName = Subtype.Movie.GetDisplayName(),
+                    Value = "/vod/1/movie",
+                },
+                new()
+                {
+                    ShowName = Subtype.Tv.GetDisplayName(),
+                    Value = "/vod/1/tv",
+                },
+                new()
+                {
+                    ShowName = Subtype.Documentary.GetDisplayName(),
+                    Value = "/vod/1/documentary",
+                },
+                new()
+                {
+                    ShowName = "他们正在看",
+                    Value = "/real-rank",
+                },
+                new()
+                {
+                    ShowName = "万能搜索",
+                    Value = "/bt-search",
+                }
+            ];
+        }
+
+        private List<LinkItem> BuildDefaultLink()
+        {
+            return
+            [
+                new()
+                {
+                    LinkName = "经典影视",
+                    LinkUrl = "//plus.17kandy.com",
+                },
+
+                new()
+                {
+                    LinkName = "AI娱乐导航站",
+                    LinkUrl = "//www.aifundh.com/",
+                },
+
+            ];
         }
     }
 }

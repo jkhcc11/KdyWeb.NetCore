@@ -20,7 +20,7 @@ namespace KdyWeb.Job.Controllers.Normal
         }
 
         /// <summary>
-        /// 分页获取反馈信息
+        /// 分页获取反馈信息 todo：正式上线后 加权限
         /// </summary>
         /// <returns></returns>
         [HttpGet("getPageList")]
@@ -29,6 +29,17 @@ namespace KdyWeb.Job.Controllers.Normal
         {
             var result = await _feedBackInfoService.GetPageFeedBackInfoAsync(input);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 分页获取反馈信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("query-feedback")]
+        public async Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoWithNormalAsync([FromQuery] GetFeedBackInfoInput input)
+        {
+            var result = await _feedBackInfoService.GetPageFeedBackInfoWithNormalAsync(input);
+            return result;
         }
     }
 }
