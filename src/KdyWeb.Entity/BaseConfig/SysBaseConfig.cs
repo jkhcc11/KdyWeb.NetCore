@@ -27,7 +27,7 @@ namespace KdyWeb.Entity.BaseConfig
             ConfigType = configType;
             ConfigName = configName;
             TargetUrl = targetUrl;
-            ConfigStatus = CommonStatusEnum.Normal;
+            ConfigStatus = CommonStatusEnum.Ban;
         }
 
         /// <summary>
@@ -48,11 +48,18 @@ namespace KdyWeb.Entity.BaseConfig
         /// <summary>
         /// 目标Url
         /// </summary>
+        /// <remarks>
+        ///  1、非通知使用
+        ///  2、通知随意
+        /// </remarks>
         public string TargetUrl { get; set; }
 
         /// <summary>
         /// 海报
         /// </summary>
+        /// <remarks>
+        ///  仅Banner使用
+        /// </remarks>
         public string? ImgUrl { get; set; }
 
         /// <summary>
@@ -62,5 +69,20 @@ namespace KdyWeb.Entity.BaseConfig
         /// 通知是这个
         /// </remarks>
         public string? Remark { get; set; }
+
+        public void SetType(ConfigTypeEnum configType)
+        {
+            ConfigType = configType;
+        }
+
+        public void Open()
+        {
+            ConfigStatus = CommonStatusEnum.Normal;
+        }
+
+        public void Ban()
+        {
+            ConfigStatus = CommonStatusEnum.Ban;
+        }
     }
 }

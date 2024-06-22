@@ -6,6 +6,7 @@ using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.BaseInterface.Repository;
 using KdyWeb.BaseInterface.Service;
+using KdyWeb.Dto.Resource;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.Entity.BaseConfig;
 using KdyWeb.Entity.SearchVideo;
@@ -70,7 +71,7 @@ namespace KdyWeb.Service.Resource
                 FilterType = FilterTypeEnum.Country,
                 FilterValue = a.EnumValue.ToString().ToLower(),
                 ShowName = a.DisplayName
-            }).ToList(); 
+            }).ToList();
             #endregion
 
             var navItems = dbList
@@ -97,7 +98,7 @@ namespace KdyWeb.Service.Resource
             var result = new GetAllResourceDto()
             {
                 TipMsg = dbList.FirstOrDefault(a => a.ConfigType == ConfigTypeEnum.TipMsg)?
-                    .Remark?.Replace("\n","<br/>"),
+                    .Remark?.Replace("\n", "<br/>"),
                 LinkItems = dbList
                     .Where(a => a.ConfigType == ConfigTypeEnum.LinkUrl)
                     .Select(a => new LinkItem()
@@ -116,7 +117,7 @@ namespace KdyWeb.Service.Resource
                 NavItems = navItems,
                 QueryFilterItems = new List<QueryFilterItem>()
             };
-            if (result.LinkItems.Any()==false)
+            if (result.LinkItems.Any() == false)
             {
                 result.LinkItems = BuildDefaultLink();
             }
@@ -125,6 +126,76 @@ namespace KdyWeb.Service.Resource
             result.QueryFilterItems.AddRange(genreFilter);
             result.QueryFilterItems.AddRange(countriesFilter);
             return KdyResult.Success(result);
+        }
+
+        /// <summary>
+        /// 创建|更新资源
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> CreateAndUpdateResourceAsync(CreateAndUpdateResourceInput input)
+        {
+            if (input.Id.HasValue)
+            {
+                return await UpdateResourceAsync(input);
+            }
+
+            return await CreateResourceAsync(input);
+        }
+
+        /// <summary>
+        /// 查询资源列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<PageList<QueryResourceDto>>> QueryResourceAsync(QueryResourceInput input)
+        {
+            input.OrderBy ??=
+            [
+                new KdyEfOrderConditions()
+                {
+                    Key = nameof(SysBaseConfig.CreatedTime),
+                    OrderBy = KdyEfOrderBy.Desc
+                }
+            ];
+
+            var pageList = await _sysBaseConfigRepository.GetQuery()
+                .GetDtoPageListAsync<SysBaseConfig, QueryResourceDto>(input);
+            return KdyResult.Success(pageList);
+        }
+
+        /// <summary>
+        /// 启用资源
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> OpenResourceAsync(long configId)
+        {
+            var dbEntity = await _sysBaseConfigRepository.FirstOrDefaultAsync(a => a.Id == configId);
+            if (dbEntity == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无效Id");
+            }
+
+            dbEntity.Open();
+            _sysBaseConfigRepository.Update(dbEntity);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 禁用资源
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> BanResourceAsync(long configId)
+        {
+            var dbEntity = await _sysBaseConfigRepository.FirstOrDefaultAsync(a => a.Id == configId);
+            if (dbEntity == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无效Id");
+            }
+
+            dbEntity.Ban();
+            _sysBaseConfigRepository.Update(dbEntity);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
         }
 
         private List<NavItem> BuildDefaultNav()
@@ -176,6 +247,53 @@ namespace KdyWeb.Service.Resource
                 },
 
             ];
+        }
+
+        private async Task<KdyResult> CreateResourceAsync(CreateAndUpdateResourceInput input)
+        {
+            if (await _sysBaseConfigRepository.GetAsNoTracking()
+                    .AnyAsync(a => a.ConfigName == input.ConfigName &&
+                                   a.ConfigType == input.ConfigType))
+            {
+                return KdyResult.Error(KdyResultCode.Error, "同类型同名称已存在");
+            }
+
+            var dbEntity = new SysBaseConfig(input.ConfigType, input.ConfigName, input.TargetUrl)
+            {
+                ImgUrl = input.ImgUrl,
+                Remark = input.Remark
+            };
+
+            await _sysBaseConfigRepository.CreateAsync(dbEntity);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        private async Task<KdyResult> UpdateResourceAsync(CreateAndUpdateResourceInput input)
+        {
+            var dbEntity = await _sysBaseConfigRepository.FirstOrDefaultAsync(a => a.Id == input.Id);
+            if (dbEntity == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无效Id");
+            }
+
+            if (await _sysBaseConfigRepository.GetAsNoTracking()
+                    .AnyAsync(a => a.ConfigName == input.ConfigName &&
+                                   a.ConfigType == input.ConfigType &&
+                                   a.Id != input.Id))
+            {
+                return KdyResult.Error(KdyResultCode.Error, "同类型同名称已存在");
+            }
+
+            dbEntity.ConfigName = input.ConfigName;
+            dbEntity.TargetUrl = input.TargetUrl;
+            dbEntity.Remark = input.Remark;
+            dbEntity.ImgUrl = input.ImgUrl;
+            dbEntity.SetType(input.ConfigType);
+
+            _sysBaseConfigRepository.Update(dbEntity);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
         }
     }
 }

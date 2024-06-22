@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KdyWeb.Dto.SearchVideo
+namespace KdyWeb.Dto.Resource
 {
     /// <summary>
     /// 全局资源

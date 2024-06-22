@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.Dto.SearchVideo;
+using KdyWeb.Dto.Resource;
 using KdyWeb.IService.Resource;
 
 namespace KdyWeb.Job.Controllers.Normal
