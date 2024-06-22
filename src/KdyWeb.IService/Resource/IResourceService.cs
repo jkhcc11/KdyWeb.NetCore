@@ -1,7 +1,7 @@
 ﻿using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
-using KdyWeb.Dto.SearchVideo;
 using System.Threading.Tasks;
+using KdyWeb.Dto.Resource;
 
 namespace KdyWeb.IService.Resource
 {
@@ -15,5 +15,30 @@ namespace KdyWeb.IService.Resource
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<GetAllResourceDto>> GetAllResourceAsync();
+
+        /// <summary>
+        /// 创建|更新资源
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> CreateAndUpdateResourceAsync(CreateAndUpdateResourceInput input);
+
+        /// <summary>
+        /// 查询资源列表
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<QueryResourceDto>>> QueryResourceAsync(QueryResourceInput input);
+
+        /// <summary>
+        /// 启用资源
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> OpenResourceAsync(long configId);
+
+        /// <summary>
+        /// 禁用资源
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> BanResourceAsync(long configId);
+
     }
 }
