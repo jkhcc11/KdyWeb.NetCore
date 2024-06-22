@@ -146,16 +146,16 @@ namespace KdyWeb.Service.Resource
                     ShowName = Subtype.Documentary.GetDisplayName(),
                     Value = "/vod/1/documentary",
                 },
-                new()
-                {
-                    ShowName = "他们正在看",
-                    Value = "/real-rank",
-                },
-                new()
-                {
-                    ShowName = "万能搜索",
-                    Value = "/bt-search",
-                }
+                //new()
+                //{
+                //    ShowName = "他们正在看",
+                //    Value = "/real-rank",
+                //},
+                //new()
+                //{
+                //    ShowName = "万能搜索",
+                //    Value = "/bt-search",
+                //}
             ];
         }
 
