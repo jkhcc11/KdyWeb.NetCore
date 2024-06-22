@@ -33,6 +33,11 @@ namespace KdyWeb.Dto
         /// 角色名
         /// </summary>
         public string RoleName  { get; set; }
+
+        /// <summary>
+        /// 是否管理
+        /// </summary>
+        public bool IsVodAdmin { get; set; }
     }
 
 }

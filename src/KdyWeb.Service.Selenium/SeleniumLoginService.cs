@@ -108,7 +108,7 @@ namespace KdyWeb.Service.Selenium
                 autoLoginElement?.Click();
                 await Task.Delay(1500);
                 loginElement?.Click();
-                
+
                 //延迟
                 await Task.Delay(1900);
 
@@ -241,5 +241,105 @@ namespace KdyWeb.Service.Selenium
             }
         }
 
+        /// <summary>
+        /// 通用视频解析
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<string>> ParseVideoByUrlAsync(ParseVideoByUrlInput input)
+        {
+            var userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1";
+            IWebDriver? webDriver = null;
+            try
+            {
+                var options = BuildChromeOptions(Enum.Parse<PageLoadStrategy>(input.PageLoadType.ToString()),
+                    isIncognito: true);
+                SetMobileModel(options, userAgent);
+                webDriver = BuildRemoteWebDriver(options,
+                    _configuration.GetValue<string>(WebDriverUrl));
+                //全屏
+                webDriver.Manage().Window.Maximize();
+                webDriver.Navigate().GoToUrl(input.Url);
+
+                //延迟2秒 为了后面的xpath定位
+                webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(2000);
+                await Task.Delay(Random.Shared.Next(2, 8) * 1000);
+
+                #region 定位Iframe
+                //默认第一层 有可能嵌套了iframe
+                IWebDriver iWebDriver = webDriver;
+                int i = 3;
+
+                while (i-- > 0)
+                {
+                    var isFrame = iWebDriver.FindElements(By.XPath("//iframe"));
+                    if (isFrame is { Count: > 0 })
+                    {
+                        for (var j = 0; j < isFrame.Count; j++)
+                        {
+                            #region 多个iframe只要有值的
+                            var item = isFrame[j];
+                            var src = item.GetAttribute("src");
+                            if (string.IsNullOrEmpty(src))
+                            {
+                                //说明是假的iframe 跳过
+                                continue;
+                            }
+                            //说明存在iframe 切换
+                            iWebDriver = iWebDriver.SwitchTo().Frame(j);
+                            break;
+                            #endregion
+                        }
+                        continue;
+                    }
+
+                    break;
+                }
+
+                if (i == 0)
+                {
+                    //说明向下三层没有找到
+                    return KdyResult.Error<string>(KdyResultCode.Error, "未找到Iframe");
+                }
+                #endregion
+
+                var videoEle = iWebDriver.FindElements(By.XPath("//video"));
+                if (videoEle.Count <= 0)
+                {
+                    _logger.LogWarning("疑似失效，请留意，Input：{input}\r\n",
+                        input.ToJsonStr());
+                    return KdyResult.Error<string>(KdyResultCode.Error, "未找到Video节点");
+                }
+
+                var videoSource = videoEle.First().FindElements(By.TagName("source"));
+                var playUrl = videoEle.First().GetAttribute("src");
+                if (string.IsNullOrEmpty(playUrl) && videoSource.Count > 0)
+                {
+                    //说明video有source标签
+                    playUrl = videoSource.First().GetAttribute("src");
+                }
+
+                if (string.IsNullOrEmpty(playUrl))
+                {
+                    return KdyResult.Error<string>(KdyResultCode.Error, "未找到Url");
+                }
+
+                //延迟
+                await Task.Delay(1900);
+                _logger.LogInformation("Input：{input}\r\n返回:{result}",
+                    input.ToJsonStr(),
+                    playUrl);
+                return KdyResult.Success(playUrl, "操作成功");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取Url异常.Input:{input}", input.ToJsonStr());
+                return KdyResult.Error<string>(KdyResultCode.Error, $"获取Url，异常：{ex.Message}");
+            }
+            finally
+            {
+                webDriver?.Close();
+                webDriver?.Quit();
+            }
+        }
     }
 }

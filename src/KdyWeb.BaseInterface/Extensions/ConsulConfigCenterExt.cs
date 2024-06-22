@@ -54,7 +54,7 @@ namespace KdyWeb.BaseInterface.Extensions
                         options.ReloadOnChange = true; //配置文件更新后重新加载
                         options.OnLoadException = exceptionContext =>
                         {
-                            exceptionContext.Ignore = true; // 忽略异常
+                            //exceptionContext.Ignore = true; // 忽略异常
                         };
 
                     }

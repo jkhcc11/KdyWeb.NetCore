@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SearchVideo;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.SearchVideo
 {
@@ -13,11 +15,13 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 主表主键Key
         /// </summary>
+        [JsonConverter(typeof(JsonConverterLong))]
         public long KeyId { get; set; }
 
         /// <summary>
         /// 剧集Key
         /// </summary>
+        [JsonConverter(typeof(JsonConverterLong))]
         public long EpId { get; set; }
 
         /// <summary>

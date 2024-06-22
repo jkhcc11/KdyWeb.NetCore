@@ -107,6 +107,19 @@ namespace KdyWeb.Service.SearchVideo
 
             var pageList = await videoSeriesListQuery
                 .GetDtoPageListAsync<VideoSeriesList, QueryVideoSeriesListDto>(input);
+
+            if (pageList.Data != null &&
+                pageList.Data.Any())
+            {
+                foreach (var item in pageList.Data)
+                {
+                    if (item.VideoMain != null)
+                    {
+                        item.VideoMain.SourceUrl = string.Empty;
+                    }
+                }
+            }
+           
             return KdyResult.Success(pageList);
         }
 

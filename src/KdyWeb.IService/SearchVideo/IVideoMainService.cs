@@ -104,5 +104,11 @@ namespace KdyWeb.IService.SearchVideo
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> UpdateVodForDouBanInfoAsync(UpdateVodForDouBanInfoInput input);
+
+        /// <summary>
+        /// 获取首页配置
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<List<HomeDataItem>>> GetHomeDataAsync();
     }
 }

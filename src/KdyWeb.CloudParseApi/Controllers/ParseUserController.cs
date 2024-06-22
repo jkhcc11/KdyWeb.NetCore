@@ -7,8 +7,10 @@ using KdyWeb.Dto;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.CloudParse.CacheItem;
 using KdyWeb.Dto.KdyUser;
+using KdyWeb.Dto.Selenium;
 using KdyWeb.IService;
 using KdyWeb.IService.CloudParse;
+using KdyWeb.IService.Selenium;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,14 +25,16 @@ namespace KdyWeb.CloudParseApi.Controllers
         private readonly IKdyUserService _kdyUserService;
         private readonly ICloudParseUserService _cloudParseUserService;
         private readonly ISubAccountService _subAccountService;
+        private readonly ISeleniumLoginService _seleniumLoginService;
 
         public ParseUserController(IKdyUserService kdyUserService,
             ICloudParseUserService cloudParseUserService,
-            ISubAccountService subAccountService)
+            ISubAccountService subAccountService, ISeleniumLoginService seleniumLoginService)
         {
             _kdyUserService = kdyUserService;
             _cloudParseUserService = cloudParseUserService;
             _subAccountService = subAccountService;
+            _seleniumLoginService = seleniumLoginService;
         }
 
         /// <summary>
@@ -155,6 +159,24 @@ namespace KdyWeb.CloudParseApi.Controllers
                 throw new AuthenticationException("用户信息失效,请刷新页面");
             }
 
+            return result;
+        }
+
+        /// <summary>
+        /// 通用Url解析
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("selenium-parse")]
+        [AllowAnonymous]
+        public async Task<KdyResult<string>> ParseVideoByUrlAsync([FromQuery] ParseVideoByUrlInput input)
+        {
+            if (input.IsDelay)
+            {
+                Task.Run(() => _seleniumLoginService.ParseVideoByUrlAsync(input));
+                return KdyResult.Success<string>("任务已提交");
+            }
+
+            var result = await _seleniumLoginService.ParseVideoByUrlAsync(input);
             return result;
         }
     }

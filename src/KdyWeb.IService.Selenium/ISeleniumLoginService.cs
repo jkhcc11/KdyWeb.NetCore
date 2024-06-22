@@ -20,5 +20,11 @@ namespace KdyWeb.IService.Selenium
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<string>> LoginWithTyH5Async(LoginBySeleniumInput input);
+
+        /// <summary>
+        /// 通用视频解析
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<string>> ParseVideoByUrlAsync(ParseVideoByUrlInput input);
     }
 }

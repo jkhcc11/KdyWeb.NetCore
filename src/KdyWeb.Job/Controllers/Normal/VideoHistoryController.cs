@@ -37,11 +37,16 @@ namespace KdyWeb.Job.Controllers.Normal
         /// </summary>
         /// <returns></returns>
         [HttpGet("search")]
-        [ProducesResponseType(typeof(KdyResult<PageList<QueryVideoHistoryDto>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> QueryVideoHistoryAsync([FromQuery] QueryVideoHistoryInput input)
+        public async Task<KdyResult<PageList<QueryVideoHistoryDto>>> QueryVideoHistoryAsync(
+            [FromQuery] QueryVideoHistoryInput input)
         {
+            if ((input.EndTime - input.StartTime).TotalDays > 7)
+            {
+                return KdyResult.Success(new PageList<QueryVideoHistoryDto>(1, 15));
+            }
+
             var result = await _videoHistoryService.QueryVideoHistoryAsync(input);
-            return Ok(result);
+            return result;
         }
     }
 }

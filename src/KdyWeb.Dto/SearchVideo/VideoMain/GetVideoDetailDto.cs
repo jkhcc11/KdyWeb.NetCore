@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.Entity.SearchVideo;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.SearchVideo
 {
@@ -17,6 +19,8 @@ namespace KdyWeb.Dto.SearchVideo
         /// 影片类型
         /// </summary>
         public Subtype Subtype { get; set; }
+
+        public string SubtypeVal => Subtype.ToString().ToLower();
 
         /// <summary>
         /// 影片类型Str
@@ -96,12 +100,18 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 剧集信息组
         /// </summary>
-        public List<VideoEpisodeGroupDto> EpisodeGroup { get; set; }
+        public List<VideoEpisodeGroupDto> EpisodeGroup { get; set; } = new();
 
         /// <summary>
         /// 是否订阅
         /// </summary>
         public bool IsSubscribe { get; set; }
+
+        /// <summary>
+        /// 订阅Id
+        /// </summary>
+        [JsonConverter(typeof(JsonConverterLong))]
+        public long? SubscribeId { get; set; }
 
         /// <summary>
         /// 豆瓣评分
@@ -209,7 +219,7 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 剧集
         /// </summary>
-        public List<VideoEpisodeDto> Episodes { get; set; }
+        public List<VideoEpisodeDto> Episodes { get; set; } = new();
     }
 
     /// <summary>
@@ -246,7 +256,7 @@ namespace KdyWeb.Dto.SearchVideo
         /// 剧集组统一排序
         /// </summary>
         /// <returns></returns>
-        public static List<VideoEpisodeGroupDto> OrderByExt(this IList<VideoEpisodeGroupDto> list)
+        public static List<VideoEpisodeGroupDto> OrderByExt(this IList<VideoEpisodeGroupDto> list, bool isClearUrl = false)
         {
             foreach (var groupItem in list)
             {
@@ -254,6 +264,15 @@ namespace KdyWeb.Dto.SearchVideo
                     .ThenBy(a => a.EpisodeName.Length)
                     .ThenBy(a => a.EpisodeName)
                     .ToList();
+
+                if (isClearUrl &&
+                    groupItem.EpisodeGroupType == EpisodeGroupType.VideoPlay)
+                {
+                    groupItem.Episodes.ForEach((item) =>
+                    {
+                        item.EpisodeUrl = string.Empty;
+                    });
+                }
             }
 
             return list.OrderByDescending(a => a.OrderBy).ToList();

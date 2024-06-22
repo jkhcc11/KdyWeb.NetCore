@@ -1,4 +1,5 @@
-﻿using KdyWeb.BaseInterface;
+﻿using System.ComponentModel.DataAnnotations;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SearchVideo;
 
@@ -18,7 +19,6 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 年份
         /// </summary>
-        [KdyQuery(nameof(VideoMain.VideoYear), KdyOperator.Equal)]
         public int? Year { get; set; }
 
         /// <summary>
@@ -44,6 +44,7 @@ namespace KdyWeb.Dto.SearchVideo
         /// <summary>
         /// 国家
         /// </summary>
+        [EnumDataType(typeof(VideoCountries))]
         public VideoCountries? VideoCountries { get; set; }
     }
 }

@@ -36,7 +36,8 @@ namespace KdyWeb.Job.Controllers.Login
                 UserEmail = _loginUserInfo.UserEmail,
                 UserName = _loginUserInfo.UserName,
                 UserNick = _loginUserInfo.UserNick,
-                RoleName = _loginUserInfo.RoleName
+                RoleName = _loginUserInfo.RoleName,
+                IsVodAdmin = _loginUserInfo.IsNormal == false
             };
             await Task.CompletedTask;
             return Ok(KdyResult.Success(result));

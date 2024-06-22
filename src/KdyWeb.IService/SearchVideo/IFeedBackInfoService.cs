@@ -13,10 +13,16 @@ namespace KdyWeb.IService.SearchVideo
     public interface IFeedBackInfoService : IKdyService
     {
         /// <summary>
-        /// 分页获取反馈信息
+        /// 分页获取反馈信息（后端通用）
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoAsync(GetFeedBackInfoInput input);
+
+        /// <summary>
+        /// 分页获取反馈信息(前端)
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoWithNormalAsync(GetFeedBackInfoInput input);
 
         /// <summary>
         /// 创建反馈信息

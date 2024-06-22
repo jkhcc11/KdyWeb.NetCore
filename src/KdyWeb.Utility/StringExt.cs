@@ -336,6 +336,40 @@ namespace KdyWeb.Utility
             return Regex.Replace(str, @"[^\w\u4E00-\u9FA5]", string.Empty).Trim();
         }
 
+        /// <summary>
+        /// Email脱敏
+        /// </summary>
+        /// <returns>
+        ///  xxxxxxx@qq.com  =>  *****@qq.com
+        /// </returns>
+        /// <exception cref="ArgumentException">长度不够</exception>
+        public static string DesensitizeEmail(this string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return email;
+            }
+
+            var parts = email.Split('@');
+            if (parts.Length != 2)
+            {
+                throw new ArgumentException("Invalid email format");
+            }
+
+            var localPart = parts[0];
+            var domain = parts[1];
+            if (localPart.Length > 2)
+            {
+                var desensitizedLocal = localPart[0] + new string('*', localPart.Length - 2) + localPart[^1];
+                return desensitizedLocal + "@" + domain;
+            }
+            else
+            {
+                var desensitizedLocal = localPart[0] + "*";
+                return desensitizedLocal + "@" + domain;
+            }
+        }
+
         #region 加密相关
         /// <summary>
         /// Md5扩展
