@@ -83,14 +83,14 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoWithNormalAsync(GetFeedBackInfoInput input)
         {
-            input.OrderBy ??=
-            [
+            input.OrderBy ??= new List<KdyEfOrderConditions>
+            {
                 new()
                 {
                     Key = nameof(FeedBackInfo.CreatedTime),
                     OrderBy = KdyEfOrderBy.Desc
                 }
-            ];
+            };
 
             var query = _kdyRepository.GetAsNoTracking();
             if (LoginUserInfo.IsLogin)

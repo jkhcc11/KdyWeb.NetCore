@@ -148,14 +148,14 @@ namespace KdyWeb.Service.Resource
         /// <returns></returns>
         public async Task<KdyResult<PageList<QueryResourceDto>>> QueryResourceAsync(QueryResourceInput input)
         {
-            input.OrderBy ??=
-            [
-                new KdyEfOrderConditions()
+            input.OrderBy ??= new List<KdyEfOrderConditions>
+            {
+                new()
                 {
                     Key = nameof(SysBaseConfig.CreatedTime),
                     OrderBy = KdyEfOrderBy.Desc
                 }
-            ];
+            };
 
             var pageList = await _sysBaseConfigRepository.GetQuery()
                 .GetDtoPageListAsync<SysBaseConfig, QueryResourceDto>(input);
@@ -200,8 +200,8 @@ namespace KdyWeb.Service.Resource
 
         private List<NavItem> BuildDefaultNav()
         {
-            return
-            [
+            return new List<NavItem>
+            {
                 new()
                 {
                     ShowName = Subtype.Movie.GetDisplayName(),
@@ -227,13 +227,13 @@ namespace KdyWeb.Service.Resource
                 //    ShowName = "万能搜索",
                 //    Value = "/bt-search",
                 //}
-            ];
+            };
         }
 
         private List<LinkItem> BuildDefaultLink()
         {
-            return
-            [
+            return new List<LinkItem>
+            {
                 new()
                 {
                     LinkName = "经典影视",
@@ -246,7 +246,7 @@ namespace KdyWeb.Service.Resource
                     LinkUrl = "//www.aifundh.com/",
                 },
 
-            ];
+            } ;
         }
 
         private async Task<KdyResult> CreateResourceAsync(CreateAndUpdateResourceInput input)

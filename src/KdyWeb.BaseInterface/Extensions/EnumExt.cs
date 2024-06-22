@@ -21,13 +21,13 @@ namespace KdyWeb.BaseInterface.Extensions
             var field = enumType.GetType().GetField(str);
             if (field == null)
             {
-                return default;
+                return string.Empty;
             }
 
             var customAttributes = field.GetCustomAttributes(typeof(DisplayAttribute), false);
             if (customAttributes.Length == 0) return str;
             var da = (DisplayAttribute)customAttributes[0];
-            return da.Name;
+            return da.Name ?? string.Empty;
         }
 
         /// <summary>
@@ -39,10 +39,15 @@ namespace KdyWeb.BaseInterface.Extensions
         {
             var str = enumType.ToString();
             var field = enumType.GetType().GetField(str);
+            if (field == null)
+            {
+                return string.Empty;
+            }
+
             var customAttributes = field.GetCustomAttributes(typeof(DisplayAttribute), false);
             if (customAttributes.Length == 0) return str;
             var da = (DisplayAttribute)customAttributes[0];
-            return da.Description;
+            return da.Description ?? string.Empty;
         }
 
         /// <summary>
@@ -54,7 +59,7 @@ namespace KdyWeb.BaseInterface.Extensions
             IEnumerable<T>? excludeValues = null) where T : Enum
         {
             var includeSet = includeValues != null ? new HashSet<T>(includeValues) : null;
-            var excludeSet = excludeValues != null ? [..excludeValues] : new HashSet<T>();
+            var excludeSet = excludeValues != null ? new HashSet<T>(excludeValues) : new HashSet<T>();
 
             foreach (var value in Enum.GetValues(typeof(T)).Cast<T>())
             {
