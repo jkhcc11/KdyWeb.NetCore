@@ -761,7 +761,7 @@ namespace KdyWeb.Service.SearchVideo
                 }
                 else
                 {
-                    query = query.Where(a => a.VideoYear == minYear);
+                    query = query.Where(a => a.VideoYear == input.Year.Value);
                 }
             }
 
