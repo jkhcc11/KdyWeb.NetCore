@@ -83,15 +83,6 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<PageList<GetFeedBackInfoDto>>> GetPageFeedBackInfoWithNormalAsync(GetFeedBackInfoInput input)
         {
-            input.OrderBy ??= new List<KdyEfOrderConditions>
-            {
-                new()
-                {
-                    Key = nameof(FeedBackInfo.CreatedTime),
-                    OrderBy = KdyEfOrderBy.Desc
-                }
-            };
-
             var query = _kdyRepository.GetAsNoTracking();
             if (LoginUserInfo.IsLogin)
             {
@@ -105,6 +96,7 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var dbPage = await query
+                .OrderByDescending(a => a.ModifyTime ?? a.CreatedTime)
                 .GetDtoPageListAsync<FeedBackInfo, GetFeedBackInfoDto>(input);
             if (LoginUserInfo.IsLogin == false &&
                 dbPage.Data != null &&

@@ -1,8 +1,10 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KdyWeb.Job.Controllers.Normal
@@ -20,11 +22,12 @@ namespace KdyWeb.Job.Controllers.Normal
         }
 
         /// <summary>
-        /// 分页获取反馈信息 todo：正式上线后 加权限
+        /// 分页获取反馈信息(不改url 直接加权限)
         /// </summary>
         /// <returns></returns>
         [HttpGet("getPageList")]
         [ProducesResponseType(typeof(KdyResult<PageList<GetFeedBackInfoDto>>), (int)HttpStatusCode.OK)]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.ManagerPolicy)]
         public async Task<IActionResult> GetPageFeedBackInfoAsync([FromQuery] GetFeedBackInfoInput input)
         {
             var result = await _feedBackInfoService.GetPageFeedBackInfoAsync(input);

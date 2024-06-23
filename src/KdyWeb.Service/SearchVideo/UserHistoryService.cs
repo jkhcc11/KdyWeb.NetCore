@@ -78,25 +78,9 @@ namespace KdyWeb.Service.SearchVideo
         public async Task<KdyResult<PageList<QueryUserHistoryDto>>> QueryUserHistoryAsync(QueryUserHistoryInput input)
         {
             var userId = LoginUserInfo.GetUserId();
-            if (input.OrderBy == null ||
-                input.OrderBy.Any() == false)
-            {
-                input.OrderBy = new List<KdyEfOrderConditions>()
-                {
-                    new KdyEfOrderConditions()
-                    {
-                        Key = nameof(UserHistory.ModifyTime),
-                        OrderBy = KdyEfOrderBy.Desc
-                    },
-                    new KdyEfOrderConditions()
-                    {
-                        Key = nameof(UserHistory.CreatedTime),
-                        OrderBy = KdyEfOrderBy.Desc
-                    }
-                };
-            }
-
-            var result = await _userHistoryRepository.GetQuery().Where(a => a.CreatedUserId == userId)
+            var result = await _userHistoryRepository.GetQuery()
+                .Where(a => a.CreatedUserId == userId)
+                .OrderByDescending(a => a.ModifyTime ?? a.CreatedTime)
                 .GetDtoPageListAsync<UserHistory, QueryUserHistoryDto>(input);
             return KdyResult.Success(result);
         }
