@@ -38,7 +38,7 @@ namespace KdyWeb.Service
         public async Task<KdyResult<GetVideoInfoByEpIdDto>> GetVideoInfoByEpIdAsync(long epId)
         {
             var result = KdyResult.Error<GetVideoInfoByEpIdDto>(KdyResultCode.Error, "播放失败");
-            var epInfo = await _videoEpisodeService.GetEpisodeInfoAsync(epId);
+            var epInfo = await _videoEpisodeService.GetEpisodeInfoAsync(epId, true);
             if (epInfo.IsSuccess == false)
             {
                 result.Msg = epInfo.Msg;

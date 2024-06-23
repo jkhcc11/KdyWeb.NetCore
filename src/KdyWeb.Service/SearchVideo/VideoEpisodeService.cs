@@ -146,8 +146,9 @@ namespace KdyWeb.Service.SearchVideo
         /// 根据剧集Id获取影片数据
         /// </summary>
         /// <param name="epId">剧集Id</param>
+        /// <param name="isPlayerApi">是否播放api 特殊不用处理</param>
         /// <returns></returns>
-        public async Task<KdyResult<GetEpisodeInfoDto>> GetEpisodeInfoAsync(long epId)
+        public async Task<KdyResult<GetEpisodeInfoDto>> GetEpisodeInfoAsync(long epId, bool isPlayerApi = false)
         {
             var epInfo = await _videoEpisodeRepository.GetQuery()
                 .Include(a => a.VideoEpisodeGroup)
@@ -167,7 +168,13 @@ namespace KdyWeb.Service.SearchVideo
 
             var result = epInfo.MapToExt<GetEpisodeInfoDto>();
             result.VideoMainInfo = dbMain.MapToExt<VideoMainDto>();
-            if (dbMain.IsLoginView() && 
+            if (isPlayerApi)
+            {
+                result.VideoEpisodeGroup.OrderByExt();
+                return KdyResult.Success(result);
+            }
+
+            if (dbMain.IsLoginView() &&
                 LoginUserInfo.IsLogin == false)
             {
                 //未登录清空
@@ -204,7 +211,7 @@ namespace KdyWeb.Service.SearchVideo
             dbMain.VideoContentFeature = input.VideoContentFeature;
             if (string.IsNullOrEmpty(input.SourceUrl) == false)
             {
-                dbMain.SourceUrl= input.SourceUrl;
+                dbMain.SourceUrl = input.SourceUrl;
             }
 
             _videoMainRepository.Update(dbMain);

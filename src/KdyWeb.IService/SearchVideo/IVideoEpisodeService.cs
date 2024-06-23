@@ -37,8 +37,9 @@ namespace KdyWeb.IService.SearchVideo
         /// 根据剧集Id获取影片数据
         /// </summary>
         /// <param name="epId">剧集Id</param>
+        /// <param name="isPlayerApi">是否播放api 特殊不用处理</param>
         /// <returns></returns>
-        Task<KdyResult<GetEpisodeInfoDto>> GetEpisodeInfoAsync(long epId);
+        Task<KdyResult<GetEpisodeInfoDto>> GetEpisodeInfoAsync(long epId, bool isPlayerApi = false);
 
         /// <summary>
         /// 更新未完结影片数据
