@@ -37,6 +37,7 @@ namespace KdyWeb.Service.Resource
         {
             var dbList = await _sysBaseConfigRepository.GetAsNoTracking()
                 .Where(a => a.ConfigStatus == CommonStatusEnum.Normal)
+                .OrderByDescending(a=>a.OrderBy)
                 .ToListAsync();
 
             #region 过滤生成
@@ -261,7 +262,8 @@ namespace KdyWeb.Service.Resource
             var dbEntity = new SysBaseConfig(input.ConfigType, input.ConfigName, input.TargetUrl)
             {
                 ImgUrl = input.ImgUrl,
-                Remark = input.Remark
+                Remark = input.Remark,
+                OrderBy = input.OrderBy
             };
 
             await _sysBaseConfigRepository.CreateAsync(dbEntity);
@@ -290,6 +292,7 @@ namespace KdyWeb.Service.Resource
             dbEntity.Remark = input.Remark;
             dbEntity.ImgUrl = input.ImgUrl;
             dbEntity.SetType(input.ConfigType);
+            dbEntity.OrderBy = input.OrderBy;
 
             _sysBaseConfigRepository.Update(dbEntity);
             await UnitOfWork.SaveChangesAsync();

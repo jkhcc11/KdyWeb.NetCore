@@ -70,6 +70,11 @@ namespace KdyWeb.Entity.BaseConfig
         /// </remarks>
         public string? Remark { get; set; }
 
+        /// <summary>
+        /// 排序
+        /// </summary>
+        public int OrderBy { get; set; }
+
         public void SetType(ConfigTypeEnum configType)
         {
             ConfigType = configType;

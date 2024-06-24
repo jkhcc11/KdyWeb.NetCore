@@ -49,5 +49,10 @@ namespace KdyWeb.Dto.Resource
         /// 通知必填
         /// </remarks>
         public string Remark { get; set; }
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        public int OrderBy { get; set; }
     }
 }

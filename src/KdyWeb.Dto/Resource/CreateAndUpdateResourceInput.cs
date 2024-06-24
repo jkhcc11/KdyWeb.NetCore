@@ -61,5 +61,10 @@ namespace KdyWeb.Dto.Resource
         /// </remarks>
         [StringLength(SysBaseConfig.RemarkLength)]
         public string Remark { get; set; }
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        public int OrderBy { get; set; }
     }
 }
