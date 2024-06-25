@@ -15,9 +15,9 @@ namespace KdyWeb.IService.HttpCapture
     /// <summary>
     /// 通用站点页面解析 抽象基类
     /// </summary>
-    public abstract class BaseKdyWebPageParseService : BaseKdyWebPageParseService<NormalPageParseConfig, KdyWebPageSearchInput, 
-        KdyWebPageSearchOut, KdyWebPageSearchOutItem, 
-        KdyWebPagePageInput, KdyWebPagePageOut, 
+    public abstract class BaseKdyWebPageParseService : BaseKdyWebPageParseService<NormalPageParseConfig, KdyWebPageSearchInput,
+        KdyWebPageSearchOut, KdyWebPageSearchOutItem,
+        KdyWebPagePageInput, KdyWebPagePageOut,
         NormalPageParseOut, NormalPageParseInput, BaseSearchConfig, BasePageConfig>
     {
         protected BaseKdyWebPageParseService(IKdyRequestClientCommon kdyRequestClientCommon) :
@@ -78,11 +78,13 @@ namespace KdyWeb.IService.HttpCapture
             if (BaseConfig.SearchConfig.Method == HttpMethod.Get)
             {
                 //Get直接格式化
-                searchUrl = string.Format(searchUrl, input.KeyWord);
+                //searchUrl = string.Format(searchUrl, input.KeyWord);
+                searchUrl = searchUrl.CheckAndFormat(input.KeyWord, input.Page ?? 1);
             }
             else
             {
-                postData = string.Format(BaseConfig.SearchConfig.SearchData, input.KeyWord);
+                //postData = string.Format(, input.KeyWord);
+                postData = BaseConfig.SearchConfig.SearchData.CheckAndFormat(input.KeyWord, input.Page ?? 1);
             }
 
             var reqInput = new KdyRequestCommonInput(searchUrl, BaseConfig.SearchConfig.Method)
@@ -211,7 +213,8 @@ namespace KdyWeb.IService.HttpCapture
             //搜索结果
             var first = await GetSearchResultAsync(new TSearchInput()
             {
-                KeyWord = input.KeyWord
+                KeyWord = input.KeyWord,
+                Page = input.Page,
             });
             if (first.IsSuccess == false)
             {

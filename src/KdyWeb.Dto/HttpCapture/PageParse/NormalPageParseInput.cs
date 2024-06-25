@@ -18,5 +18,10 @@ namespace KdyWeb.Dto.HttpCapture
         public string Detail { get; set; }
 
         public long ConfigId { get; set; }
+
+        /// <summary>
+        /// 页
+        /// </summary>
+        public int? Page { get; set; }
     }
 }

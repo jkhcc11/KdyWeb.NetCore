@@ -9,5 +9,10 @@
         /// 关键字
         /// </summary>
         string KeyWord { get; set; }
+        
+        /// <summary>
+        /// 页
+        /// </summary>
+        int? Page { get; set; }
     }
 }

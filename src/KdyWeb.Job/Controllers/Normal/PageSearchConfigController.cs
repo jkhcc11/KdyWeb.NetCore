@@ -39,6 +39,20 @@ namespace KdyWeb.Job.Controllers.Normal
         [ProducesResponseType(typeof(KdyResult<NormalPageParseOut>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetResultAsync([FromQuery] NormalPageParseInput input)
         {
+            var page = input.Page;
+            if (page > 50)
+            {
+                page = 1;
+            }
+
+            var normalInput = new NormalPageParseInput()
+            {
+                KeyWord = input.KeyWord,
+                Page = page,
+                Detail = input.Detail,
+                ConfigId = input.ConfigId
+            };
+
             var parseInput = new GetPageParseInstanceInput()
             {
                 ConfigId = input.ConfigId
@@ -50,7 +64,7 @@ namespace KdyWeb.Job.Controllers.Normal
                 return Ok(pageResult);
             }
 
-            var result = await pageResult.Data.Instance.GetResultAsync(input);
+            var result = await pageResult.Data.Instance.GetResultAsync(normalInput);
             return Ok(result);
         }
     }

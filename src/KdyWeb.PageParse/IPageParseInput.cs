@@ -11,6 +11,11 @@
         string KeyWord { get; set; }
 
         /// <summary>
+        /// 页
+        /// </summary>
+        int? Page { get; set; }
+
+        /// <summary>
         /// 详情Url
         /// </summary>
         string Detail { get; set; }

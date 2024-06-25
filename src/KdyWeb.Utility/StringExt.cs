@@ -370,6 +370,40 @@ namespace KdyWeb.Utility
             }
         }
 
+        /// <summary>
+        /// 检查字符串中的占位符，并格式化
+        /// </summary>
+        /// <remarks>
+        ///  xxx={0}&aa={1} 参数a,b 则格式化为：xxx=a&aa=b
+        ///  xxx={0} 参数a,b 则格式化为：xxx=a
+        /// </remarks>
+        /// <param name="waitStr">待处理字符串</param>
+        /// <param name="paras">参数</param>
+        /// <returns></returns>
+        public static string CheckAndFormat(this string waitStr, params object[]? paras)
+        {
+            if (paras == null ||
+                paras.Length <= 0)
+            {
+                return waitStr;
+            }
+
+            var flagCount = waitStr.Count(f => f == '{');
+            // 检查URL中的格式化占位符数量
+            if (flagCount == 1)
+            {
+                // 只有一个参数
+                return string.Format(waitStr, paras.First());
+            }
+
+            if (flagCount != paras.Length)
+            {
+                throw new ArgumentException("CheckAndFormat，参数错误，占位符和参数不匹配");
+            }
+
+            return string.Format(waitStr, paras);
+        }
+
         #region 加密相关
         /// <summary>
         /// Md5扩展
