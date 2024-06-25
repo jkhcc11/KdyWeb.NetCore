@@ -251,6 +251,7 @@ namespace KdyWeb.HttpApi
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+                .AddEnvironmentVariables() //支持环境变量
                 .Build();
 
             var defaultBuild = Host.CreateDefaultBuilder(args);
