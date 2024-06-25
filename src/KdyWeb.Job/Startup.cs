@@ -30,7 +30,6 @@ namespace KdyWeb.Job
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddKdyDefaultExt(Configuration)
-                .AddOldJob()
                 .InitHangFireServer(Configuration);
 
             //注入自用站点解析

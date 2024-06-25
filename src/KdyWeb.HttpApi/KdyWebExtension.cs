@@ -1,4 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -237,6 +239,45 @@ namespace KdyWeb.HttpApi
             KdyBaseServiceProvider.ServiceProvide = app.ApplicationServices;
             KdyBaseServiceProvider.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             return app;
+        }
+
+        /// <summary>
+        /// 生成HostBuilder
+        /// </summary>
+        /// <returns></returns>
+        public static IHostBuilder GeneralHostBuilderByConfig(string[] args)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+                .Build();
+
+            var defaultBuild = Host.CreateDefaultBuilder(args);
+            string consulConfigUrl = configuration.GetValue<string>(ConsulConfigCenterExt.ConsulConfigUrl),
+                consulToken = configuration.GetValue<string>(ConsulConfigCenterExt.ConsulToken);
+            if (string.IsNullOrEmpty(consulConfigUrl) == false &&
+                string.IsNullOrEmpty(consulToken) == false)
+            {
+                //走配置中心
+                defaultBuild = defaultBuild.ConfigureAppConfiguration((context, config) =>
+                {
+                    //环境变量
+                    var env = context.HostingEnvironment;
+                    context.Configuration = config.Build();
+                    var clientName = context.Configuration.GetValue<string>(ConsulConfigCenterExt.ConfigClientName);
+                    if (string.IsNullOrEmpty(clientName) == false)
+                    {
+                        clientName = "." + clientName;
+                    }
+
+                    config.InitConfigCenter(context, consulConfigUrl,
+                        consulToken,
+                        $"{env.ApplicationName}/appsettings.{env.EnvironmentName}{clientName}.json");
+                });
+            }
+
+            return defaultBuild;
         }
 
         /// <summary>

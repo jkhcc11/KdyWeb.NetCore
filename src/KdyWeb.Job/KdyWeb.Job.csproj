@@ -30,7 +30,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Kdy.StandardJob\Kdy.StandardJob.csproj" />
 		<ProjectReference Include="..\KdyWeb.CommonService\KdyWeb.CommonService.csproj" />
 		<ProjectReference Include="..\KdyWeb.HttpApi\KdyWeb.HttpApi.csproj" />
 	</ItemGroup>
