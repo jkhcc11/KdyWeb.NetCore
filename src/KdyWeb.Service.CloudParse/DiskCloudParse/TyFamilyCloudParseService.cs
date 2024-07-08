@@ -122,14 +122,18 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 input.PageSize = 60;
             }
 
-            var reqUrl = $"/open/family/file/listFiles.action?pageNum={input.Page}&pageSize={input.PageSize}&familyId={input.ExtData}&filename=Abc&folderId=&iconOption=5&orderBy=1&descending=false";
-            if (string.IsNullOrEmpty(input.InputId) == false)
+            var reqUrl = $"/open/family/file/listFiles.action?pageNum={input.Page}&pageSize={input.PageSize}&familyId={input.ExtData}&fileName=&folderId={input.InputId}&iconOption=5&orderBy=1&descending=false";
+            var time = DateTime.Now.ToMillisecondTimestamp() + "";
+            var url = $"AccessToken={CloudConfig.ParseCookie}&Timestamp={time}&descending=false&familyId={input.ExtData}&fileName={input.KeyWord}&folderId={input.InputId}&iconOption=5&orderBy=1&pageNum={input.Page}&pageSize={input.PageSize}";
+            if (string.IsNullOrEmpty(input.KeyWord) == false)
             {
-                reqUrl = $"/open/family/file/listFiles.action?pageNum={input.Page}&pageSize={input.PageSize}&familyId={input.ExtData}&filename=Abc&folderId={input.InputId}&iconOption=5&orderBy=1&descending=false";
+                input.Page = 1;
+                input.PageSize = 60;
+                input.InputId = "-11";
+                reqUrl = $"/open/family/file/searchFiles.action?pageNum=1&pageSize=60&familyId={input.ExtData}&fileName={input.KeyWord}&folderId={input.InputId}&iconOption=5&orderBy=1&descending=false&recursive=1&mediaType=0";
+                url = $"AccessToken={CloudConfig.ParseCookie}&Timestamp={time}&descending=false&familyId={input.ExtData}&fileName={input.KeyWord}&folderId={input.InputId}&iconOption=5&mediaType=0&orderBy=1&pageNum={input.Page}&pageSize={input.PageSize}&recursive=1";
             }
 
-            var time = DateTime.Now.ToMillisecondTimestamp() + "";
-            var url = $"AccessToken={CloudConfig.ParseCookie}&Timestamp={time}&descending=false&familyId={input.ExtData}&filename=Abc&folderId={input.InputId}&iconOption=5&orderBy=1&pageNum={input.Page}&pageSize={input.PageSize}";
             BuilderReqHeadSign(url, time);
 
             KdyRequestCommonInput.SetGetRequest(reqUrl);
@@ -161,7 +165,23 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 return KdyResult.Success(fileNameInfo);
             }
 
-            return KdyResult.Error<BaseResultOut>(KdyResultCode.Error, "未找到,请先同步");
+            var searchList = await QueryFileAsync(new BaseQueryInput<string>()
+            {
+                KeyWord = keyWord,
+                Page = 1,
+                PageSize = 60,
+                ExtData = FamilyId
+            });
+
+            var fileInfo = searchList.Data.FirstOrDefault(a => a.ResultName == keyWord);
+            if (fileInfo == null)
+            {
+                KdyLog.LogWarning("{userNick}文件名:{fileName} 天翼家庭，未搜索到请留意", CloudConfig.ReqUserInfo, keyWord);
+                return KdyResult.Error<BaseResultOut>(KdyResultCode.Error, $"未找到文件名：{keyWord}");
+            }
+
+            await nameDb.SetHashSetAsync(nameCacheKey, fileNameMd5, fileInfo);
+            return KdyResult.Success(fileInfo);
         }
 
         public async Task<Dictionary<string, string>> GetFamilyListAsync()
