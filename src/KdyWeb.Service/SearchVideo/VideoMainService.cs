@@ -60,76 +60,6 @@ namespace KdyWeb.Service.SearchVideo
         }
 
         /// <summary>
-        /// 通过豆瓣信息创建影片信息
-        /// </summary>
-        /// <returns></returns>
-        public async Task<KdyResult<CreateForDouBanInfoDto>> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
-        {
-            //获取豆瓣信息
-            var douBanInfo = await _douBanInfoRepository.FirstOrDefaultAsync(a => a.Id == input.DouBanInfoId);
-            if (douBanInfo == null)
-            {
-                return KdyResult.Error<CreateForDouBanInfoDto>(KdyResultCode.Error, "豆瓣信息Id错误");
-            }
-
-            //是否存在
-            var anyVideoMain = await _videoMainRepository
-                .GetAsNoTracking()
-                .AnyAsync(a => a.VideoInfoUrl != null &&
-                            a.VideoInfoUrl.Contains(douBanInfo.VideoDetailId));
-            if (anyVideoMain)
-            {
-                return KdyResult.Error<CreateForDouBanInfoDto>(KdyResultCode.Error, "影片已存在 创建失败");
-            }
-
-            //剧集列表
-            var episodes = input.EpUrl
-                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(GetVideoEpisodeByString)
-                .ToList();
-
-            //生成影片信息
-            var dbVideoMain = new VideoMain(douBanInfo.Subtype, douBanInfo.VideoTitle, douBanInfo.VideoImg,
-                VideoMain.SystemInput, VideoMain.SystemInput);
-            dbVideoMain.ToVideoMain(douBanInfo);
-            dbVideoMain.EpisodeGroup = new List<VideoEpisodeGroup>()
-            {
-                new VideoEpisodeGroup(input.EpisodeGroupType,"默认组")
-                {
-                    Episodes = episodes
-                }
-            };
-            dbVideoMain.IsMatchInfo = true;
-            dbVideoMain.IsEnd = true;
-            await _videoMainRepository.CreateAsync(dbVideoMain);
-
-            douBanInfo.SetSearchEnd();
-            //douBanInfo.DouBanInfoStatus = DouBanInfoStatus.SearchEnd;
-            _douBanInfoRepository.Update(douBanInfo);
-            await UnitOfWork.SaveChangesAsync();
-
-            #region 用户行为记录
-            var recordType = VodManagerRecordType.SaveMove;
-            if (episodes.Count > 10)
-            {
-                recordType = VodManagerRecordType.SaveTv;
-            }
-            var jobInput = new CreateVodManagerRecordInput(LoginUserInfo.GetUserId(), recordType)
-            {
-                BusinessId = dbVideoMain.Id,
-                Remark = $"剧集更新数量：{episodes.Count}",
-                LoginUserName = LoginUserInfo.UserName
-            };
-            BackgroundJob.Enqueue<CreateVodManagerRecordJobService>(a => a.ExecuteAsync(jobInput));
-
-            await CreateVodManagerRecordAsync(dbVideoMain, douBanInfo);
-            #endregion
-
-            var result = dbVideoMain.MapToExt<CreateForDouBanInfoDto>();
-            return KdyResult.Success(result);
-        }
-
-        /// <summary>
         /// 获取影片信息
         /// </summary>
         /// <returns></returns>
@@ -197,32 +127,6 @@ namespace KdyWeb.Service.SearchVideo
                 //非超管
                 result.SourceUrl = result.SourceUrl.StrToHex();
             }
-
-            #region 自动匹配豆瓣
-            if (main.IsMatchInfo == false)
-            {
-                var autoMatchInput = new AutoMatchDouBanInfoJobInput()
-                {
-                    MainId = main.Id,
-                    VodTitle = main.KeyWord,
-                    VodYear = main.VideoYear
-                };
-                BackgroundJob.Enqueue<AutoMatchDouBanInfoJobService>(a => a.ExecuteAsync(autoMatchInput));
-            }
-            #endregion
-
-            #region 自动匹配资源
-            if (main.IsMatchZy())
-            {
-                var autoMatchInput = new AutoMatchDouBanInfoJobInput()
-                {
-                    MainId = main.Id,
-                    VodTitle = main.KeyWord,
-                    VodYear = main.VideoYear
-                };
-                BackgroundJob.Enqueue<AutoMatchMovieInfoByZyJobService>(a => a.ExecuteAsync(autoMatchInput));
-            }
-            #endregion
 
             if (result.IsEnd)
             {
@@ -403,10 +307,10 @@ namespace KdyWeb.Service.SearchVideo
         }
 
         /// <summary>
-        /// 匹配豆瓣信息
+        /// 绑定豆瓣信息
         /// </summary>
         /// <returns></returns>
-        public async Task<KdyResult> MatchDouBanInfoAsync(MatchDouBanInfoInput input)
+        public async Task<KdyResult> BindDouBanInfoAsync(MatchDouBanInfoInput input)
         {
             var dbMain = await _videoMainRepository
                 .GetQuery()
@@ -723,11 +627,12 @@ namespace KdyWeb.Service.SearchVideo
                         OrderBy = KdyEfOrderBy.Desc
                     }
                 };
-            }else if (input.OrderBy.Any())
+            }
+            else if (input.OrderBy.Any())
             {
                 var allowFiled = new List<string>()
                 {
-                    nameof(VideoMain.OrderBy).ToLower(), 
+                    nameof(VideoMain.OrderBy).ToLower(),
                     nameof(VideoMain.CreatedTime).ToLower(),
                     nameof(VideoMain.VideoDouBan).ToLower(),
                     nameof(VideoMain.VideoYear).ToLower(),

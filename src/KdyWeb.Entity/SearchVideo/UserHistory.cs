@@ -74,9 +74,10 @@ namespace KdyWeb.Entity.SearchVideo
         /// <summary>
         /// 设置最新剧集名
         /// </summary>
-        public void SetNewEpName(string epName)
+        public void SetNewEpName(string epName, long epId)
         {
             EpName = epName;
+            EpId = epId;
         }
     }
 }

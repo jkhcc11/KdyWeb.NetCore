@@ -45,15 +45,17 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var userId = LoginUserInfo.GetUserId();
-            //历史表 存在时更新时间 要不然重复观看有问题
-            var dbHistory = new UserHistory(dbEpInfo.VideoEpisodeGroup.MainId, input.EpId);
+            var mainId = dbEpInfo.VideoEpisodeGroup.MainId;
+
+            //历史表 存在时则更新剧集
+            var dbHistory = new UserHistory(mainId, input.EpId);
             var exitUserHistory = await _userHistoryRepository
                 .FirstOrDefaultAsync(a => a.IsDelete == false &&
-                               a.EpId == input.EpId &&
+                               a.KeyId == mainId &&
                                a.CreatedUserId == userId);
             if (exitUserHistory != null)
             {
-                exitUserHistory.SetNewEpName(dbEpInfo.EpisodeName);
+                exitUserHistory.SetNewEpName(dbEpInfo.EpisodeName, dbEpInfo.Id);
                 _userHistoryRepository.Update(exitUserHistory);
                 await UnitOfWork.SaveChangesAsync();
                 return KdyResult.Success("更新成功");

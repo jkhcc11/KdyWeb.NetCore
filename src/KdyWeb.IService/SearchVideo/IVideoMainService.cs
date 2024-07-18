@@ -14,13 +14,6 @@ namespace KdyWeb.IService.SearchVideo
     public interface IVideoMainService : IKdyService
     {
         /// <summary>
-        /// 通过豆瓣信息创建影片信息
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("旧版，完全替换后。可以使用新版CreateForDouBanInfoNewAsync")]
-        Task<KdyResult<CreateForDouBanInfoDto>> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input);
-
-        /// <summary>
         /// 获取影片信息
         /// </summary>
         /// <returns></returns>
@@ -45,10 +38,10 @@ namespace KdyWeb.IService.SearchVideo
         Task<KdyResult> DeleteAsync(BatchDeleteForLongKeyInput input);
 
         /// <summary>
-        /// 匹配豆瓣信息
+        /// 绑定豆瓣信息
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> MatchDouBanInfoAsync(MatchDouBanInfoInput input);
+        Task<KdyResult> BindDouBanInfoAsync(MatchDouBanInfoInput input);
 
         /// <summary>
         /// 更新影片主表信息

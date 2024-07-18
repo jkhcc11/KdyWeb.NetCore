@@ -1,15 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
-using Hangfire;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto;
-using KdyWeb.Dto.Job;
 using KdyWeb.Dto.SearchVideo;
 using KdyWeb.IService.SearchVideo;
-using KdyWeb.Service.Job;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,22 +16,13 @@ namespace KdyWeb.Job.Controllers.Manager
     public class VideoMainController : BaseManagerController
     {
         private readonly IVideoMainService _videoMainService;
+        private readonly IVideoMainMatchInfoService _videoMainMatchInfoService;
 
-        public VideoMainController(IVideoMainService videoMainService)
+        public VideoMainController(IVideoMainService videoMainService,
+            IVideoMainMatchInfoService videoMainMatchInfoService)
         {
             _videoMainService = videoMainService;
-        }
-
-        /// <summary>
-        /// 通过豆瓣信息创建影片信息
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("create")]
-        [ProducesResponseType(typeof(KdyResult<CreateForDouBanInfoDto>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CreateForDouBanInfoAsync(CreateForDouBanInfoInput input)
-        {
-            var result = await _videoMainService.CreateForDouBanInfoAsync(input);
-            return Ok(result);
+            _videoMainMatchInfoService = videoMainMatchInfoService;
         }
 
         /// <summary>
@@ -70,9 +56,9 @@ namespace KdyWeb.Job.Controllers.Manager
         /// <returns></returns>
         [HttpPost("matchDouBanInfo")]
         [ProducesResponseType(typeof(KdyResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> MatchDouBanInfoAsync(MatchDouBanInfoInput input)
+        public async Task<IActionResult> BindDouBanInfoAsync(MatchDouBanInfoInput input)
         {
-            var result = await _videoMainService.MatchDouBanInfoAsync(input);
+            var result = await _videoMainService.BindDouBanInfoAsync(input);
             return Ok(result);
         }
 
@@ -135,31 +121,42 @@ namespace KdyWeb.Job.Controllers.Manager
         }
 
         /// <summary>
-        /// 批量匹配豆瓣信息
+        /// 自动匹配并保存剧集
         /// </summary>
         /// <returns></returns>
-        [HttpPost("batch-match-douban")]
-        public async Task<KdyResult> BatchMatchDouBanInfoAsync(List<BatchMatchDouBanInfoInput> input)
+        [HttpPost("auto-match-save")]
+        public async Task<KdyResult<string>> AutoMatchSaveEpAsync(AutoMatchSaveEpInput input)
         {
-            if (input == null ||
-                input.Any() == false)
-            {
-                return KdyResult.Error(KdyResultCode.ParError, "参数不能为空");
-            }
-
-            foreach (var item in input)
-            {
-                var matchInput = new AutoMatchDouBanInfoJobInput()
-                {
-                    MainId = item.KeyId,
-                    VodTitle = item.VodTitle,
-                    VodYear = item.VodYear
-                };
-                BackgroundJob.Enqueue<AutoMatchDouBanInfoJobService>(a => a.ExecuteAsync(matchInput));
-            }
-
-            await Task.CompletedTask;
-            return KdyResult.Success($"匹配数量：{input.Count},任务已提交");
+            var result = await _videoMainMatchInfoService.AutoMatchSaveEpAsync(input);
+            return result;
         }
+
+        ///// <summary>
+        ///// 批量匹配豆瓣信息 前端根据访问发起
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpPost("batch-match-douban")]
+        //public async Task<KdyResult> BatchMatchDouBanInfoAsync(List<BatchMatchDouBanInfoInput> input)
+        //{
+        //    if (input == null ||
+        //        input.Any() == false)
+        //    {
+        //        return KdyResult.Error(KdyResultCode.ParError, "参数不能为空");
+        //    }
+
+        //    foreach (var item in input)
+        //    {
+        //        var matchInput = new AutoMatchDouBanInfoJobInput()
+        //        {
+        //            MainId = item.KeyId,
+        //            VodTitle = item.VodTitle,
+        //            VodYear = item.VodYear
+        //        };
+        //        BackgroundJob.Enqueue<AutoMatchDouBanInfoJobService>(a => a.ExecuteAsync(matchInput));
+        //    }
+
+        //    await Task.CompletedTask;
+        //    return KdyResult.Success($"匹配数量：{input.Count},任务已提交");
+        //}
     }
 }

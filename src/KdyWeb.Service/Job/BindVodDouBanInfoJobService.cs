@@ -31,7 +31,7 @@ namespace KdyWeb.Service.Job
         /// </summary>
         public override async Task ExecuteAsync(BindVodDouBanInfoJobInput input)
         {
-            var matchResult = await _videoMainService.MatchDouBanInfoAsync(new MatchDouBanInfoInput()
+            var matchResult = await _videoMainService.BindDouBanInfoAsync(new MatchDouBanInfoInput()
             {
                 DouBanId = input.DouBanId,
                 KeyId = input.MainId

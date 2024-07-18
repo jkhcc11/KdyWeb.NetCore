@@ -14,10 +14,13 @@ namespace KdyWeb.Job.Controllers.Normal
     public class VideoMainController : BaseNormalController
     {
         private readonly IVideoMainService _videoMainService;
+        private readonly IVideoMainMatchInfoService _videoMainMatchInfoService;
 
-        public VideoMainController(IVideoMainService videoMainService)
+        public VideoMainController(IVideoMainService videoMainService,
+            IVideoMainMatchInfoService videoMainMatchInfoService)
         {
             _videoMainService = videoMainService;
+            _videoMainMatchInfoService = videoMainMatchInfoService;
         }
 
         /// <summary>
@@ -76,6 +79,39 @@ namespace KdyWeb.Job.Controllers.Normal
         {
             var result = await _videoMainService.RandVideoByNormalAsync(count);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 匹配豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("match-vod-info/{keyId}")]
+        public async Task<KdyResult> MatchDouBanInfoAsync(long keyId)
+        {
+            var result = await _videoMainMatchInfoService.MatchDouBanInfoAsync(keyId);
+            return result;
+        }
+
+        /// <summary>
+        /// 匹配资源
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("match-vod-zy/{keyId}")]
+        public async Task<KdyResult> MatchZyAsync(long keyId)
+        {
+            var result = await _videoMainMatchInfoService.MatchZyAsync(keyId);
+            return result;
+        }
+
+        /// <summary>
+        /// 自动匹配并保存剧集
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("auto-match-save")]
+        public async Task<KdyResult<string>> AutoMatchSaveEpAsync(AutoMatchSaveEpInput input)
+        {
+            var result = await _videoMainMatchInfoService.AutoMatchSaveEpAsync(input);
+            return result;
         }
     }
 }

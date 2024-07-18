@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.SearchVideo;
+using KdyWeb.Entity.SearchVideo;
 using KdyWeb.IService.SearchVideo;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,6 +32,37 @@ namespace KdyWeb.Job.Controllers.Normal
         {
             var result = await _douBanInfoService.GetTopDouBanInfoAsync(top);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 根据关键字自动创建豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("auto-create-by-keyword")]
+        public async Task<KdyResult<dynamic>> CreateForKeyWordAsync(string keyWord, int year)
+        {
+            if (string.IsNullOrEmpty(keyWord) || year <= 1900)
+            {
+                return KdyResult.Error<dynamic>(KdyResultCode.ParError, "参数错误");
+            }
+
+            var result = await _douBanInfoService.CreateForKeyWordAsync(keyWord, year);
+            if (result.IsSuccess == false)
+            {
+                return KdyResult.Error<dynamic>(KdyResultCode.Error, result.Msg);
+            }
+
+            //用户端搜索只返回这些
+            var newResult = new
+            {
+                DbDouBanId = result.Data.Id,
+                VodTitle = result.Data.VideoTitle,
+                VodYear = result.Data.VideoYear,
+                VodImg = result.Data.VideoImg,
+                Subject = result.Data.VideoDetailId,
+                DetailUrl = $"//movie.douban.com/subject/{result.Data.VideoDetailId}/"
+            };
+            return KdyResult.Success<dynamic>(newResult);
         }
     }
 }

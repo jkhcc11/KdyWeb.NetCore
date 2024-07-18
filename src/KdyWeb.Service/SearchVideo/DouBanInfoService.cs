@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
@@ -17,6 +19,7 @@ using KdyWeb.IService.HttpCapture;
 using KdyWeb.IService.SearchVideo;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace KdyWeb.Service.SearchVideo
@@ -175,8 +178,24 @@ namespace KdyWeb.Service.SearchVideo
         /// <returns></returns>
         public async Task<KdyResult<CreateForSubjectIdDto>> CreateForKeyWordAsync(string keyWord, int year)
         {
-            //避免两次请求搜索太快
-            await Task.Delay(1800);
+            var matchCacheKey = $"CreateForKeyWordAsync:{keyWord.Md5Ext()}";
+            var isRun = await KdyRedisCache.GetCache().GetStringAsync(matchCacheKey);
+            if (string.IsNullOrEmpty(isRun) == false)
+            {
+                return KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, "Run waiting");
+            }
+
+            var dbDouBanInfo = await _douBanInfoRepository
+                .FirstOrDefaultAsync(a => a.VideoTitle == keyWord);
+            if (dbDouBanInfo != null)
+            {
+                if (dbDouBanInfo.VideoYear != year)
+                {
+                    return KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, "匹配失败,年份不一致");
+                }
+
+                return KdyResult.Success(dbDouBanInfo.MapToExt<CreateForSubjectIdDto>());
+            }
 
             //如果名称相等则直接匹配详情
             //不相等则 先匹配名称和 对应的季数
@@ -186,17 +205,25 @@ namespace KdyWeb.Service.SearchVideo
                 return KdyResult.Error<CreateForSubjectIdDto>(douBanInfo.Code, douBanInfo.Msg);
             }
 
-            //避免搜索和详情请求太快
-            await Task.Delay(1800);
+            await KdyRedisCache.GetCache().SetStringAsync(matchCacheKey, DateTime.Now.ToShortTimeString(),
+                new DistributedCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+                });
 
             var result = KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, $"匹配豆瓣信息失败，未找到匹配01。{keyWord}");
             foreach (var douBanItem in douBanInfo.Data)
             {
                 await Task.Delay(1500);
 
-                var oldKey = keyWord.RemoveStrExt(" ");
-                var douBanName = douBanItem.ResultName.RemoveStrExt(" ");
+                var oldKey = keyWord.RemoveSpecialCharacters();
+                var douBanName = douBanItem.ResultName.RemoveSpecialCharacters();
                 result = await CreateForSubjectIdAsync(douBanItem.DouBanSubjectId);
+                if (result.IsSuccess == false)
+                {
+                    //异常移除
+                    break;
+                }
 
                 if (result.Data.VideoYear != year)
                 {
@@ -227,6 +254,7 @@ namespace KdyWeb.Service.SearchVideo
                 KdyLog.LogWarning($"影片采集遇到歧义名称，已跳过。第三方名称：{oldKey} 豆瓣名称：{douBanName}");
             }
 
+            await KdyRedisCache.GetCache().RemoveAsync(matchCacheKey);
             if (result.IsSuccess == false)
             {
                 return KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.Error, $"匹配豆瓣信息失败，未找到匹配02。{keyWord}");

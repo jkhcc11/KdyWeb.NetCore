@@ -115,5 +115,20 @@ namespace KdyWeb.Job.Controllers.Manager
             };
             return KdyResult.Success(pageResult);
         }
+
+        /// <summary>
+        /// 根据关键字自动创建豆瓣信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("auto-create-by-keyword")]
+        public async Task<KdyResult<CreateForSubjectIdDto>> CreateForKeyWordAsync(string keyWord, int year)
+        {
+            if (string.IsNullOrEmpty(keyWord) || year <= 1900)
+            {
+                return KdyResult.Error<CreateForSubjectIdDto>(KdyResultCode.ParError, "参数错误");
+            }
+
+            return await _douBanInfoService.CreateForKeyWordAsync(keyWord, year);
+        }
     }
 }
