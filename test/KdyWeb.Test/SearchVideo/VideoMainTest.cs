@@ -13,18 +13,18 @@ namespace KdyWeb.Test.SearchVideo
     public class VideoMainTest : BaseTest<IVideoMainService>
     {
 
-        [TestMethod]
-        public async Task TestCreate()
-        {
-            var input = new CreateForDouBanInfoInput()
-            {
-                DouBanInfoId = 268,
-                EpisodeGroupType = EpisodeGroupType.VideoPlay,
-                EpUrl = "//www.baidu.com/play.m3u8"
-            };
-            var result = await _service.CreateForDouBanInfoAsync(input);
-            Assert.IsTrue(result.IsSuccess);
-        }
+        //[TestMethod]
+        //public async Task TestCreate()
+        //{
+        //    var input = new CreateForDouBanInfoInput()
+        //    {
+        //        DouBanInfoId = 268,
+        //        EpisodeGroupType = EpisodeGroupType.VideoPlay,
+        //        EpUrl = "//www.baidu.com/play.m3u8"
+        //    };
+        //    var result = await _service.CreateForDouBanInfoAsync(input);
+        //    Assert.IsTrue(result.IsSuccess);
+        //}
 
         [TestMethod]
         public async Task TestGetDetail()

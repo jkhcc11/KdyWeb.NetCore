@@ -167,6 +167,7 @@ namespace KdyWeb.Service.SearchVideo
             }
 
             var result = epInfo.MapToExt<GetEpisodeInfoDto>();
+            result.PlayerHost = KdyConfiguration.GetValue<string>(KdyWebServiceConst.PlayerHost);
             result.VideoMainInfo = dbMain.MapToExt<VideoMainDto>();
             if (isPlayerApi)
             {

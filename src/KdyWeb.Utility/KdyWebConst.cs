@@ -85,6 +85,11 @@
         public const string ReceiveToken = "ReceiveToken";
 
         /// <summary>
+        /// 播放器Host
+        /// </summary>
+        public const string PlayerHost = "PlayerHost";
+
+        /// <summary>
         /// 解析配置节点
         /// </summary>
         public class KdyWebParseConfig
