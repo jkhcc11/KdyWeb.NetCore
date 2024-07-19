@@ -30,6 +30,7 @@ COPY ["KdyWeb.IService.Selenium/KdyWeb.IService.Selenium.csproj", "KdyWeb.IServi
 COPY ["KdyWeb.Service.CloudParse/KdyWeb.Service.CloudParse.csproj", "KdyWeb.Service.CloudParse/"]
 COPY ["KdyWeb.IService.CloudParse/KdyWeb.IService.CloudParse.csproj", "KdyWeb.IService.CloudParse/"]
 COPY ["KdyWeb.Service.Selenium/KdyWeb.Service.Selenium.csproj", "KdyWeb.Service.Selenium/"]
+COPY ["nuget.config", "KdyWeb.CloudParse.SlefHost/"]
 RUN dotnet restore "KdyWeb.CloudParse.SlefHost/KdyWeb.CloudParse.SelfHost.csproj"
 COPY . .
 WORKDIR "/src/KdyWeb.CloudParse.SlefHost"

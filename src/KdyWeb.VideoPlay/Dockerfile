@@ -26,6 +26,7 @@ COPY ["KdyWeb.IService.FileStore/KdyWeb.IService.FileStore.csproj", "KdyWeb.ISer
 COPY ["KdyWeb.Service/KdyWeb.Service.csproj", "KdyWeb.Service/"]
 COPY ["Kdy.StandardJob/Kdy.StandardJob.csproj", "Kdy.StandardJob/"]
 COPY ["KdyWeb.IService/KdyWeb.IService.csproj", "KdyWeb.IService/"]
+COPY ["nuget.config", "KdyWeb.VideoPlay/"]
 RUN dotnet restore "KdyWeb.VideoPlay/KdyWeb.VideoPlay.csproj"
 COPY . .
 WORKDIR "/src/KdyWeb.VideoPlay"

@@ -26,6 +26,7 @@ COPY ["KdyWeb.Service.FileStore/KdyWeb.Service.FileStore.csproj", "KdyWeb.Servic
 COPY ["KdyWeb.IService.FileStore/KdyWeb.IService.FileStore.csproj", "KdyWeb.IService.FileStore/"]
 COPY ["KdyWeb.Service/KdyWeb.Service.csproj", "KdyWeb.Service/"]
 COPY ["KdyWeb.IService/KdyWeb.IService.csproj", "KdyWeb.IService/"]
+COPY ["nuget.config", "KdyWeb.Job/"]
 RUN dotnet restore "KdyWeb.Job/KdyWeb.Job.csproj"
 COPY . .
 WORKDIR "/src/KdyWeb.Job"
