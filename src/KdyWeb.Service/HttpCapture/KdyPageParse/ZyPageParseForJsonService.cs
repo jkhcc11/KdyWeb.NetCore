@@ -186,14 +186,20 @@ namespace KdyWeb.Service.HttpCapture
 
         public override async Task<KdyResult<NormalPageParseOut>> KeyWordHandler(IList<KdyWebPageSearchOutItem> searchItems)
         {
-            var firstData = searchItems.First();
+            //排除解说
+            var firstData = searchItems.FirstOrDefault(a => a.ResultName.Contains("解说") == false);
+            if (firstData == null)
+            {
+                return KdyResult.Error<NormalPageParseOut>(KdyResultCode.Error, "解析失败，获取详情失败01");
+            }
+
             var detailResult = await GetPageResultAsync(firstData, new KdyWebPagePageInput()
             {
                 DetailUrl = firstData.DetailUrl
             });
             if (detailResult.IsSuccess == false)
             {
-                return KdyResult.Error<NormalPageParseOut>(KdyResultCode.Error, "解析失败，获取详情失败");
+                return KdyResult.Error<NormalPageParseOut>(KdyResultCode.Error, "解析失败，获取详情失败02");
             }
 
             return DetailHandler(firstData, detailResult.Data);

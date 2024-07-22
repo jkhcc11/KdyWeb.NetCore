@@ -87,6 +87,11 @@ namespace KdyWeb.IService.CloudParse
             /// 下载缓存
             /// </summary>
             public const string DownCacheKey = Prefix + "M3u8Url";
+
+            /// <summary>
+            /// 下一页标记缓存
+            /// </summary>
+            public const string AliPageCacheKey = Prefix + "NextPageCacheKey";
         }
 
         /// <summary>

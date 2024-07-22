@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.CloudParse.CloudParseEnum;
-using KdyWeb.CloudParse.Extensions;
 using KdyWeb.CloudParse.Input;
 using KdyWeb.CloudParse.Out;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
@@ -31,7 +32,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
     {
         private readonly string _account;
         private int _accountType = 1;
-        private const string DefaultRootId = "00019700101000000001";
+        private const string DefaultRootId = "/";
 
         /// <summary>
         /// 仅用于清除缓存
@@ -44,17 +45,23 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
         public Pan139CloudParseService(BaseConfigInput cloudConfig) : base(cloudConfig)
         {
-            KdyRequestCommonInput = new KdyRequestCommonInput("https://yun.139.com")
+            KdyRequestCommonInput = new KdyRequestCommonInput("https://personal-kd-njs.yun.139.com")
             {
                 TimeOut = 5000,
                 ExtData = new KdyRequestCommonExtInput()
                 {
                     HeardDic = new Dictionary<string, string>()
                     {
-                        { "authorization",  cloudConfig.ParseCookie }
+                        {"Authorization",  cloudConfig.ParseCookie },
+                        {"X-Yun-Api-Version","v1"},
+                        {"X-Yun-App-Channel","10000034"},
+                        {"X-Yun-Channel-Source","10000034"},
+                        {"X-Yun-Client-Info","||9|7.13.5|edge||d3c93139b2021a3b00cfb503f0dbe16d||windows 10||zh-CN|||ZWRnZQ==||"},
+                        {"X-Yun-Module-Type","100"},
+                        {"X-Yun-Svc-Type","1"},
                     }
                 },
-                Referer = "https://yun.139.com/file/index",
+                Referer = "https://yun.139.com/",
                 UserAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
             };
 
@@ -66,67 +73,63 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         protected override List<BaseResultOut> JArrayHandler(JObject jObject)
         {
             var result = new List<BaseResultOut>();
-
-            var dirArray = jObject["data"]["getDiskResult"]?["catalogList"] as JArray;
-            if (dirArray != null && dirArray.Any())
+            //搜索结果用这个
+            var dirArray = jObject["rows"] as JArray;
+            if (jObject["data"] is JObject tempData)
             {
-                #region 文件夹
-                foreach (JToken jToken in dirArray)
-                {
-                    var fileName = jToken["catalogName"];
-                    if (fileName == null)
-                    {
-                        continue;
-                    }
-
-                    var model = new BaseResultOut
-                    {
-                        //文件夹路径
-                        ParentId = $"{jToken["parentCatalogId"]}",
-                        //文件id 或者文件夹id
-                        ResultId = $"{jToken["catalogID"]}",
-                        //名字
-                        ResultName = fileName.ToString()
-                    };
-
-                    model.FileType = CloudFileType.Dir;
-
-                    result.Add(model);
-                }
-                #endregion
+                dirArray = tempData["items"] as JArray;
             }
 
-            //文件列表
-            var fileArray = jObject["data"]["getDiskResult"]?["contentList"] as JArray;
-            if (fileArray == null || fileArray.Any() == false)
+            if (dirArray == null || dirArray.Any() == false)
             {
-                fileArray = jObject["data"]["rows"] as JArray;
-                if (fileArray == null || fileArray.Any() == false)
-                {
-                    return result;
-                }
+                return result;
             }
 
-            foreach (JToken jToken in fileArray)
+            foreach (JToken jToken in dirArray)
             {
-                var fileName = jToken["contentName"] ?? jToken["contName"];
+                var fileName = jToken["name"];
                 if (fileName == null)
                 {
                     continue;
                 }
 
+                long.TryParse($"{jToken["size"]}", out var size);
                 var model = new BaseResultOut
                 {
                     //文件夹路径
-                    ParentId = $"{jToken["parentCatalogId"]}",
+                    ParentId = $"{jToken["parentFileId"]}",
                     //文件id 或者文件夹id
-                    ResultId = $"{jToken["contentID"] ?? jToken["contID"]}",
+                    ResultId = $"{jToken["fileId"]}",
                     //名字
                     ResultName = fileName.ToString(),
-                    FileSize = long.Parse((jToken["contentSize"] ?? jToken["contSize"]) + "")
+                    FileSize = size
                 };
 
-                model.FileType = ("." + (jToken["contentSuffix"] ?? jToken["contSuffix"])).FileNameToFileType();
+                var category = jToken["category"] + "";
+                switch (category)
+                {
+                    case "folder":
+                        {
+                            model.FileType = CloudFileType.Dir;
+                            break;
+                        }
+                    case "image":
+                        {
+                            model.FileType = CloudFileType.Image;
+                            break;
+                        }
+                    case "3":
+                    case "video":
+                        {
+                            model.FileType = CloudFileType.Video;
+                            break;
+                        }
+                    default:
+                        {
+                            model.FileType = CloudFileType.File;
+                            break;
+                        }
+                }
 
                 result.Add(model);
             }
@@ -152,48 +155,56 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 input.Page = 1;
             }
 
+            var nextMark = string.Empty;
+            if (input.Page > 1)
+            {
+                nextMark = await GetNextMarkAsync(input.InputId, input.Page);
+                if (string.IsNullOrEmpty(nextMark))
+                {
+                    return KdyResult.Success(resultList);
+                }
+            }
+
             if (input.PageSize <= 0)
             {
                 input.PageSize = 100;
             }
 
-            var startNumber = (input.Page - 1) * input.PageSize + 1;
-            var endNumber = input.Page * input.PageSize;
-
-            var reqUrl = "/orchestration/personalCloud/catalog/v1.0/getDisk";
+            var reqUrl = "/hcy/file/list";
             var tempData = new
             {
-                catalogID = input.InputId,
-                sortDirection = 1,
-                startNumber = startNumber,
-                endNumber = endNumber,
-                filterType = 0,
-                catalogSortType = 1, //1名称排序
-                contentSortType = 1,
-                commonAccountInfo = new
+                parentFileId = input.InputId,
+                //名称排序
+                orderBy = "name",
+                orderDirection = "ASC",
+                imageThumbnailStyleList = new[] { "Small", "Large" },
+                pageInfo = new
                 {
-                    account = _account,
-                    accountType = _accountType
+                    pageSize = 100,
+                    //翻页标识
+                    pageCursor = nextMark,
                 }
             };
+
             var postDataJson = tempData.ToJsonStr();
             if (input.KeyWord.IsEmptyExt() == false)
             {
                 //关键字搜索
-                reqUrl = "/orchestration/personalCloud/search/v1.0/fileSearch";
+                reqUrl = "https://search-njs.yun.139.com/search/SearchFile";
                 var tempKeyWordData = new
                 {
-                    conditions = $"search_name:\"{input.KeyWord}\" and path:\"{DefaultRootId}\"",
+                    conditions = new
+                    {
+                        keyword = input.KeyWord,
+                        owner = _account,
+                        type = _accountType,
+                    },
                     showInfo = new
                     {
+                        returnTotalCountFlag = true,
                         startNum = 1,
                         stopNum = 100,
                         sortInfos = new List<int>()
-                    },
-                    commonAccountInfo = new
-                    {
-                        account = _account,
-                        accountType = _accountType
                     }
                 };
                 postDataJson = tempKeyWordData.ToJsonStr();
@@ -213,6 +224,13 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             {
                 KdyLog.LogWarning("{userNick},139盘搜索文件异常,Req:{input},Response:{msg}", CloudConfig.ReqUserInfo, input, reqResult.Data);
                 return KdyResult.Success(resultList);
+            }
+
+            nextMark = jObject.GetValueExt("data.nextPageCursor");
+            if (string.IsNullOrEmpty(nextMark) == false)
+            {
+                //有翻页
+                await SetNextMarkAsync(input.InputId, input.Page + 1, nextMark);
             }
 
             var result = JArrayHandler(jObject);
@@ -269,17 +287,10 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
             var tempData = new
             {
-                getFlvOnlineAddrReq = new
-                {
-                    contentID = fileId,
-                    commonAccountInfo = new
-                    {
-                        account = _account,
-                        accountType = _accountType
-                    }
-                }
+                category = "video",
+                fileId,
             };
-            KdyRequestCommonInput.SetPostData("/orchestration/personalCloud/content/v1.2/getFlvOnlineAddr", tempData.ToJsonStr(), isAjax: true);
+            KdyRequestCommonInput.SetPostData("/hcy/videoPreview/getPreviewInfo", tempData.ToJsonStr(), isAjax: true);
             var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
             if (reqResult.IsSuccess == false ||
                 reqResult.LocationUrl.IsEmptyExt() == false)
@@ -291,17 +302,66 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             }
 
             var tempResult = JObject.Parse(reqResult.Data);
-            var downUrl = tempResult.GetValueExt("data.getFlvOnlineAddrRes.presentURL");
+            var downUrl = tempResult.GetValueExt("data.previewInfo.url");
             if (downUrl.IsEmptyExt())
             {
-                return KdyResult.Error<string>(KdyResultCode.Error, "无效播放地址"); ;
+                return KdyResult.Error<string>(KdyResultCode.Error, "无效播放地址");
             }
 
-            downUrl = downUrl.Replace("http", "https");
+            if (downUrl.StartsWith("http:"))
+            {
+                downUrl = downUrl.Replace("http", "https");
+            }
+
+            //类似这样
+            //xxxxxx/v2/hls/1471112557543558912/playlist.m3u8?ci=FtEfgbCZOWK2h0TqhDR9AiKcKYcN-zlOt&fileSize=232430401&isNew=1
+            //直接拼接1080p地址
+            //xxxx/v2/hls/1471112557543558912/single/video/0/1080/index.m3u8
+            //todo:这里后面可能会调整 待定
+            var playListIndex = downUrl.IndexOf("playlist", StringComparison.Ordinal);
+            if (playListIndex == -1)
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "无效播放地址02");
+            }
+
+            var prefix = downUrl.Substring(0, playListIndex);
+            var checkList = new[]
+            {
+                "1080",
+                "720",
+                "480"
+            };
+            downUrl = string.Empty;
+
+            foreach (var item in checkList)
+            {
+                var tempUrl = $"{prefix}single/video/0/{item}/index.m3u8";
+                var checkInput = new KdyRequestCommonInput(tempUrl, HttpMethod.Get)
+                {
+                    Referer = "https://yun.139.com/",
+                    UserAgent =
+                        "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
+                };
+                var checkResult = await KdyRequestClientCommon.SendAsync(checkInput);
+                if (checkResult.HttpCode == HttpStatusCode.NotFound ||
+                    checkResult.HttpCode == HttpStatusCode.InternalServerError)
+                {
+                    //404 下一个检查
+                    continue;
+                }
+
+                downUrl = tempUrl;
+            }
+
+            if (string.IsNullOrEmpty(downUrl))
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "waiting code 03");
+            }
+
             await KdyRedisCache.GetCache()
                 .SetStringAsync(input.CacheKey, downUrl, new DistributedCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60 * 2)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60 * 12)
                 });
 
             return KdyResult.Success<string>(downUrl);
@@ -327,16 +387,11 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
                 var tempData = new
                 {
-                    contentID = inputItem.FileId,
-                    contentName = inputItem.NewName,
-                    commonAccountInfo = new
-                    {
-                        account = _account,
-                        accountType = _accountType
-                    }
+                    fileId = inputItem.FileId,
+                    name = inputItem.NewName,
                 };
 
-                KdyRequestCommonInput.SetPostData("/orchestration/personalCloud/content/v1.0/updateContentInfo",
+                KdyRequestCommonInput.SetPostData("/hcy/file/update",
                     tempData.ToJsonStr(),
                     isAjax: true);
                 var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
@@ -356,6 +411,30 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             }
 
             return KdyResult.Error(KdyResultCode.Error, "改名失败");
+        }
+
+        /// <summary>
+        /// 获取翻页标记缓存
+        /// </summary>
+        /// <returns></returns>
+        internal async Task<string> GetNextMarkAsync(string parentFileId, int page)
+        {
+            var nextMarkCacheKey = $"{CacheKeyConst.Pan139CacheKey.AliPageCacheKey}:{CloudConfig.ReqUserInfo}:{parentFileId}:{page}";
+            return await KdyRedisCache.GetCache().GetStringAsync(nextMarkCacheKey);
+        }
+
+        /// <summary>
+        /// 设置翻页标记缓存
+        /// </summary>
+        /// <returns></returns>
+        internal async Task SetNextMarkAsync(string parentFileId, int page, string nextMark)
+        {
+            var nextMarkCacheKey = $"{CacheKeyConst.Pan139CacheKey.AliPageCacheKey}:{CloudConfig.ReqUserInfo}:{parentFileId}:{page}";
+            await KdyRedisCache.GetCache()
+                .SetStringAsync(nextMarkCacheKey, nextMark, new DistributedCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
+                });
         }
     }
 }
