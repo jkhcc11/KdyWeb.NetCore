@@ -324,44 +324,46 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 return KdyResult.Error<string>(KdyResultCode.Error, "无效播放地址02");
             }
 
-            var prefix = downUrl.Substring(0, playListIndex);
-            var checkList = new[]
-            {
-                "1080",
-                "720",
-                "480"
-            };
-            downUrl = string.Empty;
+            #region 去除检查，访问playlist.m3u8 才会即时切片
+            //var prefix = downUrl.Substring(0, playListIndex);
+            //var checkList = new[]
+            //{
+            //    "1080",
+            //    "720",
+            //    "480"
+            //};
+            //downUrl = string.Empty;
 
-            foreach (var item in checkList)
-            {
-                var tempUrl = $"{prefix}single/video/0/{item}/index.m3u8";
-                var checkInput = new KdyRequestCommonInput(tempUrl, HttpMethod.Get)
-                {
-                    Referer = "https://yun.139.com/",
-                    UserAgent =
-                        "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
-                };
-                var checkResult = await KdyRequestClientCommon.SendAsync(checkInput);
-                if (checkResult.HttpCode == HttpStatusCode.NotFound ||
-                    checkResult.HttpCode == HttpStatusCode.InternalServerError)
-                {
-                    //404 下一个检查
-                    continue;
-                }
+            //foreach (var item in checkList)
+            //{
+            //    var tempUrl = $"{prefix}single/video/0/{item}/index.m3u8";
+            //    var checkInput = new KdyRequestCommonInput(tempUrl, HttpMethod.Get)
+            //    {
+            //        Referer = "https://yun.139.com/",
+            //        UserAgent =
+            //            "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
+            //    };
+            //    var checkResult = await KdyRequestClientCommon.SendAsync(checkInput);
+            //    if (checkResult.HttpCode == HttpStatusCode.NotFound ||
+            //        checkResult.HttpCode == HttpStatusCode.InternalServerError)
+            //    {
+            //        //404 下一个检查
+            //        continue;
+            //    }
 
-                downUrl = tempUrl;
-            }
+            //    downUrl = tempUrl;
+            //}
 
-            if (string.IsNullOrEmpty(downUrl))
-            {
-                return KdyResult.Error<string>(KdyResultCode.Error, "waiting code 03");
-            }
+            //if (string.IsNullOrEmpty(downUrl))
+            //{
+            //    return KdyResult.Error<string>(KdyResultCode.Error, "waiting code 03");
+            //} 
+            #endregion
 
             await KdyRedisCache.GetCache()
                 .SetStringAsync(input.CacheKey, downUrl, new DistributedCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60 * 12)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60 * 6)
                 });
 
             return KdyResult.Success<string>(downUrl);
