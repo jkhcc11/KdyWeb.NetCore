@@ -223,7 +223,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             await KdyRedisCache.GetCache()
                 .SetStringAsync(input.CacheKey, reqResult.LocationUrl, new DistributedCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60 * 2)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(25)
                 });
 
             return KdyResult.Success<string>(reqResult.LocationUrl);
