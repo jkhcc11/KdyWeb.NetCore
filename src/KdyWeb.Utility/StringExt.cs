@@ -685,6 +685,35 @@ namespace KdyWeb.Utility
                 .Replace("-", "")
                 .ToLower();
         }
+
+        /// <summary>
+        /// Aes加密返回十六进制
+        /// </summary>
+        /// <param name="plainText">待加密字符串</param>
+        /// <param name="key">密钥</param>
+        /// <returns></returns>
+        public static string ToAesHexExt(this string plainText, string key)
+        {
+            if (string.IsNullOrEmpty(plainText))
+                throw new ArgumentNullException(nameof(plainText));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+
+            using var aes = Aes.Create();
+            aes.Key = Encoding.UTF8.GetBytes(key); ;
+            aes.Mode = CipherMode.ECB; // 设置ECB模式
+            aes.Padding = PaddingMode.PKCS7; // 设置填充为PKCS7
+
+            var encryptor = aes.CreateEncryptor(aes.Key, null);
+            using var msEncrypt = new MemoryStream();
+            using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+            using (var swEncrypt = new StreamWriter(csEncrypt))
+            {
+                swEncrypt.Write(plainText);
+            }
+
+            return msEncrypt.ToArray().ByteToHexStr();
+        }
         #endregion
     }
 }

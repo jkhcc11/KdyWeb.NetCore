@@ -228,6 +228,27 @@ namespace KdyWeb.IService.CloudParse
         }
 
         /// <summary>
+        /// 蓝奏优享CacheKey
+        /// </summary>
+        public class LanZouYouXiangCacheKey
+        {
+            /// <summary>
+            /// 前缀 
+            /// </summary>
+            private const string Prefix = "LanZouYxCloud:";
+
+            /// <summary>
+            /// 下载缓存
+            /// </summary>
+            public const string DownCacheKey = Prefix + "DownUrl";
+
+            /// <summary>
+            /// 用户信息CacheKey
+            /// </summary>
+            public const string UserInfoCache = Prefix + "UserInfoCache";
+        }
+
+        /// <summary>
         /// 旧网盘类型 转  业务标识
         /// </summary>
         /// <returns></returns>

@@ -18,6 +18,7 @@ namespace KdyWeb.Entity.CloudParse
         public const string Pan139 = "Pan139";
         public const string TxShare = "TxShare";
         public const string Pan115 = "Pan115";
+        public const string LanZouYouXiang = "iLanZou";
 
         /// <summary>
         /// 云盘Cookie类型
