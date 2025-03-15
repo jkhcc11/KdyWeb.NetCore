@@ -238,6 +238,12 @@ namespace KdyWeb.Service.HttpCapture
                 UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"
             };
 
+            var cookie = KdyConfiguration.GetValue<string>(KdyWebServiceConst.DouBanCookieKey);
+            if (string.IsNullOrEmpty(cookie) == false)
+            {
+                reqInput.Cookie = cookie;
+            }
+
             //请求豆瓣
             var reqResult = await _kdyRequestClientCommon.SendAsync(reqInput);
             if (reqResult.IsSuccess == false)
