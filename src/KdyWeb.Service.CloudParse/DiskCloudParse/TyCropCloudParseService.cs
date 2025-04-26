@@ -327,15 +327,22 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             //1、获取下载
             var reqInput = new KdyRequestCommonInput(fileInfo.Data.TempDownUrl, HttpMethod.Get)
             {
+                TimeOut = 30,
                 Cookie = KdyRequestCommonInput.Cookie,
                 Referer = KdyRequestCommonInput.Referer,
-                ExtData = new KdyRequestCommonExtInput()
+                ExtData = new KdyRequestCommonExtInput(),
+                CustomProxy = KdyRequestCommonInput.CustomProxy
             };
+
             var reqResult = await KdyRequestClientCommon.SendAsync(reqInput);
             if (reqResult.LocationUrl.IsEmptyExt())
             {
-                KdyLog.LogWarning("{userNick}天翼获取企业云下载第一步异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
-                    CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
+                KdyLog.LogWarning("{userNick}天翼获取企业云下载第一步异常,Flag:{flag},Req:{input},ErrInfo:{msg},HttpReq:{httpReq}",
+                    CloudConfig.ReqUserInfo,
+                    currentFlag,
+                    input,
+                    reqResult.ErrMsg,
+                    reqInput.ToJsonStr());
                 return KdyResult.Error<string>(KdyResultCode.Error, "获取地址异常01,请稍等1-2分钟后重试");
             }
 
@@ -344,8 +351,12 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             reqResult = await KdyRequestClientCommon.SendAsync(reqInput);
             if (reqResult.LocationUrl.IsEmptyExt())
             {
-                KdyLog.LogWarning("{userNick}天翼获取企业云下载第二步异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
-                    CloudConfig.ReqUserInfo, currentFlag, input, reqResult.ErrMsg);
+                KdyLog.LogWarning("{userNick}天翼获取企业云下载第二步异常,Flag:{flag},Req:{input},ErrInfo:{msg},HttpReq:{httpReq}",
+                    CloudConfig.ReqUserInfo,
+                    currentFlag,
+                    input,
+                    reqResult.ErrMsg,
+                    reqInput.ToJsonStr());
                 return KdyResult.Error<string>(KdyResultCode.Error, "获取地址异常02,请稍等1-2分钟后重试");
             }
 

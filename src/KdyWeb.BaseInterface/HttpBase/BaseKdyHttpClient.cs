@@ -63,7 +63,8 @@ namespace KdyWeb.BaseInterface.HttpBase
                 var httpClientHandler = new HttpClientHandler
                 {
                     Proxy = input.CustomProxy,
-                    UseProxy = true
+                    UseProxy = true,
+                    AllowAutoRedirect = false
                 };
                 httpClient = new HttpClient(httpClientHandler);
             }
