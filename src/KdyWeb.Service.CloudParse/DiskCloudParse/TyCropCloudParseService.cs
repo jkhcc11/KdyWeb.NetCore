@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface;
@@ -54,6 +55,22 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 Referer = "https://b.cloud.189.cn/main.action"
             };
 
+            #region 代理信息
+            var proxyInfo = cloudConfig.GetProxyInfo();
+            if (proxyInfo == null)
+            {
+                return;
+            }
+
+            var webProxy = new WebProxy(new Uri($"http://{proxyInfo.ServerUrl}:{proxyInfo.Port}"));
+            if (string.IsNullOrEmpty(proxyInfo.UserName) == false &&
+                string.IsNullOrEmpty(proxyInfo.UserPwd) == false)
+            {
+                webProxy.Credentials = new NetworkCredential(proxyInfo.UserName, proxyInfo.UserPwd);
+            }
+
+            KdyRequestCommonInput.CustomProxy = webProxy;
+            #endregion
         }
 
         protected override List<BaseResultOut> JArrayHandler(JObject jObject)

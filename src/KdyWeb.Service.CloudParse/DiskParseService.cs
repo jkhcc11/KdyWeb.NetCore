@@ -16,6 +16,7 @@ using KdyWeb.BaseInterface;
 using KdyWeb.Dto.HttpCapture.KdyCloudParse;
 using KdyWeb.Entity.CloudParse.Enum;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using static KdyWeb.IService.CloudParse.CacheKeyConst;
 
 namespace KdyWeb.Service.CloudParse
@@ -369,8 +370,14 @@ namespace KdyWeb.Service.CloudParse
             CloudParseUserChildrenCacheItem subAccountCacheItem,
             BaseDownInput<string> downReqInput)
         {
+
+            //todo:临时redis获取 加管理功能后移除
+            var currentUserProxy = await KdyRedisCache.GetCache().GetStringAsync($"proxy:{subAccountCacheItem.UserId}");
             var cloudConfig = new BaseConfigInput(subAccountCacheItem.ShowName,
-                subAccountCacheItem.CookieInfo, subAccountCacheItem.Id);
+                subAccountCacheItem.CookieInfo, subAccountCacheItem.Id)
+            {
+                WebProxyInfo = currentUserProxy
+            };
 
             downReqInput.IsTs = isTs;
             var cloudParseService = DiskCloudParseFactory.CreateKdyCloudParseService(cloudParseType, cloudConfig);

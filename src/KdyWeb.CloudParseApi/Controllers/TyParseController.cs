@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Extensions;
+using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.CloudParse.Input;
 using KdyWeb.Dto.CloudParse;
@@ -15,6 +16,7 @@ using KdyWeb.IService.Selenium;
 using KdyWeb.Service.CloudParse.DiskCloudParse;
 using KdyWeb.Utility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace KdyWeb.CloudParseApi.Controllers
 {
@@ -27,13 +29,15 @@ namespace KdyWeb.CloudParseApi.Controllers
         private readonly ISubAccountService _subAccountService;
         private readonly ILoginUserInfo _loginUserInfo;
         private readonly ISeleniumLoginService _seleniumLoginService;
+        private readonly IKdyRedisCache _redisCache;
 
         public TyParseController(ISubAccountService subAccountService, ILoginUserInfo loginUserInfo,
-            ISeleniumLoginService seleniumLoginService)
+            ISeleniumLoginService seleniumLoginService, IKdyRedisCache redisCache)
         {
             _subAccountService = subAccountService;
             _loginUserInfo = loginUserInfo;
             _seleniumLoginService = seleniumLoginService;
+            _redisCache = redisCache;
         }
 
         #region 个人
@@ -148,7 +152,6 @@ namespace KdyWeb.CloudParseApi.Controllers
         {
             var subAccount = await _subAccountService.GetSubAccountCacheAsync(input.SubAccountId);
             CheckSubAccountAuth(_loginUserInfo, subAccount);
-
             var parseService = new TyCropCloudParseService(new BaseConfigInput(subAccount.ShowName,
                 subAccount.CookieInfo,
                 subAccount.Id));

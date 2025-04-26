@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Text;
 
 namespace KdyWeb.BaseInterface.BaseModel
@@ -72,5 +73,10 @@ namespace KdyWeb.BaseInterface.BaseModel
         /// </summary>
         /// <returns></returns>
         string GetString();
+
+        /// <summary>
+        /// 自定义代理
+        /// </summary>
+        WebProxy? CustomProxy { set; get; }
     }
 }

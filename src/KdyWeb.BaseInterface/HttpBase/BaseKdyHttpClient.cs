@@ -56,8 +56,24 @@ namespace KdyWeb.BaseInterface.HttpBase
         /// <returns></returns>
         public virtual async Task<TResult> SendAsync(TInput input)
         {
-            //这里的name必须和注入时保持一致时 注入的配置才生效
-            var httpClient = HttpClientFactory.CreateClient(KdyBaseConst.HttpClientName);
+            HttpClient? httpClient;
+            if (input.CustomProxy != null)
+            {
+                //配置代理
+                var httpClientHandler = new HttpClientHandler
+                {
+                    Proxy = input.CustomProxy,
+                    UseProxy = true
+                };
+                httpClient = new HttpClient(httpClientHandler);
+            }
+            else
+            {
+                //默认全局的
+                //这里的name必须和注入时保持一致时 注入的配置才生效
+                httpClient = HttpClientFactory.CreateClient(KdyBaseConst.HttpClientName);
+            }
+
             if (string.IsNullOrEmpty(input.BaseHost) == false)
             {
                 if (input.Url.StartsWith(input.BaseHost))

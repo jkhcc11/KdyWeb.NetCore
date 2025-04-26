@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using Exceptionless.Json;
@@ -66,6 +67,8 @@ namespace KdyWeb.Dto.KdyHttp
 
             return str;
         }
+
+        public WebProxy? CustomProxy { get; set; }
 
         /// <summary>
         /// 设置Post请求数据
