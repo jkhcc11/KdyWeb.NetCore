@@ -90,6 +90,11 @@
         public const string PlayerHost = "PlayerHost";
 
         /// <summary>
+        /// 云解析代理（Ty）
+        /// </summary>
+        public const string CloudParseProxyWithTy = "CloudParseProxy:Ty";
+
+        /// <summary>
         /// 解析配置节点
         /// </summary>
         public class KdyWebParseConfig

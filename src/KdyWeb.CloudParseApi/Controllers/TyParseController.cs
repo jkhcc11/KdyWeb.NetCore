@@ -29,15 +29,13 @@ namespace KdyWeb.CloudParseApi.Controllers
         private readonly ISubAccountService _subAccountService;
         private readonly ILoginUserInfo _loginUserInfo;
         private readonly ISeleniumLoginService _seleniumLoginService;
-        private readonly IKdyRedisCache _redisCache;
 
         public TyParseController(ISubAccountService subAccountService, ILoginUserInfo loginUserInfo,
-            ISeleniumLoginService seleniumLoginService, IKdyRedisCache redisCache)
+            ISeleniumLoginService seleniumLoginService)
         {
             _subAccountService = subAccountService;
             _loginUserInfo = loginUserInfo;
             _seleniumLoginService = seleniumLoginService;
-            _redisCache = redisCache;
         }
 
         #region 个人
