@@ -95,6 +95,11 @@
         public const string CloudParseProxyWithTy = "CloudParseProxy:Ty";
 
         /// <summary>
+        /// 腾讯接龙记录配置
+        /// </summary>
+        public const string TxDocRecordsKey = "TxDocRecordsConfig";
+
+        /// <summary>
         /// 解析配置节点
         /// </summary>
         public class KdyWebParseConfig

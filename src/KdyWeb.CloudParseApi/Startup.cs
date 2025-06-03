@@ -11,6 +11,8 @@ using KdyWeb.Service.Selenium;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.IdentityModel.Logging;
+using KdyWeb.BaseInterface.KdyOptions;
+using KdyWeb.Utility;
 
 namespace KdyWeb.CloudParseApi
 {
@@ -32,6 +34,8 @@ namespace KdyWeb.CloudParseApi
             services.AddTransient<ISeleniumLoginService, SeleniumLoginService>();
             services.AddTransient<ILoginByQrService, LoginByQrService>();
             services.AddKdyDefaultExt(Configuration);
+            //ÌÚÑ¶¼ÇÂ¼ÅäÖÃ
+            services.Configure<TxDocRecordsOption>(Configuration.GetSection(KdyWebServiceConst.TxDocRecordsKey));
 
             //Swagger
             services.AddSwaggerGen(option =>

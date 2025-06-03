@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
-using KdyWeb.BaseInterface.KdyRedis;
-using KdyWeb.CloudParse.Input;
+using KdyWeb.BaseInterface.KdyOptions;
 using KdyWeb.Dto.CloudParse;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.IService.CloudParse;
 using KdyWeb.IService.HttpCapture;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 
 namespace KdyWeb.CloudParseApi.Controllers
 {
@@ -19,14 +19,16 @@ namespace KdyWeb.CloudParseApi.Controllers
     {
         private readonly IParseSystemService _parseSystemService;
         private readonly IOneApiService _oneApiService;
-        private readonly IKdyRedisCache _redisCache;
+        private readonly ITxDocWebService _txDocWebService;
+        private readonly TxDocRecordsOption _txDocRecordsOption;
 
         public SystemController(IParseSystemService parseSystemService, IOneApiService oneApiService,
-            IKdyRedisCache redisCache)
+            ITxDocWebService txDocWebService, IOptions<TxDocRecordsOption> options)
         {
             _parseSystemService = parseSystemService;
             _oneApiService = oneApiService;
-            _redisCache = redisCache;
+            _txDocWebService = txDocWebService;
+            _txDocRecordsOption = options.Value;
         }
 
         /// <summary>
@@ -52,17 +54,21 @@ namespace KdyWeb.CloudParseApi.Controllers
         }
 
         /// <summary>
-        /// 创建代理缓存
+        /// 获取接龙记录
         /// </summary>
         /// <returns></returns>
-        [HttpGet("create-proxy")]
-        public async Task<KdyResult> CreateProxyAsync([FromQuery] long userId, [FromQuery] string proxyInfo)
+        [HttpGet("get-doc-records")]
+        [AllowAnonymous]
+        public async Task<KdyResult> CreateProxyAsync([FromQuery] string docUrl)
         {
-            //todo:临时redis获取 加管理功能后移除
-            await _redisCache.GetCache().SetStringAsync($"proxy:{userId}", proxyInfo);
+            var input = new GetSequenceRecordsInput()
+            {
+                DocUrl = docUrl,
+                UserLoginCookie = _txDocRecordsOption.UserLoginCookie
+            };
+            var result = await _txDocWebService.GetSequenceRecordsAsync(input);
 
-            var getTemp = await _redisCache.GetCache().GetStringAsync($"proxy:{userId}");
-            return KdyResult.Success($"操作成功：{getTemp}");
+            return result;
         }
     }
 }

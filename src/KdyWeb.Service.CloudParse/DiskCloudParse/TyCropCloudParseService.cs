@@ -157,7 +157,14 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             if (string.IsNullOrEmpty(input.KeyWord) == false)
             {
                 //关键字搜索
-                reqUrl = $"/user/getFullSearchList.action?corpId={input.ExtData}&corpFileSort=0&keyWord={input.KeyWord}&mediaType=&pageSize=20&searchDate=&searchId=&searchScore=&isSearchContent=1&noCache=0.{DateTime.Now.ToMillisecondTimestamp()}";
+                var tempKeyWord = input.KeyWord;
+                if (input.KeyWord.Length > 4)
+                {
+                    //202506不能带扩展名搜索
+                    tempKeyWord = input.KeyWord.Substring(0, input.KeyWord.Length - 4);
+                }
+
+                reqUrl = $"/user/getFullSearchList.action?corpId={input.ExtData}&corpFileSort=0&keyWord={tempKeyWord}&mediaType=0&pageSize=20&searchDate=&searchId=&searchScore=&isSearchContent=0&noCache=0.{DateTime.Now.ToMillisecondTimestamp()}";
             }
 
             KdyRequestCommonInput.SetGetRequest(reqUrl);

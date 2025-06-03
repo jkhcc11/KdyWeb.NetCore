@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -44,10 +45,10 @@ namespace KdyWeb.BaseInterface.Extensions
                 return string.Empty;
             }
 
-            var customAttributes = field.GetCustomAttributes(typeof(DisplayAttribute), false);
+            var customAttributes = field.GetCustomAttributes(typeof(DescriptionAttribute), false);
             if (customAttributes.Length == 0) return str;
-            var da = (DisplayAttribute)customAttributes[0];
-            return da.Description ?? string.Empty;
+            var da = (DescriptionAttribute)customAttributes[0];
+            return da.Description;
         }
 
         /// <summary>
