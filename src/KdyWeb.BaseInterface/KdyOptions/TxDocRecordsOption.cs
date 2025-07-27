@@ -49,45 +49,6 @@ namespace KdyWeb.BaseInterface.KdyOptions
     }
 
     /// <summary>
-    /// 奖励用户类型
-    /// </summary>
-    public enum GiftUserTypeEnum
-    {
-        /// <summary>
-        /// 普通用户
-        /// </summary>
-        [Description("普通用户")]
-        Normal = 0,
-
-        /// <summary>
-        /// 年卡扣卡
-        /// </summary>
-        [Description("扣卡")]
-        Card = 1,
-
-        /// <summary>
-        /// 免费次数
-        /// </summary>
-        [Description("冠亚奖")]
-        Free = 2,
-
-        /// <summary>
-        /// 时间区间价格（这段时间是一个固定价格）
-        /// </summary>
-        [Description("折扣奖")]
-        TimePrice = 3,
-
-        /// <summary>
-        /// Vip
-        /// </summary>
-        /// <remarks>
-        /// 15免1 人员
-        /// </remarks>
-        [Description("Vip免")]
-        VipUser = 99
-    }
-
-    /// <summary>
     /// 奖励用户Item
     /// </summary>
     public class GiftUserItem

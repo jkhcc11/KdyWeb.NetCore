@@ -10,4 +10,8 @@
 		<ProjectReference Include="..\KdyWeb.IRepository\KdyWeb.IRepository.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="SequenceRecord\" />
+	</ItemGroup>
+
 </Project>

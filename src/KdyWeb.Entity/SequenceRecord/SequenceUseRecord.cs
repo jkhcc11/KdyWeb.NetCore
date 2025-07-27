@@ -1,0 +1,69 @@
+﻿using System;
+using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Entity.SequenceRecord.Enum;
+
+namespace KdyWeb.Entity.SequenceRecord
+{
+    /// <summary>
+    /// 接龙使用记录
+    /// </summary>
+    /// <remarks>
+    /// 场地当天接龙的列表
+    /// </remarks>
+    public class SequenceUseRecord : BaseEntity<long>
+    {
+        /// <summary>
+        /// 接龙使用记录
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <param name="useDate">接龙使用时间</param>
+        /// <param name="currentPrice">当天结算价格</param>
+        public SequenceUseRecord(string userId, DateTime useDate, decimal currentPrice)
+        {
+            UserId = userId;
+            UseDate = useDate;
+            CurrentPrice = currentPrice;
+        }
+
+        /// <summary>
+        /// 用户Id
+        /// </summary>
+        public string UserId { get; protected set; }
+
+        /// <summary>
+        /// 用户显示名(冗余)
+        /// </summary>
+        /// <remarks>
+        ///  对应群昵称
+        /// </remarks>
+        public string? UserShowName { get; set; }
+
+        /// <summary>
+        /// 接龙使用时间
+        /// </summary>
+        public DateTime UseDate { get; protected set; }
+
+        /// <summary>
+        /// 当天结算价格
+        /// </summary>
+        public decimal CurrentPrice { get; protected set; }
+
+        /// <summary>
+        /// 奖励用户类型
+        /// </summary>
+        /// <remarks>
+        /// 如果有奖励用户
+        /// </remarks>
+        public GiftUserTypeEnum? GiftUserType { get; set; }
+
+        /// <summary>
+        /// 场馆Id
+        /// </summary>
+        public long VenuesId { get; set; }
+
+        /// <summary>
+        /// 场馆缩写（冗余）
+        /// </summary>
+        public string? VenuesShortName { get; set; }
+    }
+}
