@@ -45,6 +45,11 @@ namespace KdyWeb.CloudParseApi
                     Title = "ÍøÅÌ½âÎöApi",
                     Version = "v1"
                 });
+                option.SwaggerDoc("ppv1", new OpenApiInfo
+                {
+                    Title = "Æ¹ÅÒÇòÏà¹ØApi",
+                    Version = "ppv1"
+                });
 
                 var xmlPath = AppDomain.CurrentDomain.BaseDirectory;
                 var filePath = Directory.GetFiles(xmlPath, "KdyWeb.*.xml");
@@ -83,7 +88,7 @@ namespace KdyWeb.CloudParseApi
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-                    // c.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+                    c.SwaggerEndpoint("/swagger/ppv1/swagger.json", "ppv1");
                 });
             }
 

@@ -169,136 +169,136 @@ namespace KdyWeb.Service.HttpCapture
                 });
             }
 
-            SequenceRecordHandler(result.SequenceRecordItems);
-            ResultShowTextFormat(result);
+            //SequenceRecordHandler(result.SequenceRecordItems);
+            //ResultShowTextFormat(result);
             return KdyResult.Success(result);
         }
 
-        /// <summary>
-        /// 接龙记录处理
-        /// </summary>
-        private void SequenceRecordHandler(List<SequenceRecordItem> sequenceRecordItems)
-        {
-            var defaultPrice = _txDocRecordsOption.MaxPrice;
-            if (sequenceRecordItems.Count >= _txDocRecordsOption.NumberSteps)
-            {
-                defaultPrice = _txDocRecordsOption.MinPrice;
-            }
+        ///// <summary>
+        ///// 接龙记录处理
+        ///// </summary>
+        //private void SequenceRecordHandler(List<SequenceRecordItem> sequenceRecordItems)
+        //{
+        //    var defaultPrice = _txDocRecordsOption.MaxPrice;
+        //    if (sequenceRecordItems.Count >= _txDocRecordsOption.NumberSteps)
+        //    {
+        //        defaultPrice = _txDocRecordsOption.MinPrice;
+        //    }
 
-            //遍历接龙人数 开始计算价格
-            //有个去重，一个人当前接龙的奖励只有一次，有些是奖励人待接龙的
-            foreach (var item in sequenceRecordItems)
-            {
-                var current = defaultPrice;
+        //    //遍历接龙人数 开始计算价格
+        //    //有个去重，一个人当前接龙的奖励只有一次，有些是奖励人待接龙的
+        //    foreach (var item in sequenceRecordItems)
+        //    {
+        //        var current = defaultPrice;
 
-                var giftItem = _txDocRecordsOption.GiftUserItems.FirstOrDefault(a => a.UserId == item.UId);
-                if (giftItem == null)
-                {
-                    item.SetGiftUserType(GiftUserTypeEnum.Normal, current);
-                    continue;
-                }
+        //        var giftItem = _txDocRecordsOption.GiftUserItems.FirstOrDefault(a => a.UserId == item.UId);
+        //        if (giftItem == null)
+        //        {
+        //            item.SetGiftUserType(GiftUserTypeEnum.Normal, current);
+        //            continue;
+        //        }
 
-                if (sequenceRecordItems.Any(a => a.UId == giftItem.UserId &&
-                                                 a.GiftUserType != GiftUserTypeEnum.Normal))
-                {
-                    //多次的 只有一次有效
-                    item.SetGiftUserType(GiftUserTypeEnum.Normal, current);
-                    continue;
-                }
+        //        if (sequenceRecordItems.Any(a => a.UId == giftItem.UserId &&
+        //                                         a.GiftUserType != GiftUserTypeEnum.Normal))
+        //        {
+        //            //多次的 只有一次有效
+        //            item.SetGiftUserType(GiftUserTypeEnum.Normal, current);
+        //            continue;
+        //        }
 
 
-                switch (giftItem.GiftUserType)
-                {
+        //        switch (giftItem.GiftUserType)
+        //        {
 
-                    case GiftUserTypeEnum.TimePrice:
-                        {
-                            current = giftItem.GiftPrice;
-                            break;
-                        }
-                    case GiftUserTypeEnum.VipUser:
-                        {
-                            //todo:这里多名额的再说
-                            if (sequenceRecordItems.Count >= _txDocRecordsOption.VipFreeSteps)
-                            {
-                                current = 0;
-                                item.SetGiftUserType(giftItem.GiftUserType, current);
-                            }
-                            else
-                            {
-                                //原价
-                                item.SetGiftUserType(GiftUserTypeEnum.Normal, current);
-                            }
-                            break;
-                        }
-                    case GiftUserTypeEnum.Card:
-                    case GiftUserTypeEnum.Free:
-                        {
-                            current = 0;
-                            break;
-                        }
-                }
+        //            case GiftUserTypeEnum.TimePrice:
+        //                {
+        //                    current = giftItem.GiftPrice;
+        //                    break;
+        //                }
+        //            case GiftUserTypeEnum.VipUser:
+        //                {
+        //                    //todo:这里多名额的再说
+        //                    if (sequenceRecordItems.Count >= _txDocRecordsOption.VipFreeSteps)
+        //                    {
+        //                        current = 0;
+        //                        item.SetGiftUserType(giftItem.GiftUserType, current);
+        //                    }
+        //                    else
+        //                    {
+        //                        //原价
+        //                        item.SetGiftUserType(GiftUserTypeEnum.Normal, current);
+        //                    }
+        //                    break;
+        //                }
+        //            case GiftUserTypeEnum.Card:
+        //            case GiftUserTypeEnum.Free:
+        //                {
+        //                    current = 0;
+        //                    break;
+        //                }
+        //        }
 
-                if (giftItem.GiftUserType != GiftUserTypeEnum.VipUser)
-                {
-                    item.SetGiftUserType(giftItem.GiftUserType, current);
-                }
-            }
-        }
+        //        if (giftItem.GiftUserType != GiftUserTypeEnum.VipUser)
+        //        {
+        //            item.SetGiftUserType(giftItem.GiftUserType, current);
+        //        }
+        //    }
+        //}
 
-        /// <summary>
-        /// 文案格式化
-        /// </summary>
-        private void ResultShowTextFormat(GetSequenceRecordsOut result)
-        {
-            //文案格式化   总：xx  x付款+x扣卡（谁）
-            //                 其中 x个xx    x个xx
+        ///// <summary>
+        ///// 文案格式化
+        ///// </summary>
+        //private void ResultShowTextFormat(GetSequenceRecordsOut result)
+        //{
+        //    //文案格式化   总：xx  x付款+x扣卡（谁）
+        //    //                 其中 x个xx    x个xx
 
-            //扣卡价格
-            var cardList = result.SequenceRecordItems
-                .Where(a => a.GiftUserType == GiftUserTypeEnum.Card)
-                .ToList();
-            var cardStr =
-                cardList.Any() ?
-                    $"+{cardList.Count}扣卡（{string.Join("、", cardList.Select(a => a.ShowName))}）" : "";
+        //    //扣卡价格
+        //    var cardList = result.SequenceRecordItems
+        //        .Where(a => a.GiftUserType == GiftUserTypeEnum.Card)
+        //        .ToList();
+        //    var cardStr =
+        //        cardList.Any() ?
+        //            $"+{cardList.Count}扣卡（{string.Join("、", cardList.Select(a => a.ShowName))}）" : "";
 
-            //时间段价格
-            var giftList = result.SequenceRecordItems
-                .Where(a => a.GiftUserType == GiftUserTypeEnum.TimePrice)
-                .GroupBy(a => a.CurrentPrice)
-                .Select(a => new
-                {
-                    Count = a.Count(),
-                    CurrentPrice = a.Key
-                })
-                .Select(a => $"{a.Count}个{a.CurrentPrice}")
-                .ToList();
-            var giftStr = $"\r\n其中 {string.Join("    ", giftList)}";
+        //    //时间段价格
+        //    var giftList = result.SequenceRecordItems
+        //        .Where(a => a.GiftUserType == GiftUserTypeEnum.TimePrice)
+        //        .GroupBy(a => a.CurrentPrice)
+        //        .Select(a => new
+        //        {
+        //            Count = a.Count(),
+        //            CurrentPrice = a.Key
+        //        })
+        //        .Select(a => $"{a.Count}个{a.CurrentPrice}")
+        //        .ToList();
+        //    var giftStr = $"\r\n其中 {string.Join("    ", giftList)}";
 
-            //冠亚免
-            var freeList = result.SequenceRecordItems
-                .Where(a => a.GiftUserType == GiftUserTypeEnum.Free)
-                .ToList();
-            var freeStr =
-                freeList.Any() ?
-                    $"\r\n{freeList.Count}个冠亚免（{string.Join("、", freeList.Select(a => a.ShowName))}）" : "";
+        //    //冠亚免
+        //    var freeList = result.SequenceRecordItems
+        //        .Where(a => a.GiftUserType == GiftUserTypeEnum.Free)
+        //        .ToList();
+        //    var freeStr =
+        //        freeList.Any() ?
+        //            $"\r\n{freeList.Count}个冠亚免（{string.Join("、", freeList.Select(a => a.ShowName))}）" : "";
 
-            //vip免
-            var vipFreeList = result.SequenceRecordItems
-                .Where(a => a.GiftUserType == GiftUserTypeEnum.VipUser)
-                .ToList();
-            var vipFreeStr =
-                vipFreeList.Any() ?
-                    $"\r\n{vipFreeList.Count}个Vip免（{string.Join("、", vipFreeList.Select(a => a.ShowName))}）" : "";
+        //    //vip免
+        //    var vipFreeList = result.SequenceRecordItems
+        //        .Where(a => a.GiftUserType == GiftUserTypeEnum.VipUser)
+        //        .ToList();
+        //    var vipFreeStr =
+        //        vipFreeList.Any() ?
+        //            $"\r\n{vipFreeList.Count}个Vip免（{string.Join("、", vipFreeList.Select(a => a.ShowName))}）" : "";
 
-            var payUserCount = result.SequenceRecordItems
-                .Count(a => a.GiftUserType == GiftUserTypeEnum.Normal ||
-                            a.GiftUserType == GiftUserTypeEnum.TimePrice);
+        //    var payUserCount = result.SequenceRecordItems
+        //        .Count(a => a.GiftUserType == GiftUserTypeEnum.Normal ||
+        //                    a.GiftUserType == GiftUserTypeEnum.TimePrice);
 
-            result.ShowText = $"总：{result.SequenceRecordItems.Count} {payUserCount}付款 {cardStr}" +
-                              $"{giftStr}" +
-                              $"{freeStr}" +
-                              $"{vipFreeStr}";
+        //    result.ShowText = $"总：{result.SequenceRecordItems.Count} {payUserCount}付款 {cardStr}" +
+        //                      $"{giftStr}" +
+        //                      $"{freeStr}" +
+        //                      $"{vipFreeStr}";
 
-        }
+        //}
     }
 }

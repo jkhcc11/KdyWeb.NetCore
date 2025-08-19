@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\common.props" />
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>bin\Debug\netcoreapp3.1\KdyWeb.Dto.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\KdyWeb.CloudParse\KdyWeb.CloudParse.csproj" />
+		<ProjectReference Include="..\KdyWeb.Entity\KdyWeb.Entity.csproj" />
+		<ProjectReference Include="..\KdyWeb.PageParse\KdyWeb.PageParse.csproj" />
+		<ProjectReference Include="..\KdyWeb.WebParse\KdyWeb.WebParse.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="新文件夹\" />
+	</ItemGroup>
+
+</Project>

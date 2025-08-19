@@ -1,4 +1,5 @@
-﻿using KdyWeb.BaseInterface.BaseModel;
+﻿using System.ComponentModel.DataAnnotations;
+using KdyWeb.BaseInterface.BaseModel;
 
 namespace KdyWeb.Entity.SequenceRecord
 {
@@ -10,6 +11,10 @@ namespace KdyWeb.Entity.SequenceRecord
     /// </remarks>
     public class SequenceUserRecord : BaseEntity<long>
     {
+        public const int UserNickNameLength = 20;
+        public const int UserShowNameLength = 20;
+        public const int UserIdLength = 20;
+
         /// <summary>
         /// 用户接龙列表
         /// </summary>
@@ -26,6 +31,7 @@ namespace KdyWeb.Entity.SequenceRecord
         /// <summary>
         /// 用户Id
         /// </summary>
+        [StringLength(UserIdLength)]
         public string UserId { get; set; }
 
         /// <summary>
@@ -34,6 +40,7 @@ namespace KdyWeb.Entity.SequenceRecord
         /// <remarks>
         ///  对应微信昵称
         /// </remarks>
+        [StringLength(UserNickNameLength)]
         public string UserNickName { get; protected set; }
 
         /// <summary>
@@ -42,6 +49,7 @@ namespace KdyWeb.Entity.SequenceRecord
         /// <remarks>
         ///  对应群昵称
         /// </remarks>
+        [StringLength(UserShowNameLength)]
         public string UserShowName { get; protected set; }
     }
 }

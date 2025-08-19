@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SequenceRecord.Enum;
 
@@ -28,6 +29,7 @@ namespace KdyWeb.Entity.SequenceRecord
         /// <summary>
         /// 用户Id
         /// </summary>
+        [StringLength(SequenceUserRecord.UserIdLength)]
         public string UserId { get; protected set; }
 
         /// <summary>
@@ -36,7 +38,17 @@ namespace KdyWeb.Entity.SequenceRecord
         /// <remarks>
         ///  对应群昵称
         /// </remarks>
+        [StringLength(SequenceUserRecord.UserShowNameLength)]
         public string? UserShowName { get; set; }
+
+        /// <summary>
+        /// 用户昵称(冗余)
+        /// </summary>
+        /// <remarks>
+        ///  对应微信昵称
+        /// </remarks>
+        [StringLength(SequenceUserRecord.UserNickNameLength)]
+        public string? UserNickName { get; set; }
 
         /// <summary>
         /// 接龙使用时间
@@ -64,6 +76,18 @@ namespace KdyWeb.Entity.SequenceRecord
         /// <summary>
         /// 场馆缩写（冗余）
         /// </summary>
+        [StringLength(VenuesConfig.ShortNameLength)]
         public string? VenuesShortName { get; set; }
+
+        /// <summary>
+        /// 更新当前价格
+        /// </summary>
+        /// <param name="giftUserType">奖励用户类型</param>
+        /// <param name="currentPrice">当前价格</param>
+        public void UpdateCurrentPrice(GiftUserTypeEnum giftUserType, decimal currentPrice)
+        {
+            GiftUserType = giftUserType;
+            CurrentPrice = currentPrice;
+        }
     }
 }

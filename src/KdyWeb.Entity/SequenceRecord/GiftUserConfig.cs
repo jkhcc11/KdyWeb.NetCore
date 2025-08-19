@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Entity.SequenceRecord.Enum;
 
@@ -9,6 +10,8 @@ namespace KdyWeb.Entity.SequenceRecord
     /// </summary>
     public class GiftUserConfig : BaseEntity<long>
     {
+        public const int GiftUserConfigRemarkLength = 100;
+
         /// <summary>
         /// 奖励用户记录
         /// </summary>
@@ -29,6 +32,7 @@ namespace KdyWeb.Entity.SequenceRecord
         /// <summary>
         /// 用户Id
         /// </summary>
+        [StringLength(SequenceUserRecord.UserIdLength)]
         public string UserId { get; protected set; }
 
         /// <summary>
@@ -42,6 +46,7 @@ namespace KdyWeb.Entity.SequenceRecord
         /// <remarks>
         ///  对应群昵称
         /// </remarks>
+        [StringLength(SequenceUserRecord.UserShowNameLength)]
         public string? UserShowName { get; set; }
 
         /// <summary>
@@ -71,6 +76,12 @@ namespace KdyWeb.Entity.SequenceRecord
         /// 奖励绑定场馆使用
         /// </remarks>
         public long VenuesId { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [StringLength(GiftUserConfigRemarkLength)]
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 禁用
