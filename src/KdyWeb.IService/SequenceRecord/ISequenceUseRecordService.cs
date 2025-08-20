@@ -28,5 +28,20 @@ namespace KdyWeb.IService.SequenceRecord
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<PageList<QueryPageSequenceUserRecordDto>>> QueryPageSequenceUserRecordAsync(QueryPageSequenceUserRecordInput input);
+
+        /// <summary>
+        /// 更新接龙使用记录
+        /// </summary>
+        /// <remarks>
+        /// 人工干预调整奖励类型和价格
+        /// </remarks>
+        /// <returns></returns>
+        Task<KdyResult> UpdateSequenceUseRecordAsync(UpdateSequenceUseRecordInput input);
+
+        /// <summary>
+        /// 获取所有用户接龙记录
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult<List<SelectedItemOut>>> GetAllUserRecordAsync();
     }
 }

@@ -70,6 +70,24 @@ namespace KdyWeb.Entity.SequenceRecord
         public decimal GiftPrice { get; set; }
 
         /// <summary>
+        /// 奖励有效次数
+        /// </summary>
+        /// <remarks>
+        ///  1、折扣卡金额大于0不用管次数
+        ///  2、只有擂主免和折扣免才需要管这个次数
+        /// </remarks>
+        public int? GiftValidCount { get; set; }
+
+        /// <summary>
+        /// 奖励已用次数
+        /// </summary>
+        /// <remarks>
+        /// 1、只有擂主免和折扣免才需要管这个次数
+        /// 2、只有改了日期、时才可以重置次次数
+        /// </remarks>
+        public int GiftUseCount { get; protected set; }
+
+        /// <summary>
         /// 场馆Id
         /// </summary>
         /// <remarks>
@@ -84,6 +102,11 @@ namespace KdyWeb.Entity.SequenceRecord
         public string? Remark { get; set; }
 
         /// <summary>
+        /// 是否变更(忽略dB查询，仅为了标识需要更新)
+        /// </summary>
+        public bool IsChange { get; protected set; }
+
+        /// <summary>
         /// 禁用
         /// </summary>
         public void Ban()
@@ -92,11 +115,79 @@ namespace KdyWeb.Entity.SequenceRecord
         }
 
         /// <summary>
+        /// 启用
+        /// </summary>
+        public void Enable()
+        {
+            IsEnable = true;
+        }
+
+        /// <summary>
+        /// 设置奖励开始时间
+        /// </summary>
+        public void SetGiftStartTime(DateTime giftStartTime)
+        {
+            GiftStartTime = giftStartTime;
+        }
+
+        /// <summary>
         /// 设置奖励结束时间
         /// </summary>
         public void SetGiftEndTime(DateTime giftEndTime)
         {
             GiftEndTime = giftEndTime;
+        }
+
+        /// <summary>
+        /// 初始化次数
+        /// </summary>
+        public void InitGiftUseCount()
+        {
+            GiftUseCount = 0;
+        }
+
+        /// <summary>
+        /// 增加使用次数
+        /// </summary>
+        public void AddGiftUseCount()
+        {
+            GiftUseCount++;
+            IsChange = true;
+        }
+
+        /// <summary>
+        /// 减少使用次数
+        /// </summary>
+        /// <remarks>
+        ///  一般用于手动重置时
+        /// </remarks>
+        public void SubtractUseCount()
+        {
+            if (GiftUseCount <= 0)
+            {
+                return;
+            }
+
+            GiftUseCount--;
+        }
+
+        /// <summary>
+        /// 判断奖励是否可用
+        /// </summary>
+        /// <remarks>
+        ///  判断次数的需要管，其他不用管
+        /// </remarks>
+        /// <returns></returns>
+        public bool IsCan()
+        {
+            if (GiftUserType.IsTotalCount(GiftPrice) == false)
+            {
+                return true;
+            }
+
+            //统计次数且 实际使用小于有效次数
+            return GiftUseCount < GiftValidCount;
+          
         }
     }
 }

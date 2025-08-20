@@ -74,32 +74,74 @@ namespace KdyWeb.Service.SequenceRecord
             .Select(a => new SequenceUserRecord(a.UId, a.NickName, a.ShowName))
             .ToList();
 
-            var totalDate = DateTime.Now.Date;
-            if (input.TotalDate.HasValue)
-            {
-                totalDate = input.TotalDate.Value.Date;
-            }
+            //接龙时间为准
+            var totalDate = txDocRecord.Data.ActivityTime;
 
             //4、获取场馆奖励用户信息
             var dbGiftUserConfig = await _giftUserConfigRepository.GetValidGiftUserConfigByVenuesIdAsync(dbVenues.Id,
                 totalDate);
 
             #region 5、计算奖励
-            List<SequenceUseRecord> dbUseRecord;
+            //基础价格
+            var basePrice = dbVenues.MaxPrice;
+            if (dbUserRecord.Count >= dbVenues.NumberSteps)
+            {
+                basePrice = dbVenues.MinPrice;
+            }
+
+            //vip用户使用记录
+            var vipUserUseRecords = await _sequenceUseRecordRepository
+                .GetAsNoTracking()
+                .Where(a => a.GiftUserType == GiftUserTypeEnum.VipUser &&
+                            a.UseDate != totalDate)
+                .GroupBy(a => a.UserId)
+                .Select(a => new
+                {
+                    UserId = a.Key,
+                    UseCount = a.Count()
+                })
+                .ToDictionaryAsync(a => a.UserId, a => a.UseCount);
+
+            var dbUseRecord = new List<SequenceUseRecord>();
             if (dbVenues.IsEnableGift)
             {
                 //启用奖励计算
-                dbUseRecord = TotalUserGift(totalDate, dbVenues,
+                dbUseRecord = TotalUserGift(totalDate, basePrice, dbVenues,
                     dbGiftUserConfig,
                     dbUserRecord);
             }
             else
             {
-                //未启用奖励计算
-                dbUseRecord = TotalUserNormal(totalDate, dbVenues,
-                    dbGiftUserConfig.Where(a => a.GiftUserType == GiftUserTypeEnum.VipUser).ToList(),
-                    dbUserRecord);
+                #region 未启用奖励的普通用户
+                var vipUserIds = dbGiftUserConfig
+                        .Where(a => a.GiftUserType == GiftUserTypeEnum.VipUser)
+                        .Select(a => a.UserId)
+                        .ToList();
+                foreach (var normalItem in dbUserRecord.Where(a => vipUserIds.Contains(a.UserId) == false))
+                {
+                    var currentUseRecord = new SequenceUseRecord(normalItem.UserId,
+                        totalDate, basePrice)
+                    {
+                        UserShowName = normalItem.UserShowName,
+                        UserNickName = normalItem.UserNickName,
+                        VenuesId = dbVenues.Id,
+                        VenuesShortName = dbVenues.ShortName
+                    };
+                    dbUseRecord.Add(currentUseRecord);
+                }
+                #endregion
             }
+
+            //vip用户单独
+            var vipUser = TotalVipUser(totalDate, basePrice, dbVenues,
+                dbGiftUserConfig,
+                dbUserRecord,
+                vipUserUseRecords);
+            if (vipUser.Any())
+            {
+                dbUseRecord.AddRange(vipUser);
+            }
+
             #endregion
 
             #region 6、入库
@@ -117,26 +159,25 @@ namespace KdyWeb.Service.SequenceRecord
             if (newUserRecords.Any())
             {
                 isSaveChange = true;
+                //根据userId去重
+                newUserRecords = newUserRecords.DistinctBy(a => a.UserId).ToList();
                 //入库
                 await _sequenceUserRecordRepository.CreateAsync(newUserRecords);
             }
             #endregion
 
-            #region 不存在用户接龙记录就入库
-            var currentUseRecords = dbUseRecord.Select(a => a.UserId).ToList();
-            var alreadyUseRecords = await _sequenceUseRecordRepository
-                .GetQuery()
-                .Where(a => currentUseRecords.Contains(a.UserId) &&
-                            a.UseDate == totalDate)
-                .Select(a => a.UserId)
-                .ToListAsync();
-            var newUseRecords = dbUseRecord
-                .Where(a => alreadyUseRecords.Contains(a.UserId) == false)
-                .ToList();
-            if (newUseRecords.Any())
+            #region 接龙记录新增(特殊)
+            if (dbUseRecord.Any())
             {
                 isSaveChange = true;
-                await _sequenceUseRecordRepository.BatchCreateAsync(newUseRecords);
+                await _sequenceUseRecordRepository.BatchCreateAsync(dbUseRecord);
+            }
+
+            var changeConfig = dbGiftUserConfig.Where(a => a.IsChange).ToList();
+            if (changeConfig.Any())
+            {
+                //只有更新过的
+                _giftUserConfigRepository.Update(changeConfig);
             }
 
             #endregion
@@ -148,9 +189,8 @@ namespace KdyWeb.Service.SequenceRecord
             #endregion
 
             var result = dbUseRecord.MapToListExt<QueryPageSequenceUseRecordDto>();
-            return KdyResult.Success(result);
+            return KdyResult.Success(result, "操作成功");
         }
-
 
         /// <summary>
         /// 分页获取接龙使用记录
@@ -162,7 +202,7 @@ namespace KdyWeb.Service.SequenceRecord
             {
                 new()
                 {
-                    Key = nameof(SequenceUseRecord.CreatedTime),
+                    Key = nameof(SequenceUseRecord.UseDate),
                     OrderBy = KdyEfOrderBy.Desc
                 }
             };
@@ -174,15 +214,24 @@ namespace KdyWeb.Service.SequenceRecord
                                          a.UserNickName.Contains(input.KeyWord));
             }
 
-            if (input.StartTime.HasValue)
+            if (input.UseDate.HasValue)
             {
-                query = query.Where(a => a.UseDate >= input.StartTime);
+                //精确过滤
+                query = query.Where(a => a.UseDate == input.UseDate);
+            }
+            else
+            {
+                if (input.StartTime.HasValue)
+                {
+                    query = query.Where(a => a.UseDate >= input.StartTime);
+                }
+
+                if (input.EndTime.HasValue)
+                {
+                    query = query.Where(a => a.UseDate <= input.EndTime);
+                }
             }
 
-            if (input.EndTime.HasValue)
-            {
-                query = query.Where(a => a.UseDate <= input.EndTime);
-            }
 
             var pageList = await query
                 .GetDtoPageListAsync<SequenceUseRecord, QueryPageSequenceUseRecordDto>(input);
@@ -216,6 +265,66 @@ namespace KdyWeb.Service.SequenceRecord
             return KdyResult.Success(pageList);
         }
 
+        /// <summary>
+        /// 更新接龙使用记录
+        /// </summary>
+        /// <remarks>
+        /// 人工干预调整奖励类型和价格
+        /// </remarks>
+        /// <returns></returns>
+        public async Task<KdyResult> UpdateSequenceUseRecordAsync(UpdateSequenceUseRecordInput input)
+        {
+            var dbEntity = await _sequenceUseRecordRepository.FirstOrDefaultAsync(a => a.Id == input.Id);
+            if (dbEntity == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无效Id");
+            }
+
+            if (dbEntity.GiftUserType != input.GiftUserType)
+            {
+                if (dbEntity.GiftUserType.HasValue &&
+                    dbEntity.GiftUserType.Value.IsTotalCount(dbEntity.CurrentPrice) &&
+                    input.CurrentPrice > 0)
+                {
+                    //这里需要根据用户Id把奖励减去
+                    await _giftUserConfigRepository.SubtractUseCountAsync(dbEntity.UserId,
+                        dbEntity.GiftUserType.Value,
+                        dbEntity.VenuesId,
+                        dbEntity.UseDate);
+                }
+                else if (input.GiftUserType.HasValue &&
+                          input.GiftUserType.Value.IsTotalCount(input.CurrentPrice))
+
+                {
+                    //这里需要根据用户Id把奖励使用加上
+                    await _giftUserConfigRepository.AddGiftUseCountAsync(dbEntity.UserId,
+                        input.GiftUserType.Value,
+                        dbEntity.VenuesId,
+                        dbEntity.UseDate);
+                }
+            }
+
+            dbEntity.UpdateCurrentPrice(input.GiftUserType, input.CurrentPrice);
+            _sequenceUseRecordRepository.Update(dbEntity);
+
+
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 获取所有用户接龙记录
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult<List<SelectedItemOut>>> GetAllUserRecordAsync()
+        {
+            var query = _sequenceUserRecordRepository.GetQuery();
+            var result = await query
+                .Select(a => new SelectedItemOut(a.UserShowName, a.UserId))
+                .ToListAsync();
+            return KdyResult.Success(result.OrderBy(a => a.Text).ToList());
+        }
+
         #region 私有
         /// <summary>
         /// 获取接龙缓存
@@ -224,7 +333,8 @@ namespace KdyWeb.Service.SequenceRecord
         private async Task<KdyResult<GetSequenceRecordsOut>> GetSequenceUseRecordCacheByTxDocAsync(CreateSequenceUseRecordByTxDocInput input)
         {
             var cacheKey = $"{input.TxDocUrl.Md5Ext()}";
-            if (input.IsForcedSync)
+            if (input.IsForcedSync.HasValue &&
+                input.IsForcedSync.Value)
             {
                 await _redisCache.GetCache().RemoveAsync(cacheKey);
             }
@@ -251,25 +361,18 @@ namespace KdyWeb.Service.SequenceRecord
         }
 
         /// <summary>
-        /// 统计用户奖励计算（有比赛奖励计算）
+        /// 统计用户奖励计算（有比赛奖励计算，不涉及vip用户）
         /// </summary>
+        /// <param name="totalDate">统计日期</param>
+        /// <param name="basePrice">基础价格</param>
+        /// <param name="venuesConfig">球馆配置</param>
+        /// <param name="giftUserConfig">奖励用户配置</param>
+        /// <param name="sequenceUserRecords">当前接龙记录</param>
         /// <returns></returns>
-        private List<SequenceUseRecord> TotalUserGift(DateTime totalDate, VenuesConfig venuesConfig, List<GiftUserConfig> giftUserConfig,
-            List<SequenceUserRecord> sequenceUserRecords)
+        private List<SequenceUseRecord> TotalUserGift(DateTime totalDate, decimal basePrice, VenuesConfig venuesConfig,
+            List<GiftUserConfig> giftUserConfig, List<SequenceUserRecord> sequenceUserRecords)
         {
-            //vip优先、擂台、vip免、娱乐赛奖励、vip卡、阶梯价
-
-            //基础价格
-            var basePrice = venuesConfig.MaxPrice;
-            if (sequenceUserRecords.Count >= venuesConfig.NumberSteps)
-            {
-                basePrice = venuesConfig.MinPrice;
-            }
-
-            //是否启用vip计算 xx免1等
-            var isTotalVip = sequenceUserRecords.Count >= venuesConfig.VipFreeSteps;
-            var vipNumber = sequenceUserRecords.Count / venuesConfig.VipFreeSteps;
-
+            //擂台、娱乐赛奖励、扣卡、阶梯价
             var result = new List<SequenceUseRecord>();
             foreach (var userRecord in sequenceUserRecords)
             {
@@ -278,6 +381,12 @@ namespace KdyWeb.Service.SequenceRecord
                     .Where(a => a.UserId == userRecord.UserId)
                     .OrderByDescending(a => a.GiftUserType.GetHashCode())
                     .ToList();
+                if (currentUserGiftConfig.Any(a => a.GiftUserType == GiftUserTypeEnum.VipUser))
+                {
+                    //vip单独计算
+                    continue;
+                }
+
                 var currentUseRecord = new SequenceUseRecord(userRecord.UserId,
                     totalDate, basePrice)
                 {
@@ -295,27 +404,17 @@ namespace KdyWeb.Service.SequenceRecord
                     continue;
                 }
 
-                //当前vip数量   可能存在多个vip数量 根据人数阶梯来
-                var currentVipCount = result.Count(a => a.GiftUserType is GiftUserTypeEnum.VipUser);
-                if (isTotalVip &&
-                    currentVipCount < vipNumber &&
-                    currentUserGiftConfig.Any(a => a.GiftUserType is GiftUserTypeEnum.VipUser))
-                {
-                    //vip用户
-                    currentUseRecord.UpdateCurrentPrice(GiftUserTypeEnum.VipUser, 0);
-                    result.Add(currentUseRecord);
-                    continue;
-                }
-
                 //按照奖励类型顺序即可，多个奖励只有一个生效  不要是vip
-                var firstUserGiftConfig = currentUserGiftConfig
-                    .Where(a => a.GiftUserType != GiftUserTypeEnum.VipUser)
-                    .OrderByDescending(a => a.GiftUserType.GetHashCode())
-                    .FirstOrDefault();
-                if (firstUserGiftConfig != null)
+                var firstUserGiftConfig = currentUserGiftConfig.FirstOrDefault();
+                if (firstUserGiftConfig != null && firstUserGiftConfig.IsCan())
                 {
                     //vip有多个奖励的，就以此来即可
                     currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
+                    //需要统计次数的
+                    if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice))
+                    {
+                        firstUserGiftConfig.AddGiftUseCount();
+                    }
                 }
 
                 result.Add(currentUseRecord);
@@ -325,49 +424,102 @@ namespace KdyWeb.Service.SequenceRecord
         }
 
         /// <summary>
-        /// 统计用户普通计算（没有启用奖励仅普通）
+        /// vip用户单独计算
         /// </summary>
+        /// <param name="totalDate">统计日期</param>
+        /// <param name="basePrice">基础价格</param>
+        /// <param name="venuesConfig">球馆配置</param>
+        /// <param name="giftUserConfig">所有奖励用户配置</param>
+        /// <param name="sequenceUserRecords">当前接龙记录</param>
+        /// <param name="vipUserUseRecords">vip用户的使用次数</param>
         /// <returns></returns>
-        private List<SequenceUseRecord> TotalUserNormal(DateTime totalDate, VenuesConfig venuesConfig,
-            List<GiftUserConfig> vipGiftUserConfig,
-            List<SequenceUserRecord> sequenceUserRecords)
+        private List<SequenceUseRecord> TotalVipUser(DateTime totalDate, decimal basePrice, VenuesConfig venuesConfig,
+            List<GiftUserConfig> giftUserConfig, List<SequenceUserRecord> sequenceUserRecords,
+            Dictionary<string, int> vipUserUseRecords)
         {
-            //基础价格
-            var basePrice = venuesConfig.MaxPrice;
-            if (sequenceUserRecords.Count >= venuesConfig.NumberSteps)
-            {
-                basePrice = venuesConfig.MinPrice;
-            }
+            var result = new List<SequenceUseRecord>();
+            //1、没有存在使用记录的，直接用优惠，存在使用记录的，次数低的用优惠
+            //2、如果不能用vip优惠，那么这个人可以用比赛奖励等
 
             //是否启用vip计算 xx免1等
-            var isTotalVip = sequenceUserRecords.Count >= venuesConfig.VipFreeSteps;
+            //var isTotalVip = sequenceUserRecords.Count >= venuesConfig.VipFreeSteps;
             var vipNumber = sequenceUserRecords.Count / venuesConfig.VipFreeSteps;
-            var result = new List<SequenceUseRecord>();
-            foreach (var userRecord in sequenceUserRecords)
-            {
-                var currentUseRecord = new SequenceUseRecord(userRecord.UserId,
-                    totalDate, basePrice)
-                {
-                    UserShowName = userRecord.UserShowName,
-                    UserNickName = userRecord.UserNickName,
-                    VenuesId = venuesConfig.Id,
-                    VenuesShortName = venuesConfig.ShortName
-                };
+            //if (isTotalVip == false)
+            //{
+            //    //不够直接跳过
+            //    return result;
+            //}
 
-                //当前vip数量   可能存在多个vip数量 根据人数阶梯来
-                var currentVipCount = result.Count(a => a.GiftUserType is GiftUserTypeEnum.VipUser);
-                if (isTotalVip &&
-                    currentVipCount < vipNumber &&
-                    vipGiftUserConfig.Any(a => a.GiftUserType is GiftUserTypeEnum.VipUser &&
-                                               a.UserId == userRecord.UserId))
+            //vip奖励用户Id
+            var vipUserIds = giftUserConfig
+                .Where(a => a.GiftUserType == GiftUserTypeEnum.VipUser)
+                .Select(a => a.UserId)
+                .ToArray();
+            //当前接龙有资格的vip用户列表
+            var currentVipUserRecords = sequenceUserRecords
+                .Where(a => vipUserIds.Contains(a.UserId))
+                .ToList();
+
+            //构造当前接龙vip用户的使用记录
+            var currentVipUseRecords = new List<(string userId, int recordCount)>();
+            foreach (var currentVipItem in currentVipUserRecords)
+            {
+                if (vipUserUseRecords.TryGetValue(currentVipItem.UserId, out var record))
                 {
-                    //vip用户
-                    currentUseRecord.UpdateCurrentPrice(GiftUserTypeEnum.VipUser, 0);
-                    result.Add(currentUseRecord);
+                    //存在记录的
+                    currentVipUseRecords.Add((currentVipItem.UserId, record));
                     continue;
                 }
 
-                result.Add(currentUseRecord);
+                currentVipUseRecords.Add((currentVipItem.UserId, 0));
+            }
+
+            //排序后然后计算
+            foreach (var vipDic in currentVipUseRecords.OrderBy(a => a.recordCount))
+            {
+                var userRecord = currentVipUserRecords.First(a => a.UserId == vipDic.userId);
+                if (result.Count < vipNumber &&
+                    result.Any(a => a.UserId == vipDic.userId) == false)
+                {
+                    //一个vip用户只能算一次
+                    #region 未超额，vip费用
+                    result.Add(new SequenceUseRecord(userRecord.UserId, totalDate, 0)
+                    {
+                        UserShowName = userRecord.UserShowName,
+                        UserNickName = userRecord.UserNickName,
+                        VenuesId = venuesConfig.Id,
+                        VenuesShortName = venuesConfig.ShortName,
+                        GiftUserType = GiftUserTypeEnum.VipUser,
+                        UseRecordRemark = $"已使用：{vipDic.recordCount}次"
+                    });
+                    #endregion
+                }
+                else
+                {
+                    #region 超额，计算普通费用，按照奖励类型顺序即可，多个奖励只有一个生效  不要是vip
+                    var currentUseRecord = new SequenceUseRecord(userRecord.UserId, totalDate, basePrice)
+                    {
+                        UserShowName = userRecord.UserShowName,
+                        UserNickName = userRecord.UserNickName,
+                        VenuesId = venuesConfig.Id,
+                        VenuesShortName = venuesConfig.ShortName
+                    };
+
+                    var firstUserGiftConfig = giftUserConfig
+                        .Where(a => a.GiftUserType != GiftUserTypeEnum.VipUser &&
+                                    a.UserId == vipDic.userId)
+                        .OrderByDescending(a => a.GiftUserType.GetHashCode())
+                        .FirstOrDefault();
+                    if (venuesConfig.IsEnableGift &&
+                        firstUserGiftConfig != null)
+                    {
+                        //启用了奖励计算且vip有多个奖励的，就以此来即可
+                        currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
+                    }
+
+                    result.Add(currentUseRecord);
+                    #endregion
+                }
             }
 
             return result;

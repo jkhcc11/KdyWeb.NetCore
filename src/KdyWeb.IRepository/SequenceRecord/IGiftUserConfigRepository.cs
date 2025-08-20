@@ -25,7 +25,28 @@ namespace KdyWeb.IRepository.SequenceRecord
         /// </summary>
         /// <param name="userId">用户Id</param>
         /// <param name="giftUserType">奖励用户类型</param>
+        /// <param name="venuesId">球馆Id</param>
         /// <returns></returns>
-        Task<bool> ExistByUserIdAndGiftUserTypeAsync(string userId, GiftUserTypeEnum giftUserType);
+        Task<bool> ExistByUserIdAndGiftUserTypeAsync(string userId, GiftUserTypeEnum giftUserType, long venuesId);
+
+        /// <summary>
+        /// 增加使用次数（有效期内）
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <param name="giftUserType">奖励类型</param>
+        /// <param name="venuesId">球馆Id</param>
+        /// <param name="totalDate">统计日期</param>
+        /// <returns></returns>
+        Task AddGiftUseCountAsync(string userId, GiftUserTypeEnum giftUserType, long venuesId, DateTime totalDate);
+
+        /// <summary>
+        /// 减少使用次数（有效期内）
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <param name="giftUserType">奖励类型</param>
+        /// <param name="venuesId">球馆Id</param>
+        /// <param name="totalDate">统计日期</param>
+        /// <returns></returns>
+        Task SubtractUseCountAsync(string userId, GiftUserTypeEnum giftUserType, long venuesId, DateTime totalDate);
     }
 }

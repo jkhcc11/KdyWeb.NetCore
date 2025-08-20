@@ -1,4 +1,5 @@
 ﻿using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Entity.SequenceRecord.Enum;
 
 namespace KdyWeb.Dto.SequenceRecord
 {
@@ -11,5 +12,10 @@ namespace KdyWeb.Dto.SequenceRecord
         /// 关键字
         /// </summary>
         public string KeyWord { get; set; }
+
+        /// <summary>
+        /// 奖励用户类型
+        /// </summary>
+        public GiftUserTypeEnum? GiftUserType { get; set; }
     }
 }

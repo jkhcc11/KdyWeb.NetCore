@@ -1,4 +1,5 @@
 ﻿using KdyWeb.Entity.SequenceRecord;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace KdyWeb.EntityFramework.Mapping.SequenceRecord
 {
@@ -10,6 +11,12 @@ namespace KdyWeb.EntityFramework.Mapping.SequenceRecord
         public GiftUserConfigMap() : base("SequenceRecord_GiftUserConfig")
         {
 
+        }
+
+        public override void MapperConfigure(EntityTypeBuilder<GiftUserConfig> builder)
+        {
+            //忽略
+            builder.Ignore(a => a.IsChange);
         }
     }
 }

@@ -110,5 +110,10 @@ namespace KdyWeb.Dto.HttpCapture
         /// 接龙名
         /// </summary>
         public string ShowName { get; set; }
+
+        /// <summary>
+        /// 接龙时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
     }
 }

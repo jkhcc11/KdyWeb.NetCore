@@ -1,15 +1,12 @@
-﻿using KdyWeb.Entity.SequenceRecord.Enum;
-using System;
-using AutoMapper;
-using KdyWeb.Entity.SequenceRecord;
+﻿using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.Entity.SequenceRecord.Enum;
 
 namespace KdyWeb.Dto.SequenceRecord
 {
     /// <summary>
     /// 分页获取接龙使用记录
     /// </summary>
-    [AutoMap(typeof(SequenceUseRecord))]
-    public class QueryPageSequenceUseRecordDto
+    public class QueryPageSequenceUseRecordDto : BaseEntityDto<long>
     {
         /// <summary>
         /// 用户Id
@@ -35,7 +32,7 @@ namespace KdyWeb.Dto.SequenceRecord
         /// <summary>
         /// 接龙使用时间
         /// </summary>
-        public DateTime UseDate { get; set; }
+        public string UseDate { get; set; }
 
         /// <summary>
         /// 当天结算价格

@@ -1,15 +1,14 @@
 ﻿using KdyWeb.Entity.SequenceRecord.Enum;
-using System;
-using AutoMapper;
-using KdyWeb.Entity.SequenceRecord;
+using KdyWeb.BaseInterface.BaseModel;
+using KdyWeb.BaseInterface;
+using Newtonsoft.Json;
 
 namespace KdyWeb.Dto.SequenceRecord
 {
     /// <summary>
     /// 分页查询奖励用户配置
     /// </summary>
-    [AutoMap(typeof(GiftUserConfig))]
-    public class QueryPageGiftUserConfigDto
+    public class QueryPageGiftUserConfigDto : BaseEntityDto<long>
     {
         /// <summary>
         /// 用户Id
@@ -37,12 +36,12 @@ namespace KdyWeb.Dto.SequenceRecord
         /// <summary>
         /// 奖励开始时间
         /// </summary>
-        public DateTime GiftStartTime { get; set; }
+        public string GiftStartTime { get; set; }
 
         /// <summary>
         /// 奖励结束时间
         /// </summary>
-        public DateTime GiftEndTime { get; set; }
+        public string GiftEndTime { get; set; }
 
         /// <summary>
         /// 奖励价格
@@ -50,12 +49,36 @@ namespace KdyWeb.Dto.SequenceRecord
         public decimal GiftPrice { get; set; }
 
         /// <summary>
+        /// 奖励有效次数
+        /// </summary>
+        /// <remarks>
+        ///  1、折扣卡金额大于0不用管次数
+        ///  2、只有擂主免和折扣免才需要管这个次数
+        /// </remarks>
+        public int? GiftValidCount { get; set; }
+
+        /// <summary>
+        /// 奖励已用次数
+        /// </summary>
+        /// <remarks>
+        /// 1、只有擂主免和折扣免才需要管这个次数
+        /// 2、只有改了日期、时才可以重置次次数
+        /// </remarks>
+        public int GiftUseCount { get; set; }
+
+        /// <summary>
         /// 场馆Id
         /// </summary>
         /// <remarks>
         /// 奖励绑定场馆使用
         /// </remarks>
+        [JsonConverter(typeof(JsonConverterLong))]
         public long VenuesId { get; set; }
+
+        /// <summary>
+        /// 球馆名
+        /// </summary>
+        public string VenuesName { get; set; }
 
         /// <summary>
         /// 备注

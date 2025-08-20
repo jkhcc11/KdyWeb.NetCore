@@ -11,7 +11,6 @@ namespace KdyWeb.CloudParseApi.Controllers
     /// 场馆配置
     /// </summary>
     [CustomRoute("venues-config")]
-    [AllowAnonymous]
     [ApiExplorerSettings(GroupName = "ppv1")]
     public class VenuesConfigController : BaseApiController
     {
@@ -27,6 +26,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("query-page")]
+        [AllowAnonymous]
         public async Task<KdyResult<PageList<QueryPageVenuesConfigDto>>> QueryPageVenuesConfigAsync([FromQuery] QueryPageVenuesConfigInput input)
         {
             var result = await _venuesConfigService.QueryPageVenuesConfigAsync(input);
@@ -45,10 +45,10 @@ namespace KdyWeb.CloudParseApi.Controllers
         }
 
         /// <summary>
-        /// 禁用场馆奖励计算
+        /// 禁用/启用场馆奖励计算
         /// </summary>
         /// <returns></returns>
-        [HttpGet("ban/{venuesConfigId}")]
+        [HttpGet("ban-or-enable/{venuesConfigId}")]
         public async Task<KdyResult> BanVenuesGiftAsync(long venuesConfigId)
         {
             var result = await _venuesConfigService.BanVenuesGiftAsync(venuesConfigId);

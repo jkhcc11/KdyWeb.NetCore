@@ -76,5 +76,13 @@ namespace KdyWeb.Entity.SequenceRecord
         {
             IsEnableGift = false;
         }
+
+        /// <summary>
+        /// 启用奖励计算
+        /// </summary>
+        public void Enable()
+        {
+            IsEnableGift = true;
+        }
     }
 }

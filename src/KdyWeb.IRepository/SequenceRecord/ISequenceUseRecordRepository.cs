@@ -14,6 +14,10 @@ namespace KdyWeb.IRepository.SequenceRecord
         /// <summary>
         /// 批量创建使用记录
         /// </summary>
+        /// <remarks>
+        ///  1、如果用户当天不存在使用记录，则直接新增
+        ///  2、如果存在则更新价格和类型，以最新为准
+        /// </remarks>
         /// <param name="useRecords">用户记录</param> 
         /// <returns></returns>
         Task<bool> BatchCreateAsync(List<SequenceUseRecord> useRecords);

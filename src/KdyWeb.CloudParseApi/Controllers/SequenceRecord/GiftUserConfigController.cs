@@ -11,7 +11,6 @@ namespace KdyWeb.CloudParseApi.Controllers
     /// 奖励用户配置
     /// </summary>
     [CustomRoute("gift-user-config")]
-    [AllowAnonymous]
     [ApiExplorerSettings(GroupName = "ppv1")]
     public class GiftUserConfigController : BaseApiController
     {
@@ -27,6 +26,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("query-page")]
+        [AllowAnonymous]
         public async Task<KdyResult<PageList<QueryPageGiftUserConfigDto>>> QueryPageGiftUserConfigAsync([FromQuery] QueryPageGiftUserConfigInput input)
         {
             var result = await _giftUserConfigService.QueryPageGiftUserConfigAsync(input);
@@ -55,12 +55,11 @@ namespace KdyWeb.CloudParseApi.Controllers
             return result;
         }
 
-
         /// <summary>
-        /// 禁用奖励用户配置
+        /// 禁用/启用奖励用户配置
         /// </summary>
         /// <returns></returns>
-        [HttpGet("ban/{configId}")]
+        [HttpGet("ban-or-enable/{configId}")]
         public async Task<KdyResult> BanGiftUserConfigAsync(long configId)
         {
             var result = await _giftUserConfigService.BanGiftUserConfigAsync(configId);

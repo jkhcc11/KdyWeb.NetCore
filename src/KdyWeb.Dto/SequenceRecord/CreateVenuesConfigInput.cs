@@ -1,4 +1,7 @@
-﻿namespace KdyWeb.Dto.SequenceRecord
+﻿using System.ComponentModel.DataAnnotations;
+using KdyWeb.Entity.SequenceRecord;
+
+namespace KdyWeb.Dto.SequenceRecord
 {
     /// <summary>
     /// 创建场馆配置
@@ -8,11 +11,15 @@
         /// <summary>
         /// 场馆名称
         /// </summary>
+        [StringLength(VenuesConfig.VenuesNameLength)]
+        [Required]
         public string VenuesName { get; set; }
 
         /// <summary>
         /// 缩写
         /// </summary>
+        [StringLength(VenuesConfig.ShortNameLength)]
+        [Required]
         public string ShortName { get; set; }
 
         /// <summary>

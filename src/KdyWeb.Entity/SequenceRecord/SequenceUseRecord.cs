@@ -13,6 +13,8 @@ namespace KdyWeb.Entity.SequenceRecord
     /// </remarks>
     public class SequenceUseRecord : BaseEntity<long>
     {
+        public const int UseRecordRemarkLength = 20;
+
         /// <summary>
         /// 接龙使用记录
         /// </summary>
@@ -80,11 +82,17 @@ namespace KdyWeb.Entity.SequenceRecord
         public string? VenuesShortName { get; set; }
 
         /// <summary>
+        /// 备注
+        /// </summary>
+        [StringLength(UseRecordRemarkLength)]
+        public string? UseRecordRemark { get; set; }
+
+        /// <summary>
         /// 更新当前价格
         /// </summary>
         /// <param name="giftUserType">奖励用户类型</param>
         /// <param name="currentPrice">当前价格</param>
-        public void UpdateCurrentPrice(GiftUserTypeEnum giftUserType, decimal currentPrice)
+        public void UpdateCurrentPrice(GiftUserTypeEnum? giftUserType, decimal currentPrice)
         {
             GiftUserType = giftUserType;
             CurrentPrice = currentPrice;

@@ -39,6 +39,15 @@ namespace KdyWeb.Dto.SequenceRecord
         public decimal GiftPrice { get; set; }
 
         /// <summary>
+        /// 奖励有效次数
+        /// </summary>
+        /// <remarks>
+        ///  1、折扣卡金额大于0不用管次数
+        ///  2、只有擂主免和折扣免才需要管这个次数
+        /// </remarks>
+        public int? GiftValidCount { get; set; }
+
+        /// <summary>
         /// 场馆Id
         /// </summary>
         /// <remarks>

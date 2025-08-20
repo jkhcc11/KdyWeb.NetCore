@@ -59,4 +59,27 @@ namespace KdyWeb.Entity.SequenceRecord.Enum
         [Description("Vip免")]
         VipUser = 99
     }
+
+    public static class GiftUserTypeEnumExtension
+    {
+        /// <summary>
+        /// 是否需要统计次数
+        /// </summary>
+        /// <param name="userTypeEnum">用户类型</param>
+        /// <param name="giftPrice">奖励价格</param>
+        /// <returns></returns>
+        public static bool IsTotalCount(this GiftUserTypeEnum userTypeEnum, decimal giftPrice)
+        {
+            switch (userTypeEnum)
+            {
+                case GiftUserTypeEnum.Free:
+                case GiftUserTypeEnum.RingmasterPrice:
+                    {
+                        return giftPrice <= 0;
+                    }
+            }
+
+            return false;
+        }
+    }
 }

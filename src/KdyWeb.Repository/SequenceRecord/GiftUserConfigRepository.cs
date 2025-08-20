@@ -40,13 +40,62 @@ namespace KdyWeb.Repository.SequenceRecord
         /// </summary>
         /// <param name="userId">用户Id</param>
         /// <param name="giftUserType">奖励用户类型</param>
+        /// <param name="venuesId">球馆Id</param>
         /// <returns></returns>
-        public async Task<bool> ExistByUserIdAndGiftUserTypeAsync(string userId, GiftUserTypeEnum giftUserType)
+        public async Task<bool> ExistByUserIdAndGiftUserTypeAsync(string userId, GiftUserTypeEnum giftUserType, long venuesId)
         {
             return await DbSet
-                .AnyAsync(a => a.IsEnable &&
-                               a.UserId == userId &&
-                               a.GiftUserType == giftUserType);
+                .AnyAsync(a => a.UserId == userId &&
+                               a.GiftUserType == giftUserType &&
+                               a.VenuesId == venuesId);
+        }
+
+        /// <summary>
+        /// 增加使用次数（有效期内）
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <param name="giftUserType">奖励类型</param>
+        /// <param name="venuesId">球馆Id</param>
+        /// <param name="totalDate">统计日期</param>
+        /// <returns></returns>
+        public async Task AddGiftUseCountAsync(string userId, GiftUserTypeEnum giftUserType, long venuesId, DateTime totalDate)
+        {
+            var dbEntity = await DbSet.FirstOrDefaultAsync(a => a.VenuesId == venuesId &&
+                                                                a.GiftUserType == giftUserType &&
+                                                                a.UserId == userId &&
+                                                                a.GiftStartTime <= totalDate &&
+                                                                a.GiftEndTime >= totalDate);
+            if (dbEntity == null)
+            {
+                return;
+            }
+
+            dbEntity.AddGiftUseCount();
+            Update(dbEntity);
+        }
+
+        /// <summary>
+        /// 减少使用次数（有效期内）
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <param name="giftUserType">奖励类型</param>
+        /// <param name="venuesId">球馆Id</param>
+        /// <param name="totalDate">统计日期</param>
+        /// <returns></returns>
+        public async Task SubtractUseCountAsync(string userId, GiftUserTypeEnum giftUserType, long venuesId, DateTime totalDate)
+        {
+            var dbEntity = await DbSet.FirstOrDefaultAsync(a => a.VenuesId == venuesId &&
+                                                                a.GiftUserType == giftUserType &&
+                                                                a.UserId == userId &&
+                                                                a.GiftStartTime <= totalDate &&
+                                                                a.GiftEndTime >= totalDate);
+            if (dbEntity == null)
+            {
+                return;
+            }
+
+            dbEntity.SubtractUseCount();
+            Update(dbEntity);
         }
     }
 }

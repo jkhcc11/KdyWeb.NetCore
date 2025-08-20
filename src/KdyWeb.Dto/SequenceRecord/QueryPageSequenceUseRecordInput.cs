@@ -14,6 +14,11 @@ namespace KdyWeb.Dto.SequenceRecord
         public string KeyWord { get; set; }
 
         /// <summary>
+        /// 接龙日期
+        /// </summary>
+        public DateTime? UseDate { get; set; }
+
+        /// <summary>
         /// 开始时间
         /// </summary>
         public DateTime? StartTime { get; set; }

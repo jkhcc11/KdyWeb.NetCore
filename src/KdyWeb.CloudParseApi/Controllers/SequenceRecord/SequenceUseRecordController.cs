@@ -12,7 +12,6 @@ namespace KdyWeb.CloudParseApi.Controllers
     /// 接龙使用记录
     /// </summary>
     [CustomRoute("sequence-use-record")]
-    [AllowAnonymous]
     [ApiExplorerSettings(GroupName = "ppv1")]
     public class SequenceUseRecordController : BaseApiController
     {
@@ -35,10 +34,22 @@ namespace KdyWeb.CloudParseApi.Controllers
         }
 
         /// <summary>
+        /// 更新接龙使用记录
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("update")]
+        public async Task<KdyResult> UpdateSequenceUseRecordAsync(UpdateSequenceUseRecordInput input)
+        {
+            var result = await _sequenceUseRecordService.UpdateSequenceUseRecordAsync(input);
+            return result;
+        }
+
+        /// <summary>
         /// 分页获取接龙使用记录
         /// </summary>
         /// <returns></returns>
         [HttpGet("query-sequence-use-record")]
+        [AllowAnonymous]
         public async Task<KdyResult<PageList<QueryPageSequenceUseRecordDto>>> QueryPageSequenceUseRecordAsync([FromQuery] QueryPageSequenceUseRecordInput input)
         {
             var result = await _sequenceUseRecordService.QueryPageSequenceUseRecordAsync(input);
@@ -50,11 +61,23 @@ namespace KdyWeb.CloudParseApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("query-sequence-user-record")]
+        [AllowAnonymous]
         public async Task<KdyResult<PageList<QueryPageSequenceUserRecordDto>>> QueryPageSequenceUserRecordAsync([FromQuery] QueryPageSequenceUserRecordInput input)
         {
             var result = await _sequenceUseRecordService.QueryPageSequenceUserRecordAsync(input);
             return result;
         }
 
+        /// <summary>
+        /// 获取所有用户接龙记录
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-all-user-record")]
+        [AllowAnonymous]
+        public async Task<KdyResult<List<SelectedItemOut>>> GetAllUserRecordAsync()
+        {
+            var result = await _sequenceUseRecordService.GetAllUserRecordAsync();
+            return result;
+        }
     }
 }

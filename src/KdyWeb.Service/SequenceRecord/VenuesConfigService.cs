@@ -64,7 +64,13 @@ namespace KdyWeb.Service.SequenceRecord
                 return KdyResult.Error(KdyResultCode.Error, "场馆已存在");
             }
 
-            var entity = new VenuesConfig(input.VenuesName, input.ShortName);
+            var entity = new VenuesConfig(input.VenuesName, input.ShortName)
+            {
+                MaxPrice = input.MaxPrice,
+                MinPrice = input.MinPrice,
+                NumberSteps = input.NumberSteps,
+                VipFreeSteps = input.VipFreeSteps
+            };
             await _venuesConfigRepository.CreateAsync(entity);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
@@ -84,7 +90,15 @@ namespace KdyWeb.Service.SequenceRecord
                 return KdyResult.Error(KdyResultCode.Error, "场馆配置不存在");
             }
 
-            entity.Ban();
+            if (entity.IsEnableGift)
+            {
+                entity.Ban();
+            }
+            else
+            {
+                entity.Enable();
+            }
+
             _venuesConfigRepository.Update(entity);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();

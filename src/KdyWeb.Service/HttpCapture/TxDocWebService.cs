@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -165,6 +166,7 @@ namespace KdyWeb.Service.HttpCapture
                 {
                     NickName = item["role"]?["user_info"]?.Value<string>("nick"),
                     UId = item.Value<string>("uid"),
+                    CreateTime = item.Value<DateTime>("create_time").AddHours(8),
                     ShowName = item["role"]?.Value<string>("name"),
                 });
             }

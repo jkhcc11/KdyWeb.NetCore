@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using KdyWeb.Dto.SearchVideo;
+using KdyWeb.Dto.SequenceRecord;
 using KdyWeb.Entity.SearchVideo;
+using KdyWeb.Entity.SequenceRecord;
 
 namespace KdyWeb.Dto
 {
@@ -27,6 +29,14 @@ namespace KdyWeb.Dto
                 .ForMember(a => a.VideoImg, a => a.MapFrom(b => b.VideoMain.VideoImg))
                 .ForMember(a => a.VideoDouBan, a => a.MapFrom(b => b.VideoMain.VideoDouBan))
                 .ForMember(a => a.VideoYear, a => a.MapFrom(b => b.VideoMain.VideoYear));
+
+            CreateMap<GiftUserConfig, QueryPageGiftUserConfigDto>()
+                .ForMember(a => a.GiftStartTime, a => a.MapFrom(b => b.GiftStartTime.ToString("yyyy-MM-dd")))
+                .ForMember(a => a.GiftEndTime, a => a.MapFrom(b => b.GiftEndTime.ToString("yyyy-MM-dd")));
+
+            CreateMap<SequenceUseRecord, QueryPageSequenceUseRecordDto>()
+                .ForMember(a => a.UseDate, a => a.MapFrom(b => b.UseDate.ToString("yyyy-MM-dd")));
+
         }
     }
 }
