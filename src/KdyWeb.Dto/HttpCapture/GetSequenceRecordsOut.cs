@@ -50,6 +50,15 @@ namespace KdyWeb.Dto.HttpCapture
         /// </summary>
         public string ShowText { get; set; }
 
+        /// <summary>
+        /// 获取缓存Key
+        /// </summary>
+        /// <returns></returns>
+        public string GetCacheKey()
+        {
+            return $"{ActivityTime:yyyyMMdd}:{PlaceTxt}";
+        }
+
         ///// <summary>
         ///// 统计列表
         ///// </summary>

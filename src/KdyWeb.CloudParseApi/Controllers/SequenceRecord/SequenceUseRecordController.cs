@@ -27,6 +27,7 @@ namespace KdyWeb.CloudParseApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("create")]
+        [AllowAnonymous]
         public async Task<KdyResult<IList<QueryPageSequenceUseRecordDto>>> CreateSequenceUseRecordByTxDocAsync(CreateSequenceUseRecordByTxDocInput input)
         {
             var result = await _sequenceUseRecordService.CreateSequenceUseRecordByTxDocAsync(input);
@@ -77,6 +78,18 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult<List<SelectedItemOut>>> GetAllUserRecordAsync()
         {
             var result = await _sequenceUseRecordService.GetAllUserRecordAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// 根据场馆获取腾讯文档缓存地址
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-today-url")]
+        [AllowAnonymous]
+        public async Task<KdyResult<string>> GetTodayTxDocUrlCacheAsync(string placeTxt)
+        {
+            var result = await _sequenceUseRecordService.GetTodayTxDocUrlCacheAsync(placeTxt);
             return result;
         }
     }

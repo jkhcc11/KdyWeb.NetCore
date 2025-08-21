@@ -18,6 +18,7 @@ using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Entity.SequenceRecord.Enum;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
 namespace KdyWeb.Service.SequenceRecord
@@ -27,6 +28,7 @@ namespace KdyWeb.Service.SequenceRecord
     /// </summary>
     public class SequenceUseRecordService : BaseKdyService, ISequenceUseRecordService
     {
+        private const string TxDocCachePrefix = "TxDocCachePrefix:";
         private readonly ISequenceUseRecordRepository _sequenceUseRecordRepository;
         private readonly IKdyRepository<SequenceUserRecord, long> _sequenceUserRecordRepository;
         private readonly IKdyRepository<VenuesConfig, long> _venuesConfigRepository;
@@ -61,6 +63,14 @@ namespace KdyWeb.Service.SequenceRecord
             {
                 return KdyResult.Error<IList<QueryPageSequenceUseRecordDto>>(txDocRecord.Code, txDocRecord.Msg);
             }
+
+            //获取成功后缓存地址
+            var cacheKey = $"TxDocCachePrefix:{txDocRecord.Data.GetCacheKey()}";
+            await _redisCache.GetCache().SetStringAsync(cacheKey, input.TxDocUrl,
+                new DistributedCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
+                });
 
             //2、球馆信息
             var dbVenues = await _venuesConfigRepository.FirstOrDefaultAsync(a => a.ShortName == txDocRecord.Data.PlaceTxt);
@@ -257,7 +267,8 @@ namespace KdyWeb.Service.SequenceRecord
             if (string.IsNullOrEmpty(input.KeyWord) == false)
             {
                 query = query.Where(a => a.UserShowName.Contains(input.KeyWord) ||
-                                         a.UserNickName.Contains(input.KeyWord));
+                                         a.UserNickName.Contains(input.KeyWord) ||
+                                         a.UserId.Contains(input.KeyWord));
             }
 
             var pageList = await query
@@ -323,6 +334,20 @@ namespace KdyWeb.Service.SequenceRecord
                 .Select(a => new SelectedItemOut(a.UserShowName, a.UserId))
                 .ToListAsync();
             return KdyResult.Success(result.OrderBy(a => a.Text).ToList());
+        }
+
+        /// <summary>
+        /// 根据场馆获取腾讯文档缓存地址
+        /// </summary>
+        /// <remarks>
+        ///  为了方便不用每次输入,只要有一个输入后，后面的人自动获取
+        /// </remarks>
+        /// <param name="placeTxt">场馆缩写</param>
+        /// <returns></returns>
+        public async Task<KdyResult<string>> GetTodayTxDocUrlCacheAsync(string placeTxt)
+        {
+            var cacheKey = $"TxDocCachePrefix:{DateTime.Now:yyyyMMdd}:{placeTxt}";
+            return KdyResult.Success(await _redisCache.GetCache().GetStringAsync(cacheKey), "操作成功");
         }
 
         #region 私有

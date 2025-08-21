@@ -43,5 +43,15 @@ namespace KdyWeb.IService.SequenceRecord
         /// </summary>
         /// <returns></returns>
         Task<KdyResult<List<SelectedItemOut>>> GetAllUserRecordAsync();
+
+        /// <summary>
+        /// 根据场馆获取腾讯文档缓存地址
+        /// </summary>
+        /// <remarks>
+        ///  为了方便不用每次输入,只要有一个输入后，后面的人自动获取
+        /// </remarks>
+        /// <param name="placeTxt">场馆缩写</param>
+        /// <returns></returns>
+        Task<KdyResult<string>> GetTodayTxDocUrlCacheAsync(string placeTxt);
     }
 }
