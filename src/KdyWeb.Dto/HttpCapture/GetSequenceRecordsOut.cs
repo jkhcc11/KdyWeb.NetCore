@@ -50,6 +50,15 @@ namespace KdyWeb.Dto.HttpCapture
         /// </summary>
         public string ShowText { get; set; }
 
+        /// <summary>
+        /// 获取缓存Key
+        /// </summary>
+        /// <returns></returns>
+        public string GetCacheKey()
+        {
+            return $"{ActivityTime:yyyyMMdd}:{PlaceTxt}";
+        }
+
         ///// <summary>
         ///// 统计列表
         ///// </summary>
@@ -68,33 +77,28 @@ namespace KdyWeb.Dto.HttpCapture
         //    .ToList();
     }
 
-    /// <summary>
-    /// 用户类型Item
-    /// </summary>
-    public class UserTypeItem
-    {
-        /// <summary>
-        /// 用户类型
-        /// </summary>
-        public GiftUserTypeEnum UserType { get; set; }
+    ///// <summary>
+    ///// 用户类型Item
+    ///// </summary>
+    //public class UserTypeItem
+    //{
+    //    /// <summary>
+    //    /// 用户类型
+    //    /// </summary>
+    //    public GiftUserTypeEnum UserType { get; set; }
 
-        public string UserTypeStr => UserType.GetDescription();
+    //    public string UserTypeStr => UserType.GetDescription();
 
-        /// <summary>
-        /// 当前价格
-        /// </summary>
-        public decimal CurrentPrice { get; set; }
+    //    /// <summary>
+    //    /// 当前价格
+    //    /// </summary>
+    //    public decimal CurrentPrice { get; set; }
 
-        /// <summary>
-        /// 数量
-        /// </summary>
-        public int Count { get; set; }
-
-        /// <summary>
-        /// 当前类型总价
-        /// </summary>
-        public decimal CurrentTypeSumPrice => CurrentPrice * Count;
-    }
+    //    /// <summary>
+    //    /// 数量
+    //    /// </summary>
+    //    public int Count { get; set; }
+    //}
 
     /// <summary>
     /// 接龙记录Item
@@ -117,24 +121,8 @@ namespace KdyWeb.Dto.HttpCapture
         public string ShowName { get; set; }
 
         /// <summary>
-        /// 当前价格
+        /// 接龙时间
         /// </summary>
-        public decimal CurrentPrice { get; protected set; }
-
-        /// <summary>
-        /// 奖励用户类型
-        /// </summary>
-        public GiftUserTypeEnum GiftUserType { get; protected set; }
-
-        /// <summary>
-        /// 设置类型和价格
-        /// </summary>
-        /// <param name="giftUserType">奖励用户类型</param>
-        /// <param name="currentPrice">当前价格</param>
-        public void SetGiftUserType(GiftUserTypeEnum giftUserType, decimal currentPrice)
-        {
-            GiftUserType = giftUserType;
-            CurrentPrice = currentPrice;
-        }
+        public DateTime CreateTime { get; set; }
     }
 }
