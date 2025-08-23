@@ -29,6 +29,7 @@ namespace KdyWeb.Service.SequenceRecord
     public class SequenceUseRecordService : BaseKdyService, ISequenceUseRecordService
     {
         private const string TxDocCachePrefix = "TxDocCachePrefix:";
+        private const string TotalGiftCountCachePrefix = "TotalGiftCountCachePrefix:";
         private readonly ISequenceUseRecordRepository _sequenceUseRecordRepository;
         private readonly IKdyRepository<SequenceUserRecord, long> _sequenceUserRecordRepository;
         private readonly IKdyRepository<VenuesConfig, long> _venuesConfigRepository;
@@ -65,7 +66,7 @@ namespace KdyWeb.Service.SequenceRecord
             }
 
             //获取成功后缓存地址
-            var cacheKey = $"TxDocCachePrefix:{txDocRecord.Data.GetCacheKey()}";
+            var cacheKey = $"{TxDocCachePrefix}:{txDocRecord.Data.GetCacheKey()}";
             await _redisCache.GetCache().SetStringAsync(cacheKey, input.TxDocUrl,
                 new DistributedCacheEntryOptions()
                 {
@@ -116,7 +117,7 @@ namespace KdyWeb.Service.SequenceRecord
             if (dbVenues.IsEnableGift)
             {
                 //启用奖励计算
-                dbUseRecord = TotalUserGift(totalDate, basePrice, dbVenues,
+                dbUseRecord = await TotalUserGiftAsync(totalDate, basePrice, dbVenues,
                     dbGiftUserConfig,
                     dbUserRecord);
             }
@@ -143,7 +144,7 @@ namespace KdyWeb.Service.SequenceRecord
             }
 
             //vip用户单独
-            var vipUser = TotalVipUser(totalDate, basePrice, dbVenues,
+            var vipUser = await TotalVipUserAsync(totalDate, basePrice, dbVenues,
                 dbGiftUserConfig,
                 dbUserRecord,
                 vipUserUseRecords);
@@ -394,13 +395,16 @@ namespace KdyWeb.Service.SequenceRecord
         /// <param name="giftUserConfig">奖励用户配置</param>
         /// <param name="sequenceUserRecords">当前接龙记录</param>
         /// <returns></returns>
-        private List<SequenceUseRecord> TotalUserGift(DateTime totalDate, decimal basePrice, VenuesConfig venuesConfig,
+        private async Task<List<SequenceUseRecord>> TotalUserGiftAsync(DateTime totalDate, decimal basePrice, VenuesConfig venuesConfig,
             List<GiftUserConfig> giftUserConfig, List<SequenceUserRecord> sequenceUserRecords)
         {
+
             //擂台、娱乐赛奖励、扣卡、阶梯价
             var result = new List<SequenceUseRecord>();
             foreach (var userRecord in sequenceUserRecords)
             {
+                var currentTotalGiftCountCacheKey = $"{TotalGiftCountCachePrefix}{totalDate:yyyyMMdd}:{userRecord.UserId}";
+
                 //当前用户的奖励配置
                 var currentUserGiftConfig = giftUserConfig
                     .Where(a => a.UserId == userRecord.UserId)
@@ -435,10 +439,19 @@ namespace KdyWeb.Service.SequenceRecord
                 {
                     //vip有多个奖励的，就以此来即可
                     currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
-                    //需要统计次数的
-                    if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice))
+                    //需要统计次数的(有缓存不统计)
+                    var cacheV = await _redisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
+                    if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice) &&
+                        string.IsNullOrEmpty(cacheV))
                     {
                         firstUserGiftConfig.AddGiftUseCount();
+
+                        await _redisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
+                              DateTime.Now.ToLongDateString(),
+                              new DistributedCacheEntryOptions()
+                              {
+                                  AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
+                              });
                     }
                 }
 
@@ -458,7 +471,7 @@ namespace KdyWeb.Service.SequenceRecord
         /// <param name="sequenceUserRecords">当前接龙记录</param>
         /// <param name="vipUserUseRecords">vip用户的使用次数</param>
         /// <returns></returns>
-        private List<SequenceUseRecord> TotalVipUser(DateTime totalDate, decimal basePrice, VenuesConfig venuesConfig,
+        private async Task<List<SequenceUseRecord>> TotalVipUserAsync(DateTime totalDate, decimal basePrice, VenuesConfig venuesConfig,
             List<GiftUserConfig> giftUserConfig, List<SequenceUserRecord> sequenceUserRecords,
             Dictionary<string, int> vipUserUseRecords)
         {
@@ -502,6 +515,7 @@ namespace KdyWeb.Service.SequenceRecord
             //排序后然后计算
             foreach (var vipDic in currentVipUseRecords.OrderBy(a => a.recordCount))
             {
+                var currentTotalGiftCountCacheKey = $"{TotalGiftCountCachePrefix}{totalDate:yyyyMMdd}:{vipDic.userId}";
                 var userRecord = currentVipUserRecords.First(a => a.UserId == vipDic.userId);
                 if (result.Count < vipNumber &&
                     result.Any(a => a.UserId == vipDic.userId) == false)
@@ -540,6 +554,21 @@ namespace KdyWeb.Service.SequenceRecord
                     {
                         //启用了奖励计算且vip有多个奖励的，就以此来即可
                         currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
+
+                        //需要统计次数的(有缓存不统计)
+                        var cacheV = await _redisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
+                        if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice) &&
+                            string.IsNullOrEmpty(cacheV))
+                        {
+                            firstUserGiftConfig.AddGiftUseCount();
+
+                            await _redisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
+                                DateTime.Now.ToLongDateString(),
+                                new DistributedCacheEntryOptions()
+                                {
+                                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
+                                });
+                        }
                     }
 
                     result.Add(currentUseRecord);

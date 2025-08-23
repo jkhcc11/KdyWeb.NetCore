@@ -53,7 +53,8 @@ namespace KdyWeb.Repository.SequenceRecord
                     //新增
                     createRecords.Add(item);
                 }
-                else if (dbItem.CurrentPrice != item.CurrentPrice)
+                else if ((dbItem.CurrentPrice != item.CurrentPrice ||
+                          dbItem.GiftUserType != item.GiftUserType))
                 {
                     dbItem.UpdateCurrentPrice(item.GiftUserType, item.CurrentPrice);
                     //修改
