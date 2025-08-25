@@ -66,7 +66,7 @@ namespace KdyWeb.Service.SequenceRecord
             }
 
             //获取成功后缓存地址
-            var cacheKey = $"{TxDocCachePrefix}:{txDocRecord.Data.GetCacheKey()}";
+            var cacheKey = $"{TxDocCachePrefix}{txDocRecord.Data.GetCacheKey()}";
             await _redisCache.GetCache().SetStringAsync(cacheKey, input.TxDocUrl,
                 new DistributedCacheEntryOptions()
                 {
@@ -347,7 +347,7 @@ namespace KdyWeb.Service.SequenceRecord
         /// <returns></returns>
         public async Task<KdyResult<string>> GetTodayTxDocUrlCacheAsync(string placeTxt)
         {
-            var cacheKey = $"TxDocCachePrefix:{DateTime.Now:yyyyMMdd}:{placeTxt}";
+            var cacheKey = $"{TxDocCachePrefix}{DateTime.Now:yyyyMMdd}:{placeTxt}";
             return KdyResult.Success(await _redisCache.GetCache().GetStringAsync(cacheKey), "操作成功");
         }
 

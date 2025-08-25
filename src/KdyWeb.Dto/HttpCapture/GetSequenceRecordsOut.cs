@@ -38,7 +38,7 @@ namespace KdyWeb.Dto.HttpCapture
         /// <summary>
         /// 地点
         /// </summary>
-        public string PlaceTxt => DocTitle.Substring(2, 2);
+        public string PlaceTxt => DocTitle.Replace(" ", "").Substring(2, 2);
 
         /// <summary>
         /// 接龙记录列表
