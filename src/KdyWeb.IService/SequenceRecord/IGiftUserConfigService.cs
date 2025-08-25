@@ -33,5 +33,11 @@ namespace KdyWeb.IService.SequenceRecord
         /// </summary>
         /// <returns></returns>
         Task<KdyResult> BanGiftUserConfigAsync(long configId);
+
+        /// <summary>
+        /// 删除奖励用户配置
+        /// </summary>
+        /// <returns></returns>
+        Task<KdyResult> DeleteAsync(long configId);
     }
 }

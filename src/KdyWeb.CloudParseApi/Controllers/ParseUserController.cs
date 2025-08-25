@@ -10,6 +10,7 @@ using KdyWeb.Dto.KdyUser;
 using KdyWeb.Dto.Selenium;
 using KdyWeb.IService;
 using KdyWeb.IService.CloudParse;
+using KdyWeb.IService.KdyUser;
 using KdyWeb.IService.Selenium;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,15 +27,18 @@ namespace KdyWeb.CloudParseApi.Controllers
         private readonly ICloudParseUserService _cloudParseUserService;
         private readonly ISubAccountService _subAccountService;
         private readonly ISeleniumLoginService _seleniumLoginService;
+        private readonly IKdyMsgCenterService _kdyMsgCenterService;
 
         public ParseUserController(IKdyUserService kdyUserService,
             ICloudParseUserService cloudParseUserService,
-            ISubAccountService subAccountService, ISeleniumLoginService seleniumLoginService)
+            ISubAccountService subAccountService, ISeleniumLoginService seleniumLoginService,
+            IKdyMsgCenterService kdyMsgCenterService)
         {
             _kdyUserService = kdyUserService;
             _cloudParseUserService = cloudParseUserService;
             _subAccountService = subAccountService;
             _seleniumLoginService = seleniumLoginService;
+            _kdyMsgCenterService = kdyMsgCenterService;
         }
 
         /// <summary>
@@ -177,6 +181,39 @@ namespace KdyWeb.CloudParseApi.Controllers
             }
 
             var result = await _seleniumLoginService.ParseVideoByUrlAsync(input);
+            return result;
+        }
+
+        /// <summary>
+        /// 根据用户和类型获取未读Top消息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-no-read-msg")]
+        public async Task<KdyResult<IReadOnlyList<GetNoReadTopMsgDto>>> GetNoReadTopMsgAsync([FromQuery]GetNoReadTopMsgInput input)
+        {
+            var result = await _kdyMsgCenterService.GetNoReadTopMsgAsync(input);
+            return result;
+        }
+
+        /// <summary>
+        /// 检查用户当前过期状态
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("check-user-expired")]
+        public async Task<KdyResult> CheckUserExpiredAsync()
+        {
+            var result = await _kdyMsgCenterService.CheckUserExpiredAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// 已读消息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("read-msg/{msgId}")]
+        public async Task<KdyResult> ReadMsgAsync(long msgId)
+        {
+            var result = await _kdyMsgCenterService.ReadMsgAsync(msgId);
             return result;
         }
     }

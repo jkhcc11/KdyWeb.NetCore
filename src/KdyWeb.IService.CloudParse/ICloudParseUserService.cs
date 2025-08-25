@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.BaseInterface.Service;
 using KdyWeb.Dto.CloudParse;
+using KdyWeb.Entity.CloudParse.Enum;
 
 namespace KdyWeb.IService.CloudParse
 {
@@ -60,10 +61,10 @@ namespace KdyWeb.IService.CloudParse
         Task<KdyResult<PageList<QueryParseUserDto>>> QueryParseUserAsync(QueryParseUserInput input);
 
         /// <summary>
-        /// 审批用户
+        /// 变更用户状态
         /// </summary>
         /// <returns></returns>
-        Task<KdyResult> AuditAsync(long userId);
+        Task<KdyResult> ChangeStatusAsync(long userId, ServerCookieStatus status);
 
         /// <summary>
         /// 延期用户使用时间
@@ -78,5 +79,11 @@ namespace KdyWeb.IService.CloudParse
         /// <returns></returns>
         Task<KdyResult> UpdateUserRemarkAsync(UpdateUserRemarkInput input);
 
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="parseUserId">解析用户Id</param>
+        /// <returns></returns>
+        Task<KdyResult> DeleteAsync(long parseUserId);
     }
 }

@@ -36,17 +36,15 @@ namespace KdyWeb.Service.SequenceRecord
         private readonly IGiftUserConfigRepository _giftUserConfigRepository;
         private readonly ITxDocWebService _txDocWebService;
         private readonly TxDocRecordsOption _txDocRecordsOption;
-        private readonly IKdyRedisCache _redisCache;
 
         public SequenceUseRecordService(IUnitOfWork unitOfWork, ISequenceUseRecordRepository sequenceUseRecordRepository,
             IKdyRepository<SequenceUserRecord, long> sequenceUserRecordRepository, ITxDocWebService txDocWebService,
-            IOptions<TxDocRecordsOption> options, IKdyRedisCache redisCache, IKdyRepository<VenuesConfig, long> venuesConfigRepository,
+            IOptions<TxDocRecordsOption> options, IKdyRepository<VenuesConfig, long> venuesConfigRepository,
             IGiftUserConfigRepository giftUserConfigRepository) : base(unitOfWork)
         {
             _sequenceUseRecordRepository = sequenceUseRecordRepository;
             _sequenceUserRecordRepository = sequenceUserRecordRepository;
             _txDocWebService = txDocWebService;
-            _redisCache = redisCache;
             _venuesConfigRepository = venuesConfigRepository;
             _giftUserConfigRepository = giftUserConfigRepository;
             _txDocRecordsOption = options.Value;
@@ -67,7 +65,7 @@ namespace KdyWeb.Service.SequenceRecord
 
             //获取成功后缓存地址
             var cacheKey = $"{TxDocCachePrefix}{txDocRecord.Data.GetCacheKey()}";
-            await _redisCache.GetCache().SetStringAsync(cacheKey, input.TxDocUrl,
+            await KdyRedisCache.GetCache().SetStringAsync(cacheKey, input.TxDocUrl,
                 new DistributedCacheEntryOptions()
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
@@ -246,7 +244,7 @@ namespace KdyWeb.Service.SequenceRecord
 
             var pageList = await query
                 .GetDtoPageListAsync<SequenceUseRecord, QueryPageSequenceUseRecordDto>(input);
-            return KdyResult.Success(pageList);
+            return KdyResult.Success(pageList, "操作成功");
         }
 
         /// <summary>
@@ -274,7 +272,7 @@ namespace KdyWeb.Service.SequenceRecord
 
             var pageList = await query
                 .GetDtoPageListAsync<SequenceUserRecord, QueryPageSequenceUserRecordDto>(input);
-            return KdyResult.Success(pageList);
+            return KdyResult.Success(pageList, "操作成功");
         }
 
         /// <summary>
@@ -348,7 +346,7 @@ namespace KdyWeb.Service.SequenceRecord
         public async Task<KdyResult<string>> GetTodayTxDocUrlCacheAsync(string placeTxt)
         {
             var cacheKey = $"{TxDocCachePrefix}{DateTime.Now:yyyyMMdd}:{placeTxt}";
-            return KdyResult.Success(await _redisCache.GetCache().GetStringAsync(cacheKey), "操作成功");
+            return KdyResult.Success(await KdyRedisCache.GetCache().GetStringAsync(cacheKey), "操作成功");
         }
 
         #region 私有
@@ -362,10 +360,10 @@ namespace KdyWeb.Service.SequenceRecord
             if (input.IsForcedSync.HasValue &&
                 input.IsForcedSync.Value)
             {
-                await _redisCache.GetCache().RemoveAsync(cacheKey);
+                await KdyRedisCache.GetCache().RemoveAsync(cacheKey);
             }
 
-            var cacheV = await _redisCache.GetCache().GetValueAsync<KdyResult<GetSequenceRecordsOut>>(cacheKey);
+            var cacheV = await KdyRedisCache.GetCache().GetValueAsync<KdyResult<GetSequenceRecordsOut>>(cacheKey);
             if (cacheV != null)
             {
                 return cacheV;
@@ -379,7 +377,7 @@ namespace KdyWeb.Service.SequenceRecord
             //成功才缓存
             if (txDocRecords.IsSuccess)
             {
-                await _redisCache.GetCache().SetValueAsync(cacheKey, txDocRecords,
+                await KdyRedisCache.GetCache().SetValueAsync(cacheKey, txDocRecords,
                     TimeSpan.FromHours(1));
             }
 
@@ -440,13 +438,13 @@ namespace KdyWeb.Service.SequenceRecord
                     //vip有多个奖励的，就以此来即可
                     currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
                     //需要统计次数的(有缓存不统计)
-                    var cacheV = await _redisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
+                    var cacheV = await KdyRedisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
                     if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice) &&
                         string.IsNullOrEmpty(cacheV))
                     {
                         firstUserGiftConfig.AddGiftUseCount();
 
-                        await _redisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
+                        await KdyRedisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
                               DateTime.Now.ToLongDateString(),
                               new DistributedCacheEntryOptions()
                               {
@@ -556,13 +554,13 @@ namespace KdyWeb.Service.SequenceRecord
                         currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
 
                         //需要统计次数的(有缓存不统计)
-                        var cacheV = await _redisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
+                        var cacheV = await KdyRedisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
                         if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice) &&
                             string.IsNullOrEmpty(cacheV))
                         {
                             firstUserGiftConfig.AddGiftUseCount();
 
-                            await _redisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
+                            await KdyRedisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
                                 DateTime.Now.ToLongDateString(),
                                 new DistributedCacheEntryOptions()
                                 {
