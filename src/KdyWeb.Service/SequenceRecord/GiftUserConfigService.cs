@@ -72,7 +72,7 @@ namespace KdyWeb.Service.SequenceRecord
                 }
             }
 
-            return KdyResult.Success(pageList);
+            return KdyResult.Success(pageList, "操作成功");
         }
 
         /// <summary>
@@ -181,6 +181,23 @@ namespace KdyWeb.Service.SequenceRecord
             }
 
             _giftUserConfigRepository.Update(dbEntity);
+            await UnitOfWork.SaveChangesAsync();
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 删除奖励用户配置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<KdyResult> DeleteAsync(long configId)
+        {
+            var dbEntity = await _giftUserConfigRepository.FirstOrDefaultAsync(a => a.Id == configId);
+            if (dbEntity == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无效Id");
+            }
+
+            _giftUserConfigRepository.Delete(dbEntity);
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
         }

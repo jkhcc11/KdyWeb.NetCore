@@ -17,6 +17,12 @@ namespace KdyWeb.Entity.CloudParse.Enum
         /// 正常
         /// </summary>
         [Display(Name = "正常")]
-        Normal = 5
+        Normal = 5,
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        [Display(Name = "禁用")]
+        Ban = 10
     }
 }

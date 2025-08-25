@@ -57,7 +57,7 @@ namespace KdyWeb.Entity.CloudParse
         /// <summary>
         /// 用户状态
         /// </summary>
-        public ServerCookieStatus UserStatus { get; set; }
+        public ServerCookieStatus UserStatus { get; protected set; }
 
         /// <summary>
         /// Api使用
@@ -77,7 +77,7 @@ namespace KdyWeb.Entity.CloudParse
         /// 备注
         /// </summary>
         [StringLength(RemarkLength)]
-        public string?  Remark  { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 初始化token
@@ -93,6 +93,14 @@ namespace KdyWeb.Entity.CloudParse
         public void DelayData()
         {
             ExpirationDateTime = ExpirationDateTime?.AddDays(30) ?? DateTime.Now;
+        }
+
+        /// <summary>
+        /// 变更用户状态
+        /// </summary>
+        public void ChangeStatus(ServerCookieStatus userStatus)
+        {
+            UserStatus = userStatus;
         }
     }
 }

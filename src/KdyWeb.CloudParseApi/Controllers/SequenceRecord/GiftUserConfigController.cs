@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.SequenceRecord;
 using KdyWeb.IService.SequenceRecord;
@@ -63,6 +64,18 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult> BanGiftUserConfigAsync(long configId)
         {
             var result = await _giftUserConfigService.BanGiftUserConfigAsync(configId);
+            return result;
+        }
+
+        /// <summary>
+        /// 删除奖励
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("delete/{configId}")]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public async Task<KdyResult> DeleteAsync(long configId)
+        {
+            var result = await _giftUserConfigService.DeleteAsync(configId);
             return result;
         }
     }

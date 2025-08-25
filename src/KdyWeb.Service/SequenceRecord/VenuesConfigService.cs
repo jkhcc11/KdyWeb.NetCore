@@ -49,7 +49,7 @@ namespace KdyWeb.Service.SequenceRecord
 
             var pageList = await query
                 .GetDtoPageListAsync<VenuesConfig, QueryPageVenuesConfigDto>(input);
-            return KdyResult.Success(pageList);
+            return KdyResult.Success(pageList, "操作成功");
 
         }
 

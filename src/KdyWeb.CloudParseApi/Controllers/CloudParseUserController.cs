@@ -2,6 +2,7 @@
 using KdyWeb.BaseInterface;
 using KdyWeb.BaseInterface.BaseModel;
 using KdyWeb.Dto.CloudParse;
+using KdyWeb.Entity.CloudParse.Enum;
 using KdyWeb.IService.CloudParse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,14 +57,14 @@ namespace KdyWeb.CloudParseApi.Controllers
         }
 
         /// <summary>
-        /// 审批
+        /// 变更用户状态
         /// </summary>
         /// <returns></returns>
-        [HttpPost("audit/{id}")]
+        [HttpPost("change-status/{id}")]
         [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
-        public async Task<KdyResult> AuditAsync(long id)
+        public async Task<KdyResult> ChangeStatusAsync(long id, ChangeStatusInput input)
         {
-            var result = await _cloudParseUserService.AuditAsync(id);
+            var result = await _cloudParseUserService.ChangeStatusAsync(id, input.Status);
             return result;
         }
 
@@ -99,6 +100,18 @@ namespace KdyWeb.CloudParseApi.Controllers
         public async Task<KdyResult> UpdateUserRemarkAsync(UpdateUserRemarkInput input)
         {
             var result = await _cloudParseUserService.UpdateUserRemarkAsync(input);
+            return result;
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("delete/{id}")]
+        [Authorize(Policy = AuthorizationConst.NormalPolicyName.SuperAdminPolicy)]
+        public async Task<KdyResult> DeleteAsync(long id)
+        {
+            var result = await _cloudParseUserService.DeleteAsync(id);
             return result;
         }
     }

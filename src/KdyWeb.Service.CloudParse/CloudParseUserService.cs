@@ -337,11 +337,11 @@ namespace KdyWeb.Service.CloudParse
         /// 审批用户
         /// </summary>
         /// <returns></returns>
-        public async Task<KdyResult> AuditAsync(long userId)
+        public async Task<KdyResult> ChangeStatusAsync(long userId, ServerCookieStatus status)
         {
             var query = _cloudParseUserRepository.GetQuery();
             var dbUser = await query.FirstOrDefaultAsync(a => a.UserId == userId);
-            dbUser.UserStatus = ServerCookieStatus.Normal;
+            dbUser.ChangeStatus(status);
             _cloudParseUserRepository.Update(dbUser);
             await UnitOfWork.SaveChangesAsync();
 
@@ -383,6 +383,25 @@ namespace KdyWeb.Service.CloudParse
 
             dbUserInfo.Remark = input.Remark;
             _cloudParseUserRepository.Update(dbUserInfo);
+            await UnitOfWork.SaveChangesAsync();
+
+            return KdyResult.Success();
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="parseUserId">解析用户Id</param>
+        /// <returns></returns>
+        public async Task<KdyResult> DeleteAsync(long parseUserId)
+        {
+            var parseUser = await _cloudParseUserRepository.FirstOrDefaultAsync(a => a.Id == parseUserId);
+            if (parseUser == null)
+            {
+                return KdyResult.Error(KdyResultCode.Error, "无效用户");
+            }
+
+            _cloudParseUserRepository.Delete(parseUser);
             await UnitOfWork.SaveChangesAsync();
 
             return KdyResult.Success();
