@@ -548,7 +548,8 @@ namespace KdyWeb.Service.SequenceRecord
                         .OrderByDescending(a => a.GiftUserType.GetHashCode())
                         .FirstOrDefault();
                     if (venuesConfig.IsEnableGift &&
-                        firstUserGiftConfig != null)
+                        firstUserGiftConfig != null &&
+                        firstUserGiftConfig.IsCan())
                     {
                         //启用了奖励计算且vip有多个奖励的，就以此来即可
                         currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
