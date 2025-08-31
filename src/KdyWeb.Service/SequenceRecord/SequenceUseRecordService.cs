@@ -14,7 +14,6 @@ using KdyWeb.BaseInterface.Extensions;
 using KdyWeb.Dto.HttpCapture;
 using KdyWeb.IService.HttpCapture;
 using KdyWeb.BaseInterface.KdyOptions;
-using KdyWeb.BaseInterface.KdyRedis;
 using KdyWeb.Entity.SequenceRecord.Enum;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore;
@@ -290,33 +289,39 @@ namespace KdyWeb.Service.SequenceRecord
                 return KdyResult.Error(KdyResultCode.Error, "无效Id");
             }
 
-            if (dbEntity.GiftUserType != input.GiftUserType)
+            if (dbEntity.GiftUserType == input.GiftUserType)
             {
-                if (dbEntity.GiftUserType.HasValue &&
-                    dbEntity.GiftUserType.Value.IsTotalCount(dbEntity.CurrentPrice) &&
-                    input.CurrentPrice > 0)
-                {
-                    //这里需要根据用户Id把奖励减去
-                    await _giftUserConfigRepository.SubtractUseCountAsync(dbEntity.UserId,
-                        dbEntity.GiftUserType.Value,
-                        dbEntity.VenuesId,
-                        dbEntity.UseDate);
-                }
-                else if (input.GiftUserType.HasValue &&
-                          input.GiftUserType.Value.IsTotalCount(input.CurrentPrice))
-
-                {
-                    //这里需要根据用户Id把奖励使用加上
-                    await _giftUserConfigRepository.AddGiftUseCountAsync(dbEntity.UserId,
-                        input.GiftUserType.Value,
-                        dbEntity.VenuesId,
-                        dbEntity.UseDate);
-                }
+                //说明只改了价格而已
+                dbEntity.UpdateCurrentPrice(dbEntity.GiftUserType,
+                    input.CurrentPrice,
+                    dbEntity.GiftConfigId);
+                _sequenceUseRecordRepository.Update(dbEntity);
             }
+            else if (input.GiftUserType.HasValue)
+            {
+                //说明改了奖励方式（原来有或者无->新的为有）
+                var dbGiftConfig = await _giftUserConfigRepository.GetGiftUserConfigByTotalDateAsync(dbEntity.UseDate,
+                    dbEntity.UserId,
+                    input.GiftUserType.Value,
+                    dbEntity.VenuesId,
+                    input.CurrentPrice);
+                if (dbGiftConfig == null)
+                {
+                    return KdyResult.Error(KdyResultCode.Error, "无效奖励配置");
+                }
 
-            dbEntity.UpdateCurrentPrice(input.GiftUserType, input.CurrentPrice);
-            _sequenceUseRecordRepository.Update(dbEntity);
+                if (dbGiftConfig.IsCan() == false)
+                {
+                    return KdyResult.Error(KdyResultCode.Error, "当前奖励无效，无有效次数");
+                }
 
+                await _sequenceUseRecordRepository.ChangeGiftTypeAsync(dbEntity, dbGiftConfig);
+            }
+            else
+            {
+                //说明改了奖励方式（原来有或者无->新的为无）
+                await _sequenceUseRecordRepository.ChangeGiftTypeAsync(dbEntity, input.CurrentPrice);
+            }
 
             await UnitOfWork.SaveChangesAsync();
             return KdyResult.Success();
@@ -436,7 +441,9 @@ namespace KdyWeb.Service.SequenceRecord
                 if (firstUserGiftConfig != null && firstUserGiftConfig.IsCan())
                 {
                     //vip有多个奖励的，就以此来即可
-                    currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
+                    currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType,
+                        firstUserGiftConfig.GiftPrice,
+                        firstUserGiftConfig.Id);
                     //需要统计次数的(有缓存不统计)
                     var cacheV = await KdyRedisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
                     if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice) &&
@@ -552,7 +559,9 @@ namespace KdyWeb.Service.SequenceRecord
                         firstUserGiftConfig.IsCan())
                     {
                         //启用了奖励计算且vip有多个奖励的，就以此来即可
-                        currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType, firstUserGiftConfig.GiftPrice);
+                        currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType,
+                            firstUserGiftConfig.GiftPrice,
+                            firstUserGiftConfig.Id);
 
                         //需要统计次数的(有缓存不统计)
                         var cacheV = await KdyRedisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
@@ -560,7 +569,6 @@ namespace KdyWeb.Service.SequenceRecord
                             string.IsNullOrEmpty(cacheV))
                         {
                             firstUserGiftConfig.AddGiftUseCount();
-
                             await KdyRedisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
                                 DateTime.Now.ToLongDateString(),
                                 new DistributedCacheEntryOptions()

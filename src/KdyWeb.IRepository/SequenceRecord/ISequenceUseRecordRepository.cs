@@ -28,5 +28,27 @@ namespace KdyWeb.IRepository.SequenceRecord
         /// <param name="useDate">使用时间</param>
         /// <returns></returns>
         Task<List<SequenceUseRecord>> GetSequenceUseRecordByDateAsync(DateTime useDate);
+
+        /// <summary>
+        /// 变更奖励类型
+        /// </summary>
+        /// <remarks>
+        /// 原来有或者无奖励->新的为有奖励
+        /// </remarks>
+        /// <param name="dbEntity">待变更的记录</param>
+        /// <param name="newGiftUserConfig">新的奖励用户配置</param>
+        /// <returns></returns>
+        Task ChangeGiftTypeAsync(SequenceUseRecord dbEntity, GiftUserConfig newGiftUserConfig);
+
+        /// <summary>
+        /// 变更奖励类型
+        /// </summary>
+        /// <remarks>
+        /// 原来有或者无奖励->新的为无奖励
+        /// </remarks>
+        /// <param name="dbEntity">待变更的记录</param>
+        /// <param name="currentPrice">最新结算价格</param>
+        /// <returns></returns>
+        Task ChangeGiftTypeAsync(SequenceUseRecord dbEntity, decimal currentPrice);
     }
 }

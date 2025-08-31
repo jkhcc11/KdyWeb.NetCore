@@ -51,51 +51,24 @@ namespace KdyWeb.Repository.SequenceRecord
         }
 
         /// <summary>
-        /// 增加使用次数（有效期内）
+        /// 根据用户Id和奖励用户类型查询是否存在有效配置
         /// </summary>
+        /// <param name="totalDate">结算日期</param>
         /// <param name="userId">用户Id</param>
-        /// <param name="giftUserType">奖励类型</param>
+        /// <param name="giftUserType">奖励用户类型</param>
         /// <param name="venuesId">球馆Id</param>
-        /// <param name="totalDate">统计日期</param>
+        /// <param name="giftPrice">奖励价格</param>
         /// <returns></returns>
-        public async Task AddGiftUseCountAsync(string userId, GiftUserTypeEnum giftUserType, long venuesId, DateTime totalDate)
+        public async Task<GiftUserConfig?> GetGiftUserConfigByTotalDateAsync(DateTime totalDate, string userId, GiftUserTypeEnum giftUserType, long venuesId,
+            decimal giftPrice)
         {
-            var dbEntity = await DbSet.FirstOrDefaultAsync(a => a.VenuesId == venuesId &&
-                                                                a.GiftUserType == giftUserType &&
-                                                                a.UserId == userId &&
-                                                                a.GiftStartTime <= totalDate &&
-                                                                a.GiftEndTime >= totalDate);
-            if (dbEntity == null)
-            {
-                return;
-            }
-
-            dbEntity.AddGiftUseCount();
-            Update(dbEntity);
-        }
-
-        /// <summary>
-        /// 减少使用次数（有效期内）
-        /// </summary>
-        /// <param name="userId">用户Id</param>
-        /// <param name="giftUserType">奖励类型</param>
-        /// <param name="venuesId">球馆Id</param>
-        /// <param name="totalDate">统计日期</param>
-        /// <returns></returns>
-        public async Task SubtractUseCountAsync(string userId, GiftUserTypeEnum giftUserType, long venuesId, DateTime totalDate)
-        {
-            var dbEntity = await DbSet.FirstOrDefaultAsync(a => a.VenuesId == venuesId &&
-                                                                a.GiftUserType == giftUserType &&
-                                                                a.UserId == userId &&
-                                                                a.GiftStartTime <= totalDate &&
-                                                                a.GiftEndTime >= totalDate);
-            if (dbEntity == null)
-            {
-                return;
-            }
-
-            dbEntity.SubtractUseCount();
-            Update(dbEntity);
+            return await DbSet
+                .FirstOrDefaultAsync(a => a.UserId == userId &&
+                               a.GiftUserType == giftUserType &&
+                               a.VenuesId == venuesId &&
+                               a.GiftPrice == giftPrice &&
+                               a.GiftStartTime <= totalDate &&
+                               totalDate <= a.GiftEndTime);
         }
     }
 }

@@ -33,6 +33,10 @@ namespace KdyWeb.Repository
         /// 用户登录信息
         /// </summary>
         protected ILoginUserInfo LoginUserInfo;
+        /// <summary>
+        /// 工作单元
+        /// </summary>
+        protected IUnitOfWork BaseUnitOfWork;
 
         protected KdyRepository(IUnitOfWork unitOfWork)
         {
@@ -40,6 +44,7 @@ namespace KdyWeb.Repository
             DbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Read).Set<TEntity>();
             WriteDbSet = unitOfWork.GetCurrentDbContext(ReadWrite.Write).Set<TEntity>();
             LoginUserInfo = KdyBaseServiceProvider.ServiceProvide.GetService<ILoginUserInfo>();
+            BaseUnitOfWork = unitOfWork;
         }
 
         /// <summary>

@@ -71,6 +71,11 @@ namespace KdyWeb.Entity.SequenceRecord
         public GiftUserTypeEnum? GiftUserType { get; set; }
 
         /// <summary>
+        /// 奖励配置Id
+        /// </summary>
+        public long? GiftConfigId { get; set; }
+
+        /// <summary>
         /// 场馆Id
         /// </summary>
         public long VenuesId { get; set; }
@@ -92,10 +97,13 @@ namespace KdyWeb.Entity.SequenceRecord
         /// </summary>
         /// <param name="giftUserType">奖励用户类型</param>
         /// <param name="currentPrice">当前价格</param>
-        public void UpdateCurrentPrice(GiftUserTypeEnum? giftUserType, decimal currentPrice)
+        /// <param name="giftConfigId">奖励配置Id</param>
+        public void UpdateCurrentPrice(GiftUserTypeEnum? giftUserType,
+            decimal currentPrice, long? giftConfigId)
         {
             GiftUserType = giftUserType;
             CurrentPrice = currentPrice;
+            GiftConfigId = giftConfigId;
         }
     }
 }
