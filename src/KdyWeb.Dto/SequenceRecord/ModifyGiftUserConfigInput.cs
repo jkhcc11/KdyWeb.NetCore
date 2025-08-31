@@ -40,5 +40,13 @@ namespace KdyWeb.Dto.SequenceRecord
         /// 备注
         /// </summary>
         public string Remark { get; set; }
+
+        /// <summary>
+        /// 奖励扣费排序（奖励叠加时扣费顺序）
+        /// </summary>
+        /// <remarks>
+        /// 多个奖励同时存在时使用顺序（越大越靠前扣费）
+        /// </remarks>
+        public int GiftOrderBy { get; set; }
     }
 }

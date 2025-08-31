@@ -123,7 +123,8 @@ namespace KdyWeb.Service.SequenceRecord
                 VenuesId = input.VenuesId,
                 Remark = input.Remark,
                 UserShowName = userRecord.UserShowName,
-                GiftValidCount = input.GiftValidCount
+                GiftValidCount = input.GiftValidCount,
+                GiftOrderBy = input.GiftOrderBy
             };
             await _giftUserConfigRepository.CreateAsync(entity);
             await UnitOfWork.SaveChangesAsync();
@@ -153,6 +154,7 @@ namespace KdyWeb.Service.SequenceRecord
             dbEntity.Remark = input.Remark;
             dbEntity.GiftPrice = input.GiftPrice;
             dbEntity.GiftValidCount = input.GiftValidCount;
+            dbEntity.GiftOrderBy = input.GiftOrderBy;
 
             _giftUserConfigRepository.Update(dbEntity);
             await UnitOfWork.SaveChangesAsync();
