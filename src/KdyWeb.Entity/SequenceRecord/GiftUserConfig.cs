@@ -102,6 +102,14 @@ namespace KdyWeb.Entity.SequenceRecord
         public string? Remark { get; set; }
 
         /// <summary>
+        /// 奖励扣费排序（奖励叠加时扣费顺序）
+        /// </summary>
+        /// <remarks>
+        /// 多个奖励同时存在时使用顺序（越大越靠前扣费）
+        /// </remarks>
+        public int GiftOrderBy { get; set; }
+
+        /// <summary>
         /// 是否变更(忽略dB查询，仅为了标识需要更新)
         /// </summary>
         public bool IsChange { get; protected set; }
@@ -187,7 +195,7 @@ namespace KdyWeb.Entity.SequenceRecord
 
             //统计次数且 实际使用小于有效次数
             return GiftUseCount < GiftValidCount;
-          
+
         }
     }
 }

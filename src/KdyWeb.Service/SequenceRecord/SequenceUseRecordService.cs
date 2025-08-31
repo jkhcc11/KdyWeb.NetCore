@@ -412,6 +412,7 @@ namespace KdyWeb.Service.SequenceRecord
                 var currentUserGiftConfig = giftUserConfig
                     .Where(a => a.UserId == userRecord.UserId)
                     .OrderByDescending(a => a.GiftUserType.GetHashCode())
+                    .ThenByDescending(a => a.GiftOrderBy)
                     .ToList();
                 if (currentUserGiftConfig.Any(a => a.GiftUserType == GiftUserTypeEnum.VipUser))
                 {
@@ -553,6 +554,7 @@ namespace KdyWeb.Service.SequenceRecord
                         .Where(a => a.GiftUserType != GiftUserTypeEnum.VipUser &&
                                     a.UserId == vipDic.userId)
                         .OrderByDescending(a => a.GiftUserType.GetHashCode())
+                        .ThenByDescending(a => a.GiftOrderBy)
                         .FirstOrDefault();
                     if (venuesConfig.IsEnableGift &&
                         firstUserGiftConfig != null &&
