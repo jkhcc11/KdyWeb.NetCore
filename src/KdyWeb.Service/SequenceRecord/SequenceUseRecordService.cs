@@ -28,7 +28,7 @@ namespace KdyWeb.Service.SequenceRecord
     public class SequenceUseRecordService : BaseKdyService, ISequenceUseRecordService
     {
         private const string TxDocCachePrefix = "TxDocCachePrefix:";
-        private const string TotalGiftCountCachePrefix = "TotalGiftCountCachePrefix:";
+        private const string TotalGiftCountCachePrefix = "TotalGiftCountCacheEntityPrefix:";
         private readonly ISequenceUseRecordRepository _sequenceUseRecordRepository;
         private readonly IKdyRepository<SequenceUserRecord, long> _sequenceUserRecordRepository;
         private readonly IKdyRepository<VenuesConfig, long> _venuesConfigRepository;
@@ -436,6 +436,9 @@ namespace KdyWeb.Service.SequenceRecord
                     continue;
                 }
 
+                //需要统计次数的(有缓存不统计)
+                var cacheV = await KdyRedisCache.GetCache().GetValueAsync<GiftUserConfig>(currentTotalGiftCountCacheKey);
+
                 //按照奖励类型顺序即可，多个奖励只有一个生效  不要是vip
                 var firstUserGiftConfig = currentUserGiftConfig.FirstOrDefault();
                 if (firstUserGiftConfig != null && firstUserGiftConfig.IsCan())
@@ -444,20 +447,24 @@ namespace KdyWeb.Service.SequenceRecord
                     currentUseRecord.UpdateCurrentPrice(firstUserGiftConfig.GiftUserType,
                         firstUserGiftConfig.GiftPrice,
                         firstUserGiftConfig.Id);
-                    //需要统计次数的(有缓存不统计)
-                    var cacheV = await KdyRedisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
+
                     if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice) &&
-                        string.IsNullOrEmpty(cacheV))
+                        cacheV == null)
                     {
                         firstUserGiftConfig.AddGiftUseCount();
 
-                        await KdyRedisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
-                              DateTime.Now.ToLongDateString(),
-                              new DistributedCacheEntryOptions()
-                              {
-                                  AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
-                              });
+                        await KdyRedisCache.GetCache().SetValueAsync(currentTotalGiftCountCacheKey,
+                            firstUserGiftConfig,
+                            TimeSpan.FromDays(7));
                     }
+                }
+
+                if (cacheV != null)
+                {
+                    //当天多次请求时，需要把历史记录带出来，否则最后一次统计会出错
+                    currentUseRecord.UpdateCurrentPrice(cacheV.GiftUserType,
+                        cacheV.GiftPrice,
+                        cacheV.Id);
                 }
 
                 result.Add(currentUseRecord);
@@ -554,6 +561,9 @@ namespace KdyWeb.Service.SequenceRecord
                                     a.UserId == vipDic.userId)
                         .OrderByDescending(a => a.GiftOrderBy)
                         .FirstOrDefault();
+
+                    //需要统计次数的(有缓存不统计)
+                    var cacheV = await KdyRedisCache.GetCache().GetValueAsync<GiftUserConfig>(currentTotalGiftCountCacheKey);
                     if (venuesConfig.IsEnableGift &&
                         firstUserGiftConfig != null &&
                         firstUserGiftConfig.IsCan())
@@ -563,19 +573,23 @@ namespace KdyWeb.Service.SequenceRecord
                             firstUserGiftConfig.GiftPrice,
                             firstUserGiftConfig.Id);
 
-                        //需要统计次数的(有缓存不统计)
-                        var cacheV = await KdyRedisCache.GetCache().GetStringAsync(currentTotalGiftCountCacheKey);
+
                         if (firstUserGiftConfig.GiftUserType.IsTotalCount(firstUserGiftConfig.GiftPrice) &&
-                            string.IsNullOrEmpty(cacheV))
+                            cacheV == null)
                         {
                             firstUserGiftConfig.AddGiftUseCount();
-                            await KdyRedisCache.GetCache().SetStringAsync(currentTotalGiftCountCacheKey,
-                                DateTime.Now.ToLongDateString(),
-                                new DistributedCacheEntryOptions()
-                                {
-                                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
-                                });
+                            await KdyRedisCache.GetCache().SetValueAsync(currentTotalGiftCountCacheKey,
+                                firstUserGiftConfig,
+                                TimeSpan.FromDays(7));
                         }
+                    }
+
+                    if (cacheV != null)
+                    {
+                        //当天多次请求时，需要把历史记录带出来，否则最后一次统计会出错
+                        currentUseRecord.UpdateCurrentPrice(cacheV.GiftUserType,
+                            cacheV.GiftPrice,
+                            cacheV.Id);
                     }
 
                     result.Add(currentUseRecord);

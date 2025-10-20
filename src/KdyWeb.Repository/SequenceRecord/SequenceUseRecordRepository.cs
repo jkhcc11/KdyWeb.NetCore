@@ -33,7 +33,8 @@ namespace KdyWeb.Repository.SequenceRecord
             var currentUseRecordsUserIds = useRecords.Select(a => a.UserId).ToArray();
             var totalDate = useRecords.First().UseDate;
             var dbCurrentDateRecords = await DbSet
-                .Where(a => a.UseDate == totalDate)
+                .Where(a => a.UseDate == totalDate &&
+                            a.IsDelete == false)
                 .ToListAsync();
             if (dbCurrentDateRecords.Any() == false)
             {

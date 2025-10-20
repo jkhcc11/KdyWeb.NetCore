@@ -52,6 +52,8 @@ namespace KdyWeb.BaseInterface.Extensions
                         };//Consul地址
                         options.Optional = true; //配置选项当前配置文件为可有可无
                         options.ReloadOnChange = true; //配置文件更新后重新加载
+                        //轮询等待时间
+                        //options.PollWaitTime=TimeSpan.FromSeconds(5);
                         options.OnLoadException = exceptionContext =>
                         {
                             //exceptionContext.Ignore = true; // 忽略异常
