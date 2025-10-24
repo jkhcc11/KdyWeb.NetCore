@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using KdyWeb.Utility;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
@@ -105,6 +107,119 @@ namespace KdyWeb.Test
 
             Console.WriteLine(string.Join(",", testArrays));
             Assert.IsTrue(testArrays.Any());
+        }
+
+        /// <summary>
+        /// 文件处理
+        /// </summary>
+        [TestMethod]
+        public void FileHandler()
+        {
+            var filePath = "I:\\待处理\\电影合集\\合并";
+            var re = ProcessAllFiles(filePath);
+
+            Assert.IsTrue(re);
+        }
+
+
+        public bool ProcessAllFiles(string rootPath)
+        {
+            try
+            {
+                // 获取根目录下的所有子目录
+                string[] subDirectories = Directory.GetDirectories(rootPath);
+
+                int processedCount = 0;
+                int errorCount = 0;
+
+                foreach (string subDir in subDirectories)
+                {
+                    try
+                    {
+                        // 获取目录中的所有mp4文件
+                        var mp4Files = Directory.GetFiles(subDir, "*.mp4", SearchOption.AllDirectories);
+                        if (mp4Files.Length > 1)
+                        {
+                            Console.WriteLine($"处理目录失败 '{subDir}': 多文件");
+                            continue;
+                        }
+
+                        var filePath = mp4Files.First();
+                        //当前mp4文件全路径
+                        var fileName = Path.GetFileName(filePath);
+                        //处理文件名
+                        var newFileName = ConvertFileName(filePath);
+                        if (string.IsNullOrEmpty(newFileName))
+                        {
+                            continue;
+                        }
+
+                        // 构建新的文件路径（直接放在根目录下）
+                        var newFilePath = Path.Combine(rootPath, newFileName);
+
+                        // 移动文件到根目录
+                        File.Move(filePath, newFilePath);
+                        Console.WriteLine($"成功: {fileName} -> {Path.GetFileName(newFilePath)}");
+                        processedCount++;
+
+                        // 如果目录为空，删除空目录
+                        if (Directory.GetFiles(subDir, "*", SearchOption.AllDirectories).Length == 0)
+                        {
+                            Directory.Delete(subDir, true);
+                            Console.WriteLine($"删除空目录: {subDir}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"处理目录失败 '{subDir}': {ex.Message}");
+                        errorCount++;
+                    }
+                }
+
+                Console.WriteLine($"\n处理完成！成功: {processedCount} 个文件，失败: {errorCount} 个文件");
+                return processedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"程序执行错误: {ex.Message}");
+                return false;
+            }
+        }
+
+        public string ConvertFileName(string originalName)
+        {
+            // 使用正则表达式匹配所有需要的部分
+            var pattern = @"《(?<chineseName>[^》]+)》(?<year>\d{4}).*?\\(?<englishName>[^/]+?)\.\d{4}";
+            var match = Regex.Match(originalName, pattern);
+            if (!match.Success)
+            {
+                Console.WriteLine($"文件名格式不符合预期: {originalName}");
+                return null;
+            }
+
+            var chineseName = match.Groups["chineseName"].Value;
+            var year = match.Groups["year"].Value;
+            var englishName = match.Groups["englishName"].Value;
+
+            var language = "英语中字";
+            if (originalName.Contains("泰国"))
+            {
+                language = "泰语中字";
+            }
+            else if (originalName.Contains("西班牙"))
+            {
+                language = "西班牙语中字";
+            }
+            else if (originalName.Contains("日本"))
+            {
+                language = "日语中字";
+            }
+            else if (originalName.Contains("韩国"))
+            {
+                language = "韩语中字";
+            }
+
+            return $"{year}{chineseName}.{englishName}.{language}.mp4";
         }
     }
 }
