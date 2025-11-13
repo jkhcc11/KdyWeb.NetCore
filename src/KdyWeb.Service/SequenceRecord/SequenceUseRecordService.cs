@@ -34,11 +34,11 @@ namespace KdyWeb.Service.SequenceRecord
         private readonly IKdyRepository<VenuesConfig, long> _venuesConfigRepository;
         private readonly IGiftUserConfigRepository _giftUserConfigRepository;
         private readonly ITxDocWebService _txDocWebService;
-        private readonly TxDocRecordsOption _txDocRecordsOption;
+        private readonly IOptionsMonitor<TxDocRecordsOption> _txDocRecordsOption;
 
         public SequenceUseRecordService(IUnitOfWork unitOfWork, ISequenceUseRecordRepository sequenceUseRecordRepository,
             IKdyRepository<SequenceUserRecord, long> sequenceUserRecordRepository, ITxDocWebService txDocWebService,
-            IOptions<TxDocRecordsOption> options, IKdyRepository<VenuesConfig, long> venuesConfigRepository,
+            IOptionsMonitor<TxDocRecordsOption> options, IKdyRepository<VenuesConfig, long> venuesConfigRepository,
             IGiftUserConfigRepository giftUserConfigRepository) : base(unitOfWork)
         {
             _sequenceUseRecordRepository = sequenceUseRecordRepository;
@@ -46,7 +46,7 @@ namespace KdyWeb.Service.SequenceRecord
             _txDocWebService = txDocWebService;
             _venuesConfigRepository = venuesConfigRepository;
             _giftUserConfigRepository = giftUserConfigRepository;
-            _txDocRecordsOption = options.Value;
+            _txDocRecordsOption = options;
         }
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace KdyWeb.Service.SequenceRecord
             var txDocRecords = await _txDocWebService.GetSequenceRecordsAsync(new GetSequenceRecordsInput()
             {
                 DocUrl = input.TxDocUrl,
-                UserLoginCookie = _txDocRecordsOption.UserLoginCookie
+                UserLoginCookie = _txDocRecordsOption.CurrentValue.UserLoginCookie
             });
             //成功才缓存
             if (txDocRecords.IsSuccess)

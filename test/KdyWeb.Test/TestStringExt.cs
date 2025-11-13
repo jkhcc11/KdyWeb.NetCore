@@ -115,7 +115,8 @@ namespace KdyWeb.Test
         [TestMethod]
         public void FileHandler()
         {
-            var filePath = "I:\\待处理\\电影合集\\合并";
+            //var filePath = "I:\\待处理\\电影合集\\合并";
+            var filePath = "I:\\待处理\\处理中\\电影";
             var re = ProcessAllFiles(filePath);
 
             Assert.IsTrue(re);
@@ -190,11 +191,26 @@ namespace KdyWeb.Test
         {
             // 使用正则表达式匹配所有需要的部分
             var pattern = @"《(?<chineseName>[^》]+)》(?<year>\d{4}).*?\\(?<englishName>[^/]+?)\.\d{4}";
+
+            // 模式2: 中文名.英文名.年份 (如：饥饿站台.El Hoyo.2020)
+            var pattern2 = @"(?<chineseName>[^\\\.]+)\.[^\\\.]*?(?<englishName>[^\\\.]+)\.(?<year>\d{4})";
+
+            // 模式3: 英文名.年份 (如：The.Unseen.2016)
+            //var pattern3 = @"(?<chineseName>[^\\\.]+)\.\d+\\(?<englishName>[A-Za-z\.]+)\.(?<year>\d{4})";
+
             var match = Regex.Match(originalName, pattern);
-            if (!match.Success)
+            if (match.Success == false)
             {
-                Console.WriteLine($"文件名格式不符合预期: {originalName}");
-                return null;
+                match = Regex.Match(originalName, pattern2);
+                if (match.Success == false)
+                {
+                   // match = Regex.Match(originalName, pattern3);
+                    if (match.Success == false)
+                    {
+                        //Console.WriteLine($"文件名格式不符合预期: {originalName}");
+                        return null;
+                    }
+                }
             }
 
             var chineseName = match.Groups["chineseName"].Value;
