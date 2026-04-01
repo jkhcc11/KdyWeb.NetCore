@@ -285,6 +285,9 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 fileId = fileInfo.Data.ResultId;
             }
 
+            //todo:20260401调整为down
+            return await GetDownUrlByFileIdAsync(fileId,input.CacheKey, currentFlag);
+
             var tempData = new
             {
                 category = "video",
@@ -437,6 +440,43 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
                 });
+        }
+
+        /// <summary>
+        /// 根据文件id获取下载地址
+        /// </summary>
+        /// <returns></returns>
+        internal async Task<KdyResult<string>> GetDownUrlByFileIdAsync(string fileId, string cacheKey, string currentFlag)
+        {
+            var tempData = new
+            {
+                fileId,
+            };
+            KdyRequestCommonInput.SetPostData("/hcy/file/getDownloadUrl", tempData.ToJsonStr(), isAjax: true);
+            var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
+            if (reqResult.IsSuccess == false ||
+                reqResult.LocationUrl.IsEmptyExt() == false)
+            {
+                //有跳转说明失效了
+                KdyLog.LogWarning("{userNick},139盘文件下载异常,Flag:{flag},Req:{input},ErrInfo:{msg}",
+                    CloudConfig.ReqUserInfo, currentFlag, fileId, reqResult.ErrMsg);
+                throw new KdyCustomException(reqResult.ErrMsg);
+            }
+
+            var tempResult = JObject.Parse(reqResult.Data);
+            var downUrl = tempResult.GetValueExt("data.url");
+            if (downUrl.IsEmptyExt())
+            {
+                return KdyResult.Error<string>(KdyResultCode.Error, "无效down地址");
+            }
+
+            await KdyRedisCache.GetCache()
+                .SetStringAsync(cacheKey, downUrl, new DistributedCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(12)
+                });
+
+            return KdyResult.Success<string>(downUrl);
         }
     }
 }
