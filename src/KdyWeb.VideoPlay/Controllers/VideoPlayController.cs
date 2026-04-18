@@ -19,7 +19,7 @@ namespace KdyWeb.VideoPlay.Controllers
 
             ViewBag.EpId = id;
 
-            Response.Headers.Add("Content-Security-Policy", "frame-ancestors 'self' http://*.kdy666.pro");
+            Response.Headers.Add("Content-Security-Policy", "frame-ancestors 'self' http://*.kdy666.com");
             return View();
         }
     }
