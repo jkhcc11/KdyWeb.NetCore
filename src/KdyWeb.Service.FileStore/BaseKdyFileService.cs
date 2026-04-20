@@ -117,6 +117,7 @@ namespace KdyWeb.Service.FileStore
             // 创建 HttpRequestMessage 实例
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             requestMessage.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36");
+            requestMessage.Headers.Referrer = new Uri(url);
             var httpClient = _httpClientFactory.CreateClient();
             // 发送请求并获取响应
             var response = await httpClient.SendAsync(requestMessage);
