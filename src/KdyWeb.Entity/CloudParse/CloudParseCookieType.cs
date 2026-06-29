@@ -20,6 +20,7 @@ namespace KdyWeb.Entity.CloudParse
         public const string Pan115 = "Pan115";
         public const string LanZouYouXiang = "iLanZou";
         public const string DouBao = "DouBao";
+        public const string GuangYa = "GuangYa";
 
         /// <summary>
         /// 云盘Cookie类型

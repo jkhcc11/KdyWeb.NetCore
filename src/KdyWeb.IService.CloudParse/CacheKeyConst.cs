@@ -155,6 +155,32 @@ namespace KdyWeb.IService.CloudParse
         }
 
         /// <summary>
+        /// 光鸭Cache
+        /// </summary>
+        public class GuangYaCacheKey
+        {
+            /// <summary>
+            /// 前缀
+            /// </summary>
+            private const string Prefix = "GuangYa:";
+
+            /// <summary>
+            /// 刷新Token
+            /// </summary>
+            public const string RefreshToken = Prefix + "RefreshToken";
+
+            /// <summary>
+            /// 请求Token
+            /// </summary>
+            public const string ReqToken = Prefix + "ReqCloudToken";
+
+            /// <summary>
+            /// 下载缓存
+            /// </summary>
+            public const string DownCacheKey = Prefix + "DownUrl";
+        }
+
+        /// <summary>
         /// 自定义声明类型
         /// </summary>
         public class KdyCustomClaimType
