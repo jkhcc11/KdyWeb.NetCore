@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using KdyWeb.Entity.CloudParse;
+using System.Net;
 
 namespace KdyWeb.Service.CloudParse.DiskCloudParse
 {
@@ -226,6 +227,8 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
             var postJson = JsonConvert.SerializeObject(reqData);
             await SetAuthHeaderAsync();
 
+            //仅下载设置代理
+            SetPublicProxy();
             KdyRequestCommonInput.SetPostData("/userres/v1/get_res_download_url", postJson);
             var reqResult = await KdyRequestClientCommon.SendAsync(KdyRequestCommonInput);
             if (reqResult.IsSuccess == false)
@@ -300,7 +303,7 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
 
             var postData = new
             {
-                client_id= "aMe-8VSlkrbQXpUR",
+                client_id = "aMe-8VSlkrbQXpUR",
                 refresh_token = refreshToken,
                 grant_type = "refresh_token"
             };
@@ -389,6 +392,29 @@ namespace KdyWeb.Service.CloudParse.DiskCloudParse
         internal string GetCacheKeyWithRefreshToken()
         {
             return $"{CacheKeyConst.GuangYaCacheKey.RefreshToken}:{CloudConfig.ChildUserId}";
+        }
+
+        /// <summary>
+        /// 设置公共代理
+        /// </summary>
+        internal void SetPublicProxy()
+        {
+            #region 代理信息
+            var proxyInfo = CloudConfig.GetProxyInfo();
+            if (proxyInfo == null)
+            {
+                return;
+            }
+
+            var webProxy = new WebProxy(new Uri($"http://{proxyInfo.ServerUrl}:{proxyInfo.Port}"));
+            if (string.IsNullOrEmpty(proxyInfo.UserName) == false &&
+                string.IsNullOrEmpty(proxyInfo.UserPwd) == false)
+            {
+                webProxy.Credentials = new NetworkCredential(proxyInfo.UserName, proxyInfo.UserPwd);
+            }
+
+            KdyRequestCommonInput.CustomProxy = webProxy;
+            #endregion
         }
         #endregion
 
