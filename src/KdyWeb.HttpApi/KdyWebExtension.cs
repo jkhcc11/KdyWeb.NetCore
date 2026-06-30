@@ -91,6 +91,10 @@ namespace KdyWeb.HttpApi
                         options.Authority = authServer.AuthHost;
                         options.RequireHttpsMetadata = authServer.IsRequireHttps;
                         options.Audience = authServer.Scope;
+
+                        // 调整失败后的重试间隔为 30 秒
+                        options.RefreshInterval = TimeSpan.FromSeconds(30);
+
                         options.Events = new JwtBearerEvents()
                         {
                             OnTokenValidated = CustomAuthValidated
